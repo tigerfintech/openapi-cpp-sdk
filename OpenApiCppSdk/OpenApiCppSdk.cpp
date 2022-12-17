@@ -6,6 +6,7 @@
 #include "Base64.h"
 #include "Sha1RSASign.h"
 
+
 void signTest();
 int main()
 {
@@ -96,7 +97,7 @@ void signTest() {
 	else {
 		Base64 *base = new Base64();
 		std::string encoded = base->Encode(encrypted, encrypted_length);
-		printf("base 64:%s", encoded);
+		printf("base 64:%s", encoded.c_str());
 	}
 	printf("Encrypted length =%d\n", encrypted_length);
 

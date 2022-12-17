@@ -6,6 +6,9 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <iostream>
+#include <stdio.h>
+
+using namespace std;
 
 class Sha1RSASign
 {
@@ -77,7 +80,9 @@ int Sha1RSASign::sha1Encrypt(unsigned char * context, int contextLength, unsigne
 		ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encryptedLength, rsa);
 		if (1 != ret)
 		{
-			printf_s("shal rsa encrypt sign error,result is [%d], encrypted length is [%d]\n", ret, *encryptedLength);
+			// printf_s("shal rsa encrypt sign error,result is [%d], encrypted length is [%d]\n", ret, *encryptedLength);
+			cout << "sha1 rsa encrypt sign error, result is " << ret << ", encrypted len is " << *encryptedLength << endl;
+
 		}
 		RSA_free(rsa);
 	}
@@ -89,7 +94,8 @@ void Sha1RSASign::printLastError(const char *msg)
 	char * err = new char[130];
 	ERR_load_crypto_strings();
 	ERR_error_string(ERR_get_error(), err);
-	printf_s("%s ERROR: %s\n", msg, err);
+	// printf_s("%s ERROR: %s\n", msg, err);
+	// cout << msg << " ERROR: " << err << endl;
 	delete []err;
 }
 
@@ -104,11 +110,14 @@ int Sha1RSASign::buildSha1RsaSign(char *filename, unsigned char *src, int srclen
 	RSA *rsa_pri_key = RSA_new();
 
 	FILE *fp = NULL;
-	int errorCode = fopen_s(&fp, filename, "rt");
-	if (errorCode != 0)
+	// int errorCode = fopen(&fp, filename, "rt");
+	fp = fopen(filename, "rt");
+
+	if (fp)
 	{
 		RSA_free(rsa_pri_key);
-		printf("fopen [%s] error:[%d]\n", filename, errorCode);
+		// printf("fopen [%s] error:[%d]\n", filename, errorCode);
+		// cout << "fopen " << filename << " error " << endl;
 		return -2;
 	}
 	rsa_pri_key = PEM_read_RSAPrivateKey(fp, &rsa_pri_key, NULL, NULL);
@@ -125,7 +134,8 @@ int Sha1RSASign::buildSha1RsaSign(char *filename, unsigned char *src, int srclen
 	if (1 != ret)
 	{
 		RSA_free(rsa_pri_key);
-		printf("RSA_sign err,r is [%d],sign_len is [%d]\n", ret, *signlen);
+		// printf("RSA_sign err,r is [%d],sign_len is [%d]\n", ret, *signlen);
+		// cout << "RSA_sign err, r is " << ret << ", sign_len is " << *signlen << endl;
 		return -4;
 	}
 	RSA_free(rsa_pri_key);
