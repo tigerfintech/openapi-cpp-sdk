@@ -27,8 +27,8 @@ public:
     TIGERAPI(struct Config &cf) { set_config(cf);};
     ~TIGERAPI() {};
     void set_config(struct Config &cf);
-    string send_request(const string &method, const string &request_path, const string &params= "");
-    string get_sign(string timestamp, string method, string request_path, string body);
+    string send_request(const string &method, value &params);
+    string get_sign(string timestamp, string method, string body);
 
     void test_request();
 

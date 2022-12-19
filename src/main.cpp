@@ -3,6 +3,7 @@
 #include "tigerapi.h"
 #include <algorithm>
 #include "utils.h"
+#include "common/service_types.h"
 #include <cpprest/json.h>
 //#include <windows.h>
 
@@ -11,20 +12,29 @@ using namespace web;
 using namespace web::json;
 
 
+void test_grab_quote_permission(TIGERAPI tigerapi) {
+    value obj = value::object(true);
+    obj[U("tiger_id")] = value(1);
+    obj[U("method")] = value::string(GRAB_QUOTE_PERMISSION);
+
+    tigerapi.send_request("POST", obj);
+}
+
+
 int main(int argc, char *args[]) {
     cout << "Tiger Api demo" << endl;
-//    TIGERAPI tigerapi;
+    TIGERAPI tigerapi;
     /************************** set config **********************/
     struct Config config;
     config.private_key = "";
-    config.tiger_id = "";
-    config.server_url = "https://openapi.tigerfintech.com/gateway";
+    config.tiger_id = "1";
+    config.server_url = "https://openapi-sandbox.tigerfintech.com/gateway";
     config.account = "";
 
-    //tigerapi.set_config(config);
+    tigerapi.set_config(config);
+    test_grab_quote_permission(tigerapi);
     ///************************** test examples **********************/
     value obj  = value::object(true);
-//    obj[L"direction"] = value::string(L"long");
     obj[U("direction")] = value::string(U("long"));
 
     value obj2;
@@ -36,3 +46,4 @@ int main(int argc, char *args[]) {
     cout << abc.serialize() << std::endl;
     return 0;
 }
+

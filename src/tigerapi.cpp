@@ -11,51 +11,56 @@ void TIGERAPI::set_config(struct Config &cf) {
     client_config.account = cf.account;
     client_config.tiger_id = cf.tiger_id;
     client_config.private_key = cf.private_key;
+    client_config.server_url = cf.server_url;
 }
 
-string TIGERAPI::get_sign(string timestamp, string method, string request_path, string body) {
+string TIGERAPI::get_sign(string timestamp, string method, string body) {
     string sign;
     unsigned char * mac = NULL;
     unsigned int mac_length = 0;
-    string data = timestamp + method + request_path + body;
+    string data = timestamp + method + body;
     string key = client_config.private_key;
     int ret = hmac_encode("sha256", key.c_str(), key.length(), data.c_str(), data.length(), mac, mac_length);
     sign = base64_encode(mac, mac_length);
     return sign;
 }
 
-string TIGERAPI::send_request(const string &method, const string &request_path, const string &params) {
+string TIGERAPI::send_request(const string &method, value &params) {
     /************************** set request method ***************************/
     http_request request;
     /************************** set request uri ***************************/
-    uri_builder builder;
-    builder.append_path(request_path);
+//    uri_builder builder;
+//    builder.append_path("");
 
     request.set_method(method);
-    request.set_request_uri(builder.to_uri());
-    request._set_base_uri("https://openapi.tigerfintech.com");
+//    request.set_request_uri(builder.to_uri());
+//    request._set_base_uri(client_config.server_url);
 
     /************************** set request headers ***************************/
     char * timestamp = new char[32];
     timestamp = get_timestamp(timestamp, 32);
-    string sign = get_sign(timestamp, method, builder.to_string(), params);
+    string sign = get_sign(timestamp, method, params.serialize());
+    params[U("sign")] = value::string(sign);
+    params[U("charset")] = value::string("UTF-8");
     request.headers().clear();
     request.headers().add(U("Accept"), U("application/json"));
     request.headers().set_content_type(U("application/json; charset=UTF-8"));
 
     /************************** set request body ***************************/
-    request.set_body(params,"application/json; charset=UTF-8");
-
-    cout << "request:\n" << request.to_string().c_str() << endl;
-    if (!params.empty()) {
-        cout << "body:\n" << json_format(params) << endl;
-    }
+    request.set_body(params.serialize(),"application/json; charset=UTF-8");
 
     /************************** get response ***************************/
     http_response response;
     string str;
     try {
-        http_client client("");
+        http_client client(client_config.server_url);
+
+        cout << "request:\n" << "Server: " << client.base_uri().to_string() << "\n" << request.to_string().c_str() << endl;
+        if (!params.is_null()) {
+            cout << "body:\n" << json_format(params.serialize()) << endl;
+        }
+
+
         // Wait for headers
         response = client.request(request).get();
 
@@ -84,7 +89,7 @@ string TIGERAPI::send_request(const string &method, const string &request_path, 
     auto fp = fopen("result.txt", "a");
     fputs("request:\n", fp);
     fputs(method.c_str(), fp);
-    fputs(request_path.c_str(), fp);
+    fputs(params.serialize().c_str(), fp);
     fputs("\nresponse:\n", fp);
     fputs(str.c_str(), fp);
     fputs("\n\n", fp);
