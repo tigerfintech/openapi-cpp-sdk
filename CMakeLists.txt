@@ -22,17 +22,6 @@ if(UNIX) # Darwing or Linux
         set(OPENSSL_VERSION "1.0.1")
     endif()
 
-#    set(ICU_ROOT "/usr/local/opt/icu4c")
-#    find_package(ICU REQUIRED COMPONENTS data)
-#    if(ICU_FOUND)
-#        message(STATUS "ICU found: ${ICU_VERSION}")
-#        include_directories(${ICU_INCLUDE_DIRS})
-#    else()
-#        message(FATAL_ERROR "ICU not found")
-#    endif()
-
-
-
 elseif(WIN32) # Windows systems including Win64.
     message(FATAL_ERROR "-- Windows is not supported for now.")
 else()
@@ -62,19 +51,15 @@ add_executable(${PROJECT_NAME} src/main.cpp src/base64.hpp
 
 # headers search paths ...
 set(CPPRESTSDK_INCLUDE_DIR "./libs/cpprestsdk/Release/include")
-set(MICROSERVICE_INCLUDE_DIR "./src/foundation/include")
-message(MICROSERVICE " ${MICROSERVICE_INCLUDE_DIR}")
-set(HEADER_SEARCH_PATHS ${CPPRESTSDK_INCLUDE_DIR} ${MICROSERVICE_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${CPPRESTSDK_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
 
 # library search paths ...
 if(APPLE)
-    #    set(OPENSSL_LIBS "/usr/local/Cellar/openssl/${OPENSSL_VERSION}/lib/libssl.dylib;/usr/local/Cellar/openssl/${OPENSSL_VERSION}/lib/libcrypto.dylib")
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(ICU_LIBS = "${ICU_LIBRARIES}")
     set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.debug/Binaries/libcpprest.a")
     set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
 
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPRESTSDK_LIBRARY} ${ZIP_LIBRARY} ${ICU_LIBRARIES})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPRESTSDK_LIBRARY} ${ZIP_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
     set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.debug/Binaries/libcpprest.a")
@@ -93,8 +78,7 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework CoreFoundation")
     target_link_libraries(${PROJECT_NAME} "-framework Security")
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks -L/usr/local/opt/openssl/lib -lcrypto -lssl")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
 endif()

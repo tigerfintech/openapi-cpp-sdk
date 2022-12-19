@@ -12,6 +12,7 @@ using namespace web::json;
 
 
 int main(int argc, char *args[]) {
+    cout << "Tiger Api demo" << endl;
 //    TIGERAPI tigerapi;
     /************************** set config **********************/
     struct Config config;
