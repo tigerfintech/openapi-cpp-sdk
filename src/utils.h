@@ -9,10 +9,13 @@
 #include <zlib.h>
 
 char * get_timestamp(char *timestamp, int len);
+std::string get_device_id();
 std::string build_params(std::string req_path, std::map<std::string,std::string> m);
 std::string json_format(std::string json_str);
 int gz_decompress(Byte *zdata, uLong nzdata, Byte *data, uLong *ndata);
-std::string get_sign(std::string key, std::string timestamp, std::string method, std::string req_path, std::string body);
+std::string get_sign(std::string key, std::string content);
+std::string get_sign(unsigned char * private_key, unsigned char * content);
+
 unsigned int str_hex(unsigned char *str,unsigned char *hex);
 void hex_str(unsigned char *inchar, unsigned int len, unsigned char *outtxt);
 

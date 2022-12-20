@@ -1,3 +1,7 @@
+
+#ifndef TIGERAPI_RSA_SIGN_HPP
+#define TIGERAPI_RSA_SIGN_HPP
+
 #pragma once
 
 //#include "pch.h"
@@ -51,10 +55,10 @@ RSA * Sha1RSASign::createRSA(unsigned char * key, bool isPrivate)
 	BIO *keybio = BIO_new_mem_buf(key, -1);
 	if (keybio != nullptr) {
 		if (isPrivate) {
-			rsa = PEM_read_bio_RSAPrivateKey(keybio, &rsa, 0, 0);
+			rsa = PEM_read_bio_RSAPrivateKey(keybio, nullptr, 0, 0);
 		}
 		else {
-			rsa = PEM_read_bio_RSA_PUBKEY(keybio, &rsa, 0, 0);
+			rsa = PEM_read_bio_RSA_PUBKEY(keybio, nullptr, 0, 0);
 		}
 		BIO_free_all(keybio);
 	}
@@ -95,7 +99,7 @@ void Sha1RSASign::printLastError(const char *msg)
 	ERR_load_crypto_strings();
 	ERR_error_string(ERR_get_error(), err);
 	// printf_s("%s ERROR: %s\n", msg, err);
-	// cout << msg << " ERROR: " << err << endl;
+	 cout << msg << " ERROR: " << err << endl;
 	delete []err;
 }
 
@@ -155,3 +159,4 @@ int Sha1RSASign::decrypt(unsigned char * context, int contextLength, unsigned ch
 	return result;
 }
 
+#endif

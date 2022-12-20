@@ -19,6 +19,8 @@ struct Config{
     string private_key;
     string account;
     string server_url;
+    string charset = "UTF-8";
+    string sign_type = "RSA";
 };
 
 class TIGERAPI {
@@ -27,13 +29,13 @@ public:
     TIGERAPI(struct Config &cf) { set_config(cf);};
     ~TIGERAPI() {};
     void set_config(struct Config &cf);
-    string send_request(const string &method, value &params);
-    string get_sign(string timestamp, string method, string body);
-
-    void test_request();
-
+    string post(const string &api_method, value &params);
+    string get(const string &api_method, value &params);
+    string send_request(const string &http_method, const string &api_method, value &body);
 private:
     struct Config client_config;
+    string build_sign_content(const value& obj);
+    value build_common_params();
 };
 
 

@@ -47,7 +47,7 @@ endif()
 # src files ...
 add_executable(${PROJECT_NAME} src/main.cpp src/base64.hpp
                                src/tigerapi.cpp src/tigerapi.h src/algo_hmac.h src/algo_hmac.cpp src/constants.h
-         src/utils.h src/utils.cpp src/common/service_types.h)
+         src/utils.h src/utils.cpp src/common/service_types.h src/common/rsa_sign.hpp)
 
 # headers search paths ...
 set(CPPRESTSDK_INCLUDE_DIR "./libs/cpprestsdk/Release/include")
