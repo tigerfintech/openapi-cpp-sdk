@@ -1,16 +1,13 @@
 
 
-#include "utils.h"
-#include "algo_hmac.h"
+#include "../include/tigerapi/utils.h"
 #include "base64.hpp"
 #include <time.h>
 #include <cpprest/http_client.h>
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <random>
 #include <algorithm>
-#include "common/rsa_sign.hpp"
+#include "common/rsa_sign.h"
 
 using namespace std;
 using namespace web;
@@ -30,12 +27,12 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
     unsigned char decrypted[4098] = {};
     Sha1RSASign sha1RSASign;
     unsigned int encrypted_length = 0;
-    int encryptedRet = sha1RSASign.sha1Encrypt(content, strlen((char *) content),
-                                               private_key, encrypted,
-                                               &encrypted_length);
+    int encryptedRet = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
+                                                private_key, encrypted,
+                                                &encrypted_length);
 
     if (encryptedRet != 1) {
-        sha1RSASign.printLastError("Private Encrypt failed");
+        sha1RSASign.print_last_error("Private Encrypt failed");
         exit(0);
     }
     std::string encoded = websocketpp::base64_encode(encrypted, encrypted_length);

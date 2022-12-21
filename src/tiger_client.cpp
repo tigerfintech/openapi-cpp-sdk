@@ -1,20 +1,16 @@
-#include "tigerapi.h"
-#include <ctime>
-#include "algo_hmac.h"
+#include "../include/tigerapi/tiger_client.h"
 #include "base64.hpp"
-#include "utils.h"
-#include "constants.h"
 
 using namespace websocketpp;
 
-void TIGERAPI::set_config(struct Config &cf) {
+void TigerClient::set_config(struct Config &cf) {
     client_config.account = cf.account;
     client_config.tiger_id = cf.tiger_id;
     client_config.private_key = cf.private_key;
     client_config.server_url = cf.server_url;
 }
 
-string TIGERAPI::build_sign_content(const value &obj) {
+string TigerClient::build_sign_content(const value &obj) {
     json::object obj_obj = obj.as_object();
 
     // Create a vector to hold the keys.
@@ -37,7 +33,7 @@ string TIGERAPI::build_sign_content(const value &obj) {
     return str;
 }
 
-value TIGERAPI::build_common_params() {
+value TigerClient::build_common_params() {
     value common_params;
     common_params[P_TIGER_ID] = value::string(client_config.tiger_id);
     common_params[P_CHARSET] = value::string(client_config.charset);
@@ -47,15 +43,15 @@ value TIGERAPI::build_common_params() {
     return common_params;
 }
 
-string TIGERAPI::post(const string &api_method, value &params) {
+string TigerClient::post(const string &api_method, value &params) {
     return send_request(POST, api_method, params);
 }
 
-string TIGERAPI::get(const string &api_method, value &params) {
+string TigerClient::get(const string &api_method, value &params) {
     return send_request(GET, api_method, params);
 }
 
-string TIGERAPI::send_request(const string &http_method, const string &api_method, value &body) {
+string TigerClient::send_request(const string &http_method, const string &api_method, value &body) {
     http_request request;
     request.set_method(http_method);
 

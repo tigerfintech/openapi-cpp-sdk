@@ -2,9 +2,9 @@
 #define TIGERAPI_TEST_SIGN_HPP
 
 #include <iostream>
-#include "../base64.hpp"
-#include "../common/rsa_sign.hpp"
-#include "../utils.h"
+#include "src/base64.hpp"
+#include "src/common/rsa_sign.h"
+#include "include/tigerapi/utils.h"
 
 
 //void test_sign();

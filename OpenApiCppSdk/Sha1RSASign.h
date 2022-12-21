@@ -16,17 +16,17 @@ public:
 	Sha1RSASign();
 	~Sha1RSASign();
 
-	void printLastError(const char *msg);
-	RSA * createRSA(unsigned char * key, bool isPrivate);
+	void print_last_error(const char *msg);
+	RSA * create_rsa(unsigned char * key, bool isPrivate);
 	/*
 		shar1 rsa sign from private key context
 	*/
-	int sha1Encrypt(unsigned char * context, int contextLength, unsigned char * key, unsigned char *encrypted, unsigned int* encryptedLength);
+	int sha1_encrypt(unsigned char * context, int contextLength, unsigned char * key, unsigned char *encrypted, unsigned int* encryptedLength);
 
 	/*
 		shar1 rsa sign from private key file
 	*/
-	int buildSha1RsaSign(char *filename, unsigned char *src, int srclen, unsigned char *sign, unsigned int *signlen);
+	int build_sha1_rsa_sign(char *filename, unsigned char *src, int srclen, unsigned char *sign, unsigned int *signlen);
 
 	/*
 		encrypt decryp rsa sign,
@@ -45,7 +45,7 @@ Sha1RSASign::~Sha1RSASign()
 {
 }
 
-RSA * Sha1RSASign::createRSA(unsigned char * key, bool isPrivate)
+RSA * Sha1RSASign::create_rsa(unsigned char * key, bool isPrivate)
 {
 	RSA *rsa = nullptr;
 	BIO *keybio = BIO_new_mem_buf(key, -1);
@@ -69,7 +69,7 @@ RSA * Sha1RSASign::createRSA(unsigned char * key, bool isPrivate)
 	return rsa;
 }
 
-int Sha1RSASign::sha1Encrypt(unsigned char * context, int contextLength, unsigned char * key, unsigned char *encrypted, unsigned int* encryptedLength)
+int Sha1RSASign::sha1_encrypt(unsigned char * context, int contextLength, unsigned char * key, unsigned char *encrypted, unsigned int* encryptedLength)
 {
 	RSA * rsa = createRSA(key, true);
 	int ret = -1;
@@ -89,7 +89,7 @@ int Sha1RSASign::sha1Encrypt(unsigned char * context, int contextLength, unsigne
 	return ret;
 }
 
-void Sha1RSASign::printLastError(const char *msg)
+void Sha1RSASign::print_last_error(const char *msg)
 {
 	char * err = new char[130];
 	ERR_load_crypto_strings();
@@ -99,7 +99,7 @@ void Sha1RSASign::printLastError(const char *msg)
 	delete []err;
 }
 
-int Sha1RSASign::buildSha1RsaSign(char *filename, unsigned char *src, int srclen, unsigned char *sign, unsigned int *signlen) {
+int Sha1RSASign::build_sha1_rsa_sign(char *filename, unsigned char *src, int srclen, unsigned char *sign, unsigned int *signlen) {
 	int ret = 0, isrclen = 0, ideslen = 0, i = 0, n = 0, ienclen = 0, rsalen = 0;
 
 	if (filename == NULL || src == NULL || sign == NULL)

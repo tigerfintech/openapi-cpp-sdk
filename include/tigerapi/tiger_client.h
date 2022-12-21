@@ -1,10 +1,10 @@
 
-#ifndef CPPSDK_TIGERAPI_H
-#define CPPSDK_TIGERAPI_H
+#ifndef TIGERAPI_TIGER_CLIENT_H
+#define TIGERAPI_TIGER_CLIENT_H
 #include <iostream>
 #include <string>
-#include <cpprest/http_client.h>
-#include <cpprest/filestream.h>
+#include "cpprest/http_client.h"
+#include "cpprest/filestream.h"
 #include "utils.h"
 #include "constants.h"
 
@@ -23,11 +23,11 @@ struct Config{
     string sign_type = "RSA";
 };
 
-class TIGERAPI {
+class TigerClient {
 public:
-    TIGERAPI() {};
-    TIGERAPI(struct Config &cf) { set_config(cf);};
-    ~TIGERAPI() {};
+    TigerClient() {};
+    TigerClient(struct Config &cf) { set_config(cf);};
+    ~TigerClient() {};
     void set_config(struct Config &cf);
     string post(const string &api_method, value &params);
     string get(const string &api_method, value &params);
@@ -39,4 +39,4 @@ private:
 };
 
 
-#endif //CPPSDK_TIGERAPI_H
+#endif //TIGERAPI_TIGER_CLIENT_H

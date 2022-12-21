@@ -8,6 +8,12 @@ if(UNIX) # Darwing or Linux
     find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
     find_package(Threads REQUIRED)
 
+    # cpprest
+    find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
+    find_library(CPPREST_LIBRARY NAMES cpprest)
+    message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
+    message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
+
     if(APPLE)
         # Prefer a homebrew version of OpenSSL over the one in /usr/lib
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
@@ -17,6 +23,8 @@ if(UNIX) # Darwing or Linux
 
         find_package(OpenSSL 1.1 REQUIRED)
         set(OPENSSL_VERSION "1.1.1q")
+
+
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -43,28 +51,23 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 # Project construction ...
-
 # src files ...
 add_executable(${PROJECT_NAME} src/main.cpp src/base64.hpp
-                               src/tigerapi.cpp src/tigerapi.h src/algo_hmac.h src/algo_hmac.cpp src/constants.h
-         src/utils.h src/utils.cpp src/common/service_types.h src/common/rsa_sign.hpp)
+        src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
+        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h src/common/rsa_sign.h)
 
 # headers search paths ...
-set(CPPRESTSDK_INCLUDE_DIR "./libs/cpprestsdk/Release/include")
-set(HEADER_SEARCH_PATHS ${CPPRESTSDK_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
 
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.debug/Binaries/libcpprest.a")
     set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
 
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPRESTSDK_LIBRARY} ${ZIP_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(CPPRESTSDK_LIBRARY "${PROJECT_SOURCE_DIR}/libs/cpprestsdk/build.debug/Binaries/libcpprest.a")
-
-    set(LIBRARIES_SEARCH_PATHS ${CPPRESTSDK_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES})
+    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES})
 endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
@@ -82,3 +85,23 @@ if (APPLE)
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
 endif()
+
+#set(CMAKE_INSTALL_PREFIX "./")
+
+install(DIRECTORY include/
+        DESTINATION "include"
+        FILES_MATCHING PATTERN "*.h"
+        )
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}Targets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
+        )
+install(EXPORT ${PROJECT_NAME}Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION lib/cmake/${PROJECT_NAME}
+        )
