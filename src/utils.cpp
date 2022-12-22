@@ -13,12 +13,13 @@ using namespace std;
 using namespace web;
 using namespace websocketpp;
 
-char *get_timestamp(char *timestamp, int len) {
+std::string get_timestamp() {
     struct tm tm;
     time_t t = time(NULL);
     gmtime_r(&t, &tm);
-    strftime(timestamp, len, "%Y-%m-%d %H:%M:%S", &tm);
-    return timestamp;
+    char timestamp[32];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm);
+    return std::string(timestamp);
 }
 
 std::string get_sign(unsigned char * private_key, unsigned char * content) {

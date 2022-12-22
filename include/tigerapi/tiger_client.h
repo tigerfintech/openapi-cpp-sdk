@@ -23,20 +23,31 @@ struct Config{
     string sign_type = "RSA";
 };
 
-class TigerClient {
-public:
-    TigerClient() {};
-    TigerClient(struct Config &cf) { set_config(cf);};
-    ~TigerClient() {};
-    void set_config(struct Config &cf);
-    string post(const string &api_method, value &params);
-    string get(const string &api_method, value &params);
-    string send_request(const string &http_method, const string &api_method, value &body);
-private:
-    struct Config client_config;
-    string build_sign_content(const value& obj);
-    value build_common_params();
-};
+namespace TIGERAPI {
+    class TigerClient {
+    public:
+        TigerClient() {};
+
+        TigerClient(struct Config &cf) { set_config(cf); };
+
+        ~TigerClient() {};
+
+        void set_config(struct Config &cf);
+
+        value post(const string &api_method, value &params);
+
+        value get(const string &api_method, value &params);
+
+        value send_request(const string &http_method, const string &api_method, value &body);
+
+    private:
+        struct Config client_config;
+
+        string build_sign_content(const value &obj);
+
+        value build_common_params();
+    };
+}
 
 
 #endif //TIGERAPI_TIGER_CLIENT_H

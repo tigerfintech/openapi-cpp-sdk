@@ -1,4 +1,5 @@
 #include "tigerapi/tiger_client.h"
+#include "tigerapi/service_types.h"
 #include "cpprest/http_client.h"
 #include "cpprest/filestream.h"
 
@@ -31,7 +32,8 @@ int main(int argc, char *args[]) {
     /************************** set config **********************/
     struct Config config;
     config.private_key = "-----BEGIN RSA PRIVATE KEY-----\n"
-                         "";
+                         ""
+                         "-----END RSA PRIVATE KEY-----";
     config.tiger_id = "2";
     config.server_url = "https://openapi-sandbox.tigerfintech.com/gateway";
     config.account = "";

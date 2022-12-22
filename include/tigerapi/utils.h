@@ -8,7 +8,7 @@
 #include <map>
 #include <zlib.h>
 
-char * get_timestamp(char *timestamp, int len);
+std::string get_timestamp();
 std::string get_device_id();
 std::string build_params(std::string req_path, std::map<std::string,std::string> m);
 std::string json_format(std::string json_str);

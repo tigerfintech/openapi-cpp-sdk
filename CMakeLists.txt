@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(tigerapi)
+
+# Find the source file that contains the version information
+find_file(VERSION_FILE include/tigerapi/version.h PATHS ${CMAKE_SOURCE_DIR})
+
+message(version file " ${VERSION_FILE}")
+# Extract the version information from the source file
+file(READ ${VERSION_FILE} VERSION_FILE_CONTENTS)
+string(REGEX MATCH "([0-9]\\.[0-9]\\.[0-9])"
+        PROJECT_VERSION "${VERSION_FILE_CONTENTS}")
+message(PROJECT_VERSION " ${PROJECT_VERSION}")
+
+project(tigerapi VERSION ${PROJECT_VERSION})
+
 
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
@@ -54,7 +66,7 @@ endif()
 # src files ...
 add_executable(${PROJECT_NAME} src/main.cpp src/base64.hpp
         src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
-        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h src/common/rsa_sign.h)
+        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h src/common/rsa_sign.h include/tigerapi/quote_client.h src/quote_client.cpp )
 
 # headers search paths ...
 set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
