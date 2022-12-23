@@ -1,7 +1,7 @@
 
 
 #include "../include/tigerapi/utils.h"
-#include "base64.hpp"
+#include "base64.h"
 #include <time.h>
 #include <cpprest/http_client.h>
 #include <iostream>

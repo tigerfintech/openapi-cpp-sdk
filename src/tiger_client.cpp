@@ -1,11 +1,11 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
-#include "base64.hpp"
+#include "base64.h"
 
 
 using namespace websocketpp;
 
-namespace TIGERAPI {
+namespace TIGER_API {
     void TigerClient::set_config(struct Config &cf) {
         client_config.account = cf.account;
         client_config.tiger_id = cf.tiger_id;
@@ -107,12 +107,12 @@ namespace TIGERAPI {
         }
         try {
             result = response.extract_json().get();
-            int code = result["code"].as_integer();
+            int code = result[P_CODE].as_integer();
             if (code != 0) {
                 cout << "Exception: api error, response: " << result << endl;
                 exit(code);
             }
-            result_data = result["data"];
+            result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
             cout << e.what() << endl;

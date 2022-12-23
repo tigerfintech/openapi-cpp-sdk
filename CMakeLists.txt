@@ -64,9 +64,9 @@ endif()
 
 # Project construction ...
 # src files ...
-add_executable(${PROJECT_NAME} src/main.cpp src/base64.hpp
+add_executable(${PROJECT_NAME} src/main.cpp src/base64.h
         src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
-        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h src/common/rsa_sign.h include/tigerapi/quote_client.h src/quote_client.cpp )
+        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h src/common/rsa_sign.h include/tigerapi/quote_client.h src/quote_client.cpp src/trade_client.cpp)
 
 # headers search paths ...
 set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})

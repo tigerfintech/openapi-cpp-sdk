@@ -23,7 +23,7 @@ struct Config{
     string sign_type = "RSA";
 };
 
-namespace TIGERAPI {
+namespace TIGER_API {
     class TigerClient {
     public:
         TigerClient() {};
@@ -31,6 +31,8 @@ namespace TIGERAPI {
         TigerClient(struct Config &cf) { set_config(cf); };
 
         ~TigerClient() {};
+
+        struct Config client_config;
 
         void set_config(struct Config &cf);
 
@@ -41,7 +43,6 @@ namespace TIGERAPI {
         value send_request(const string &http_method, const string &api_method, value &body);
 
     private:
-        struct Config client_config;
 
         string build_sign_content(const value &obj);
 

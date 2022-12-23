@@ -67,7 +67,7 @@ inline std::string enum_to_str(SecType secType) {
     std::string name;
     switch (secType) {
         case SecType::ALL:
-            name = "ALL";
+            name = "";
             break;
         case SecType::STK:
             name = "STK";
@@ -185,6 +185,24 @@ inline std::string enum_to_str(QuoteRight quoteRight) {
     }
 }
 
+enum class Right {
+    PUT,
+    CALL,
+    ALL,
+};
+
+inline std::string enum_to_str(Right right) {
+    switch (right) {
+        case Right::ALL:
+            return "";
+        case Right::PUT:
+            return "PUT";
+        case Right::CALL:
+            return "CALL";
+        default:
+            return "";
+    }
+}
 
 enum class TimelinePeriod {
     DAY = 1,
@@ -292,6 +310,22 @@ inline std::string enum_to_str(CapitalPeriod period) {
     }
 }
 
+enum class OrderSortBy {
+    LATEST_CREATED,
+    LATEST_STATUS_UPDATED
+};
+
+inline std::string enum_to_str(OrderSortBy sortBy) {
+    switch (sortBy) {
+        case OrderSortBy::LATEST_CREATED:
+            return "LATEST_CREATED";
+        case OrderSortBy::LATEST_STATUS_UPDATED:
+            return "LATEST_STATUS_UPDATED";
+        default:
+            return "";
+    }
+}
+
 enum class OrderStatus {
     PendingNew,
     Initial,
@@ -303,5 +337,31 @@ enum class OrderStatus {
     Inactive,
     Invalid
 };
+
+inline std::string enum_to_str(OrderStatus status) {
+    switch (status) {
+        case OrderStatus::PendingNew:
+            return "PendingNew";
+        case OrderStatus::Initial:
+            return "Initial";
+        case OrderStatus::Submitted:
+            return "Submitted";
+        case OrderStatus::PartiallyFilled:
+            return "PartiallyFilled";
+        case OrderStatus::Filled:
+            return "Filled";
+        case OrderStatus::Cancelled:
+            return "Cancelled";
+        case OrderStatus::PendingCancel:
+            return "PendingCancel";
+        case OrderStatus::Inactive:
+            return "Inactive";
+        case OrderStatus::Invalid:
+            return "Invalid";
+        default:
+            return "";
+    }
+}
+
 
 #endif //TIGERAPI_ENUMS_H

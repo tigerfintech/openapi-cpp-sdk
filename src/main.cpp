@@ -1,12 +1,55 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/quote_client.h"
+#include "../include/tigerapi/trade_client.h"
 #include "../include/tigerapi/service_types.h"
 
 
 using namespace std;
 using namespace web;
 using namespace web::json;
-using namespace TIGERAPI;
+using namespace TIGER_API;
+
+/**
+ * 调用交易接口
+ */
+class TestTradeClient {
+public:
+    static void test_get_prime_asset(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_prime_asset();
+        cout << "asset: " << res << endl;
+    }
+
+    static void test_get_asset(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_asset();
+        cout << "asset: " << res << endl;
+    }
+
+    static void test_get_position(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_positions();
+        cout << "position: " << res << endl;
+    }
+
+    static void test_get_orders(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_orders();
+        cout << "orders: " << res << endl;
+    }
+
+    static void test_get_active_orders(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_active_orders();
+        cout << "active orders: " << res << endl;
+    }
+
+    static void test_get_contract(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->get_contract("AAPL");
+        cout << "contract: " << res << endl;
+    }
+
+
+    static void test_trade(std::shared_ptr<TradeClient> trade_client) {
+        TestTradeClient::test_get_active_orders(trade_client);
+    }
+};
+
 
 /**
  * 调用行情接口
@@ -99,7 +142,7 @@ int main(int argc, char *args[]) {
                          "-----END RSA PRIVATE KEY-----";
     config.tiger_id = "2";
     config.server_url = "https://openapi-sandbox.tigerfintech.com/gateway";
-    config.account = "";
+    config.account = "402901";
 
     /**
      * 直接 使用 TigerApi
@@ -112,10 +155,14 @@ int main(int argc, char *args[]) {
     /**
      * 使用封装后的行情接口 QuoteClient
      */
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>();
-    quote_client->set_config(config);
-//    quote_client->grab_quote_permission();
-    TestQuoteClient::test_quote(quote_client);
+//    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>();
+//    quote_client->set_config(config);
+////    quote_client->grab_quote_permission();
+//    TestQuoteClient::test_quote(quote_client);
+
+    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>();
+    trade_client->set_config(config);
+    TestTradeClient::test_trade(trade_client);
     return 0;
 }
 

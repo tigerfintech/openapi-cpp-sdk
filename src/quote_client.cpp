@@ -2,10 +2,9 @@
 // Created by sukai on 2022/12/21.
 //
 #include "../include/tigerapi/quote_client.h"
-#include "../include/tigerapi/service_types.h"
 
 
-namespace TIGERAPI {
+namespace TIGER_API {
     QuoteClient::QuoteClient() {};
 
     QuoteClient::QuoteClient(struct Config &cf, bool is_grab_permission) : TigerClient(cf) {};

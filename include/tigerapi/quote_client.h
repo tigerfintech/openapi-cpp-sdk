@@ -7,8 +7,9 @@
 
 #include "tiger_client.h"
 #include "enums.h"
+#include "../include/tigerapi/service_types.h"
 
-namespace TIGERAPI {
+namespace TIGER_API {
     class QuoteClient : public TigerClient {
     public:
         QuoteClient();
@@ -28,7 +29,7 @@ namespace TIGERAPI {
         value get_history_timeline(const value &symbols, string date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, long begin_time=-1, long end_time=-1,
                         QuoteRight right=QuoteRight::br, int limit=251, string page_token="");
-        value get_kline(const value &symbols, string period="DAY", long begin_time=-1, long end_time=-1,
+        value get_kline(const value &symbols, string period, long begin_time=-1, long end_time=-1,
                         string right="br", int limit=251, string page_token="");
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
