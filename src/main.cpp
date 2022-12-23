@@ -24,10 +24,17 @@ public:
         cout << "result: " << result << endl;
     }
 
+    static void test_get_symbols_names(std::shared_ptr<QuoteClient> quote_client) {
+//        value result = quote_client->get_all_symbol_names("HK");
+        value result = quote_client->get_all_symbol_names(Market::HK);
+        cout << "result: " << result << endl;
+    }
+
     static void test_get_kline(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string("AAPL");
         symbols[1] = value::string("JD");
+        cout << "symbols " << symbols << endl;
         value result = quote_client->get_kline(symbols);
         cout << "result: " << result << endl;
     }
@@ -41,7 +48,7 @@ public:
     }
 
     static void test_quote(std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_symbols(quote_client);
+        TestQuoteClient::test_get_symbols_names(quote_client);
     }
 };
 

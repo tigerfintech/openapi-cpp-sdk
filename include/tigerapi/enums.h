@@ -51,7 +51,7 @@ inline std::string enum_to_str(TradingSession session) {
     }
 }
 
-enum class SecurityType
+enum class SecType
 {
     ALL,
     STK,  // 股票
@@ -63,12 +63,58 @@ enum class SecurityType
     CASH  // 外汇
 };
 
+inline std::string enum_to_str(SecType secType) {
+    std::string name;
+    switch (secType) {
+        case SecType::ALL:
+            name = "ALL";
+            break;
+        case SecType::STK:
+            name = "STK";
+            break;
+        case SecType::OPT:
+            name = "OPT";
+            break;
+        case SecType::WAR:
+            name = "WAR";
+            break;
+        case SecType::IOPT:
+            name = "IOPT";
+            break;
+        case SecType::FUT:
+            name = "FUT";
+            break;
+        case SecType::FOP:
+            name = "FOP";
+            break;
+        case SecType::CASH:
+            name = "CASH";
+            break;
+    }
+    return name;
+}
+
 enum class SegmentType
 {
     ALL,
     SEC,
     FUT
 };
+inline std::string enum_to_str(SegmentType segmentType) {
+    std::string name;
+    switch (segmentType) {
+        case SegmentType::ALL:
+            name = "ALL";
+            break;
+        case SegmentType::SEC:
+            name = "SEC";
+            break;
+        case SegmentType::FUT:
+            name = "FUT";
+            break;
+    }
+    return name;
+}
 
 // Currency 枚举类
 enum class Currency {
@@ -78,6 +124,27 @@ enum class Currency {
     CNH,
     SGD,
 };
+inline std::string enum_to_str(Currency currency) {
+    std::string name;
+    switch (currency) {
+        case Currency::ALL:
+            name = "ALL";
+            break;
+        case Currency::USD:
+            name = "USD";
+            break;
+        case Currency::HKD:
+            name = "HKD";
+            break;
+        case Currency::CNH:
+            name = "CNH";
+            break;
+        case Currency::SGD:
+            name = "SGD";
+            break;
+    }
+    return name;
+}
 
 // Language 枚举类
 enum class Language {
@@ -85,6 +152,21 @@ enum class Language {
     zh_TW,
     en_US,
 };
+inline std::string enum_to_str(Language language) {
+    std::string name;
+    switch (language) {
+        case Language::zh_CN:
+            name = "zh_CN";
+            break;
+        case Language::zh_TW:
+            name = "zh_TW";
+            break;
+        case Language::en_US:
+            name = "en_US";
+            break;
+    }
+    return name;
+}
 
 // QuoteRight 枚举类
 enum class QuoteRight {
@@ -143,7 +225,7 @@ enum class BarPeriod {
 };
 
 // 获取 BarPeriod 名称的函数
-inline std::string get_bar_period_value(BarPeriod period) {
+inline std::string enum_to_str(BarPeriod period) {
     switch (period) {
         case BarPeriod::DAY:
             return "day";
@@ -191,7 +273,7 @@ enum class CapitalPeriod {
     HALFAYEAR,
 };
 
-inline std::string get_capital_period_value(CapitalPeriod period) {
+inline std::string enum_to_str(CapitalPeriod period) {
     switch (period) {
         case CapitalPeriod::INTRADAY:
             return "intraday";

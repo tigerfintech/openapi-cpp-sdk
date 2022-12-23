@@ -106,7 +106,7 @@ namespace TIGERAPI {
             exit(0);
         }
         try {
-            result = response.extract_json(true).get();
+            result = response.extract_json().get();
             int code = result["code"].as_integer();
             if (code != 0) {
                 cout << "Exception: api error, response: " << result << endl;
