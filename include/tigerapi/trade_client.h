@@ -85,6 +85,7 @@ namespace TIGER_API {
                          OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                          SegmentType seg_type = SegmentType::SEC);
 
+        /** 获取未成交订单 **/
         value get_active_orders(string account = "", string sec_type = "",
                                 string market = "ALL",
                                 string symbol = "", long start_time = -1, long end_time = -1, long parent_id = 0,
@@ -96,6 +97,8 @@ namespace TIGER_API {
                                 string symbol = "", long start_time = -1, long end_time = -1, long parent_id = 0,
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
+
+        value place_order(value &order);
 
         value
         get_contract(string symbol, string sec_type, string currency = "", string exchange = "", long expiry = -1,

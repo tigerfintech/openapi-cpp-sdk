@@ -30,6 +30,9 @@ public:
     int sha1_encrypt(unsigned char *context, int context_length, unsigned char *key, unsigned char *encrypted,
                      unsigned int *encrypted_length);
 
+    int sha1_decrypt(unsigned char *encrypted, unsigned int encrypted_length, unsigned char *key,
+                     unsigned char *decrypted, unsigned int decrypted_length);
+
     /*
         shar1 rsa sign from private key file
     */
@@ -77,6 +80,7 @@ int Sha1RSASign::sha1_encrypt(unsigned char *context, int context_length, unsign
     RSA *rsa = create_rsa(key, true);
     int ret = -1;
     if (rsa != nullptr) {
+        // 用hash作为签名内容
         unsigned char hash[SHA_DIGEST_LENGTH] = "";
         SHA1(context, context_length, hash);
         ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
@@ -89,6 +93,24 @@ int Sha1RSASign::sha1_encrypt(unsigned char *context, int context_length, unsign
     }
     return ret;
 }
+
+int Sha1RSASign::sha1_decrypt(unsigned char *encrypted, unsigned int encrypted_length, unsigned char *key,
+                              unsigned char *decrypted, unsigned int decrypted_length) {
+    RSA *rsa = create_rsa(key, false);
+    int ret = -1;
+    if (rsa != nullptr) {
+        // 先取hash再验签
+        unsigned char hash[SHA_DIGEST_LENGTH] = "";
+        SHA1(decrypted, decrypted_length, hash);
+        ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
+        if (1 != ret) {
+            cout << "sha1 rsa decrypt verify error, result is " << ret << endl;
+        }
+        RSA_free(rsa);
+    }
+    return ret;
+}
+
 
 void Sha1RSASign::print_last_error(const char *msg) {
     char *err = new char[130];

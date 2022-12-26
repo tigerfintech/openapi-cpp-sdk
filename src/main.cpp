@@ -46,7 +46,7 @@ public:
 
 
     static void test_trade(std::shared_ptr<TradeClient> trade_client) {
-        TestTradeClient::test_get_active_orders(trade_client);
+        TestTradeClient::test_get_prime_asset(trade_client);
     }
 };
 

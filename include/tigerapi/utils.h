@@ -15,6 +15,11 @@ std::string json_format(std::string json_str);
 int gz_decompress(Byte *zdata, uLong nzdata, Byte *data, uLong *ndata);
 std::string get_sign(std::string key, std::string content);
 std::string get_sign(unsigned char * private_key, unsigned char * content);
+bool verify_sign(std::string public_key, std::string content, std::string encoded_signature);
+
+std::string add_start_end(std::string& key, std::string start_marker, std::string end_marker);
+std::string fill_private_key_marker(std::string& private_key);
+std::string fill_public_key_marker(std::string& public_key);
 
 unsigned int str_hex(unsigned char *str,unsigned char *hex);
 void hex_str(unsigned char *inchar, unsigned int len, unsigned char *outtxt);

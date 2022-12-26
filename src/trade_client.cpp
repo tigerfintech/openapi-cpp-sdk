@@ -189,5 +189,14 @@ namespace TIGER_API {
                             enum_to_str(right));
     }
 
+    value TradeClient::place_order(value &order) {
+        value obj = value::object(true);
+        for (const auto &kvp: order.as_object()) {
+            obj[kvp.first] = kvp.second;
+        }
+        obj[P_ACCOUNT] = get_account_param(order[P_ACCOUNT].as_string());
+
+        value res = post(PLACE_ORDER, obj);
+     }
 
 }

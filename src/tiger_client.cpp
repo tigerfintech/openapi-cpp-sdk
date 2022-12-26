@@ -86,6 +86,7 @@ namespace TIGER_API {
         http_response response;
         value result;
         value result_data;
+        string result_str;
         try {
             http_client client(client_config.server_url);
 
@@ -107,20 +108,26 @@ namespace TIGER_API {
         }
         try {
             result = response.extract_json().get();
+            result_str = result.serialize();
             int code = result[P_CODE].as_integer();
             if (code != 0) {
                 cout << "Exception: api error, response: " << result << endl;
                 exit(code);
+            }
+            string res_sign = result[P_SIGN].as_string();
+            bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
+            if (!is_sign_ok) {
+                cout << "Exception: response sign verify failed. " << endl;
+                exit(-1);
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
             cout << e.what() << endl;
         }
-        string str = result.serialize();
         cout << "response:\n" << result << endl;
         // json format
-        cout << "body:\n" << json_format(str) << endl;
+        cout << "body:\n" << json_format(result_str) << endl;
         cout << endl << endl;
 
         /************************** print response ***************************/

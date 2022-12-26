@@ -3,7 +3,7 @@
 #define CPPSDK_CONSTANTS_H
 
 static std::string GET = "GET";
-static std::string POST   = "POST";
+static std::string POST = "POST";
 
 static std::string P_TIGER_ID = "tiger_id";
 static std::string P_METHOD = "method";
@@ -51,5 +51,14 @@ static std::string P_TYPE = "type";
 static std::string P_EXCHANGE_CODE = "exchange_code";
 
 static std::string OPEN_API_SERVICE_VERSION = "3.0";
+
+// 老虎证券开放平台公钥
+static std::string TIGER_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDNF3G8SoEcCZh2rshUbayDgLLrj6rKgzNMxDL2HS" \
+                   "nKcB0+GPOsndqSv+a4IBu9+I3fyBp5hkyMMG2+AXugd9pMpy6VxJxlNjhX1MYbNTZJUT4nudki4uh+LM" \
+                   "OkIBHOceGNXjgB+cXqmlUnjlqha/HgboeHSnSgpM3dKSJQlIOsDwIDAQAB";
+
+static std::string SANDBOX_TIGER_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbm21i11hgAENGd3/f280PSe4g9YGkS3TEXBY" \
+                           "MidihTvHHf+tJ0PYD0o3PruI0hl3qhEjHTAxb75T5YD3SGK4IBhHn/Rk6mhqlGgI+bBrBVYaXixm" \
+                           "HfRo75RpUUuWACyeqQkZckgR0McxuW9xRMIa2cXZOoL1E4SL4lXKGhKoWbwIDAQAB";
 
 #endif //CPPSDK_CONSTANTS_H

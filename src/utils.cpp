@@ -25,14 +25,14 @@ std::string get_timestamp() {
 std::string get_sign(unsigned char * private_key, unsigned char * content) {
 
     unsigned char encrypted[8196 * 16] = {};
-    unsigned char decrypted[4098] = {};
+//    unsigned char decrypted[4098] = {};
     Sha1RSASign sha1RSASign;
     unsigned int encrypted_length = 0;
-    int encryptedRet = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
-                                                private_key, encrypted,
-                                                &encrypted_length);
+    int encrypted_ret = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
+                                                 private_key, encrypted,
+                                                 &encrypted_length);
 
-    if (encryptedRet != 1) {
+    if (encrypted_ret != 1) {
         sha1RSASign.print_last_error("Private Encrypt failed");
         exit(0);
     }
@@ -43,9 +43,33 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
 }
 
 std::string get_sign(std::string private_key, std::string content) {
+
     unsigned char plain_text[2048 / 8];
     std::copy(content.begin(), content.end(), plain_text);
-    return get_sign((unsigned char *) private_key.c_str(), (unsigned char *) content.c_str());
+    return get_sign((unsigned char *) fill_private_key_marker(private_key).c_str(), (unsigned char *) content.c_str());
+}
+
+bool verify_sign(std::string public_key, std::string content, std::string encoded_signature) {
+    std::string filled_public_key = fill_public_key_marker(public_key).c_str();
+    unsigned char encrypted[8196 * 16] = {};
+    unsigned int encrypted_length = 0;
+
+    std::string decoded = websocketpp::base64_decode(encoded_signature);
+    memcpy(encrypted, decoded.data(), decoded.size());
+    encrypted_length = decoded.size();
+
+    unsigned char decrypted[4098] = {};
+    unsigned int decrypted_length = content.size();
+    memcpy(decrypted, content.data(), content.size());
+
+    Sha1RSASign sha1RSASign;
+    int decrypted_ret = sha1RSASign.sha1_decrypt(encrypted, encrypted_length,
+                                                 (unsigned char *) filled_public_key.c_str(), decrypted, decrypted_length);
+    if (decrypted_ret != 1) {
+        sha1RSASign.print_last_error("Public Decrypt failed");
+        return false;
+    }
+    return true;
 }
 
 string build_params(string req_path, map<string, string> m) {
@@ -266,3 +290,23 @@ std::string get_device_id() {
     return result;
 }
 
+
+
+
+std::string add_start_end(std::string& key, std::string start_marker, std::string end_marker) {
+    if (key.find(start_marker) == std::string::npos) {
+        key = start_marker + key;
+    }
+    if (key.find(end_marker) == std::string::npos) {
+        key = key + end_marker;
+    }
+    return key;
+}
+
+std::string fill_private_key_marker(std::string& private_key) {
+    return add_start_end(private_key, "-----BEGIN RSA PRIVATE KEY-----\n", "\n-----END RSA PRIVATE KEY-----");
+}
+
+std::string fill_public_key_marker(std::string& public_key) {
+    return add_start_end(public_key, "-----BEGIN PUBLIC KEY-----\n", "\n-----END PUBLIC KEY-----");
+}
