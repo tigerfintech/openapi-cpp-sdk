@@ -1,8 +1,8 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/quote_client.h"
 #include "../include/tigerapi/trade_client.h"
-#include "../include/tigerapi/service_types.h"
-
+#include "../include/tigerapi/contract_util.h"
+#include "../include/tigerapi/order_util.h"
 
 using namespace std;
 using namespace web;
@@ -44,9 +44,41 @@ public:
         cout << "contract: " << res << endl;
     }
 
+    static void test_place_order(std::shared_ptr<TradeClient> trade_client) {
+        Contract contract = stock_contract("AAPL", "USD");
+        Order order = limit_order(contract, "BUY", 1, 100.0);
+        value res = trade_client->place_order(order);
+        long id = res["id"].as_integer();
+        cout << "order id: " << id << endl;
+        cout << "place order result: " << res << endl;
+    }
+
+    static void test_get_order(std::shared_ptr<TradeClient> trade_client) {
+//        Contract contract = stock_contract("AAPL", "USD");
+//        Order order = limit_order(contract, "BUY", 1, 100.0);
+//        trade_client->place_order(order);
+        Order my_order = trade_client->get_order(29270263515317248);
+        cout << "order : " << my_order.to_string() << endl;
+    }
+
+    static void test_cancel_order(std::shared_ptr<TradeClient> trade_client) {
+        value res = trade_client->cancel_order(29270263515317248);
+        cout << "cancel order : " << res << endl;
+    }
+
+    static void test_modify_order(std::shared_ptr<TradeClient> trade_client) {
+        Contract contract = stock_contract("AAPL", "USD");
+        Order order = limit_order(contract, "BUY", 1, 100.0);
+        long id = trade_client->place_order(order)["id"].as_number().to_uint64();
+        value res = trade_client->modify_order(order, 105);
+        cout << "modify order res: " << res << endl;
+        Order mod_order = trade_client->get_order(id);
+        cout << "modified order: " << mod_order.to_string() << endl;
+    }
+
 
     static void test_trade(std::shared_ptr<TradeClient> trade_client) {
-        TestTradeClient::test_get_prime_asset(trade_client);
+        TestTradeClient::test_modify_order(trade_client);
     }
 };
 

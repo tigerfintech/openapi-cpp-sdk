@@ -7,10 +7,11 @@
 #include <string>
 #include <map>
 #include <zlib.h>
+#include <cpprest/json.h>
 
 std::string get_timestamp();
 std::string get_device_id();
-std::string build_params(std::string req_path, std::map<std::string,std::string> m);
+void camel_to_snake(web::json::value& obj);
 std::string json_format(std::string json_str);
 int gz_decompress(Byte *zdata, uLong nzdata, Byte *data, uLong *ndata);
 std::string get_sign(std::string key, std::string content);

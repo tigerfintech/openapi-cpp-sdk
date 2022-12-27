@@ -8,7 +8,9 @@
 
 #include "tiger_client.h"
 #include "enums.h"
-#include "../include/tigerapi/service_types.h"
+#include "service_types.h"
+#include "utils.h"
+#include "model.h"
 
 
 namespace TIGER_API {
@@ -98,10 +100,17 @@ namespace TIGER_API {
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
+        Order get_order(long id, bool is_brief=false);
+        value cancel_order(long id);
         value place_order(value &order);
+        value place_order(Order &order);
+        value modify_order(Order &order);
+        value modify_order(Order &order, double limit_price=0, long total_quantity=0,  double aux_price=0,
+                           double trail_stop_price=0, double trailing_percent=0, double percent_offset=0,
+                           string time_in_force="", bool outside_rth=false, long expire_time=0);
 
-        value
-        get_contract(string symbol, string sec_type, string currency = "", string exchange = "", long expiry = -1,
+
+        value get_contract(string symbol, string sec_type, string currency = "", string exchange = "", long expiry = -1,
                      double strike = 0, string right = "");
         value
         get_contract(string symbol, SecType sec_type = SecType::STK, Currency currency = Currency::ALL, string exchange = "", long expiry = -1,

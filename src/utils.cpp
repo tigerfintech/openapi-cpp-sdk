@@ -2,8 +2,7 @@
 
 #include "../include/tigerapi/utils.h"
 #include "base64.h"
-#include <time.h>
-#include <cpprest/http_client.h>
+#include <ctime>
 #include <iostream>
 #include <random>
 #include <algorithm>
@@ -25,7 +24,6 @@ std::string get_timestamp() {
 std::string get_sign(unsigned char * private_key, unsigned char * content) {
 
     unsigned char encrypted[8196 * 16] = {};
-//    unsigned char decrypted[4098] = {};
     Sha1RSASign sha1RSASign;
     unsigned int encrypted_length = 0;
     int encrypted_ret = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
@@ -37,14 +35,14 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
         exit(0);
     }
     std::string encoded = websocketpp::base64_encode(encrypted, encrypted_length);
-    printf("base 64:%s", encoded.c_str());
-    printf("Encrypted length =%d\n", encrypted_length);
+//    printf("base 64:%s", encoded.c_str());
+//    printf("Encrypted length =%d\n", encrypted_length);
     return encoded;
 }
 
 std::string get_sign(std::string private_key, std::string content) {
 
-    unsigned char plain_text[2048 / 8];
+    unsigned char plain_text[8196 * 16];
     std::copy(content.begin(), content.end(), plain_text);
     return get_sign((unsigned char *) fill_private_key_marker(private_key).c_str(), (unsigned char *) content.c_str());
 }
@@ -70,23 +68,6 @@ bool verify_sign(std::string public_key, std::string content, std::string encode
         return false;
     }
     return true;
-}
-
-string build_params(string req_path, map<string, string> m) {
-    string str = req_path;
-    bool first = true;
-    for (auto i = m.begin(); i != m.end(); i++) {
-        if (first) {
-            str += "?";
-            first = false;
-        } else {
-            str += "&";
-        }
-        str += i->first;
-        str += "=";
-        str += i->second;
-    }
-    return str;
 }
 
 string get_level_str(int level) {
@@ -310,3 +291,44 @@ std::string fill_private_key_marker(std::string& private_key) {
 std::string fill_public_key_marker(std::string& public_key) {
     return add_start_end(public_key, "-----BEGIN PUBLIC KEY-----\n", "\n-----END PUBLIC KEY-----");
 }
+
+
+void camel_to_snake(web::json::value& obj) {
+    if (obj.is_object()) {
+        // Iterate through all the keys in the object
+        for (const auto& kv : obj.as_object()) {
+            // Convert the key to snake case
+            std::string key = kv.first;
+//            if (key.empty()) {
+//                continue;
+//            }
+            std::string snake_key;
+            bool is_first_char = true;
+            for (const auto& c : key) {
+                if (isupper(c)) {
+                    if (!is_first_char) {
+                        snake_key += '_';
+                    }
+                    snake_key += tolower(c);
+                } else {
+                    snake_key += c;
+                }
+                is_first_char = false;
+            }
+            // Recurse into the value and convert it as well
+            auto value = kv.second;
+            camel_to_snake(value);
+            // Replace the key with the converted key
+            obj[snake_key] = value;
+            obj.erase(key);
+        }
+    } else if (obj.is_array()) {
+        // Iterate through all the elements in the array and convert them
+        for (auto& value : obj.as_array()) {
+            camel_to_snake(value);
+        }
+    }
+}
+
+
+

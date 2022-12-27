@@ -123,7 +123,7 @@ namespace TIGER_API {
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
-            cout << e.what() << endl;
+            cout << "get response error :" << e.what() << endl;
         }
         cout << "response:\n" << result << endl;
         // json format
@@ -140,6 +140,7 @@ namespace TIGER_API {
 //        fputs("\n\n", fp);
 //        fclose(fp);
 
+//        camel_to_snake(result_data);
         return result_data;
     }
 }
