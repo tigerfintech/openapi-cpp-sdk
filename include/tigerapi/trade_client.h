@@ -17,20 +17,18 @@ namespace TIGER_API {
     class TradeClient : public TigerClient {
     public:
         TradeClient();
-
-        TradeClient(struct Config &cf);
-
+        TradeClient(const ClientConfig &cf);
         /**
          * 获取资产(适用综合/模拟账户) get asset
          * @param account
          * @param base_currency 币种
          * @return
          */
-        value get_prime_asset(string account = "", string base_currency = "USD");
+        value get_prime_asset(const string& account = "", const string& base_currency = "USD");
 
-        value get_prime_asset(string account, Currency base_currency = Currency::USD);
+        value get_prime_asset(const string &account, Currency base_currency = Currency::USD);
 
-        PortfolioAccount get_prime_portfolio(string account = "", string base_currency = "USD");
+        PortfolioAccount get_prime_portfolio(const string &account = "", const string &base_currency = "USD");
 
         /**
          * 获取资产(适用于环球/综合/模拟账户)
@@ -56,10 +54,10 @@ namespace TIGER_API {
                             string symbol = "", const value &sub_accounts = value::array(), long expiry = -1,
                             double strike = 0, Right right = Right::ALL);
 
-        value get_positions(string account, string sec_type = "", string currency = "ALL",
-                            string market = "ALL",
-                            string symbol = "", const value &sub_accounts = value::array(), long expiry = -1,
-                            double strike = 0, string right = "");
+        value get_positions(const string &account, const string &sec_type = "", const string &currency = "ALL",
+                            const string &market = "ALL",
+                            const string &symbol = "", const value &sub_accounts = value::array(), long expiry = -1,
+                            double strike = 0, const string &right = "");
 
         vector<Position> get_position_list(string account = "", string sec_type = "", string currency = "ALL",
                             string market = "ALL",
@@ -80,11 +78,11 @@ namespace TIGER_API {
          * @param seg_type
          * @return
          */
-        value get_orders(string account = "", string sec_type = "",
-                         string market = "ALL",
-                         string symbol = "", long start_time = -1, long end_time = -1, int limit = 100,
-                         bool is_brief = false, const value &states = value::array(), string sort_by = "",
-                         string seg_type = "");
+        value get_orders(const string &account = "", const string &sec_type = "",
+                         const string &market = "ALL",
+                         const string &symbol = "", long start_time = -1, long end_time = -1, int limit = 100,
+                         bool is_brief = false, const value &states = value::array(), const string &sort_by = "",
+                         const string &seg_type = "");
 
         value get_orders(string account, SecType sec_type = SecType::ALL,
                          Market market = Market::ALL,
@@ -126,7 +124,7 @@ namespace TIGER_API {
 
 
     private:
-        value get_account_param(string account="");
+        value get_account_param(const string &account="");
     };
 }
 

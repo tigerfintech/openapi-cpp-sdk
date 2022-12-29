@@ -6,6 +6,7 @@
 #define TIGERAPI_QUOTE_CLIENT_H
 
 #include "tiger_client.h"
+#include "client_config.h"
 #include "enums.h"
 #include "../include/tigerapi/service_types.h"
 
@@ -13,7 +14,7 @@ namespace TIGER_API {
     class QuoteClient : public TigerClient {
     public:
         QuoteClient();
-        QuoteClient(struct Config &cf, bool is_grab_permission);
+        QuoteClient(const ClientConfig &cf, bool is_grab_permission);
         value grab_quote_permission();
         value get_quote_permission();
 

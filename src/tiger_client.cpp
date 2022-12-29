@@ -6,11 +6,15 @@
 using namespace websocketpp;
 
 namespace TIGER_API {
-    void TigerClient::set_config(struct Config &cf) {
-        client_config.account = cf.account;
-        client_config.tiger_id = cf.tiger_id;
-        client_config.private_key = cf.private_key;
-        client_config.server_url = cf.server_url;
+//    void TigerClient::set_config(struct Config &cf) {
+//        client_config.account = cf.account;
+//        client_config.tiger_id = cf.tiger_id;
+//        client_config.private_key = cf.private_key;
+//        client_config.server_url = cf.server_url;
+//    }
+//
+    void TigerClient::set_config(const ClientConfig &cf) {
+        client_config = cf;
     }
 
     string TigerClient::build_sign_content(const value &obj) {
@@ -88,7 +92,7 @@ namespace TIGER_API {
         value result_data;
         string result_str;
         try {
-            http_client client(client_config.server_url);
+            http_client client(client_config.get_server_url());
 
             cout << "request:\n" << "Server: " << client.base_uri().to_string() << "\n" << request.to_string().c_str()
                  << endl;
@@ -109,9 +113,13 @@ namespace TIGER_API {
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
+            if (result[P_CODE].is_null()) {
+                cout << "Exception: api error, response: " << result << endl;
+                exit(-1);
+            }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                cout << "Exception: api error, response: " << result << endl;
+                cout << "Exception: api code error, response: " << result << endl;
                 exit(code);
             }
             string res_sign = result[P_SIGN].as_string();

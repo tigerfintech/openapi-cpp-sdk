@@ -7,28 +7,30 @@
 namespace TIGER_API {
     TradeClient::TradeClient() {}
 
-    TradeClient::TradeClient(Config &cf) : TigerClient(cf) {}
+//    TradeClient::TradeClient(Config &cf) : TigerClient(cf) {}
+    TradeClient::TradeClient(const ClientConfig &cf) : TigerClient(cf) {}
 
-    value TradeClient::get_prime_asset(string account, string base_currency) {
+    value TradeClient::get_prime_asset(const string &account, const string &base_currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        obj["base_currency"] = value::string(base_currency);
         return post(PRIME_ASSETS, obj);
     }
 
-    value TradeClient::get_prime_asset(string account, Currency base_currency) {
+    value TradeClient::get_prime_asset(const string &account, Currency base_currency) {
         return get_prime_asset(account, enum_to_str(base_currency));
     }
 
-    PortfolioAccount TradeClient::get_prime_portfolio(string account, string base_currency) {
+    PortfolioAccount TradeClient::get_prime_portfolio(const string &account, const string &base_currency) {
         value asset = get_prime_asset(account, base_currency);
         PortfolioAccount portfolio = PortfolioAccount();
         portfolio.account = asset.at("accountId").as_string();
         portfolio.update_timestamp = (long) asset.at("updateTimestamp").as_number().to_uint64();
         vector<Segment> segments;
-        for (const auto& element : asset.at("segments").as_array()) {
+        for (const auto &element: asset.at("segments").as_array()) {
             Segment s = Segment(element);
             vector<CurrencyAsset> currency_assets;
-            for (const auto& c: element.at("currencyAssets").as_array()) {
+            for (const auto &c: element.at("currencyAssets").as_array()) {
                 currency_assets.push_back(CurrencyAsset(c));
             }
             s.currency_assets = currency_assets;
@@ -46,15 +48,16 @@ namespace TIGER_API {
         return post(PRIME_ASSETS, obj);
     }
 
-    value TradeClient::get_account_param(string account) {
+    value TradeClient::get_account_param(const string &account) {
         if (account.empty()) {
             return value::string(client_config.account);
         }
         return value::string(account);
     }
 
-    value TradeClient::get_positions(string account, string sec_type, string currency, string market, string symbol,
-                                     const value &sub_accounts, long expiry, double strike, string right) {
+    value TradeClient::get_positions(const string &account, const string &sec_type, const string &currency,
+                                     const string &market, const string &symbol,
+                                     const value &sub_accounts, long expiry, double strike, const string &right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -96,17 +99,17 @@ namespace TIGER_API {
                                    const value &sub_accounts, long expiry, double strike, string right) {
         std::vector<Position> vec;
         value positions = get_positions(account, sec_type, currency, market, symbol,
-        sub_accounts, expiry, strike, right);
-        for (const auto& element : positions.as_array()) {
+                                        sub_accounts, expiry, strike, right);
+        for (const auto &element: positions.as_array()) {
             Position p = Position(element);
             vec.push_back(p);
         }
         return vec;
     }
 
-    value TradeClient::get_orders(string account, string sec_type, string market, string symbol, long start_time,
-                                  long end_time, int limit, bool is_brief, const value &states, string sort_by,
-                                  string seg_type) {
+    value TradeClient::get_orders(const string &account, const string &sec_type, const string &market, const string &symbol, long start_time,
+                                  long end_time, int limit, bool is_brief, const value &states, const string &sort_by,
+                                  const string &seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -231,7 +234,7 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(order[P_ACCOUNT].as_string());
         value res = post(PLACE_ORDER, obj);
         return res;
-     }
+    }
 
     value TradeClient::place_order(Order &order) {
         value obj = value::object(true);
@@ -443,8 +446,6 @@ namespace TIGER_API {
         value res = post(MODIFY_ORDER, obj);
         return res;
     }
-
-
 
 
 }

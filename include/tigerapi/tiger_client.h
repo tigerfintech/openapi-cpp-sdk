@@ -7,6 +7,7 @@
 #include "cpprest/filestream.h"
 #include "utils.h"
 #include "constants.h"
+#include "client_config.h"
 
 using namespace std;
 using namespace web;
@@ -14,27 +15,18 @@ using namespace web::http;
 using namespace web::http::client;
 using namespace web::json;
 
-struct Config{
-    string tiger_id;
-    string private_key;
-    string account;
-    string server_url;
-    string charset = "UTF-8";
-    string sign_type = "RSA";
-};
-
 namespace TIGER_API {
     class TigerClient {
     public:
         TigerClient() {};
-
-        TigerClient(struct Config &cf) { set_config(cf); };
-
+        TigerClient(const ClientConfig &cf) {
+            client_config = cf;
+        }
         ~TigerClient() {};
 
-        struct Config client_config;
+        ClientConfig client_config;
 
-        void set_config(struct Config &cf);
+        void set_config(const ClientConfig &cf);
 
         value post(const string &api_method, value &params);
 

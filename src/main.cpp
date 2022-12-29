@@ -14,47 +14,47 @@ using namespace TIGER_API;
  */
 class TestTradeClient {
 public:
-    static void test_get_prime_asset(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_prime_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_prime_asset();
         cout << "asset: " << res << endl;
     }
 
-    static void test_get_prime_portfolio(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_prime_portfolio(const std::shared_ptr<TradeClient>& trade_client) {
         PortfolioAccount res = trade_client->get_prime_portfolio();
         cout << "portfolio: " << res.to_string() << endl;
     }
 
-    static void test_get_asset(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_asset();
         cout << "asset: " << res << endl;
     }
 
-    static void test_get_position(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_position(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_positions();
         cout << "position: " << res << endl;
     }
 
-    static void test_get_position_list(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_position_list(const std::shared_ptr<TradeClient>& trade_client) {
         vector<Position> res = trade_client->get_position_list();
         cout << "position size: " << res.size()  << " , first item: " << res[0].to_string() << endl;
     }
 
-    static void test_get_orders(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_orders();
         cout << "orders: " << res << endl;
     }
 
-    static void test_get_active_orders(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_active_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_active_orders();
         cout << "active orders: " << res << endl;
     }
 
-    static void test_get_contract(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_contract(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_contract("AAPL");
         cout << "contract: " << res << endl;
     }
 
-    static void test_place_order(std::shared_ptr<TradeClient> trade_client) {
+    static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
         Contract contract = stock_contract("AAPL", "USD");
         Order order = limit_order(contract, "BUY", 1, 100.0);
         value res = trade_client->place_order(order);
@@ -63,7 +63,7 @@ public:
         cout << "place order result: " << res << endl;
     }
 
-    static void test_get_order(std::shared_ptr<TradeClient> trade_client) {
+    static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
 //        Contract contract = stock_contract("AAPL", "USD");
 //        Order order = limit_order(contract, "BUY", 1, 100.0);
 //        trade_client->place_order(order);
@@ -71,12 +71,12 @@ public:
         cout << "order : " << my_order.to_string() << endl;
     }
 
-    static void test_cancel_order(std::shared_ptr<TradeClient> trade_client) {
+    static void test_cancel_order(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->cancel_order(29270263515317248);
         cout << "cancel order : " << res << endl;
     }
 
-    static void test_modify_order(std::shared_ptr<TradeClient> trade_client) {
+    static void test_modify_order(const std::shared_ptr<TradeClient>& trade_client) {
         Contract contract = stock_contract("AAPL", "USD");
         Order order = limit_order(contract, "BUY", 1, 100.0);
         long id = (long) trade_client->place_order(order)["id"].as_number().to_uint64();
@@ -87,8 +87,8 @@ public:
     }
 
 
-    static void test_trade(std::shared_ptr<TradeClient> trade_client) {
-        TestTradeClient::test_get_prime_portfolio(trade_client);
+    static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
+        TestTradeClient::test_get_orders(trade_client);
     }
 };
 
@@ -166,45 +166,30 @@ public:
 int main(int argc, char *args[]) {
     cout << "Tiger Api main" << endl;
     /************************** set config **********************/
-    struct Config config;
+    ClientConfig config = ClientConfig(true);
+
     config.private_key = "-----BEGIN RSA PRIVATE KEY-----\n"
-                         "MIICXQIBAAKBgQC1amZa5YsGTklry7DAsUBOwXJCgrsZZtB21PImw/yLmrbqRfsS\n"
-                         "3vawvMigLWcCwIDnHa+hpdpeze0eHIwbZzJzUDGvRALYK9t3D8pwPVxpwX1OF8Rf\n"
-                         "HCM7YQvSOvPPnHHuVQvKaR7NNm1/WmvGXC9kVJdkYQ7kCmh52siFoy1MLQIDAQAB\n"
-                         "AoGAVabcmIHTt7ByncBXvUJymDxhE+HhMEcImXJEueTCca8kOUu9FNXMJvmax3Vo\n"
-                         "MzZsJbIwX+OMTEJxd0wHIlEA0gECjDwFK4Q42q+ptO4QABJQVSC6I+dOt2OIY28u\n"
-                         "vT3rkenOO8KRIDt4F52PFd71ZdB1aaXixORORq1MdSLi8EkCQQDiviAB+L5R/HVx\n"
-                         "wxvqZfJ530OtFd5IipZC9YZlY1CtXWCmu89LK7UUlEuNXyGsOxyz5jLqFuNRsie5\n"
-                         "AC23tfEPAkEAzNMCa8axJWfPZIH4tGrbZ1F3I41BQdgp2zBmR7AyUMBDkli86Ozm\n"
-                         "J7QUCJA/PJxK43/IYUWm4OU5Q+SvXCr3AwJBAJTBj1Y7zwES1CpSitn5EF+MbmX7\n"
-                         "1t1YrsQ3OHkD80YJ4QMCbDkw75gUwox5QSoxjd8ow3Z4laJfc1gYGeZQ41kCQQCC\n"
-                         "iQwm8cceBq3W6To+iUdw7itWngRz2Ta7uXnFwFYgvpeR4jnq3GfF7+9AkeWrVBQq\n"
-                         "Ltrem0xCUfQP/+N+gudPAkBFLbt78/MpQGEDc7jyu/KE5Mp4wMMDQQwch9VLvsAZ\n"
-                         "wWLysB6rZWpo3jIfp9zZ7c3zOYGNMWAZjtMmNkRJ8COH\n"
+
                          "-----END RSA PRIVATE KEY-----";
-    config.tiger_id = "2";
-    config.server_url = "https://openapi-sandbox.tigerfintech.com/gateway";
-    config.account = "402901";
+    config.tiger_id = "";
+    config.account = "";
 
     /**
      * 直接 使用 TigerApi
      */
-//    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>();
-//    tigerapi->set_config(config);
-//    TestTigerApi::test_grab_quote_permission(tigerapi);
+    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+    TestTigerApi::test_grab_quote_permission(tigerapi);
 
 
     /**
      * 使用封装后的行情接口 QuoteClient
      */
 //    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>();
-//    quote_client->set_config(config);
 ////    quote_client->grab_quote_permission();
 //    TestQuoteClient::test_quote(quote_client);
 
-    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>();
-    trade_client->set_config(config);
-    TestTradeClient::test_trade(trade_client);
+//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+//    TestTradeClient::test_trade(trade_client);
     return 0;
 }
 

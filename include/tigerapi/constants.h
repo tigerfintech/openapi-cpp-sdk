@@ -56,9 +56,13 @@ static std::string OPEN_API_SERVICE_VERSION = "3.0";
 static std::string TIGER_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDNF3G8SoEcCZh2rshUbayDgLLrj6rKgzNMxDL2HS" \
                    "nKcB0+GPOsndqSv+a4IBu9+I3fyBp5hkyMMG2+AXugd9pMpy6VxJxlNjhX1MYbNTZJUT4nudki4uh+LM" \
                    "OkIBHOceGNXjgB+cXqmlUnjlqha/HgboeHSnSgpM3dKSJQlIOsDwIDAQAB";
-
 static std::string SANDBOX_TIGER_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbm21i11hgAENGd3/f280PSe4g9YGkS3TEXBY" \
                            "MidihTvHHf+tJ0PYD0o3PruI0hl3qhEjHTAxb75T5YD3SGK4IBhHn/Rk6mhqlGgI+bBrBVYaXixm" \
                            "HfRo75RpUUuWACyeqQkZckgR0McxuW9xRMIa2cXZOoL1E4SL4lXKGhKoWbwIDAQAB";
 
+/** http 接口服务地址 **/
+static std::string TIGER_SERVER_URL = "https://openapi.tigerfintech.com/gateway";
+static std::string SANDBOX_TIGER_SERVER_URL = "https://openapi-sandbox.tigerfintech.com/gateway";
+
+                           
 #endif //CPPSDK_CONSTANTS_H
