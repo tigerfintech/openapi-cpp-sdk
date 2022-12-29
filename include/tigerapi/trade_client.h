@@ -30,6 +30,8 @@ namespace TIGER_API {
 
         value get_prime_asset(string account, Currency base_currency = Currency::USD);
 
+        PortfolioAccount get_prime_portfolio(string account = "", string base_currency = "USD");
+
         /**
          * 获取资产(适用于环球/综合/模拟账户)
          */
@@ -59,6 +61,10 @@ namespace TIGER_API {
                             string symbol = "", const value &sub_accounts = value::array(), long expiry = -1,
                             double strike = 0, string right = "");
 
+        vector<Position> get_position_list(string account = "", string sec_type = "", string currency = "ALL",
+                            string market = "ALL",
+                            string symbol = "", const value &sub_accounts = value::array(), long expiry = -1,
+                            double strike = 0, string right = "");
         /**
          * 获取订单列表
          * @param account

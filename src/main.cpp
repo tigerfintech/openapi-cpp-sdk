@@ -19,6 +19,11 @@ public:
         cout << "asset: " << res << endl;
     }
 
+    static void test_get_prime_portfolio(std::shared_ptr<TradeClient> trade_client) {
+        PortfolioAccount res = trade_client->get_prime_portfolio();
+        cout << "portfolio: " << res.to_string() << endl;
+    }
+
     static void test_get_asset(std::shared_ptr<TradeClient> trade_client) {
         value res = trade_client->get_asset();
         cout << "asset: " << res << endl;
@@ -27,6 +32,11 @@ public:
     static void test_get_position(std::shared_ptr<TradeClient> trade_client) {
         value res = trade_client->get_positions();
         cout << "position: " << res << endl;
+    }
+
+    static void test_get_position_list(std::shared_ptr<TradeClient> trade_client) {
+        vector<Position> res = trade_client->get_position_list();
+        cout << "position size: " << res.size()  << " , first item: " << res[0].to_string() << endl;
     }
 
     static void test_get_orders(std::shared_ptr<TradeClient> trade_client) {
@@ -69,7 +79,7 @@ public:
     static void test_modify_order(std::shared_ptr<TradeClient> trade_client) {
         Contract contract = stock_contract("AAPL", "USD");
         Order order = limit_order(contract, "BUY", 1, 100.0);
-        long id = trade_client->place_order(order)["id"].as_number().to_uint64();
+        long id = (long) trade_client->place_order(order)["id"].as_number().to_uint64();
         value res = trade_client->modify_order(order, 105);
         cout << "modify order res: " << res << endl;
         Order mod_order = trade_client->get_order(id);
@@ -78,7 +88,7 @@ public:
 
 
     static void test_trade(std::shared_ptr<TradeClient> trade_client) {
-        TestTradeClient::test_modify_order(trade_client);
+        TestTradeClient::test_get_prime_portfolio(trade_client);
     }
 };
 

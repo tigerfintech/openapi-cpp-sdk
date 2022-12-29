@@ -19,6 +19,25 @@ namespace TIGER_API {
         return get_prime_asset(account, enum_to_str(base_currency));
     }
 
+    PortfolioAccount TradeClient::get_prime_portfolio(string account, string base_currency) {
+        value asset = get_prime_asset(account, base_currency);
+        PortfolioAccount portfolio = PortfolioAccount();
+        portfolio.account = asset.at("accountId").as_string();
+        portfolio.update_timestamp = (long) asset.at("updateTimestamp").as_number().to_uint64();
+        vector<Segment> segments;
+        for (const auto& element : asset.at("segments").as_array()) {
+            Segment s = Segment(element);
+            vector<CurrencyAsset> currency_assets;
+            for (const auto& c: element.at("currencyAssets").as_array()) {
+                currency_assets.push_back(CurrencyAsset(c));
+            }
+            s.currency_assets = currency_assets;
+            segments.push_back(s);
+        }
+        portfolio.segments = segments;
+        return portfolio;
+    }
+
     value TradeClient::get_asset(string account, const value &sub_accounts, bool segment, bool market_value) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -69,6 +88,20 @@ namespace TIGER_API {
                                      const value &sub_accounts, long expiry, double strike, Right right) {
         return get_positions(account, enum_to_str(sec_type), enum_to_str(currency), enum_to_str(market),
                              symbol, sub_accounts, expiry, strike, enum_to_str(right));
+    }
+
+
+    vector<Position>
+    TradeClient::get_position_list(string account, string sec_type, string currency, string market, string symbol,
+                                   const value &sub_accounts, long expiry, double strike, string right) {
+        std::vector<Position> vec;
+        value positions = get_positions(account, sec_type, currency, market, symbol,
+        sub_accounts, expiry, strike, right);
+        for (const auto& element : positions.as_array()) {
+            Position p = Position(element);
+            vec.push_back(p);
+        }
+        return vec;
     }
 
     value TradeClient::get_orders(string account, string sec_type, string market, string symbol, long start_time,
@@ -314,31 +347,6 @@ namespace TIGER_API {
 
     value TradeClient::modify_order(Order &order) {
         value obj = value::object(true);
-//        Contract contract = order.contract;
-//        if (!contract.symbol.empty()) {
-//            obj["symbol"] = value::string(contract.symbol);
-//        }
-//        if (!contract.currency.empty()) {
-//            obj["currency"] = value::string(contract.currency);
-//        }
-//        if (!contract.sec_type.empty()) {
-//            obj["sec_type"] = value::string(contract.sec_type);
-//        }
-//        if (!contract.exchange.empty()) {
-//            obj["exchange"] = value::string(contract.exchange);
-//        }
-//        if (!contract.expiry.empty()) {
-//            obj["expiry"] = value::string(contract.expiry);
-//        }
-//        if (contract.strike != 0) {
-//            obj["strike"] = contract.strike;
-//        }
-//        if (!contract.right.empty()) {
-//            obj["right"] = value::string(contract.right);
-//        }
-//        if (contract.multiplier != 0) {
-//            obj["multiplier"] = contract.multiplier;
-//        }
 
         obj[P_ACCOUNT] = get_account_param(order.account);
 
@@ -435,5 +443,8 @@ namespace TIGER_API {
         value res = post(MODIFY_ORDER, obj);
         return res;
     }
+
+
+
 
 }
