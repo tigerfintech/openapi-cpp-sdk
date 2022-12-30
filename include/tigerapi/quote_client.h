@@ -14,7 +14,7 @@ namespace TIGER_API {
     class QuoteClient : public TigerClient {
     public:
         QuoteClient();
-        QuoteClient(const ClientConfig &cf, bool is_grab_permission);
+        QuoteClient(const ClientConfig &cf, bool is_grab_permission = true);
         value grab_quote_permission();
         value get_quote_permission();
 

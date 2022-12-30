@@ -169,27 +169,45 @@ int main(int argc, char *args[]) {
     ClientConfig config = ClientConfig(true);
 
     config.private_key = "-----BEGIN RSA PRIVATE KEY-----\n"
-
+                         "MIICXQIBAAKBgQC1amZa5YsGTklry7DAsUBOwXJCgrsZZtB21PImw/yLmrbqRfsS\n"
+                         "3vawvMigLWcCwIDnHa+hpdpeze0eHIwbZzJzUDGvRALYK9t3D8pwPVxpwX1OF8Rf\n"
+                         "HCM7YQvSOvPPnHHuVQvKaR7NNm1/WmvGXC9kVJdkYQ7kCmh52siFoy1MLQIDAQAB\n"
+                         "AoGAVabcmIHTt7ByncBXvUJymDxhE+HhMEcImXJEueTCca8kOUu9FNXMJvmax3Vo\n"
+                         "MzZsJbIwX+OMTEJxd0wHIlEA0gECjDwFK4Q42q+ptO4QABJQVSC6I+dOt2OIY28u\n"
+                         "vT3rkenOO8KRIDt4F52PFd71ZdB1aaXixORORq1MdSLi8EkCQQDiviAB+L5R/HVx\n"
+                         "wxvqZfJ530OtFd5IipZC9YZlY1CtXWCmu89LK7UUlEuNXyGsOxyz5jLqFuNRsie5\n"
+                         "AC23tfEPAkEAzNMCa8axJWfPZIH4tGrbZ1F3I41BQdgp2zBmR7AyUMBDkli86Ozm\n"
+                         "J7QUCJA/PJxK43/IYUWm4OU5Q+SvXCr3AwJBAJTBj1Y7zwES1CpSitn5EF+MbmX7\n"
+                         "1t1YrsQ3OHkD80YJ4QMCbDkw75gUwox5QSoxjd8ow3Z4laJfc1gYGeZQ41kCQQCC\n"
+                         "iQwm8cceBq3W6To+iUdw7itWngRz2Ta7uXnFwFYgvpeR4jnq3GfF7+9AkeWrVBQq\n"
+                         "Ltrem0xCUfQP/+N+gudPAkBFLbt78/MpQGEDc7jyu/KE5Mp4wMMDQQwch9VLvsAZ\n"
+                         "wWLysB6rZWpo3jIfp9zZ7c3zOYGNMWAZjtMmNkRJ8COH\n"
                          "-----END RSA PRIVATE KEY-----";
-    config.tiger_id = "";
-    config.account = "";
-
-    /**
-     * 直接 使用 TigerApi
-     */
-    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-    TestTigerApi::test_grab_quote_permission(tigerapi);
+    config.tiger_id = "2";
+    config.account = "402901";
 
 
     /**
      * 使用封装后的行情接口 QuoteClient
      */
-//    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>();
-////    quote_client->grab_quote_permission();
-//    TestQuoteClient::test_quote(quote_client);
+    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    quote_client->grab_quote_permission();
+    TestQuoteClient::test_quote(quote_client);
 
-//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-//    TestTradeClient::test_trade(trade_client);
+    /**
+     * 使用封装后的交易接口 TradeClient
+     */
+    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    TestTradeClient::test_trade(trade_client);
+
+    /**
+     * 直接使用未封装的 TigerApi
+     */
+    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+    TestTigerApi::test_grab_quote_permission(tigerapi);
+
+
+
     return 0;
 }
 

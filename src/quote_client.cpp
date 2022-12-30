@@ -6,9 +6,6 @@
 
 namespace TIGER_API {
     QuoteClient::QuoteClient() {};
-
-//    QuoteClient::QuoteClient(struct Config &cf, bool is_grab_permission) : TigerClient(cf) {};
-
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
 
     }
