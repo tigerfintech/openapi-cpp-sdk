@@ -60,6 +60,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DBOOST_LOG_DYN_LINK")
 
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        add_compile_options(/D BOOST_LOG_DYN_LINK /MT)
 endif()
 
 # Project construction ...
