@@ -35,6 +35,7 @@ brew install boost
 cd /tmp  # 选择暂存源码的目录，此处用 /tmp，也可根据本机环境指定其他系统路径
 git clone https://github.com/microsoft/cpprestsdk.git
 cd cpprestsdk
+git submodule update --init
 mkdir build
 cd build
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
@@ -68,6 +69,11 @@ make install
 - 方式二：使用[vcpkg](https://vcpkg.io/en/getting-started.html)
 ``` 
 vcpkg install boost
+```
+
+### 安装 openssl
+``` 
+vcpkg install openssl
 ```
 
 ### 编译安装 cpprestsdk
