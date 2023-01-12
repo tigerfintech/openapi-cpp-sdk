@@ -34,6 +34,8 @@ namespace TIGER_API {
 
         value send_request(const string &http_method, const string &api_method, value &body);
 
+        value identifiers_to_options(value identifiers);
+
     private:
 
         string build_sign_content(const value &obj);

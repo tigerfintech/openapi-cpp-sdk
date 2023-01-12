@@ -37,6 +37,11 @@ namespace TIGER_API {
         return post(ALL_SYMBOL_NAMES, obj);
     }
 
+    value QuoteClient::get_market_state(string market) {
+        value obj = value::object(true);
+        obj[P_MARKET] = value::string(market);
+        return post(MARKET_STATE, obj);
+    }
 
     value
     QuoteClient::get_brief(const value &symbols, bool include_hour_trading, bool include_ask_bid, QuoteRight right) {
@@ -93,9 +98,14 @@ namespace TIGER_API {
     value
     QuoteClient::get_trade_tick(const value &symbols, TradingSession trade_session, long begin_index, long end_index,
                                 int limit) {
+        return get_trade_tick(symbols, begin_index, end_index, enum_to_str(trade_session), limit);
+    }
+
+    value QuoteClient::get_trade_tick(const value &symbols, long begin_index,
+                                                    long end_index, string trade_session, int limit) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
-        obj[P_TRADE_SESSION] = value::string(enum_to_str(trade_session));
+        obj[P_TRADE_SESSION] = value::string(trade_session);
         obj[P_BEGIN_INDEX] = begin_index;
         obj[P_END_INDEX] = end_index;
         obj[P_LIMIT] = limit;
@@ -132,8 +142,12 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_trading_calendar(Market market, string begin_date, string end_date) {
+        return get_trading_calendar(enum_to_str(market), begin_date, end_date);
+    }
+
+    value QuoteClient::get_trading_calendar(string market, string begin_date, string end_date) {
         value obj = value::object(true);
-        obj[P_MARKET] = value::string(enum_to_str(market));
+        obj[P_MARKET] = value::string(market);
         obj[P_BEGIN_DATE] = value::string(begin_date);
         obj[P_END_DATE] = value::string(end_date);
         return post(TRADING_CALENDAR, obj);
@@ -147,10 +161,14 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_capital_flow(string symbol, Market market, CapitalPeriod period) {
+        return get_capital_flow(symbol, enum_to_str(market), enum_to_str(period));
+    }
+
+    value QuoteClient::get_capital_flow(string symbol, string market, string period) {
         value obj = value::object(true);
         obj[P_SYMBOL] = value::string(symbol);
-        obj[P_MARKET] = value::string(enum_to_str(market));
-        obj[P_PERIOD] = value::string(enum_to_str(period));
+        obj[P_MARKET] = value::string(market);
+        obj[P_PERIOD] = value::string(period);
         return post(CAPITAL_FLOW, obj);
     }
 
@@ -167,23 +185,58 @@ namespace TIGER_API {
         return post(OPTION_EXPIRATION, obj);
     }
 
-    value QuoteClient::get_option_chain(const value &symbols, long expiry, value option_filter) {
+    value QuoteClient::get_option_chain(const string symbol, long expiry, value option_filter) {
         value obj = value::object(true);
-        obj[P_SYMBOLS] = symbols;
-        obj[P_EXPIRY] = expiry;
+        value basic = value::object(true);
+        basic[P_SYMBOL] = value::string(symbol);
+        basic[P_EXPIRY] = expiry;
+        value option_basic = value::array();
+        option_basic[0] = basic;
+        obj["option_basic"] = option_basic;
         return post(OPTION_CHAIN, obj);
     }
 
+    value QuoteClient::get_option_chain(const string symbol, string expiry, value option_filter) {
+        long expiry_ts = date_string_to_timestamp(expiry);
+        return get_option_chain(symbol, expiry_ts, option_filter);
+    }
+
+    value QuoteClient::get_option_brief(const string identifier) {
+        value options = value::array();
+        options[0] = value::string(identifier);
+        return get_option_brief(options);
+    }
+
     value QuoteClient::get_option_brief(value identifiers) {
-        return value();
+        value options = identifiers_to_options(identifiers);
+        return post(OPTION_BRIEF, options);
     }
 
     value QuoteClient::get_option_kline(value identifiers, long begin_time, long end_time) {
-        return value();
+        value options = value::array();
+        for (size_t i = 0; i < identifiers.size(); ++i) {
+            auto identifier = identifiers[i];
+            std::string symbol, expiry, right;
+            double strike;
+            std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
+            if (symbol.empty() || expiry.empty() || right.empty()) {
+                continue;
+            }
+            value obj = value::object(true);
+            obj[P_SYMBOL] = value::string(symbol);
+            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_STRIKE] = strike;
+            obj[P_RIGHT] = value::string(right);
+            obj[P_BEGIN_TIME] = begin_time;
+            obj[P_END_TIME] = end_time;
+            options[i] = obj;
+        }
+        return post(OPTION_KLINE, options);
     }
 
     value QuoteClient::get_option_trade_tick(value identifiers) {
-        return value();
+        value options = identifiers_to_options(identifiers);
+        return post(OPTION_TRADE_TICK, options);
     }
 
     value QuoteClient::get_future_exchange(SecType sec_type) {

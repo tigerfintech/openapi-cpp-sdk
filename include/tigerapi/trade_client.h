@@ -105,6 +105,9 @@ namespace TIGER_API {
                                 SegmentType seg_type = SegmentType::SEC);
 
         Order get_order(long id, bool is_brief=false);
+        Order get_transactions(string account = "", long order_id = 0, string sec_type = "",
+                              string symbol = "", long start_time = -1, long end_time = -1,
+                              int limit = 100, string expiry = "", double strike = 0, string right = "");
         value cancel_order(long id);
         value place_order(value &order);
         value place_order(Order &order);

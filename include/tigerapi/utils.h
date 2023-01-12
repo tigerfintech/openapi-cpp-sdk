@@ -10,6 +10,7 @@
 #include <cpprest/json.h>
 
 std::string get_timestamp();
+long date_string_to_timestamp(const std::string &date_string);
 std::string get_device_id();
 void camel_to_snake(web::json::value& obj);
 std::string json_format(std::string json_str);
@@ -21,6 +22,8 @@ bool verify_sign(std::string public_key, std::string content, std::string encode
 std::string add_start_end(std::string& key, std::string start_marker, std::string end_marker);
 std::string fill_private_key_marker(std::string& private_key);
 std::string fill_public_key_marker(std::string& public_key);
+
+std::tuple<std::string, std::string, std::string, double> extract_option_info(const std::string &identifier);
 
 unsigned int str_hex(unsigned char *str,unsigned char *hex);
 void hex_str(unsigned char *inchar, unsigned int len, unsigned char *outtxt);

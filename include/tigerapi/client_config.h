@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include "constants.h"
+#include "log.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ namespace TIGER_API {
                 server_url = SANDBOX_TIGER_SERVER_URL;
                 server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
             }
+            init_log();
         };
 
         ClientConfig(string tiger_id, string private_key, string account) : tiger_id(std::move(tiger_id)),
@@ -34,6 +36,7 @@ namespace TIGER_API {
                 server_url = SANDBOX_TIGER_SERVER_URL;
                 server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
             }
+            init_log();
         };
 
         string tiger_id;
@@ -54,6 +57,18 @@ namespace TIGER_API {
         bool sandbox_debug = false;
         string server_url = TIGER_SERVER_URL;
         string server_public_key = TIGER_PUBLIC_KEY;
+
+        void init_log()
+        {
+//            logging::add_file_log(
+//                    keywords::file_name = "tigerapi_%N.log",
+//                    keywords::rotation_size = 10 * 1024 * 1024,
+//                    keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
+//                    keywords::format = "[%TimeStamp%]: %Message%"
+//                    );
+            //logging::core::get() returns a pointer to the core singleton
+            logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+        }
     };
 }
 

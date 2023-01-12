@@ -88,7 +88,7 @@ public:
 
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_get_orders(trade_client);
+        TestTradeClient::test_get_position(trade_client);
     }
 };
 
@@ -109,9 +109,69 @@ public:
         cout << "result: " << result << endl;
     }
 
-    static void test_get_symbols_names(std::shared_ptr<QuoteClient> quote_client) {
+    static void test_get_symbols_names(const std::shared_ptr<QuoteClient> quote_client) {
 //        value result = quote_client->get_all_symbol_names("HK");
         value result = quote_client->get_all_symbol_names(Market::HK);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_market_state(const std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_market_state("HK");
+        cout << "result: " << result << endl;
+    }
+
+
+    static void test_get_trading_calendar(const std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_trading_calendar("US", "2023-01-01", "2023-03-01");
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_timeline(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_timeline(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_history_timeline(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_history_timeline(symbols, "2023-01-10");
+        cout << "result: " << result << endl;
+    }
+
+
+    static void test_get_quote_real_time(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_quote_real_time(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_quote_delay(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_quote_delay(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_quote_depth(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_quote_depth(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_shortable_stocks(const std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_quote_shortable_stocks(symbols);
         cout << "result: " << result << endl;
     }
 
@@ -120,7 +180,7 @@ public:
         symbols[0] = value::string("AAPL");
         symbols[1] = value::string("JD");
         cout << "symbols " << symbols << endl;
-        value result = quote_client->get_kline(symbols);
+        value result = quote_client->get_kline(symbols, "day", -1, -1, "br", 5);
         cout << "result: " << result << endl;
     }
 
@@ -132,8 +192,110 @@ public:
         cout << "Result: " << result << endl;
     }
 
-    static void test_quote(std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_symbols_names(quote_client);
+    static void test_get_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("AAPL");
+        symbols[1] = value::string("JD");
+        value result = quote_client->get_trade_tick(symbols, 0, 100);
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_capital_flow(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_capital_flow("AAPL", "US", "intraday");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_capital_distribution(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_capital_distribution("AAPL");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_exchange(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_exchange();
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_contracts(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_contracts("CL");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_current_contract(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_current_contract("CL");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_continuous_contracts(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_continuous_contracts("CL");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_contract_by_contract_code(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_contract_by_contract_code("CL2303");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_trading_date(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_trading_date("CL2303", "2023-01-12");
+        cout << "Result: " << result << endl;
+    }
+
+    static void test_get_future_kline(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("CL2303");
+        cout << "symbols " << symbols << endl;
+        value result = quote_client->get_future_kline(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_future_tick(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_future_tick("CL2312");
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_future_real_time_quote(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("CL2303");
+        cout << "symbols " << symbols << endl;
+        value result = quote_client->get_future_real_time_quote(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_option_expiration(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string("TSLA");
+        cout << "symbols " << symbols << endl;
+        value result = quote_client->get_option_expiration(symbols);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_option_chain(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_option_chain("TSLA", "2023-01-20");
+        cout << "result: " << result << endl;
+    }
+
+
+    static void test_get_option_brief(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_option_brief("AAPL 220923C000155000");
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
+        value identifiers = value::array();
+        identifiers[0] = value::string("AAPL 220923C000155000");
+        value result = quote_client->get_option_kline(identifiers);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_get_option_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
+        value identifiers = value::array();
+        identifiers[0] = value::string("AAPL 230923C000155000");
+        value result = quote_client->get_option_trade_tick(identifiers);
+        cout << "result: " << result << endl;
+    }
+
+    static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
+        TestQuoteClient::test_get_option_trade_tick(quote_client);
     }
 };
 
@@ -164,7 +326,7 @@ public:
 };
 
 int main(int argc, char *args[]) {
-    cout << "Tiger Api main" << endl;
+    LOGGER(info) << "Tiger API Demo";
     /************************** set config **********************/
     ClientConfig config = ClientConfig(true);
 
@@ -191,20 +353,20 @@ int main(int argc, char *args[]) {
      * 使用封装后的行情接口 QuoteClient
      */
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    quote_client->grab_quote_permission();
+//    quote_client->grab_quote_permission();
     TestQuoteClient::test_quote(quote_client);
 
     /**
      * 使用封装后的交易接口 TradeClient
      */
-    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-    TestTradeClient::test_trade(trade_client);
+//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+//    TestTradeClient::test_trade(trade_client);
 
     /**
      * 直接使用未封装的 TigerApi
      */
-    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-    TestTigerApi::test_grab_quote_permission(tigerapi);
+//    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+//    TestTigerApi::test_grab_quote_permission(tigerapi);
 
 
 

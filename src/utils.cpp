@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <regex>
 #include "common/rsa_sign.h"
 
 using namespace std;
@@ -19,6 +20,17 @@ std::string get_timestamp() {
     char timestamp[32];
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm);
     return std::string(timestamp);
+}
+
+time_t date_string_to_timestamp(const std::string &date_string) {
+    struct tm tm;
+    std::istringstream ss(date_string);
+    ss >> std::get_time(&tm, "%Y-%m-%d");
+    tm.tm_hour = 0;
+    tm.tm_min = 0;
+    tm.tm_sec = 0;
+    time_t res = mktime(&tm) * 1000;
+    return res;
 }
 
 std::string get_sign(unsigned char * private_key, unsigned char * content) {
@@ -35,8 +47,6 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
         exit(0);
     }
     std::string encoded = websocketpp::base64_encode(encrypted, encrypted_length);
-//    printf("base 64:%s", encoded.c_str());
-//    printf("Encrypted length =%d\n", encrypted_length);
     return encoded;
 }
 
@@ -113,41 +123,6 @@ string json_format(string json_str) {
 
     return json_format_str;
 
-}
-
-
-// Demonstrates how to iterate over a JSON object.
-void iterate_json_value() {
-    // Create a JSON object.
-    json::value obj;
-//    obj[L"key1"] = json::value::boolean(false);
-    obj[U("key1")] = json::value::boolean(false);
-    obj[U("key2")] = json::value::number(44);
-    obj[U("key3")] = json::value::number(43.6);
-    obj[U("key4")] = json::value::string(U("str"));
-
-
-    // Loop over each element in the object.
-    for (auto iter = obj.as_object().cbegin(); iter != obj.as_object().cend(); ++iter) {
-        // Make sure to get the value as const reference otherwise you will end up copying
-        // the whole JSON value recursively which can be expensive if it is a nested object.
-
-        //const json::value &str = iter->first;
-        //const json::value &v = iter->second;
-
-        const auto &str = iter->first;
-        const auto &v = iter->second;
-
-        // Perform actions here to process each string and value in the JSON object...
-//        std::cout << "String: " << str.c_str() << ", Value: " << w2s(v.serialize()) << endl;
-    }
-
-    /* Output:
-    String: key1, Value: false
-    String: key2, Value: 44
-    String: key3, Value: 43.6
-    String: key4, Value: str
-    */
 }
 
 int gz_decompress(Byte *zdata, uLong nzdata, Byte *data, uLong *ndata) {
@@ -330,5 +305,27 @@ void camel_to_snake(web::json::value& obj) {
     }
 }
 
+
+
+
+std::tuple<std::string, std::string, std::string, double> extract_option_info(const std::string &identifier) {
+    if (!identifier.empty()) {
+        std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
+        std::smatch matches;
+
+        if (std::regex_search(identifier, matches, pattern) && matches.size() == 5) {
+            std::string underlying_symbol = matches[1];
+            std::string expiry = "20" + matches[2].str();
+            std::string right = matches[3];
+            double strike = std::stod(matches[4]) / 1000;
+            if (expiry.size() == 8) {
+                expiry = expiry.substr(0, 4) + "-" + expiry.substr(4, 2) + "-" + expiry.substr(6);
+            }
+            right = (right == "C") ? "CALL" : "PUT";
+            return std::make_tuple(underlying_symbol, expiry, right, strike);
+        }
+    }
+    return std::make_tuple("", "", "", 0.0);
+}
 
 

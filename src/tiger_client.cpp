@@ -1,18 +1,13 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
+#include "../include/tigerapi/log.h"
 #include "base64.h"
 
 
 using namespace websocketpp;
 
 namespace TIGER_API {
-//    void TigerClient::set_config(struct Config &cf) {
-//        client_config.account = cf.account;
-//        client_config.tiger_id = cf.tiger_id;
-//        client_config.private_key = cf.private_key;
-//        client_config.server_url = cf.server_url;
-//    }
-//
+
     void TigerClient::set_config(const ClientConfig &cf) {
         client_config = cf;
     }
@@ -93,11 +88,10 @@ namespace TIGER_API {
         string result_str;
         try {
             http_client client(client_config.get_server_url());
-
-            cout << "request:\n" << "Server: " << client.base_uri().to_string() << "\n" << request.to_string().c_str()
+            LOGGER(debug) << "request:\n" << "Server: " << client.base_uri().to_string() << "\n" << request.to_string().c_str()
                  << endl;
             if (!params.is_null()) {
-                cout << "body:\n" << json_format(params.serialize()) << endl;
+               LOGGER(debug)  << "body:\n" << json_format(params.serialize()) << endl;
             }
             // Wait for headers
             response = client.request(request).get();
@@ -107,36 +101,36 @@ namespace TIGER_API {
 
         }
         catch (std::exception &ex) {
-            cout << "Exception: " << ex.what() << endl;
+            LOGGER(error) << "Exception: " << ex.what() << endl;
             exit(0);
         }
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
-                cout << "Exception: api error, response: " << result << endl;
+                LOGGER(error) << "Exception: api error, response: " << result << endl;
                 exit(-1);
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                cout << "Exception: api code error, response: " << result << endl;
+                LOGGER(error) << "Exception: api code error, response: " << result << endl;
                 exit(code);
             }
             string res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
-                cout << "Exception: response sign verify failed. " << endl;
+                LOGGER(error) << "Exception: response sign verify failed. " << endl;
                 exit(-1);
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
-            cout << "get response error :" << e.what() << endl;
+            LOGGER(error) << "get response error :" << e.what() << endl;
         }
-        cout << "response:\n" << result << endl;
+        LOGGER(debug) << "response:\n" << result << endl;
         // json format
-        cout << "body:\n" << json_format(result_str) << endl;
-        cout << endl << endl;
+        LOGGER(debug) << "body:\n" << json_format(result_str) << endl;
+        LOGGER(debug) << endl << endl;
 
         /************************** print response ***************************/
 //        auto fp = fopen("result.txt", "a");
@@ -150,5 +144,25 @@ namespace TIGER_API {
 
 //        camel_to_snake(result_data);
         return result_data;
+    }
+
+    value TigerClient::identifiers_to_options(value identifiers) {
+        value options = value::array();
+        for (size_t i = 0; i < identifiers.size(); ++i) {
+            auto identifier = identifiers[i];
+            std::string symbol, expiry, right;
+            double strike;
+            std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
+            if (symbol.empty() || expiry.empty() || right.empty()) {
+                continue;
+            }
+            value obj = value::object(true);
+            obj[P_SYMBOL] = value::string(symbol);
+            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_STRIKE] = strike;
+            obj[P_RIGHT] = value::string(right);
+            options[i] = obj;
+        }
+        return options;
     }
 }
