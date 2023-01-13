@@ -13,7 +13,7 @@ namespace TIGER_API {
     value TradeClient::get_prime_asset(const string &account, const string &base_currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
-        obj["base_currency"] = value::string(base_currency);
+        obj[U("base_currency")] = value::string(base_currency);
         return post(PRIME_ASSETS, obj);
     }
 
@@ -24,13 +24,13 @@ namespace TIGER_API {
     PortfolioAccount TradeClient::get_prime_portfolio(const string &account, const string &base_currency) {
         value asset = get_prime_asset(account, base_currency);
         PortfolioAccount portfolio = PortfolioAccount();
-        portfolio.account = asset.at("accountId").as_string();
-        portfolio.update_timestamp = (long) asset.at("updateTimestamp").as_number().to_uint64();
+        portfolio.account = asset.at(U("accountId")).as_string();
+        portfolio.update_timestamp = (long) asset.at(U("updateTimestamp")).as_number().to_uint64();
         vector<Segment> segments;
-        for (const auto &element: asset.at("segments").as_array()) {
+        for (const auto &element: asset.at(U("segments")).as_array()) {
             Segment s = Segment(element);
             vector<CurrencyAsset> currency_assets;
-            for (const auto &c: element.at("currencyAssets").as_array()) {
+            for (const auto &c: element.at(U("currencyAssets")).as_array()) {
                 currency_assets.push_back(CurrencyAsset(c));
             }
             s.currency_assets = currency_assets;
@@ -43,8 +43,8 @@ namespace TIGER_API {
     value TradeClient::get_asset(string account, const value &sub_accounts, bool segment, bool market_value) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
-        obj["segment"] = segment;
-        obj["market_value"] = market_value;
+        obj[U("segment")] = segment;
+        obj[U("market_value")] = market_value;
         return post(PRIME_ASSETS, obj);
     }
 
@@ -73,7 +73,7 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (!sub_accounts.is_null() && sub_accounts.size() > 0) {
-            obj["sub_accounts"] = sub_accounts;
+            obj[U("sub_accounts")] = sub_accounts;
         }
         if (expiry != -1 && expiry != 0) {
             obj[P_EXPIRY] = expiry;
@@ -131,16 +131,16 @@ namespace TIGER_API {
             obj[P_LIMIT] = limit;
         }
         if (!states.is_null() && states.size() > 0) {
-            obj["states"] = states;
+            obj[U("states")] = states;
         }
         if (!sort_by.empty()) {
-            obj["sort_by"] = value::string(sort_by);
+            obj[U("sort_by")] = value::string(sort_by);
         }
         if (!seg_type.empty()) {
             obj[P_SEG_TYPE] = value::string(seg_type);
         }
         if (is_brief) {
-            obj["is_brief"] = is_brief;
+            obj[U("is_brief")] = is_brief;
         }
         return post(ORDERS, obj)[P_ITEMS];
     }
@@ -172,10 +172,10 @@ namespace TIGER_API {
             obj[P_END_TIME] = end_time;
         }
         if (parent_id != 0) {
-            obj["parent_id"] = parent_id;
+            obj[U("parent_id")] = parent_id;
         }
         if (!sort_by.empty()) {
-            obj["sort_by"] = value::string(sort_by);
+            obj[U("sort_by")] = value::string(sort_by);
         }
         if (!seg_type.empty()) {
             obj[P_SEG_TYPE] = value::string(seg_type);
@@ -240,87 +240,87 @@ namespace TIGER_API {
         value obj = value::object(true);
         Contract contract = order.contract;
         if (!contract.symbol.empty()) {
-            obj["symbol"] = value::string(contract.symbol);
+            obj[U("symbol")] = value::string(contract.symbol);
         }
         if (!contract.currency.empty()) {
-            obj["currency"] = value::string(contract.currency);
+            obj[U("currency")] = value::string(contract.currency);
         }
         if (!contract.sec_type.empty()) {
-            obj["sec_type"] = value::string(contract.sec_type);
+            obj[U("sec_type")] = value::string(contract.sec_type);
         }
         if (!contract.exchange.empty()) {
-            obj["exchange"] = value::string(contract.exchange);
+            obj[U("exchange")] = value::string(contract.exchange);
         }
         if (!contract.expiry.empty()) {
-            obj["expiry"] = value::string(contract.expiry);
+            obj[U("expiry")] = value::string(contract.expiry);
         }
         if (contract.strike != 0) {
-            obj["strike"] = contract.strike;
+            obj[U("strike")] = contract.strike;
         }
         if (!contract.right.empty()) {
-            obj["right"] = value::string(contract.right);
+            obj[U("right")] = value::string(contract.right);
         }
         if (contract.multiplier != 0) {
-            obj["multiplier"] = contract.multiplier;
+            obj[U("multiplier")] = contract.multiplier;
         }
 
         obj[P_ACCOUNT] = get_account_param(order.account);
 
         if (!order.secret_key.empty()) {
-            obj["secret_key"] = value::string(order.secret_key);
+            obj[U("secret_key")] = value::string(order.secret_key);
         }
 
         if (order.order_id != 0) {
-            obj["order_id"] = order.order_id;
+            obj[U("order_id")] = order.order_id;
         }
         if (order.id != 0) {
-            obj["id"] = order.id;
+            obj[U("id")] = order.id;
         }
         if (!order.order_type.empty()) {
-            obj["order_type"] = value::string(order.order_type);
+            obj[U("order_type")] = value::string(order.order_type);
         }
         if (!order.action.empty()) {
-            obj["action"] = value::string(order.action);
+            obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj["total_quantity"] = order.total_quantity;
+            obj[U("total_quantity")] = order.total_quantity;
         }
         if (order.limit_price != 0) {
-            obj["limit_price"] = order.limit_price;
+            obj[U("limit_price")] = order.limit_price;
         }
         if (order.aux_price != 0) {
-            obj["aux_price"] = order.aux_price;
+            obj[U("aux_price")] = order.aux_price;
         }
         if (order.trail_stop_price != 0) {
-            obj["trail_stop_price"] = order.trail_stop_price;
+            obj[U("trail_stop_price")] = order.trail_stop_price;
         }
         if (order.trailing_percent != 0) {
-            obj["trailing_percent"] = order.trailing_percent;
+            obj[U("trailing_percent")] = order.trailing_percent;
         }
         if (order.percent_offset != 0) {
-            obj["percent_offset"] = order.percent_offset;
+            obj[U("percent_offset")] = order.percent_offset;
         }
         if (!order.time_in_force.empty()) {
-            obj["time_in_force"] = value::string(order.time_in_force);
+            obj[U("time_in_force")] = value::string(order.time_in_force);
         }
         if (order.outside_rth) {
-            obj["outside_rth"] = order.outside_rth;
+            obj[U("outside_rth")] = order.outside_rth;
         }
         if (order.adjust_limit) {
-            obj["adjust_limit"] = order.adjust_limit;
+            obj[U("adjust_limit")] = order.adjust_limit;
         }
         if (!order.user_mark.empty()) {
-            obj["user_mark"] = value::string(order.user_mark);
+            obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj["expire_time"] = order.expire_time;
+            obj[U("expire_time")] = order.expire_time;
         }
         value res = post(PLACE_ORDER, obj);
         try {
-            order.id = res["id"].as_number().to_uint64();
-            order.sub_ids = res["subIds"];
+            order.id = res[U("id")].as_number().to_uint64();
+            order.sub_ids = res[U("subIds")];
         } catch (...) {
-            cout << "Warn: id not returned" << endl;
+            cout << U("Warn: id not returned") << endl;
         }
         return res;
     }
@@ -328,14 +328,14 @@ namespace TIGER_API {
     Order TradeClient::get_order(long id, bool is_brief) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
-        obj["id"] = id;
-        obj["is_brief"] = is_brief;
+        obj[U("id")] = id;
+        obj[U("is_brief")] = is_brief;
         value res = post(ORDERS, obj);
         if (!res.is_null()) {
             Order order = Order(res);
             return order;
         } else {
-            cout << "Exception: order " << id << " not exist, result: " << res << endl;
+            cout << U("Exception: order ") << id << U(" not exist, result: ") << res << endl;
             exit(-1);
         }
     }
@@ -343,7 +343,7 @@ namespace TIGER_API {
     value TradeClient::cancel_order(long id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
-        obj["id"] = id;
+        obj[U("id")] = id;
         value res = post(CANCEL_ORDER, obj);
         return res;
     }
@@ -354,46 +354,46 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(order.account);
 
         if (order.id != 0) {
-            obj["id"] = order.id;
+            obj[U("id")] = order.id;
         }
         if (!order.order_type.empty()) {
-            obj["order_type"] = value::string(order.order_type);
+            obj[U("order_type")] = value::string(order.order_type);
         }
         if (!order.action.empty()) {
-            obj["action"] = value::string(order.action);
+            obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj["total_quantity"] = order.total_quantity;
+            obj[U("total_quantity")] = order.total_quantity;
         }
         if (order.limit_price != 0) {
-            obj["limit_price"] = order.limit_price;
+            obj[U("limit_price")] = order.limit_price;
         }
         if (order.aux_price != 0) {
-            obj["aux_price"] = order.aux_price;
+            obj[U("aux_price")] = order.aux_price;
         }
         if (order.trail_stop_price != 0) {
-            obj["trail_stop_price"] = order.trail_stop_price;
+            obj[U("trail_stop_price")] = order.trail_stop_price;
         }
         if (order.trailing_percent != 0) {
-            obj["trailing_percent"] = order.trailing_percent;
+            obj[U("trailing_percent")] = order.trailing_percent;
         }
         if (order.percent_offset != 0) {
-            obj["percent_offset"] = order.percent_offset;
+            obj[U("percent_offset")] = order.percent_offset;
         }
         if (!order.time_in_force.empty()) {
-            obj["time_in_force"] = value::string(order.time_in_force);
+            obj[U("time_in_force")] = value::string(order.time_in_force);
         }
         if (order.outside_rth) {
-            obj["outside_rth"] = order.outside_rth;
+            obj[U("outside_rth")] = order.outside_rth;
         }
         if (order.adjust_limit) {
-            obj["adjust_limit"] = order.adjust_limit;
+            obj[U("adjust_limit")] = order.adjust_limit;
         }
         if (!order.user_mark.empty()) {
-            obj["user_mark"] = value::string(order.user_mark);
+            obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj["expire_time"] = order.expire_time;
+            obj[U("expire_time")] = order.expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
@@ -406,42 +406,42 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(order.account);
 
         if (order.id != 0) {
-            obj["id"] = order.id;
+            obj[U("id")] = order.id;
         }
         if (!order.order_type.empty()) {
-            obj["order_type"] = value::string(order.order_type);
+            obj[U("order_type")] = value::string(order.order_type);
         }
         if (!order.action.empty()) {
-            obj["action"] = value::string(order.action);
+            obj[U("action")] = value::string(order.action);
         }
         if (total_quantity != 0) {
-            obj["total_quantity"] = total_quantity;
+            obj[U("total_quantity")] = total_quantity;
         } else {
-            obj["total_quantity"] = order.total_quantity;
+            obj[U("total_quantity")] = order.total_quantity;
         }
         if (limit_price != 0) {
-            obj["limit_price"] = limit_price;
+            obj[U("limit_price")] = limit_price;
         }
         if (aux_price != 0) {
-            obj["aux_price"] = aux_price;
+            obj[U("aux_price")] = aux_price;
         }
         if (trail_stop_price != 0) {
-            obj["trail_stop_price"] = trail_stop_price;
+            obj[U("trail_stop_price")] = trail_stop_price;
         }
         if (trailing_percent != 0) {
-            obj["trailing_percent"] = trailing_percent;
+            obj[U("trailing_percent")] = trailing_percent;
         }
         if (percent_offset != 0) {
-            obj["percent_offset"] = percent_offset;
+            obj[U("percent_offset")] = percent_offset;
         }
         if (!time_in_force.empty()) {
-            obj["time_in_force"] = value::string(time_in_force);
+            obj[U("time_in_force")] = value::string(time_in_force);
         }
         if (outside_rth) {
-            obj["outside_rth"] = outside_rth;
+            obj[U("outside_rth")] = outside_rth;
         }
         if (expire_time) {
-            obj["expire_time"] = expire_time;
+            obj[U("expire_time")] = expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;

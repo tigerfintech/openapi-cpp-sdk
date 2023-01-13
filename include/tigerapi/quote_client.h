@@ -22,7 +22,7 @@ namespace TIGER_API {
 
         value get_symbols(Market market = Market::ALL);
         value get_all_symbol_names(Market market = Market::ALL);
-        value get_all_symbol_names(string market="ALL");
+        value get_all_symbol_names(string market=U("ALL"));
         value get_market_state(string market);
         value get_trading_calendar(Market market, string begin_date, string end_date);
         value get_trading_calendar(string market, string begin_date, string end_date);
@@ -32,13 +32,13 @@ namespace TIGER_API {
         value get_timeline(const value &symbols, bool include_hour_trading=false, long begin_time=-1);
         value get_history_timeline(const value &symbols, string date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, long begin_time=-1, long end_time=-1,
-                        QuoteRight right=QuoteRight::br, int limit=251, string page_token="");
+                        QuoteRight right=QuoteRight::br, int limit=251, string page_token=U(""));
         value get_kline(const value &symbols, string period, long begin_time=-1, long end_time=-1,
-                        string right="br", int limit=251, string page_token="");
+                        string right=U("br"), int limit=251, string page_token=U(""));
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
         value get_trade_tick(const value &symbols, long begin_index=-1,
-                             long end_index=-1, string trade_session="Regular", int limit=100);
+                             long end_index=-1, string trade_session=U("Regular"), int limit=100);
         value get_quote_real_time(const value &symbols);
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
@@ -46,7 +46,7 @@ namespace TIGER_API {
         value get_stock_broker(string symbol, int limit=40);
         value get_capital_distribution(string symbol, Market market = Market::US);
         value get_capital_flow(string symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY);
-        value get_capital_flow(string symbol, string market, string period = "day");
+        value get_capital_flow(string symbol, string market, string period = U("day"));
 
         /** 期权行情 Option quote related api **/
         value get_option_expiration(const value &symbols);
@@ -65,7 +65,7 @@ namespace TIGER_API {
         value get_future_continuous_contracts(string type);
         value get_future_current_contract(string type);
         value get_future_kline(value contract_codes, BarPeriod period=BarPeriod::DAY, long begin_time=-1, long end_time=-1,
-                               int limit=251, string page_token="");
+                               int limit=251, string page_token=U(""));
         value get_future_real_time_quote(value contract_codes);
         value get_future_tick(string contract_code, long begin_index=0, long end_index=100, int limit=1000);
         value get_future_trading_date(string contract_code, string trading_date);

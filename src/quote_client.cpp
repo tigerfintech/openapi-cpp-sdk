@@ -47,8 +47,8 @@ namespace TIGER_API {
     QuoteClient::get_brief(const value &symbols, bool include_hour_trading, bool include_ask_bid, QuoteRight right) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
-        obj["include_hour_trading"] = include_hour_trading;
-        obj["include_ask_bid"] = include_ask_bid;
+        obj[U("include_hour_trading")] = include_hour_trading;
+        obj[U("include_ask_bid")] = include_ask_bid;
         obj[P_RIGHT] = value::string(enum_to_str(right));
         return post(BRIEF, obj);
     }
@@ -62,7 +62,7 @@ namespace TIGER_API {
     value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, long begin_time) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
-        obj["include_hour_trading"] = include_hour_trading;
+        obj[U("include_hour_trading")] = include_hour_trading;
         obj[P_BEGIN_TIME] = begin_time;
         return post(TIMELINE, obj);
     }
@@ -192,7 +192,7 @@ namespace TIGER_API {
         basic[P_EXPIRY] = expiry;
         value option_basic = value::array();
         option_basic[0] = basic;
-        obj["option_basic"] = option_basic;
+        obj[U("option_basic")] = option_basic;
         return post(OPTION_CHAIN, obj);
     }
 

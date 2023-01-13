@@ -4,7 +4,6 @@
 
 #pragma once
 
-//#include "pch.h"
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <openssl/bio.h>
@@ -65,11 +64,11 @@ RSA *Sha1RSASign::create_rsa(unsigned char *key, bool is_private) {
         }
         BIO_free_all(keybio);
     } else {
-        print_last_error("Failed to create key BIO");
+        print_last_error(U("Failed to create key BIO"));
     }
 
     if (rsa == nullptr) {
-        print_last_error("Failed to create RSA");
+        print_last_error(U("Failed to create RSA"));
     }
 
     return rsa;
@@ -81,11 +80,11 @@ int Sha1RSASign::sha1_encrypt(unsigned char *context, int context_length, unsign
     int ret = -1;
     if (rsa != nullptr) {
         // 用hash作为签名内容
-        unsigned char hash[SHA_DIGEST_LENGTH] = "";
+        unsigned char hash[SHA_DIGEST_LENGTH] = U("");
         SHA1(context, context_length, hash);
         ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
         if (1 != ret) {
-            cout << "sha1 rsa encrypt sign error, result is " << ret << ", encrypted len is " << *encrypted_length
+            cout << U("sha1 rsa encrypt sign error, result is ") << ret << U(", encrypted len is ") << *encrypted_length
                  << endl;
 
         }
@@ -100,11 +99,11 @@ int Sha1RSASign::sha1_decrypt(unsigned char *encrypted, unsigned int encrypted_l
     int ret = -1;
     if (rsa != nullptr) {
         // 先取hash再验签
-        unsigned char hash[SHA_DIGEST_LENGTH] = "";
+        unsigned char hash[SHA_DIGEST_LENGTH] = U("");
         SHA1(decrypted, decrypted_length, hash);
         ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
         if (1 != ret) {
-            cout << "sha1 rsa decrypt verify error, result is " << ret << endl;
+            cout << U("sha1 rsa decrypt verify error, result is ") << ret << endl;
         }
         RSA_free(rsa);
     }
@@ -116,8 +115,8 @@ void Sha1RSASign::print_last_error(const char *msg) {
     char *err = new char[130];
     ERR_load_crypto_strings();
     ERR_error_string(ERR_get_error(), err);
-    // printf_s("%s ERROR: %s\n", msg, err);
-    cout << msg << " ERROR: " << err << endl;
+    // printf_s(U("%s ERROR: %s\n"), msg, err);
+    cout << msg << U(" ERROR: ") << err << endl;
     delete[]err;
 }
 
@@ -128,24 +127,24 @@ int Sha1RSASign::build_sha1_rsa_sign(char *filename, unsigned char *src, int src
     if (filename == NULL || src == NULL || sign == NULL)
         return -1;
 
-    unsigned char hash[SHA_DIGEST_LENGTH] = "";
+    unsigned char hash[SHA_DIGEST_LENGTH] = U("");
     //unsigned sign_len = sizeof( sign );
     RSA *rsa_pri_key = RSA_new();
 
     FILE *fp = NULL;
-    // int errorCode = fopen(&fp, filename, "rt");
-    fp = fopen(filename, "rt");
+    // int errorCode = fopen(&fp, filename, U("rt"));
+    fp = fopen(filename, U("rt"));
 
     if (fp) {
         RSA_free(rsa_pri_key);
-        cout << "fopen " << filename << " error " << endl;
+        cout << U("fopen ") << filename << U(" error ") << endl;
         return -2;
     }
     rsa_pri_key = PEM_read_RSAPrivateKey(fp, &rsa_pri_key, NULL, NULL);
     if (rsa_pri_key == NULL) {
         RSA_free(rsa_pri_key);
         fclose(fp);
-        printf("PEM_read_RSAPrivateKey error\n");
+        printf(U("PEM_read_RSAPrivateKey error\n"));
         return -3;
     }
     fclose(fp);
@@ -153,7 +152,7 @@ int Sha1RSASign::build_sha1_rsa_sign(char *filename, unsigned char *src, int src
     ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, sign, (unsigned int *) signlen, rsa_pri_key);
     if (1 != ret) {
         RSA_free(rsa_pri_key);
-        cout << "RSA_sign err, r is " << ret << ", sign_len is " << *signlen << endl;
+        cout << U("RSA_sign err, r is ") << ret << U(", sign_len is ") << *signlen << endl;
         return -4;
     }
     RSA_free(rsa_pri_key);

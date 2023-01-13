@@ -10,12 +10,12 @@
 
 Contract stock_contract(const string symbol, const string currency, const string local_symbol, const string exchange,
                         long contract_id) {
-    return Contract("STK", symbol, currency,  local_symbol, exchange, contract_id);
+    return Contract(U("STK"), symbol, currency,  local_symbol, exchange, contract_id);
 }
 
 Contract option_contract(const string symbol, const string expiry, double strike, const string right,
                          const string currency, long multiplier, const string local_symbol, long contract_id) {
-    return Contract( "OPT", symbol,expiry, strike, right, currency, multiplier, local_symbol, contract_id);
+    return Contract( U("OPT"), symbol,expiry, strike, right, currency, multiplier, local_symbol, contract_id);
 }
 
 Contract option_contract(const string identifier, long multiplier, const string currency) {
@@ -25,13 +25,13 @@ Contract option_contract(const string identifier, long multiplier, const string 
     if (!expiry.empty() && expiry.find('-') != std::string::npos) {
         expiry.erase(std::remove(expiry.begin(), expiry.end(), '-'), expiry.end());
     }
-    return Contract("OPT", symbol, expiry, strike, right, currency, multiplier, "", 0);
+    return Contract(U("OPT"), symbol, expiry, strike, right, currency, multiplier, U(""), 0);
 }
 
 Contract future_contract(const string symbol, const string currency, const string expiry,
                          const string exchange, const string contract_month, long multiplier,
                          const string local_symbol) {
-    return Contract("FUT", symbol, expiry, multiplier, contract_month, currency, exchange, local_symbol);
+    return Contract(U("FUT"), symbol, expiry, multiplier, contract_month, currency, exchange, local_symbol);
 }
 
 
@@ -42,18 +42,18 @@ std::tuple<std::string, std::string, std::string, double> extract_option_info(co
         if (std::regex_match(identifier, tokens, re)) {
             std::string underlying_symbol = tokens[1];
             std::string expiry = tokens[2];
-            expiry = "20" + expiry;
+            expiry = U("20") + expiry;
             if (expiry.size() == 8) {
-                expiry = expiry.substr(0, 4) + "-" + expiry.substr(4, 2) + "-" + expiry.substr(6);
+                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
             }
-            std::string put_call = (tokens[3] == "C") ? "CALL" : "PUT";
+            std::string put_call = (tokens[3] == U("C")) ? U("CALL") : U("PUT");
             double strike = std::stod(tokens[4]) / 1000;
             return std::make_tuple(underlying_symbol, expiry, put_call, strike);
         } else {
-            return std::make_tuple("", "", "", 0.0);
+            return std::make_tuple(U(""), U(""), U(""), 0.0);
         }
     } else {
-        return std::make_tuple("", "", "", 0.0);
+        return std::make_tuple(U(""), U(""), U(""), 0.0);
     }
 }
 

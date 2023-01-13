@@ -41,9 +41,9 @@
 namespace websocketpp {
 
     static std::string const base64_chars =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "abcdefghijklmnopqrstuvwxyz"
-            "0123456789+/";
+            U("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            U("abcdefghijklmnopqrstuvwxyz")
+            U("0123456789+/");
 
 /// Test whether a character is a valid base64 character
 /**

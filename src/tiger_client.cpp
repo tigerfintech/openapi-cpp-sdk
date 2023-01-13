@@ -1,6 +1,5 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
-#include "../include/tigerapi/log.h"
 #include "base64.h"
 
 
@@ -28,9 +27,9 @@ namespace TIGER_API {
         // Iterate through the sorted list of keys and concat string.
         for (const auto &key: keys) {
             if (!str.empty()) {
-                str += "&";
+                str += U("&");
             }
-            str += key + "=" + obj_obj[key].as_string();
+            str += key + U("=") + obj_obj[key].as_string();
         }
         return str;
     }
@@ -79,7 +78,7 @@ namespace TIGER_API {
         string sign_content = build_sign_content(params);
         string sign = get_sign(client_config.private_key, sign_content);
         params[P_SIGN] = value::string(sign);
-//        request.set_body(params.serialize(), "application/json; charset=UTF-8");
+//        request.set_body(params.serialize(), U("application/json; charset=UTF-8"));
         request.set_body(params);
         /************************** get response ***************************/
         http_response response;
@@ -88,10 +87,10 @@ namespace TIGER_API {
         string result_str;
         try {
             http_client client(client_config.get_server_url());
-            LOGGER(debug) << "request:\n" << "Server: " << client.base_uri().to_string() << "\n" << request.to_string().c_str()
+            LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str()
                  << endl;
             if (!params.is_null()) {
-               LOGGER(debug)  << "body:\n" << json_format(params.serialize()) << endl;
+               LOGGER(debug)  << U("body:\n") << json_format(params.serialize()) << endl;
             }
             // Wait for headers
             response = client.request(request).get();
@@ -101,45 +100,45 @@ namespace TIGER_API {
 
         }
         catch (std::exception &ex) {
-            LOGGER(error) << "Exception: " << ex.what() << endl;
+            LOGGER(error) << U("Exception: ") << ex.what() << endl;
             exit(0);
         }
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
-                LOGGER(error) << "Exception: api error, response: " << result << endl;
+                LOGGER(error) << U("Exception: api error, response: ") << result << endl;
                 exit(-1);
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                LOGGER(error) << "Exception: api code error, response: " << result << endl;
+                LOGGER(error) << U("Exception: api code error, response: ") << result << endl;
                 exit(code);
             }
             string res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
-                LOGGER(error) << "Exception: response sign verify failed. " << endl;
+                LOGGER(error) << U("Exception: response sign verify failed. ") << endl;
                 exit(-1);
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
-            LOGGER(error) << "get response error :" << e.what() << endl;
+            LOGGER(error) << U("get response error :") << e.what() << endl;
         }
-        LOGGER(debug) << "response:\n" << result << endl;
+        LOGGER(debug) << U("response:\n") << result << endl;
         // json format
-        LOGGER(debug) << "body:\n" << json_format(result_str) << endl;
+        LOGGER(debug) << U("body:\n") << json_format(result_str) << endl;
         LOGGER(debug) << endl << endl;
 
         /************************** print response ***************************/
-//        auto fp = fopen("result.txt", "a");
-//        fputs("request:\n", fp);
+//        auto fp = fopen(U("result.txt"), U("a"));
+//        fputs(U("request:\n"), fp);
 //        fputs(http_method.c_str(), fp);
 //        fputs(params.serialize().c_str(), fp);
-//        fputs("\nresponse:\n", fp);
+//        fputs(U("\nresponse:\n"), fp);
 //        fputs(str.c_str(), fp);
-//        fputs("\n\n", fp);
+//        fputs(U("\n\n"), fp);
 //        fclose(fp);
 
 //        camel_to_snake(result_data);

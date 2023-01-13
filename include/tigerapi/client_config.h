@@ -42,8 +42,8 @@ namespace TIGER_API {
         string tiger_id;
         string private_key;
         string account;
-        string charset = "UTF-8";
-        string sign_type = "RSA";
+        string charset = U("UTF-8");
+        string sign_type = U("RSA");
 
         void set_server_url(const string &url) {
             this->server_url = url;
@@ -61,10 +61,10 @@ namespace TIGER_API {
         void init_log()
         {
 //            logging::add_file_log(
-//                    keywords::file_name = "tigerapi_%N.log",
+//                    keywords::file_name = U("tigerapi_%N.log"),
 //                    keywords::rotation_size = 10 * 1024 * 1024,
 //                    keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
-//                    keywords::format = "[%TimeStamp%]: %Message%"
+//                    keywords::format = U("[%TimeStamp%]: %Message%")
 //                    );
             //logging::core::get() returns a pointer to the core singleton
             logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);

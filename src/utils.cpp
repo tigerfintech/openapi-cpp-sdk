@@ -18,14 +18,14 @@ std::string get_timestamp() {
     time_t t = time(NULL);
     gmtime_r(&t, &tm);
     char timestamp[32];
-    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm);
+    strftime(timestamp, sizeof(timestamp), U("%Y-%m-%d %H:%M:%S"), &tm);
     return std::string(timestamp);
 }
 
 time_t date_string_to_timestamp(const std::string &date_string) {
     struct tm tm;
     std::istringstream ss(date_string);
-    ss >> std::get_time(&tm, "%Y-%m-%d");
+    ss >> std::get_time(&tm, U("%Y-%m-%d"));
     tm.tm_hour = 0;
     tm.tm_min = 0;
     tm.tm_sec = 0;
@@ -43,7 +43,7 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
                                                  &encrypted_length);
 
     if (encrypted_ret != 1) {
-        sha1RSASign.print_last_error("Private Encrypt failed");
+        sha1RSASign.print_last_error(U("Private Encrypt failed"));
         exit(0);
     }
     std::string encoded = websocketpp::base64_encode(encrypted, encrypted_length);
@@ -74,7 +74,7 @@ bool verify_sign(std::string public_key, std::string content, std::string encode
     int decrypted_ret = sha1RSASign.sha1_decrypt(encrypted, encrypted_length,
                                                  (unsigned char *) filled_public_key.c_str(), decrypted, decrypted_length);
     if (decrypted_ret != 1) {
-        sha1RSASign.print_last_error("Public Decrypt failed");
+        sha1RSASign.print_last_error(U("Public Decrypt failed"));
         return false;
     }
     return true;
@@ -83,7 +83,7 @@ bool verify_sign(std::string public_key, std::string content, std::string encode
 string get_level_str(int level) {
     string level_str;
     for (int levelI = 0; levelI < level; levelI++) {
-        level_str.append("\t");
+        level_str.append(U("\t"));
     }
     return level_str;
 }
@@ -236,10 +236,10 @@ std::string get_device_id() {
     std::string str = ss.str();
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 
-    std::string result = "";
+    std::string result = U("");
     for (int i = 0; i < 12; i += 2) {
         result += str.substr(i, 2);
-        result += ":";
+        result += U(":");
     }
     result.pop_back();
 
@@ -260,11 +260,11 @@ std::string add_start_end(std::string& key, std::string start_marker, std::strin
 }
 
 std::string fill_private_key_marker(std::string& private_key) {
-    return add_start_end(private_key, "-----BEGIN RSA PRIVATE KEY-----\n", "\n-----END RSA PRIVATE KEY-----");
+    return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
 }
 
 std::string fill_public_key_marker(std::string& public_key) {
-    return add_start_end(public_key, "-----BEGIN PUBLIC KEY-----\n", "\n-----END PUBLIC KEY-----");
+    return add_start_end(public_key, U("-----BEGIN PUBLIC KEY-----\n"), U("\n-----END PUBLIC KEY-----"));
 }
 
 
@@ -315,17 +315,17 @@ std::tuple<std::string, std::string, std::string, double> extract_option_info(co
 
         if (std::regex_search(identifier, matches, pattern) && matches.size() == 5) {
             std::string underlying_symbol = matches[1];
-            std::string expiry = "20" + matches[2].str();
+            std::string expiry = U("20") + matches[2].str();
             std::string right = matches[3];
             double strike = std::stod(matches[4]) / 1000;
             if (expiry.size() == 8) {
-                expiry = expiry.substr(0, 4) + "-" + expiry.substr(4, 2) + "-" + expiry.substr(6);
+                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
             }
-            right = (right == "C") ? "CALL" : "PUT";
+            right = (right == U("C")) ? U("CALL") : U("PUT");
             return std::make_tuple(underlying_symbol, expiry, right, strike);
         }
     }
-    return std::make_tuple("", "", "", 0.0);
+    return std::make_tuple(U(""), U(""), U(""), 0.0);
 }
 
 

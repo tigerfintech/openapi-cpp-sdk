@@ -18,17 +18,17 @@ enum class Market
 inline std::string enum_to_str(Market market) {
     switch (market) {
         case Market::ALL:
-            return "ALL";
+            return U("ALL");
         case Market::US:
-            return "US";
+            return U("US");
         case Market::HK:
-            return "HK";
+            return U("HK");
         case Market::CN:
-            return "CN";
+            return U("CN");
         case Market::SG:
-            return "SG";
+            return U("SG");
         default:
-            return "";
+            return U("");
     }
 }
 
@@ -43,11 +43,11 @@ enum class TradingSession
 inline std::string enum_to_str(TradingSession session) {
     switch (session) {
         case TradingSession::PreMarket:
-            return "PreMarket";
+            return U("PreMarket");
         case TradingSession::Regular:
-            return "Regular";
+            return U("Regular");
         case TradingSession::AfterHours:
-            return "AfterHours";
+            return U("AfterHours");
     }
 }
 
@@ -67,28 +67,28 @@ inline std::string enum_to_str(SecType secType) {
     std::string name;
     switch (secType) {
         case SecType::ALL:
-            name = "";
+            name = U("");
             break;
         case SecType::STK:
-            name = "STK";
+            name = U("STK");
             break;
         case SecType::OPT:
-            name = "OPT";
+            name = U("OPT");
             break;
         case SecType::WAR:
-            name = "WAR";
+            name = U("WAR");
             break;
         case SecType::IOPT:
-            name = "IOPT";
+            name = U("IOPT");
             break;
         case SecType::FUT:
-            name = "FUT";
+            name = U("FUT");
             break;
         case SecType::FOP:
-            name = "FOP";
+            name = U("FOP");
             break;
         case SecType::CASH:
-            name = "CASH";
+            name = U("CASH");
             break;
     }
     return name;
@@ -104,13 +104,13 @@ inline std::string enum_to_str(SegmentType segmentType) {
     std::string name;
     switch (segmentType) {
         case SegmentType::ALL:
-            name = "ALL";
+            name = U("ALL");
             break;
         case SegmentType::SEC:
-            name = "SEC";
+            name = U("SEC");
             break;
         case SegmentType::FUT:
-            name = "FUT";
+            name = U("FUT");
             break;
     }
     return name;
@@ -128,19 +128,19 @@ inline std::string enum_to_str(Currency currency) {
     std::string name;
     switch (currency) {
         case Currency::ALL:
-            name = "ALL";
+            name = U("ALL");
             break;
         case Currency::USD:
-            name = "USD";
+            name = U("USD");
             break;
         case Currency::HKD:
-            name = "HKD";
+            name = U("HKD");
             break;
         case Currency::CNH:
-            name = "CNH";
+            name = U("CNH");
             break;
         case Currency::SGD:
-            name = "SGD";
+            name = U("SGD");
             break;
     }
     return name;
@@ -156,13 +156,13 @@ inline std::string enum_to_str(Language language) {
     std::string name;
     switch (language) {
         case Language::zh_CN:
-            name = "zh_CN";
+            name = U("zh_CN");
             break;
         case Language::zh_TW:
-            name = "zh_TW";
+            name = U("zh_TW");
             break;
         case Language::en_US:
-            name = "en_US";
+            name = U("en_US");
             break;
     }
     return name;
@@ -177,11 +177,11 @@ enum class QuoteRight {
 inline std::string enum_to_str(QuoteRight quoteRight) {
     switch (quoteRight) {
         case QuoteRight::br:
-            return "br";
+            return U("br");
         case QuoteRight::nr:
-            return "nr";
+            return U("nr");
         default:
-            return "";
+            return U("");
     }
 }
 
@@ -194,13 +194,13 @@ enum class Right {
 inline std::string enum_to_str(Right right) {
     switch (right) {
         case Right::ALL:
-            return "";
+            return U("");
         case Right::PUT:
-            return "PUT";
+            return U("PUT");
         case Right::CALL:
-            return "CALL";
+            return U("CALL");
         default:
-            return "";
+            return U("");
     }
 }
 
@@ -211,9 +211,9 @@ enum class TimelinePeriod {
 
 // 定义字符串数组
 static const std::string timeline_period_names[] = {
-        "",  // 由于数组的下标从0开始，因此第一个元素需要留空
-        "day",
-        "5day",
+        U(""),  // 由于数组的下标从0开始，因此第一个元素需要留空
+        U("day"),
+        U("5day"),
 };
 
 // 获取 TimelinePeriod 名称的函数
@@ -246,37 +246,37 @@ enum class BarPeriod {
 inline std::string enum_to_str(BarPeriod period) {
     switch (period) {
         case BarPeriod::DAY:
-            return "day";
+            return U("day");
         case BarPeriod::WEEK:
-            return "week";
+            return U("week");
         case BarPeriod::MONTH:
-            return "month";
+            return U("month");
         case BarPeriod::YEAR:
-            return "year";
+            return U("year");
         case BarPeriod::ONE_MINUTE:
-            return "1min";
+            return U("1min");
         case BarPeriod::THREE_MINUTES:
-            return "3min";
+            return U("3min");
         case BarPeriod::FIVE_MINUTES:
-            return "5min";
+            return U("5min");
         case BarPeriod::TEN_MINUTES:
-            return "10min";
+            return U("10min");
         case BarPeriod::FIFTEEN_MINUTES:
-            return "15min";
+            return U("15min");
         case BarPeriod::HALF_HOUR:
-            return "30min";
+            return U("30min");
         case BarPeriod::FORTY_FIVE_MINUTES:
-            return "45min";
+            return U("45min");
         case BarPeriod::ONE_HOUR:
-            return "60min";
+            return U("60min");
         case BarPeriod::TWO_HOURS:
-            return "2hour";
+            return U("2hour");
         case BarPeriod::THREE_HOURS:
-            return "3hours";
+            return U("3hours");
         case BarPeriod::FOUR_HOURS:
-            return "4hour";
+            return U("4hour");
         case BarPeriod::SIX_HOURS:
-            return "6hour";
+            return U("6hour");
     }
 }
 
@@ -294,19 +294,19 @@ enum class CapitalPeriod {
 inline std::string enum_to_str(CapitalPeriod period) {
     switch (period) {
         case CapitalPeriod::INTRADAY:
-            return "intraday";
+            return U("intraday");
         case CapitalPeriod::DAY:
-            return "day";
+            return U("day");
         case CapitalPeriod::WEEK:
-            return "week";
+            return U("week");
         case CapitalPeriod::MONTH:
-            return "month";
+            return U("month");
         case CapitalPeriod::YEAR:
-            return "year";
+            return U("year");
         case CapitalPeriod::QUARTER:
-            return "quarter";
+            return U("quarter");
         case CapitalPeriod::HALFAYEAR:
-            return "6month";
+            return U("6month");
     }
 }
 
@@ -318,11 +318,11 @@ enum class OrderSortBy {
 inline std::string enum_to_str(OrderSortBy sortBy) {
     switch (sortBy) {
         case OrderSortBy::LATEST_CREATED:
-            return "LATEST_CREATED";
+            return U("LATEST_CREATED");
         case OrderSortBy::LATEST_STATUS_UPDATED:
-            return "LATEST_STATUS_UPDATED";
+            return U("LATEST_STATUS_UPDATED");
         default:
-            return "";
+            return U("");
     }
 }
 
@@ -341,25 +341,25 @@ enum class OrderStatus {
 inline std::string enum_to_str(OrderStatus status) {
     switch (status) {
         case OrderStatus::PendingNew:
-            return "PendingNew";
+            return U("PendingNew");
         case OrderStatus::Initial:
-            return "Initial";
+            return U("Initial");
         case OrderStatus::Submitted:
-            return "Submitted";
+            return U("Submitted");
         case OrderStatus::PartiallyFilled:
-            return "PartiallyFilled";
+            return U("PartiallyFilled");
         case OrderStatus::Filled:
-            return "Filled";
+            return U("Filled");
         case OrderStatus::Cancelled:
-            return "Cancelled";
+            return U("Cancelled");
         case OrderStatus::PendingCancel:
-            return "PendingCancel";
+            return U("PendingCancel");
         case OrderStatus::Inactive:
-            return "Inactive";
+            return U("Inactive");
         case OrderStatus::Invalid:
-            return "Invalid";
+            return U("Invalid");
         default:
-            return "";
+            return U("");
     }
 }
 

@@ -115,97 +115,97 @@ public:
 
     std::string to_string() {
         std::stringstream ss;
-        ss << "Order(id=" << this->id << " status=" << this->status << " total_quantity: " << this->total_quantity
-           << " limit_price: " << this->limit_price << ")" << endl;
+        ss << U("Order(id=") << this->id << U(" status=") << this->status << U(" total_quantity: ") << this->total_quantity
+           << U(" limit_price: ") << this->limit_price << ")" << endl;
         return ss.str();
     };
 
     Order(const web::json::value &json) {
-        if (json.has_field("id")) {
-            id = json.at("id").as_number().to_uint64();
+        if (json.has_field(U("id"))) {
+            id = json.at(U("id")).as_number().to_uint64();
         }
-        if (json.has_field("orderType")) {
-            order_type = json.at("orderType").as_string();
+        if (json.has_field(U("orderType"))) {
+            order_type = json.at(U("orderType")).as_string();
         }
-        if (json.has_field("account")) {
-            account = json.at("account").as_string();
+        if (json.has_field(U("account"))) {
+            account = json.at(U("account")).as_string();
         }
-        if (json.has_field("symbol")) {
-            string symbol = json.at("symbol").as_string();
-            string sec_type = json.at("secType").as_string();
-            string market = json.at("market").as_string();
-            string currency = json.at("currency").as_string();
+        if (json.has_field(U("symbol"))) {
+            string symbol = json.at(U("symbol")).as_string();
+            string sec_type = json.at(U("secType")).as_string();
+            string market = json.at(U("market")).as_string();
+            string currency = json.at(U("currency")).as_string();
             contract = Contract();
             contract.symbol = symbol;
             contract.sec_type = sec_type;
             contract.market = market;
             contract.currency = currency;
         }
-        if (json.has_field("action")) {
-            action = json.at("action").as_string();
+        if (json.has_field(U("action"))) {
+            action = json.at(U("action")).as_string();
         }
-        if (json.has_field("limitPrice")) {
-            limit_price = json.at("limitPrice").as_double();
+        if (json.has_field(U("limitPrice"))) {
+            limit_price = json.at(U("limitPrice")).as_double();
         }
-        if (json.has_field("auxPrice")) {
-            aux_price = json.at("auxPrice").as_double();
+        if (json.has_field(U("auxPrice"))) {
+            aux_price = json.at(U("auxPrice")).as_double();
         }
-        if (json.has_field("trailingPercent")) {
-            trailing_percent = json.at("trailingPercent").as_double();
+        if (json.has_field(U("trailingPercent"))) {
+            trailing_percent = json.at(U("trailingPercent")).as_double();
         }
-        if (json.has_field("timeInForce")) {
-            time_in_force = json.at("timeInForce").as_string();
+        if (json.has_field(U("timeInForce"))) {
+            time_in_force = json.at(U("timeInForce")).as_string();
         }
-        if (json.has_field("outsideRth")) {
-            outside_rth = json.at("outsideRth").as_bool();
+        if (json.has_field(U("outsideRth"))) {
+            outside_rth = json.at(U("outsideRth")).as_bool();
         }
-        if (json.has_field("adjustLimit")) {
-            adjust_limit = json.at("adjustLimit").as_bool();
+        if (json.has_field(U("adjustLimit"))) {
+            adjust_limit = json.at(U("adjustLimit")).as_bool();
         }
-        if (json.has_field("userMark")) {
-            user_mark = json.at("userMark").as_string();
+        if (json.has_field(U("userMark"))) {
+            user_mark = json.at(U("userMark")).as_string();
         }
-        if (json.has_field("expireTime")) {
-            expire_time = json.at("expireTime").as_integer();
+        if (json.has_field(U("expireTime"))) {
+            expire_time = json.at(U("expireTime")).as_integer();
         }
-        if (json.has_field("status")) {
-            status = json.at("status").as_string();
+        if (json.has_field(U("status"))) {
+            status = json.at(U("status")).as_string();
         }
-        if (json.has_field("parentId")) {
-            parent_id = json.at("parentId").as_integer();
+        if (json.has_field(U("parentId"))) {
+            parent_id = json.at(U("parentId")).as_integer();
         }
-        if (json.has_field("openTime")) {
-            open_time = json.at("openTime").as_integer();
+        if (json.has_field(U("openTime"))) {
+            open_time = json.at(U("openTime")).as_integer();
         }
-        if (json.has_field("reason")) {
-            reason = json.at("reason").as_string();
+        if (json.has_field(U("reason"))) {
+            reason = json.at(U("reason")).as_string();
         }
-        if (json.has_field("latestTime")) {
-            latest_time = json.at("latestTime").as_integer();
+        if (json.has_field(U("latestTime"))) {
+            latest_time = json.at(U("latestTime")).as_integer();
         }
-        if (json.has_field("updateTime")) {
-            update_time = json.at("updateTime").as_integer();
+        if (json.has_field(U("updateTime"))) {
+            update_time = json.at(U("updateTime")).as_integer();
         }
-        if (json.has_field("filledQuantity")) {
-            filled_quantity = json.at("filledQuantity").as_integer();
+        if (json.has_field(U("filledQuantity"))) {
+            filled_quantity = json.at(U("filledQuantity")).as_integer();
         }
-        if (json.has_field("totalQuantity")) {
-            total_quantity = json.at("totalQuantity").as_integer();
+        if (json.has_field(U("totalQuantity"))) {
+            total_quantity = json.at(U("totalQuantity")).as_integer();
         }
-        if (json.has_field("avgFillPrice")) {
-            avg_fill_price = json.at("avgFillPrice").as_double();
+        if (json.has_field(U("avgFillPrice"))) {
+            avg_fill_price = json.at(U("avgFillPrice")).as_double();
         }
-        if (json.has_field("realizedPnl")) {
-            realized_pnl = json.at("realizedPnl").as_double();
+        if (json.has_field(U("realizedPnl"))) {
+            realized_pnl = json.at(U("realizedPnl")).as_double();
         }
-        if (json.has_field("commission")) {
-            commission = json.at("commission").as_double();
+        if (json.has_field(U("commission"))) {
+            commission = json.at(U("commission")).as_double();
         }
-        if (json.has_field("subIds")) {
-            sub_ids = json.at("subIds");
+        if (json.has_field(U("subIds"))) {
+            sub_ids = json.at(U("subIds"));
         }
-        if (json.has_field("algoStrategy")) {
-            algo_strategy = json.at("algoStrategy").as_string();
+        if (json.has_field(U("algoStrategy"))) {
+            algo_strategy = json.at(U("algoStrategy")).as_string();
         }
     };
 
@@ -223,17 +223,17 @@ public:
               unrealized_pnl(unrealized_pnl) {};
 
     Position(const web::json::value &json) {
-        if (json.has_field("account")) {
-            account = json.at("account").as_string();
+        if (json.has_field(U("account"))) {
+            account = json.at(U("account")).as_string();
         }
-        if (json.has_field("symbol")) {
-            string symbol = json.at("symbol").as_string();
-            string sec_type = json.at("secType").as_string();
-            string market = json.at("market").as_string();
-            string currency = json.at("currency").as_string();
-            string identifier = json.at("identifier").as_string();
-            long contract_id = json.at("contractId").as_integer();
-            long multiplier = (long) json.at("multiplier").as_number().to_uint64();
+        if (json.has_field(U("symbol"))) {
+            string symbol = json.at(U("symbol")).as_string();
+            string sec_type = json.at(U("secType")).as_string();
+            string market = json.at(U("market")).as_string();
+            string currency = json.at(U("currency")).as_string();
+            string identifier = json.at(U("identifier")).as_string();
+            long contract_id = json.at(U("contractId")).as_integer();
+            long multiplier = (long) json.at(U("multiplier")).as_number().to_uint64();
             contract = Contract();
             contract.symbol = symbol;
             contract.sec_type = sec_type;
@@ -243,29 +243,29 @@ public:
             contract.identifier = identifier;
             contract.multiplier = multiplier;
         }
-        if (json.has_field("position")) {
-            position = json.at("position").as_number().to_uint64();
+        if (json.has_field(U("position"))) {
+            position = json.at(U("position")).as_number().to_uint64();
         }
-        if (json.has_field("averageCost")) {
-            average_cost = json.at("averageCost").as_double();
+        if (json.has_field(U("averageCost"))) {
+            average_cost = json.at(U("averageCost")).as_double();
         }
-        if (json.has_field("marketValue")) {
-            market_value = json.at("marketValue").as_double();
+        if (json.has_field(U("marketValue"))) {
+            market_value = json.at(U("marketValue")).as_double();
         }
-        if (json.has_field("realizedPnl")) {
-            realized_pnl = json.at("realizedPnl").as_double();
+        if (json.has_field(U("realizedPnl"))) {
+            realized_pnl = json.at(U("realizedPnl")).as_double();
         }
-        if (json.has_field("unrealizedPnl")) {
-            unrealized_pnl = json.at("unrealizedPnl").as_double();
+        if (json.has_field(U("unrealizedPnl"))) {
+            unrealized_pnl = json.at(U("unrealizedPnl")).as_double();
         }
-        if (json.has_field("latestPrice")) {
-            latest_price = json.at("latestPrice").as_double();
+        if (json.has_field(U("latestPrice"))) {
+            latest_price = json.at(U("latestPrice")).as_double();
         }
-        if (json.has_field("updateTimestamp")) {
-            update_timestamp = (long) json.at("updateTimestamp").as_number().to_uint64();
+        if (json.has_field(U("updateTimestamp"))) {
+            update_timestamp = (long) json.at(U("updateTimestamp")).as_number().to_uint64();
         }
-        if (json.has_field("status")) {
-            status = json.at("status").as_integer();
+        if (json.has_field(U("status"))) {
+            status = json.at(U("status")).as_integer();
         }
     }
 
@@ -283,7 +283,7 @@ public:
 
     std::string to_string() {
         std::stringstream ss;
-        ss << "Position(symbol=" << this->contract.symbol << " position=" << this->position << ")" << endl;
+        ss << U("Position(symbol=") << this->contract.symbol << U(" position=") << this->position << ")" << endl;
         return ss.str();
     };
 };
@@ -424,7 +424,7 @@ public:
 
     std::string to_string() {
         std::stringstream ss;
-        ss << "Segment(category=" << this->category << " currency=" << this->currency << ")" << endl;
+        ss << U("Segment(category=") << this->category << U(" currency=") << this->currency << ")" << endl;
         return ss.str();
     };
 
@@ -439,7 +439,7 @@ public:
 
     std::string to_string() {
         std::stringstream ss;
-        ss << "PortfolioAccount(account=" << this->account << " update_timestamp=" << this->update_timestamp << ")" << endl;
+        ss << U("PortfolioAccount(account=") << this->account << U(" update_timestamp=") << this->update_timestamp << ")" << endl;
         return ss.str();
     };
 };
