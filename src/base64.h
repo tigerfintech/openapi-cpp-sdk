@@ -50,7 +50,7 @@ namespace websocketpp {
  * @param c The character to test
  * @return true if c is a valid base64 character
  */
-    static inline bool is_base64(unsigned char c) {
+    static inline bool is_base64(utility::char_t c) {
         return (c == 43 || // +
                 (c >= 47 && c <= 57) || // /-9
                 (c >= 65 && c <= 90) || // A-Z
@@ -63,12 +63,12 @@ namespace websocketpp {
  * @param len The length of input in bytes
  * @return A base64 encoded string representing input
  */
-    inline utility::string_t  base64_encode(unsigned char const * input, size_t len) {
+    inline utility::string_t  base64_encode(utility::char_t const * input, size_t len) {
         utility::string_t  ret;
         int i = 0;
         int j = 0;
-        unsigned char char_array_3[3];
-        unsigned char char_array_4[4];
+        utility::char_t char_array_3[3];
+        utility::char_t char_array_4[4];
 
         while (len--) {
             char_array_3[i++] = *(input++);
@@ -118,7 +118,7 @@ namespace websocketpp {
  */
     inline utility::string_t  base64_encode(utility::string_t  const & input) {
         return base64_encode(
-                reinterpret_cast<const unsigned char *>(input.data()),
+                reinterpret_cast<const utility::char_t *>(input.data()),
                 input.size()
         );
     }
@@ -133,7 +133,7 @@ namespace websocketpp {
         int i = 0;
         int j = 0;
         int in_ = 0;
-        unsigned char char_array_4[4], char_array_3[3];
+        utility::char_t char_array_4[4], char_array_3[3];
         utility::string_t  ret;
 
         while (in_len-- && ( input[in_] != '=') && is_base64(input[in_])) {

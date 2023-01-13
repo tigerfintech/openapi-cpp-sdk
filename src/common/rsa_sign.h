@@ -21,28 +21,28 @@ public:
 
     void print_last_error(const char *msg);
 
-    RSA *create_rsa(unsigned char *key, bool is_private);
+    RSA *create_rsa(utility::char_t *key, bool is_private);
 
     /*
         shar1 rsa sign from private key context
     */
-    int sha1_encrypt(unsigned char *context, int context_length, unsigned char *key, unsigned char *encrypted,
+    int sha1_encrypt(utility::char_t *context, int context_length, utility::char_t *key, utility::char_t *encrypted,
                      unsigned int *encrypted_length);
 
-    int sha1_decrypt(unsigned char *encrypted, unsigned int encrypted_length, unsigned char *key,
-                     unsigned char *decrypted, unsigned int decrypted_length);
+    int sha1_decrypt(utility::char_t *encrypted, unsigned int encrypted_length, utility::char_t *key,
+                     utility::char_t *decrypted, unsigned int decrypted_length);
 
     /*
         shar1 rsa sign from private key file
     */
-    int build_sha1_rsa_sign(char *filename, unsigned char *src, int srclen, unsigned char *sign, unsigned int *signlen);
+    int build_sha1_rsa_sign(char *filename, utility::char_t *src, int srclen, utility::char_t *sign, unsigned int *signlen);
 
     /*
         encrypt decrypt rsa sign,
     */
-    int encrypt(unsigned char *data, int data_len, unsigned char *key, unsigned char *encrypted);
+    int encrypt(utility::char_t *data, int data_len, utility::char_t *key, utility::char_t *encrypted);
 
-    int decrypt(unsigned char *context, int contextLength, unsigned char *key, unsigned char *decrypted);
+    int decrypt(utility::char_t *context, int contextLength, utility::char_t *key, utility::char_t *decrypted);
 
 
 };
@@ -53,7 +53,7 @@ Sha1RSASign::Sha1RSASign() {
 Sha1RSASign::~Sha1RSASign() {
 }
 
-RSA *Sha1RSASign::create_rsa(unsigned char *key, bool is_private) {
+RSA *Sha1RSASign::create_rsa(utility::char_t *key, bool is_private) {
     RSA *rsa = nullptr;
     BIO *keybio = BIO_new_mem_buf(key, -1);
     if (keybio != nullptr) {
@@ -74,13 +74,13 @@ RSA *Sha1RSASign::create_rsa(unsigned char *key, bool is_private) {
     return rsa;
 }
 
-int Sha1RSASign::sha1_encrypt(unsigned char *context, int context_length, unsigned char *key, unsigned char *encrypted,
+int Sha1RSASign::sha1_encrypt(utility::char_t *context, int context_length, utility::char_t *key, utility::char_t *encrypted,
                               unsigned int *encrypted_length) {
     RSA *rsa = create_rsa(key, true);
     int ret = -1;
     if (rsa != nullptr) {
         // 用hash作为签名内容
-        unsigned char hash[SHA_DIGEST_LENGTH] = U("");
+        utility::char_t hash[SHA_DIGEST_LENGTH] = U("");
         SHA1(context, context_length, hash);
         ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
         if (1 != ret) {
@@ -93,13 +93,13 @@ int Sha1RSASign::sha1_encrypt(unsigned char *context, int context_length, unsign
     return ret;
 }
 
-int Sha1RSASign::sha1_decrypt(unsigned char *encrypted, unsigned int encrypted_length, unsigned char *key,
-                              unsigned char *decrypted, unsigned int decrypted_length) {
+int Sha1RSASign::sha1_decrypt(utility::char_t *encrypted, unsigned int encrypted_length, utility::char_t *key,
+                              utility::char_t *decrypted, unsigned int decrypted_length) {
     RSA *rsa = create_rsa(key, false);
     int ret = -1;
     if (rsa != nullptr) {
         // 先取hash再验签
-        unsigned char hash[SHA_DIGEST_LENGTH] = U("");
+        utility::char_t hash[SHA_DIGEST_LENGTH] = U("");
         SHA1(decrypted, decrypted_length, hash);
         ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH, encrypted, encrypted_length, rsa);
         if (1 != ret) {
@@ -120,14 +120,14 @@ void Sha1RSASign::print_last_error(const char *msg) {
     delete[]err;
 }
 
-int Sha1RSASign::build_sha1_rsa_sign(char *filename, unsigned char *src, int srclen, unsigned char *sign,
+int Sha1RSASign::build_sha1_rsa_sign(char *filename, utility::char_t *src, int srclen, utility::char_t *sign,
                                      unsigned int *signlen) {
     int ret = 0, isrclen = 0, ideslen = 0, i = 0, n = 0, ienclen = 0, rsalen = 0;
 
     if (filename == NULL || src == NULL || sign == NULL)
         return -1;
 
-    unsigned char hash[SHA_DIGEST_LENGTH] = U("");
+    utility::char_t hash[SHA_DIGEST_LENGTH] = U("");
     //unsigned sign_len = sizeof( sign );
     RSA *rsa_pri_key = RSA_new();
 
@@ -159,13 +159,13 @@ int Sha1RSASign::build_sha1_rsa_sign(char *filename, unsigned char *src, int src
     return 0;
 }
 
-int Sha1RSASign::encrypt(unsigned char *data, int data_len, unsigned char *key, unsigned char *encrypted) {
+int Sha1RSASign::encrypt(utility::char_t *data, int data_len, utility::char_t *key, utility::char_t *encrypted) {
     RSA *rsa = create_rsa(key, true);
     int result = RSA_private_encrypt(data_len, data, encrypted, rsa, RSA_PKCS1_PADDING);
     return result;
 }
 
-int Sha1RSASign::decrypt(unsigned char *context, int contextLength, unsigned char *key, unsigned char *decrypted) {
+int Sha1RSASign::decrypt(utility::char_t *context, int contextLength, utility::char_t *key, utility::char_t *decrypted) {
     RSA *rsa = create_rsa(key, false);
     int result = RSA_public_decrypt(contextLength, context, decrypted, rsa, RSA_PKCS1_PADDING);
     RSA_free(rsa);

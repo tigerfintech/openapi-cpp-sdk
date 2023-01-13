@@ -33,9 +33,9 @@ time_t date_string_to_timestamp(const utility::string_t &date_string) {
     return res;
 }
 
-utility::string_t get_sign(unsigned char * private_key, unsigned char * content) {
+utility::string_t get_sign(utility::char_t * private_key, utility::char_t * content) {
 
-    unsigned char encrypted[8196 * 16] = {};
+    utility::char_t encrypted[8196 * 16] = {};
     Sha1RSASign sha1RSASign;
     unsigned int encrypted_length = 0;
     int encrypted_ret = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
@@ -52,27 +52,27 @@ utility::string_t get_sign(unsigned char * private_key, unsigned char * content)
 
 utility::string_t get_sign(utility::string_t private_key, utility::string_t content) {
 
-    unsigned char plain_text[8196 * 16];
+    utility::char_t plain_text[8196 * 16];
     std::copy(content.begin(), content.end(), plain_text);
-    return get_sign((unsigned char *) fill_private_key_marker(private_key).c_str(), (unsigned char *) content.c_str());
+    return get_sign((utility::char_t *) fill_private_key_marker(private_key).c_str(), (utility::char_t *) content.c_str());
 }
 
 bool verify_sign(utility::string_t public_key, utility::string_t content, utility::string_t encoded_signature) {
     utility::string_t filled_public_key = fill_public_key_marker(public_key).c_str();
-    unsigned char encrypted[8196 * 16] = {};
+    utility::char_t encrypted[8196 * 16] = {};
     unsigned int encrypted_length = 0;
 
     utility::string_t decoded = websocketpp::base64_decode(encoded_signature);
     memcpy(encrypted, decoded.data(), decoded.size());
     encrypted_length = decoded.size();
 
-    unsigned char decrypted[4098] = {};
+    utility::char_t decrypted[4098] = {};
     unsigned int decrypted_length = content.size();
     memcpy(decrypted, content.data(), content.size());
 
     Sha1RSASign sha1RSASign;
     int decrypted_ret = sha1RSASign.sha1_decrypt(encrypted, encrypted_length,
-                                                 (unsigned char *) filled_public_key.c_str(), decrypted, decrypted_length);
+                                                 (utility::char_t *) filled_public_key.c_str(), decrypted, decrypted_length);
     if (decrypted_ret != 1) {
         sha1RSASign.print_last_error(U("Public Decrypt failed"));
         return false;
@@ -173,8 +173,8 @@ int gz_decompress(Byte *zdata, uLong nzdata, Byte *data, uLong *ndata) {
 }
 
 
-unsigned int str_hex(unsigned char *str, unsigned char *hex) {
-    unsigned char ctmp, ctmp1, half;
+unsigned int str_hex(utility::char_t *str, utility::char_t *hex) {
+    utility::char_t ctmp, ctmp1, half;
     unsigned int num = 0;
     do {
         do {
@@ -211,8 +211,8 @@ unsigned int str_hex(unsigned char *str, unsigned char *hex) {
     return (num);
 }
 
-void hex_str(unsigned char *inchar, unsigned int len, unsigned char *outtxt) {
-    unsigned char hbit, lbit;
+void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt) {
+    utility::char_t hbit, lbit;
     unsigned int i;
     for (i = 0; i < len; i++) {
         hbit = (*(inchar + i) & 0xf0) >> 4;
