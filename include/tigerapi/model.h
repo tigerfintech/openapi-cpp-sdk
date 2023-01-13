@@ -16,59 +16,59 @@ class Contract {
 public:
     Contract() {};
 
-    Contract(const string sec_type, const string symbol, const string currency, const string local_symbol,
-             const string exchange, long contract_id) : sec_type(sec_type), symbol(symbol), currency(currency),
+    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t currency, const utility::string_t local_symbol,
+             const utility::string_t exchange, long contract_id) : sec_type(sec_type), symbol(symbol), currency(currency),
                                                         local_symbol(local_symbol), exchange(exchange),
                                                         contract_id(contract_id) {};
 
-    Contract(const string sec_type, const string symbol, const string expiry, double strike, const string right,
-             const string currency, long multiplier, const string local_symbol, long contract_id) :
+    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, double strike, const utility::string_t right,
+             const utility::string_t currency, long multiplier, const utility::string_t local_symbol, long contract_id) :
             sec_type(sec_type), symbol(symbol), expiry(expiry), strike(strike), right(right),
             currency(currency), multiplier(multiplier), local_symbol(local_symbol), contract_id(contract_id) {};
 
-    Contract(const string sec_type, const string symbol, const string expiry, long multiplier,
-             const string contract_month,
-             const string currency, const string exchange, const string local_symbol) :
+    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, long multiplier,
+             const utility::string_t contract_month,
+             const utility::string_t currency, const utility::string_t exchange, const utility::string_t local_symbol) :
             sec_type(sec_type), symbol(symbol), expiry(expiry), currency(currency), multiplier(multiplier),
             exchange(exchange), contract_month(contract_month), local_symbol(local_symbol) {};
 
-    string symbol;
-    string currency;
-    string sec_type;
-    string exchange;
-    string local_symbol;
-    string expiry;
+    utility::string_t symbol;
+    utility::string_t currency;
+    utility::string_t sec_type;
+    utility::string_t exchange;
+    utility::string_t local_symbol;
+    utility::string_t expiry;
     double strike = 0;
-    string right;
+    utility::string_t right;
     int multiplier = 0;
-    string contract_month;
+    utility::string_t contract_month;
     long contract_id;
-    string identifier;
-    string market;
+    utility::string_t identifier;
+    utility::string_t market;
 };
 
 class Order {
 public:
     Order() {};
 
-    Order(const string order_type, const string account, Contract &contract, const string action, long total_quantity) :
+    Order(const utility::string_t order_type, const utility::string_t account, Contract &contract, const utility::string_t action, long total_quantity) :
             order_type(order_type), account(account), contract(contract), action(action),
             total_quantity(total_quantity) {};
 
-    Order(const string order_type, const string account, Contract &contract, const string action, long total_quantity,
+    Order(const utility::string_t order_type, const utility::string_t account, Contract &contract, const utility::string_t action, long total_quantity,
           double limit_price, double aux_price = 0, double trailing_percent = 0) :
             order_type(order_type), account(account), contract(contract), action(action),
             total_quantity(total_quantity),
             limit_price(limit_price), aux_price(aux_price), trailing_percent(trailing_percent) {};
 
     Contract contract;
-    std::string account;
+    utility::string_t account;
     long id;
     long order_id;
     /**  订单类型, 'MKT' 市价单 / 'LMT' 限价单 / 'STP' 止损单 / 'STP_LMT' 止损限价单 / 'TRAIL' 跟踪止损单 **/
-    std::string order_type;
+    utility::string_t order_type;
     /** 交易方向, 'BUY' / 'SELL' **/
-    std::string action;
+    utility::string_t action;
     /** 下单数量 **/
     long total_quantity;
     /** 限价单价格 **/
@@ -79,7 +79,7 @@ public:
     double trailing_percent;
     double percent_offset;
     /** 有效期,'DAY' 日内有效 / 'GTC' good till cancel  / 'GTD' good till date **/
-    std::string time_in_force;
+    utility::string_t time_in_force;
     /** 是否允许盘前盘后交易(outside of regular trading hours 美股专属). True 允许, False 不允许 **/
     bool outside_rth;
     /**
@@ -87,17 +87,17 @@ public:
           例如：0.001 代表向上调整且幅度不超过 0.1%；-0.001 代表向下调整且幅度不超过 0.1%。默认 0 表示不调整
      */
     bool adjust_limit;
-    std::string user_mark;
+    utility::string_t user_mark;
     long expire_time;
 
     // 订单状态
-    std::string status;
+    utility::string_t status;
     // 主订单id, 目前只用于 TigerTrade App端的附加订单中
     long parent_id;
     // 下单时间
     long open_time;
     // 下单失败时, 会返回失败原因的描述
-    std::string reason;
+    utility::string_t reason;
     // 最新成交时间
     long latest_time;
     // order updated time
@@ -108,12 +108,12 @@ public:
     double avg_fill_price;
     // 实现盈亏
     double realized_pnl;
-    std::string secret_key;
+    utility::string_t secret_key;
     web::json::value sub_ids;
-    string algo_strategy;
+    utility::string_t algo_strategy;
     double commission;
 
-    std::string to_string() {
+    utility::string_t to_string() {
         std::stringstream ss;
         ss << U("Order(id=") << this->id << U(" status=") << this->status << U(" total_quantity: ") << this->total_quantity
            << U(" limit_price: ") << this->limit_price << ")" << endl;
@@ -131,10 +131,10 @@ public:
             account = json.at(U("account")).as_string();
         }
         if (json.has_field(U("symbol"))) {
-            string symbol = json.at(U("symbol")).as_string();
-            string sec_type = json.at(U("secType")).as_string();
-            string market = json.at(U("market")).as_string();
-            string currency = json.at(U("currency")).as_string();
+            utility::string_t symbol = json.at(U("symbol")).as_string();
+            utility::string_t sec_type = json.at(U("secType")).as_string();
+            utility::string_t market = json.at(U("market")).as_string();
+            utility::string_t currency = json.at(U("currency")).as_string();
             contract = Contract();
             contract.symbol = symbol;
             contract.sec_type = sec_type;
@@ -215,7 +215,7 @@ class Position {
 public:
     Position() {};
 
-    Position(const std::string &account, const Contract &contract, int position = 0, double average_cost = 0.0,
+    Position(const utility::string_t &account, const Contract &contract, int position = 0, double average_cost = 0.0,
              double latest_price = 0.0, double market_value = 0.0, double realized_pnl = 0.0,
              double unrealized_pnl = 0.0)
             : account(account), contract(contract), position(position), average_cost(average_cost),
@@ -227,11 +227,11 @@ public:
             account = json.at(U("account")).as_string();
         }
         if (json.has_field(U("symbol"))) {
-            string symbol = json.at(U("symbol")).as_string();
-            string sec_type = json.at(U("secType")).as_string();
-            string market = json.at(U("market")).as_string();
-            string currency = json.at(U("currency")).as_string();
-            string identifier = json.at(U("identifier")).as_string();
+            utility::string_t symbol = json.at(U("symbol")).as_string();
+            utility::string_t sec_type = json.at(U("secType")).as_string();
+            utility::string_t market = json.at(U("market")).as_string();
+            utility::string_t currency = json.at(U("currency")).as_string();
+            utility::string_t identifier = json.at(U("identifier")).as_string();
             long contract_id = json.at(U("contractId")).as_integer();
             long multiplier = (long) json.at(U("multiplier")).as_number().to_uint64();
             contract = Contract();
@@ -269,7 +269,7 @@ public:
         }
     }
 
-    std::string account;
+    utility::string_t account;
     Contract contract;
     long position;
     double average_cost;
@@ -281,7 +281,7 @@ public:
     long update_timestamp;
 
 
-    std::string to_string() {
+    utility::string_t to_string() {
         std::stringstream ss;
         ss << U("Position(symbol=") << this->contract.symbol << U(" position=") << this->position << ")" << endl;
         return ss.str();
@@ -322,7 +322,7 @@ public:
 
     double cash_available_for_trade = 0;
     double cash_balance = 0;
-    string currency;
+    utility::string_t currency;
     double gross_position_value = 0;
     double option_market_value = 0;
     double realized_pl = 0;
@@ -399,9 +399,9 @@ public:
         }
     };
 
-    string category;
-    string capability;
-    string currency;
+    utility::string_t category;
+    utility::string_t capability;
+    utility::string_t currency;
     double buying_power = 0;
     double cash_available_for_trade = 0;
     double cash_available_for_withdrawal = 0;
@@ -422,7 +422,7 @@ public:
     double unrealized_plby_cost_of_carry = 0;
     vector<CurrencyAsset> currency_assets;
 
-    std::string to_string() {
+    utility::string_t to_string() {
         std::stringstream ss;
         ss << U("Segment(category=") << this->category << U(" currency=") << this->currency << ")" << endl;
         return ss.str();
@@ -433,11 +433,11 @@ public:
 class PortfolioAccount {
 public:
     PortfolioAccount(){};
-    string account;
+    utility::string_t account;
     long update_timestamp;
     vector<Segment> segments;
 
-    std::string to_string() {
+    utility::string_t to_string() {
         std::stringstream ss;
         ss << U("PortfolioAccount(account=") << this->account << U(" update_timestamp=") << this->update_timestamp << ")" << endl;
         return ss.str();

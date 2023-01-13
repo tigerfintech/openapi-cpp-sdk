@@ -15,7 +15,7 @@ enum class Market
     SG   // 新加坡
 };
 
-inline std::string enum_to_str(Market market) {
+inline utility::string_t enum_to_str(Market market) {
     switch (market) {
         case Market::ALL:
             return U("ALL");
@@ -40,7 +40,7 @@ enum class TradingSession
     AfterHours  // 盘后
 };
 
-inline std::string enum_to_str(TradingSession session) {
+inline utility::string_t enum_to_str(TradingSession session) {
     switch (session) {
         case TradingSession::PreMarket:
             return U("PreMarket");
@@ -63,8 +63,8 @@ enum class SecType
     CASH  // 外汇
 };
 
-inline std::string enum_to_str(SecType secType) {
-    std::string name;
+inline utility::string_t enum_to_str(SecType secType) {
+    utility::string_t name;
     switch (secType) {
         case SecType::ALL:
             name = U("");
@@ -100,8 +100,8 @@ enum class SegmentType
     SEC,
     FUT
 };
-inline std::string enum_to_str(SegmentType segmentType) {
-    std::string name;
+inline utility::string_t enum_to_str(SegmentType segmentType) {
+    utility::string_t name;
     switch (segmentType) {
         case SegmentType::ALL:
             name = U("ALL");
@@ -124,8 +124,8 @@ enum class Currency {
     CNH,
     SGD,
 };
-inline std::string enum_to_str(Currency currency) {
-    std::string name;
+inline utility::string_t enum_to_str(Currency currency) {
+    utility::string_t name;
     switch (currency) {
         case Currency::ALL:
             name = U("ALL");
@@ -152,8 +152,8 @@ enum class Language {
     zh_TW,
     en_US,
 };
-inline std::string enum_to_str(Language language) {
-    std::string name;
+inline utility::string_t enum_to_str(Language language) {
+    utility::string_t name;
     switch (language) {
         case Language::zh_CN:
             name = U("zh_CN");
@@ -174,7 +174,7 @@ enum class QuoteRight {
     nr,
 };
 
-inline std::string enum_to_str(QuoteRight quoteRight) {
+inline utility::string_t enum_to_str(QuoteRight quoteRight) {
     switch (quoteRight) {
         case QuoteRight::br:
             return U("br");
@@ -191,7 +191,7 @@ enum class Right {
     ALL,
 };
 
-inline std::string enum_to_str(Right right) {
+inline utility::string_t enum_to_str(Right right) {
     switch (right) {
         case Right::ALL:
             return U("");
@@ -210,14 +210,14 @@ enum class TimelinePeriod {
 };
 
 // 定义字符串数组
-static const std::string timeline_period_names[] = {
+static const utility::string_t timeline_period_names[] = {
         U(""),  // 由于数组的下标从0开始，因此第一个元素需要留空
         U("day"),
         U("5day"),
 };
 
 // 获取 TimelinePeriod 名称的函数
-inline std::string get_timeline_period_value(TimelinePeriod period) {
+inline utility::string_t get_timeline_period_value(TimelinePeriod period) {
     return timeline_period_names[static_cast<int>(period)];
 }
 
@@ -243,7 +243,7 @@ enum class BarPeriod {
 };
 
 // 获取 BarPeriod 名称的函数
-inline std::string enum_to_str(BarPeriod period) {
+inline utility::string_t enum_to_str(BarPeriod period) {
     switch (period) {
         case BarPeriod::DAY:
             return U("day");
@@ -291,7 +291,7 @@ enum class CapitalPeriod {
     HALFAYEAR,
 };
 
-inline std::string enum_to_str(CapitalPeriod period) {
+inline utility::string_t enum_to_str(CapitalPeriod period) {
     switch (period) {
         case CapitalPeriod::INTRADAY:
             return U("intraday");
@@ -315,7 +315,7 @@ enum class OrderSortBy {
     LATEST_STATUS_UPDATED
 };
 
-inline std::string enum_to_str(OrderSortBy sortBy) {
+inline utility::string_t enum_to_str(OrderSortBy sortBy) {
     switch (sortBy) {
         case OrderSortBy::LATEST_CREATED:
             return U("LATEST_CREATED");
@@ -338,7 +338,7 @@ enum class OrderStatus {
     Invalid
 };
 
-inline std::string enum_to_str(OrderStatus status) {
+inline utility::string_t enum_to_str(OrderStatus status) {
     switch (status) {
         case OrderStatus::PendingNew:
             return U("PendingNew");

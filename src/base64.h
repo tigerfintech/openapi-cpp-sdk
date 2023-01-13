@@ -40,7 +40,7 @@
 
 namespace websocketpp {
 
-    static std::string const base64_chars =
+    static utility::string_t  const base64_chars =
             U("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             U("abcdefghijklmnopqrstuvwxyz")
             U("0123456789+/");
@@ -63,8 +63,8 @@ namespace websocketpp {
  * @param len The length of input in bytes
  * @return A base64 encoded string representing input
  */
-    inline std::string base64_encode(unsigned char const * input, size_t len) {
-        std::string ret;
+    inline utility::string_t  base64_encode(unsigned char const * input, size_t len) {
+        utility::string_t  ret;
         int i = 0;
         int j = 0;
         unsigned char char_array_3[3];
@@ -116,7 +116,7 @@ namespace websocketpp {
  * @param input The input data
  * @return A base64 encoded string representing input
  */
-    inline std::string base64_encode(std::string const & input) {
+    inline utility::string_t  base64_encode(utility::string_t  const & input) {
         return base64_encode(
                 reinterpret_cast<const unsigned char *>(input.data()),
                 input.size()
@@ -128,13 +128,13 @@ namespace websocketpp {
  * @param input The base64 encoded input data
  * @return A string representing the decoded raw bytes
  */
-    inline std::string base64_decode(std::string const & input) {
+    inline utility::string_t  base64_decode(utility::string_t  const & input) {
         size_t in_len = input.size();
         int i = 0;
         int j = 0;
         int in_ = 0;
         unsigned char char_array_4[4], char_array_3[3];
-        std::string ret;
+        utility::string_t  ret;
 
         while (in_len-- && ( input[in_] != '=') && is_base64(input[in_])) {
             char_array_4[i++] = input[in_]; in_++;
@@ -166,7 +166,7 @@ namespace websocketpp {
             char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
 
             for (j = 0; (j < i - 1); j++) {
-                ret += static_cast<std::string::value_type>(char_array_3[j]);
+                ret += static_cast<utility::string_t ::value_type>(char_array_3[j]);
             }
         }
 

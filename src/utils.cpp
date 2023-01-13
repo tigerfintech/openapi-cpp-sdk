@@ -13,7 +13,7 @@ using namespace std;
 using namespace web;
 using namespace websocketpp;
 
-std::string get_timestamp() {
+utility::string_t get_timestamp() {
     struct tm tm;
     time_t t = time(NULL);
     gmtime_r(&t, &tm);
@@ -22,7 +22,7 @@ std::string get_timestamp() {
     return std::string(timestamp);
 }
 
-time_t date_string_to_timestamp(const std::string &date_string) {
+time_t date_string_to_timestamp(const utility::string_t &date_string) {
     struct tm tm;
     std::istringstream ss(date_string);
     ss >> std::get_time(&tm, U("%Y-%m-%d"));
@@ -33,7 +33,7 @@ time_t date_string_to_timestamp(const std::string &date_string) {
     return res;
 }
 
-std::string get_sign(unsigned char * private_key, unsigned char * content) {
+utility::string_t get_sign(unsigned char * private_key, unsigned char * content) {
 
     unsigned char encrypted[8196 * 16] = {};
     Sha1RSASign sha1RSASign;
@@ -46,23 +46,23 @@ std::string get_sign(unsigned char * private_key, unsigned char * content) {
         sha1RSASign.print_last_error(U("Private Encrypt failed"));
         exit(0);
     }
-    std::string encoded = websocketpp::base64_encode(encrypted, encrypted_length);
+    utility::string_t encoded = websocketpp::base64_encode(encrypted, encrypted_length);
     return encoded;
 }
 
-std::string get_sign(std::string private_key, std::string content) {
+utility::string_t get_sign(utility::string_t private_key, utility::string_t content) {
 
     unsigned char plain_text[8196 * 16];
     std::copy(content.begin(), content.end(), plain_text);
     return get_sign((unsigned char *) fill_private_key_marker(private_key).c_str(), (unsigned char *) content.c_str());
 }
 
-bool verify_sign(std::string public_key, std::string content, std::string encoded_signature) {
-    std::string filled_public_key = fill_public_key_marker(public_key).c_str();
+bool verify_sign(utility::string_t public_key, utility::string_t content, utility::string_t encoded_signature) {
+    utility::string_t filled_public_key = fill_public_key_marker(public_key).c_str();
     unsigned char encrypted[8196 * 16] = {};
     unsigned int encrypted_length = 0;
 
-    std::string decoded = websocketpp::base64_decode(encoded_signature);
+    utility::string_t decoded = websocketpp::base64_decode(encoded_signature);
     memcpy(encrypted, decoded.data(), decoded.size());
     encrypted_length = decoded.size();
 
@@ -80,8 +80,8 @@ bool verify_sign(std::string public_key, std::string content, std::string encode
     return true;
 }
 
-string get_level_str(int level) {
-    string level_str;
+utility::string_t get_level_str(int level) {
+    utility::string_t level_str;
     for (int levelI = 0; levelI < level; levelI++) {
         level_str.append(U("\t"));
     }
@@ -89,9 +89,9 @@ string get_level_str(int level) {
 }
 
 
-string json_format(string json_str) {
+utility::string_t json_format(utility::string_t json_str) {
     int level = 0;
-    string json_format_str;
+    utility::string_t json_format_str;
     for (int i = 0; i < json_str.length(); i++) {
         char c = json_str.at(i);
         if (level > 0 && '\n' == json_format_str.at(json_format_str.length() - 1)) {
@@ -225,7 +225,7 @@ void hex_str(unsigned char *inchar, unsigned int len, unsigned char *outtxt) {
     outtxt[2 * i] = 0;
 }
 
-std::string get_device_id() {
+utility::string_t get_device_id() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis;
@@ -233,10 +233,10 @@ std::string get_device_id() {
 
     std::stringstream ss;
     ss << std::hex << std::setfill('0') << std::setw(12) << mac;
-    std::string str = ss.str();
+    utility::string_t str = ss.str();
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 
-    std::string result = U("");
+    utility::string_t result = U("");
     for (int i = 0; i < 12; i += 2) {
         result += str.substr(i, 2);
         result += U(":");
@@ -249,7 +249,7 @@ std::string get_device_id() {
 
 
 
-std::string add_start_end(std::string& key, std::string start_marker, std::string end_marker) {
+utility::string_t add_start_end(std::string& key, utility::string_t start_marker, utility::string_t end_marker) {
     if (key.find(start_marker) == std::string::npos) {
         key = start_marker + key;
     }
@@ -259,11 +259,11 @@ std::string add_start_end(std::string& key, std::string start_marker, std::strin
     return key;
 }
 
-std::string fill_private_key_marker(std::string& private_key) {
+utility::string_t fill_private_key_marker(std::string& private_key) {
     return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
 }
 
-std::string fill_public_key_marker(std::string& public_key) {
+utility::string_t fill_public_key_marker(std::string& public_key) {
     return add_start_end(public_key, U("-----BEGIN PUBLIC KEY-----\n"), U("\n-----END PUBLIC KEY-----"));
 }
 
@@ -273,11 +273,11 @@ void camel_to_snake(web::json::value& obj) {
         // Iterate through all the keys in the object
         for (const auto& kv : obj.as_object()) {
             // Convert the key to snake case
-            std::string key = kv.first;
+            utility::string_t key = kv.first;
 //            if (key.empty()) {
 //                continue;
 //            }
-            std::string snake_key;
+            utility::string_t snake_key;
             bool is_first_char = true;
             for (const auto& c : key) {
                 if (isupper(c)) {
@@ -308,15 +308,15 @@ void camel_to_snake(web::json::value& obj) {
 
 
 
-std::tuple<std::string, std::string, std::string, double> extract_option_info(const std::string &identifier) {
+std::tuple<std::string, std::string, std::string, double> extract_option_info(const utility::string_t &identifier) {
     if (!identifier.empty()) {
         std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
         std::smatch matches;
 
         if (std::regex_search(identifier, matches, pattern) && matches.size() == 5) {
-            std::string underlying_symbol = matches[1];
-            std::string expiry = U("20") + matches[2].str();
-            std::string right = matches[3];
+            utility::string_t underlying_symbol = matches[1];
+            utility::string_t expiry = U("20") + matches[2].str();
+            utility::string_t right = matches[3];
             double strike = std::stod(matches[4]) / 1000;
             if (expiry.size() == 8) {
                 expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);

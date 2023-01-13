@@ -23,12 +23,12 @@ namespace TIGER_API {
             init_log();
         };
 
-        ClientConfig(string tiger_id, string private_key, string account) : tiger_id(std::move(tiger_id)),
+        ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account) : tiger_id(std::move(tiger_id)),
                                                                                                  private_key(std::move(
                                                                                                          private_key)),
                                                                                                  account(std::move(account)) {};
 
-        ClientConfig(string tiger_id, string private_key, string account,
+        ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account,
                      bool sandbox_debug = false) :
                 tiger_id(std::move(tiger_id)), private_key(std::move(private_key)),
                 account(std::move(account)), sandbox_debug(sandbox_debug) {
@@ -39,24 +39,24 @@ namespace TIGER_API {
             init_log();
         };
 
-        string tiger_id;
-        string private_key;
-        string account;
-        string charset = U("UTF-8");
-        string sign_type = U("RSA");
+        utility::string_t tiger_id;
+        utility::string_t private_key;
+        utility::string_t account;
+        utility::string_t charset = U("UTF-8");
+        utility::string_t sign_type = U("RSA");
 
-        void set_server_url(const string &url) {
+        void set_server_url(const utility::string_t &url) {
             this->server_url = url;
         }
 
-        string get_server_url() {
+        utility::string_t get_server_url() {
             return this->server_url;
         }
 
     private:
         bool sandbox_debug = false;
-        string server_url = TIGER_SERVER_URL;
-        string server_public_key = TIGER_PUBLIC_KEY;
+        utility::string_t server_url = TIGER_SERVER_URL;
+        utility::string_t server_public_key = TIGER_PUBLIC_KEY;
 
         void init_log()
         {

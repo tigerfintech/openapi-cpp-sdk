@@ -28,17 +28,17 @@ namespace TIGER_API {
 
         void set_config(const ClientConfig &cf);
 
-        value post(const string &api_method, value &params);
+        value post(const utility::string_t &api_method, value &params);
 
-        value get(const string &api_method, value &params);
+        value get(const utility::string_t &api_method, value &params);
 
-        value send_request(const string &http_method, const string &api_method, value &body);
+        value send_request(const utility::string_t &http_method, const utility::string_t &api_method, value &body);
 
         value identifiers_to_options(value identifiers);
 
     private:
 
-        string build_sign_content(const value &obj);
+        utility::string_t build_sign_content(const value &obj);
 
         value build_common_params();
     };

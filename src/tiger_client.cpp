@@ -11,11 +11,11 @@ namespace TIGER_API {
         client_config = cf;
     }
 
-    string TigerClient::build_sign_content(const value &obj) {
+    utility::string_t TigerClient::build_sign_content(const value &obj) {
         json::object obj_obj = obj.as_object();
 
         // Create a vector to hold the keys.
-        std::vector<std::string> keys;
+        std::vector<utility::string_t > keys;
         // Iterate over the key-value pairs and add the keys to the vector.
         for (const auto &pair: obj_obj) {
             keys.push_back(pair.first);
@@ -23,7 +23,7 @@ namespace TIGER_API {
         // Sort the keys in ascending order using the std::sort function.
         std::sort(keys.begin(), keys.end());
 
-        std::string str;
+        utility::string_t  str;
         // Iterate through the sorted list of keys and concat string.
         for (const auto &key: keys) {
             if (!str.empty()) {
@@ -44,15 +44,15 @@ namespace TIGER_API {
         return common_params;
     }
 
-    value TigerClient::post(const string &api_method, value &params) {
+    value TigerClient::post(const utility::string_t &api_method, value &params) {
         return send_request(POST, api_method, params);
     }
 
-    value TigerClient::get(const string &api_method, value &params) {
+    value TigerClient::get(const utility::string_t &api_method, value &params) {
         return send_request(GET, api_method, params);
     }
 
-    value TigerClient::send_request(const string &http_method, const string &api_method, value &body) {
+    value TigerClient::send_request(const utility::string_t &http_method, const utility::string_t &api_method, value &body) {
         http_request request;
         request.set_method(http_method);
 
@@ -75,8 +75,8 @@ namespace TIGER_API {
         params[P_METHOD] = value::string(api_method);
         params[P_TIMESTAMP] = value::string(get_timestamp());
 
-        string sign_content = build_sign_content(params);
-        string sign = get_sign(client_config.private_key, sign_content);
+        utility::string_t sign_content = build_sign_content(params);
+        utility::string_t sign = get_sign(client_config.private_key, sign_content);
         params[P_SIGN] = value::string(sign);
 //        request.set_body(params.serialize(), U("application/json; charset=UTF-8"));
         request.set_body(params);
@@ -84,7 +84,7 @@ namespace TIGER_API {
         http_response response;
         value result;
         value result_data;
-        string result_str;
+        utility::string_t result_str;
         try {
             http_client client(client_config.get_server_url());
             LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str()
@@ -115,7 +115,7 @@ namespace TIGER_API {
                 LOGGER(error) << U("Exception: api code error, response: ") << result << endl;
                 exit(code);
             }
-            string res_sign = result[P_SIGN].as_string();
+            utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
                 LOGGER(error) << U("Exception: response sign verify failed. ") << endl;
@@ -149,7 +149,7 @@ namespace TIGER_API {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            std::string symbol, expiry, right;
+            utility::string_t  symbol, expiry, right;
             double strike;
             std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
