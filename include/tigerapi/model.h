@@ -114,7 +114,7 @@ public:
     double commission;
 
     utility::string_t to_string() {
-        std::stringstream ss;
+        utility::stringstream_t ss;
         ss << U("Order(id=") << this->id << U(" status=") << this->status << U(" total_quantity: ") << this->total_quantity
            << U(" limit_price: ") << this->limit_price << ")" << endl;
         return ss.str();
@@ -282,7 +282,7 @@ public:
 
 
     utility::string_t to_string() {
-        std::stringstream ss;
+        utility::stringstream_t ss;
         ss << U("Position(symbol=") << this->contract.symbol << U(" position=") << this->position << ")" << endl;
         return ss.str();
     };
@@ -423,7 +423,7 @@ public:
     vector<CurrencyAsset> currency_assets;
 
     utility::string_t to_string() {
-        std::stringstream ss;
+        utility::stringstream_t ss;
         ss << U("Segment(category=") << this->category << U(" currency=") << this->currency << ")" << endl;
         return ss.str();
     };
@@ -438,7 +438,7 @@ public:
     vector<Segment> segments;
 
     utility::string_t to_string() {
-        std::stringstream ss;
+        utility::stringstream_t ss;
         ss << U("PortfolioAccount(account=") << this->account << U(" update_timestamp=") << this->update_timestamp << ")" << endl;
         return ss.str();
     };

@@ -210,7 +210,7 @@ utility::string_t get_device_id() {
     std::uniform_int_distribution<unsigned long long> dis;
     unsigned long long mac = dis(gen);
 
-    std::stringstream ss;
+    utility::stringstream_t ss;
     ss << std::hex << std::setfill('0') << std::setw(12) << mac;
     utility::string_t str = ss.str();
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
