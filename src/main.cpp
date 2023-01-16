@@ -295,7 +295,7 @@ public:
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_option_trade_tick(quote_client);
+        TestQuoteClient::test_grab_quote_permission(quote_client);
     }
 };
 

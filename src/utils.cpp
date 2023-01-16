@@ -1,25 +1,32 @@
 
 
 #include "../include/tigerapi/utils.h"
+#include "../include/tigerapi/log.h"
 #include "base64.h"
 #include <ctime>
 #include <iostream>
+#include <iomanip>
 #include <random>
 #include <algorithm>
 #include <regex>
-#include "common/rsa_sign.h"
+//#include "common/rsa_sign.h"
+#include "common/sign_util.h"
 
 using namespace std;
 using namespace web;
 using namespace websocketpp;
 
 utility::string_t get_timestamp() {
-    struct tm tm;
     time_t t = time(NULL);
-    gmtime_r(&t, &tm);
-    char timestamp[32];
-    strftime(timestamp, sizeof(timestamp), U("%Y-%m-%d %H:%M:%S"), &tm);
-    return std::string(timestamp);
+    char tmp[32];
+    strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
+    return utility::string_t(tmp);
+//    struct tm tm;
+//    time_t t = time(NULL);
+//    gmtime_r(&t, &tm);
+//    char timestamp[32];
+//    strftime(timestamp, sizeof(timestamp), U("%Y-%m-%d %H:%M:%S"), &tm);
+//    return utility::string_t(timestamp);
 }
 
 time_t date_string_to_timestamp(const utility::string_t &date_string) {
@@ -33,48 +40,20 @@ time_t date_string_to_timestamp(const utility::string_t &date_string) {
     return res;
 }
 
-utility::string_t get_sign(utility::char_t * private_key, utility::char_t * content) {
+utility::string_t get_sign(utility::string_t &private_key, const utility::string_t &content) {
+    utility::string_t filled_private_key = fill_private_key_marker(private_key);
 
-    utility::char_t encrypted[8196 * 16] = {};
-    Sha1RSASign sha1RSASign;
-    unsigned int encrypted_length = 0;
-    int encrypted_ret = sha1RSASign.sha1_encrypt(content, strlen((char *) content),
-                                                 private_key, encrypted,
-                                                 &encrypted_length);
-
-    if (encrypted_ret != 1) {
-        sha1RSASign.print_last_error(U("Private Encrypt failed"));
-        exit(0);
-    }
-    utility::string_t encoded = websocketpp::base64_encode(encrypted, encrypted_length);
-    return encoded;
+    utility::string_t encrypted = sha1_sign(content, filled_private_key);
+    return websocketpp::base64_encode(encrypted);
 }
 
-utility::string_t get_sign(utility::string_t private_key, utility::string_t content) {
+bool verify_sign(utility::string_t public_key, const utility::string_t &content,
+                 const utility::string_t &encoded_signature) {
+    utility::string_t filled_public_key = fill_public_key_marker(public_key);
+    int ret = sha1_verify(content, encoded_signature, filled_public_key);
 
-    utility::char_t plain_text[8196 * 16];
-    std::copy(content.begin(), content.end(), plain_text);
-    return get_sign((utility::char_t *) fill_private_key_marker(private_key).c_str(), (utility::char_t *) content.c_str());
-}
-
-bool verify_sign(utility::string_t public_key, utility::string_t content, utility::string_t encoded_signature) {
-    utility::string_t filled_public_key = fill_public_key_marker(public_key).c_str();
-    utility::char_t encrypted[8196 * 16] = {};
-    unsigned int encrypted_length = 0;
-
-    utility::string_t decoded = websocketpp::base64_decode(encoded_signature);
-    memcpy(encrypted, decoded.data(), decoded.size());
-    encrypted_length = decoded.size();
-
-    utility::char_t decrypted[4098] = {};
-    unsigned int decrypted_length = content.size();
-    memcpy(decrypted, content.data(), content.size());
-
-    Sha1RSASign sha1RSASign;
-    int decrypted_ret = sha1RSASign.sha1_decrypt(encrypted, encrypted_length,
-                                                 (utility::char_t *) filled_public_key.c_str(), decrypted, decrypted_length);
-    if (decrypted_ret != 1) {
-        sha1RSASign.print_last_error(U("Public Decrypt failed"));
+    if (ret != 1) {
+                LOGGER(info) << U("Public Decrypt failed");
         return false;
     }
     return true;
@@ -247,9 +226,8 @@ utility::string_t get_device_id() {
 }
 
 
-
-
-utility::string_t add_start_end(std::string& key, utility::string_t start_marker, utility::string_t end_marker) {
+utility::string_t
+add_start_end(std::string &key, const utility::string_t &start_marker, const utility::string_t end_marker) {
     if (key.find(start_marker) == std::string::npos) {
         key = start_marker + key;
     }
@@ -259,19 +237,19 @@ utility::string_t add_start_end(std::string& key, utility::string_t start_marker
     return key;
 }
 
-utility::string_t fill_private_key_marker(std::string& private_key) {
+utility::string_t fill_private_key_marker(std::string &private_key) {
     return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
 }
 
-utility::string_t fill_public_key_marker(std::string& public_key) {
+utility::string_t fill_public_key_marker(std::string &public_key) {
     return add_start_end(public_key, U("-----BEGIN PUBLIC KEY-----\n"), U("\n-----END PUBLIC KEY-----"));
 }
 
 
-void camel_to_snake(web::json::value& obj) {
+void camel_to_snake(web::json::value &obj) {
     if (obj.is_object()) {
         // Iterate through all the keys in the object
-        for (const auto& kv : obj.as_object()) {
+        for (const auto &kv: obj.as_object()) {
             // Convert the key to snake case
             utility::string_t key = kv.first;
 //            if (key.empty()) {
@@ -279,7 +257,7 @@ void camel_to_snake(web::json::value& obj) {
 //            }
             utility::string_t snake_key;
             bool is_first_char = true;
-            for (const auto& c : key) {
+            for (const auto &c: key) {
                 if (isupper(c)) {
                     if (!is_first_char) {
                         snake_key += '_';
@@ -299,13 +277,11 @@ void camel_to_snake(web::json::value& obj) {
         }
     } else if (obj.is_array()) {
         // Iterate through all the elements in the array and convert them
-        for (auto& value : obj.as_array()) {
+        for (auto &value: obj.as_array()) {
             camel_to_snake(value);
         }
     }
 }
-
-
 
 
 std::tuple<std::string, std::string, std::string, double> extract_option_info(const utility::string_t &identifier) {
