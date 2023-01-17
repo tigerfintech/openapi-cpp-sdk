@@ -8,7 +8,7 @@
 #include "tiger_client.h"
 #include "client_config.h"
 #include "enums.h"
-#include "../include/tigerapi/service_types.h"
+#include "service_types.h"
 
 namespace TIGER_API {
     class QuoteClient : public TigerClient {

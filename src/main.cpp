@@ -3,6 +3,7 @@
 #include "../include/tigerapi/trade_client.h"
 #include "../include/tigerapi/contract_util.h"
 #include "../include/tigerapi/order_util.h"
+#include <cpprest/details/basic_types.h>
 
 using namespace std;
 using namespace web;
@@ -16,42 +17,42 @@ class TestTradeClient {
 public:
     static void test_get_prime_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_prime_asset();
-        cout << U("asset: ") << res << endl;
+        ucout << U("asset: ") << res << endl;
     }
 
     static void test_get_prime_portfolio(const std::shared_ptr<TradeClient>& trade_client) {
         PortfolioAccount res = trade_client->get_prime_portfolio();
-        cout << U("portfolio: ") << res.to_string() << endl;
+        ucout << U("portfolio: ") << res.to_string() << endl;
     }
 
     static void test_get_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_asset();
-        cout << U("asset: ") << res << endl;
+        ucout << U("asset: ") << res << endl;
     }
 
     static void test_get_position(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_positions();
-        cout << U("position: ") << res << endl;
+        ucout << U("position: ") << res << endl;
     }
 
     static void test_get_position_list(const std::shared_ptr<TradeClient>& trade_client) {
         vector<Position> res = trade_client->get_position_list();
-        cout << U("position size: ") << res.size()  << U(" , first item: ") << res[0].to_string() << endl;
+        ucout << U("position size: ") << res.size()  << U(" , first item: ") << res[0].to_string() << endl;
     }
 
     static void test_get_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_orders();
-        cout << U("orders: ") << res << endl;
+        ucout << U("orders: ") << res << endl;
     }
 
     static void test_get_active_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_active_orders();
-        cout << U("active orders: ") << res << endl;
+        ucout << U("active orders: ") << res << endl;
     }
 
     static void test_get_contract(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_contract(U("AAPL"));
-        cout << U("contract: ") << res << endl;
+        ucout << U("contract: ") << res << endl;
     }
 
     static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -59,8 +60,8 @@ public:
         Order order = limit_order(contract, U("BUY"), 1, 100.0);
         value res = trade_client->place_order(order);
         long id = res[U("id")].as_integer();
-        cout << U("order id: ") << id << endl;
-        cout << U("place order result: ") << res << endl;
+        ucout << U("order id: ") << id << endl;
+        ucout << U("place order result: ") << res << endl;
     }
 
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -68,12 +69,12 @@ public:
 //        Order order = limit_order(contract, U("BUY"), 1, 100.0);
 //        trade_client->place_order(order);
         Order my_order = trade_client->get_order(29270263515317248);
-        cout << U("order : ") << my_order.to_string() << endl;
+        ucout << U("order : ") << my_order.to_string() << endl;
     }
 
     static void test_cancel_order(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->cancel_order(29270263515317248);
-        cout << U("cancel order : ") << res << endl;
+        ucout << U("cancel order : ") << res << endl;
     }
 
     static void test_modify_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -81,9 +82,9 @@ public:
         Order order = limit_order(contract, U("BUY"), 1, 100.0);
         long id = (long) trade_client->place_order(order)[U("id")].as_number().to_uint64();
         value res = trade_client->modify_order(order, 105);
-        cout << U("modify order res: ") << res << endl;
+        ucout << U("modify order res: ") << res << endl;
         Order mod_order = trade_client->get_order(id);
-        cout << U("modified order: ") << mod_order.to_string() << endl;
+        ucout << U("modified order: ") << mod_order.to_string() << endl;
     }
 
 
@@ -101,29 +102,29 @@ class TestQuoteClient {
 public:
     static void test_grab_quote_permission(std::shared_ptr<QuoteClient> quote_client) {
         value perms = quote_client->grab_quote_permission();
-        cout << U("Quote perms: ") << perms << endl;
+        ucout << U("Quote perms: ") << perms << endl;
     }
 
     static void test_get_symbols(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_symbols();
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_symbols_names(const std::shared_ptr<QuoteClient> quote_client) {
 //        value result = quote_client->get_all_symbol_names(U("HK"));
         value result = quote_client->get_all_symbol_names(Market::HK);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_market_state(const std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_market_state(U("HK"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
 
     static void test_get_trading_calendar(const std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_trading_calendar(U("US"), U("2023-01-01"), U("2023-03-01"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_timeline(const std::shared_ptr<QuoteClient> quote_client) {
@@ -131,7 +132,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_timeline(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_history_timeline(const std::shared_ptr<QuoteClient> quote_client) {
@@ -139,7 +140,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_history_timeline(symbols, U("2023-01-10"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
 
@@ -148,7 +149,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_quote_real_time(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_quote_delay(const std::shared_ptr<QuoteClient> quote_client) {
@@ -156,7 +157,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_quote_delay(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_quote_depth(const std::shared_ptr<QuoteClient> quote_client) {
@@ -164,7 +165,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_quote_depth(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_shortable_stocks(const std::shared_ptr<QuoteClient> quote_client) {
@@ -172,16 +173,16 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_quote_shortable_stocks(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_kline(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        cout << U("symbols ") << symbols << endl;
+        ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
@@ -189,7 +190,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_quote_stock_trade(symbols);
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
@@ -197,101 +198,101 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_trade_tick(symbols, 0, 100);
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_capital_flow(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_capital_flow(U("AAPL"), U("US"), U("intraday"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_capital_distribution(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_capital_distribution(U("AAPL"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_exchange(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_exchange();
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_contracts(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_contracts(U("CL"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_current_contract(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_current_contract(U("CL"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_continuous_contracts(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_continuous_contracts(U("CL"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_contract_by_contract_code(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_contract_by_contract_code(U("CL2303"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_trading_date(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_trading_date(U("CL2303"), U("2023-01-12"));
-        cout << U("Result: ") << result << endl;
+        ucout << U("Result: ") << result << endl;
     }
 
     static void test_get_future_kline(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
-        cout << U("symbols ") << symbols << endl;
+        ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_future_kline(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_future_tick(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_future_tick(U("CL2312"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_future_real_time_quote(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
-        cout << U("symbols ") << symbols << endl;
+        ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_future_real_time_quote(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_option_expiration(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("TSLA"));
-        cout << U("symbols ") << symbols << endl;
+        ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_option_expiration(symbols);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_option_chain(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_option_chain(U("TSLA"), U("2023-01-20"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
 
     static void test_get_option_brief(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_option_brief(U("AAPL 230317C000135000"));
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
         identifiers[0] = value::string(U("AAPL 230317C000135000"));
         value result = quote_client->get_option_kline(identifiers);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_get_option_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
         identifiers[0] = value::string(U("AAPL 230317C000135000"));
         value result = quote_client->get_option_trade_tick(identifiers);
-        cout << U("result: ") << result << endl;
+        ucout << U("result: ") << result << endl;
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
@@ -308,7 +309,7 @@ public:
     static void test_grab_quote_permission(std::shared_ptr<TigerClient> tigerapi) {
         value obj = value::object(true);
         value perms = tigerapi->post(GRAB_QUOTE_PERMISSION, obj);
-        cout << U("quote perms: ") << perms << endl;
+        ucout << U("quote perms: ") << perms << endl;
     }
 
     static void test_get_market_status(std::shared_ptr<TigerClient>  tigerapi) {

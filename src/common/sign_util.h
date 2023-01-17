@@ -87,11 +87,11 @@ RSA * create_rsa(utility::char_t *key, bool is_private) {
         }
         BIO_free_all(keybio);
     } else {
-        cout << U("Failed to create key BIO");
+        ucout << U("Failed to create key BIO");
     }
 
     if (rsa == nullptr) {
-        cout << U("Failed to create RSA");
+        ucout << U("Failed to create RSA");
     }
 
     return rsa;
@@ -169,11 +169,11 @@ RSA * create_rsa(utility::char_t *key, bool is_private) {
         }
         BIO_free_all(keybio);
     } else {
-        cout << U("Failed to create key BIO");
+        ucout << U("Failed to create key BIO");
     }
 
     if (rsa == nullptr) {
-        cout << U("Failed to create RSA");
+        ucout << U("Failed to create RSA");
     }
 
     return rsa;
@@ -251,11 +251,11 @@ RSA * create_rsa(utility::char_t *key, bool is_private) {
         }
         BIO_free_all(keybio);
     } else {
-        cout << U("Failed to create key BIO");
+        ucout << U("Failed to create key BIO");
     }
 
     if (rsa == nullptr) {
-        cout << U("Failed to create RSA");
+        ucout << U("Failed to create RSA");
     }
 
     return rsa;

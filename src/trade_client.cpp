@@ -320,7 +320,7 @@ namespace TIGER_API {
             order.id = res[U("id")].as_number().to_uint64();
             order.sub_ids = res[U("subIds")];
         } catch (...) {
-            cout << U("Warn: id not returned") << endl;
+            ucout << U("Warn: id not returned") << endl;
         }
         return res;
     }
@@ -335,7 +335,7 @@ namespace TIGER_API {
             Order order = Order(res);
             return order;
         } else {
-            cout << U("Exception: order ") << id << U(" not exist, result: ") << res << endl;
+            ucout << U("Exception: order ") << id << U(" not exist, result: ") << res << endl;
             exit(-1);
         }
     }

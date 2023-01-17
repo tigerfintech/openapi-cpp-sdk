@@ -20,42 +20,42 @@ class TestTradeClient {
 public:
     static void test_get_prime_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_prime_asset();
-        cout << "asset: " << res << endl;
+        ucout << "asset: " << res << endl;
     }
 
     static void test_get_prime_portfolio(const std::shared_ptr<TradeClient>& trade_client) {
         PortfolioAccount res = trade_client->get_prime_portfolio();
-        cout << "portfolio: " << res.to_string() << endl;
+        ucout << "portfolio: " << res.to_string() << endl;
     }
 
     static void test_get_asset(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_asset();
-        cout << "asset: " << res << endl;
+        ucout << "asset: " << res << endl;
     }
 
     static void test_get_position(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_positions();
-        cout << "position: " << res << endl;
+        ucout << "position: " << res << endl;
     }
 
     static void test_get_position_list(const std::shared_ptr<TradeClient>& trade_client) {
         vector<Position> res = trade_client->get_position_list();
-        cout << "position size: " << res.size()  << " , first item: " << res[0].to_string() << endl;
+        ucout << "position size: " << res.size()  << " , first item: " << res[0].to_string() << endl;
     }
 
     static void test_get_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_orders();
-        cout << "orders: " << res << endl;
+        ucout << "orders: " << res << endl;
     }
 
     static void test_get_active_orders(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_active_orders();
-        cout << "active orders: " << res << endl;
+        ucout << "active orders: " << res << endl;
     }
 
     static void test_get_contract(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_contract("AAPL");
-        cout << "contract: " << res << endl;
+        ucout << "contract: " << res << endl;
     }
 
     static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -63,8 +63,8 @@ public:
         Order order = limit_order(contract, "BUY", 1, 100.0);
         value res = trade_client->place_order(order);
         long id = res["id"].as_integer();
-        cout << "order id: " << id << endl;
-        cout << "place order result: " << res << endl;
+        ucout << "order id: " << id << endl;
+        ucout << "place order result: " << res << endl;
     }
 
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -72,12 +72,12 @@ public:
 //        Order order = limit_order(contract, "BUY", 1, 100.0);
 //        trade_client->place_order(order);
         Order my_order = trade_client->get_order(29270263515317248);
-        cout << "order : " << my_order.to_string() << endl;
+        ucout << "order : " << my_order.to_string() << endl;
     }
 
     static void test_cancel_order(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->cancel_order(29270263515317248);
-        cout << "cancel order : " << res << endl;
+        ucout << "cancel order : " << res << endl;
     }
 
     static void test_modify_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -85,9 +85,9 @@ public:
         Order order = limit_order(contract, "BUY", 1, 100.0);
         long id = (long) trade_client->place_order(order)["id"].as_number().to_uint64();
         value res = trade_client->modify_order(order, 105);
-        cout << "modify order res: " << res << endl;
+        ucout << "modify order res: " << res << endl;
         Order mod_order = trade_client->get_order(id);
-        cout << "modified order: " << mod_order.to_string() << endl;
+        ucout << "modified order: " << mod_order.to_string() << endl;
     }
 
 
@@ -105,27 +105,27 @@ class TestQuoteClient {
 public:
     static void test_grab_quote_permission(std::shared_ptr<QuoteClient> quote_client) {
         value perms = quote_client->grab_quote_permission();
-        cout << "Quote perms: " << perms << endl;
+        ucout << "Quote perms: " << perms << endl;
     }
 
     static void test_get_symbols(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_symbols();
-        cout << "result: " << result << endl;
+        ucout << "result: " << result << endl;
     }
 
     static void test_get_symbols_names(std::shared_ptr<QuoteClient> quote_client) {
 //        value result = quote_client->get_all_symbol_names("HK");
         value result = quote_client->get_all_symbol_names(Market::HK);
-        cout << "result: " << result << endl;
+        ucout << "result: " << result << endl;
     }
 
     static void test_get_kline(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string("AAPL");
         symbols[1] = value::string("JD");
-        cout << "symbols " << symbols << endl;
+        ucout << "symbols " << symbols << endl;
         value result = quote_client->get_kline(symbols);
-        cout << "result: " << result << endl;
+        ucout << "result: " << result << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
@@ -133,7 +133,7 @@ public:
         symbols[0] = value::string("AAPL");
         symbols[1] = value::string("JD");
         value result = quote_client->get_quote_stock_trade(symbols);
-        cout << "Result: " << result << endl;
+        ucout << "Result: " << result << endl;
     }
 
     static void test_quote(std::shared_ptr<QuoteClient> quote_client) {
@@ -150,7 +150,7 @@ public:
     static void test_grab_quote_permission(std::shared_ptr<TigerClient> tigerapi) {
         value obj = value::object(true);
         value perms = tigerapi->post(GRAB_QUOTE_PERMISSION, obj);
-        cout << "quote perms: " << perms << endl;
+        ucout << "quote perms: " << perms << endl;
     }
 
     static void test_get_market_status(std::shared_ptr<TigerClient>  tigerapi) {
@@ -168,7 +168,7 @@ public:
 };
 
 int main(int argc, char *args[]) {
-    cout << "Tiger Api main" << endl;
+    ucout << "Tiger Api main" << endl;
     /************************** set config **********************/
     ClientConfig config = ClientConfig(true);
 
