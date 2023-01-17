@@ -276,26 +276,26 @@ public:
 
 
     static void test_get_option_brief(std::shared_ptr<QuoteClient> quote_client) {
-        value result = quote_client->get_option_brief(U("AAPL 220923C000155000"));
+        value result = quote_client->get_option_brief(U("AAPL 230317C000135000"));
         cout << U("result: ") << result << endl;
     }
 
     static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
-        identifiers[0] = value::string(U("AAPL 220923C000155000"));
+        identifiers[0] = value::string(U("AAPL 230317C000135000"));
         value result = quote_client->get_option_kline(identifiers);
         cout << U("result: ") << result << endl;
     }
 
     static void test_get_option_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
-        identifiers[0] = value::string(U("AAPL 230923C000155000"));
+        identifiers[0] = value::string(U("AAPL 230317C000135000"));
         value result = quote_client->get_option_trade_tick(identifiers);
         cout << U("result: ") << result << endl;
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_grab_quote_permission(quote_client);
+        TestQuoteClient::test_get_option_brief(quote_client);
     }
 };
 

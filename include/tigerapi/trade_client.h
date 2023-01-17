@@ -24,7 +24,7 @@ namespace TIGER_API {
          * @param base_currency 币种
          * @return
          */
-        value get_prime_asset(const utility::string_t & account = U(""), const string& base_currency = U("USD"));
+        value get_prime_asset(const utility::string_t & account = U(""), const utility::string_t & base_currency = U("USD"));
 
         value get_prime_asset(const utility::string_t &account, Currency base_currency = Currency::USD);
 

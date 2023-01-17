@@ -288,7 +288,6 @@ std::tuple<std::string, std::string, std::string, double> extract_option_info(co
     if (!identifier.empty()) {
         std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
         std::smatch matches;
-
         if (std::regex_search(identifier, matches, pattern) && matches.size() == 5) {
             utility::string_t underlying_symbol = matches[1];
             utility::string_t expiry = U("20") + matches[2].str();
