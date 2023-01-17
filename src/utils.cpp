@@ -18,8 +18,8 @@ using namespace websocketpp;
 
 utility::string_t get_timestamp() {
     time_t t = time(NULL);
-    char tmp[32];
-    strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
+    utility::char_t tmp[32];
+    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
     return utility::string_t(tmp);
 //    struct tm tm;
 //    time_t t = time(NULL);
@@ -31,7 +31,7 @@ utility::string_t get_timestamp() {
 
 time_t date_string_to_timestamp(const utility::string_t &date_string) {
     struct tm tm;
-    std::istringstream ss(date_string);
+    utility::istringstream_t ss(date_string);
     ss >> std::get_time(&tm, U("%Y-%m-%d"));
     tm.tm_hour = 0;
     tm.tm_min = 0;
@@ -227,7 +227,7 @@ utility::string_t get_device_id() {
 
 
 utility::string_t
-add_start_end(std::string &key, const utility::string_t &start_marker, const utility::string_t end_marker) {
+add_start_end(utility::string_t &key, const utility::string_t &start_marker, const utility::string_t end_marker) {
     if (key.find(start_marker) == std::string::npos) {
         key = start_marker + key;
     }
@@ -237,11 +237,11 @@ add_start_end(std::string &key, const utility::string_t &start_marker, const uti
     return key;
 }
 
-utility::string_t fill_private_key_marker(std::string &private_key) {
+utility::string_t fill_private_key_marker(utility::string_t &private_key) {
     return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
 }
 
-utility::string_t fill_public_key_marker(std::string &public_key) {
+utility::string_t fill_public_key_marker(utility::string_t &public_key) {
     return add_start_end(public_key, U("-----BEGIN PUBLIC KEY-----\n"), U("\n-----END PUBLIC KEY-----"));
 }
 
@@ -284,12 +284,12 @@ void camel_to_snake(web::json::value &obj) {
 }
 
 
-std::tuple<std::string, std::string, std::string, double> extract_option_info(const utility::string_t &identifier) {
-    if (!identifier.empty()) {
+std::tuple<utility::string_t, utility::string_t, utility::string_t, double> extract_option_info(const utility::string_t &identifier) {
+    /*if (!identifier.empty()) {
         std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
         std::smatch matches;
-        if (std::regex_search(identifier, matches, pattern) && matches.size() == 5) {
-            utility::string_t underlying_symbol = matches[1];
+        if (std::regex_search((const std::string) identifier, matches, pattern) && matches.size() == 5) {
+            utility::string_t underlying_symbol = identifier.substr(0, 3);
             utility::string_t expiry = U("20") + matches[2].str();
             utility::string_t right = matches[3];
             double strike = std::stod(matches[4]) / 1000;
@@ -299,7 +299,7 @@ std::tuple<std::string, std::string, std::string, double> extract_option_info(co
             right = (right == U("C")) ? U("CALL") : U("PUT");
             return std::make_tuple(underlying_symbol, expiry, right, strike);
         }
-    }
+    }*/
     return std::make_tuple(U(""), U(""), U(""), 0.0);
 }
 

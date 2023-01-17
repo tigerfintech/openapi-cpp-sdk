@@ -36,25 +36,9 @@ Contract future_contract(const utility::string_t symbol, const utility::string_t
 
 
 std::tuple<utility::string_t , utility::string_t , utility::string_t , double> extract_option_info(const utility::string_t  identifier) {
-    if (!identifier.empty()) {
-        std::smatch tokens;
-        std::regex re(R"((\w+)\s*(\d{6})([CP])(\d+))");
-        if (std::regex_match(identifier, tokens, re)) {
-            utility::string_t  underlying_symbol = tokens[1];
-            utility::string_t  expiry = tokens[2];
-            expiry = U("20") + expiry;
-            if (expiry.size() == 8) {
-                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
-            }
-            utility::string_t  put_call = (tokens[3] == U("C")) ? U("CALL") : U("PUT");
-            double strike = std::stod(tokens[4]) / 1000;
-            return std::make_tuple(underlying_symbol, expiry, put_call, strike);
-        } else {
-            return std::make_tuple(U(""), U(""), U(""), 0.0);
-        }
-    } else {
+ 
         return std::make_tuple(U(""), U(""), U(""), 0.0);
-    }
+    
 }
 
 

@@ -16,64 +16,12 @@ using namespace std;
 
 #include <bcrypt.h>
 #include <winternl.h>
-
-// Code analysis complains even though there is no bug.
-#pragma warning(push)
-#pragma warning(disable : 6102)
-std::vector<unsigned char> hmac_sha1(const utility::string_t& key, const utility::string_t& data)
-{
-    NTSTATUS status;
-    BCRYPT_ALG_HANDLE alg_handle = nullptr;
-    BCRYPT_HASH_HANDLE hash_handle = nullptr;
-
-    std::vector<unsigned char> hash;
-    DWORD hash_len = 0;
-    ULONG result_len = 0;
-
-    const auto& key_c = conversions::utf16_to_utf8(key);
-    const auto& data_c = conversions::utf16_to_utf8(data);
-
-    status = BCryptOpenAlgorithmProvider(&alg_handle, BCRYPT_SHA1_ALGORITHM, nullptr, BCRYPT_ALG_HANDLE_HMAC_FLAG);
-    if (!NT_SUCCESS(status))
-    {
-        goto cleanup;
-    }
-    status = BCryptGetProperty(alg_handle, BCRYPT_HASH_LENGTH, (PBYTE)&hash_len, sizeof(hash_len), &result_len, 0);
-    if (!NT_SUCCESS(status))
-    {
-        goto cleanup;
-    }
-    hash.resize(hash_len);
-
-    status = BCryptCreateHash(alg_handle, &hash_handle, nullptr, 0, (PBYTE)key_c.c_str(), (ULONG)key_c.length(), 0);
-    if (!NT_SUCCESS(status))
-    {
-        goto cleanup;
-    }
-    status = BCryptHashData(hash_handle, (PBYTE)data_c.c_str(), (ULONG)data_c.length(), 0);
-    if (!NT_SUCCESS(status))
-    {
-        goto cleanup;
-    }
-    status = BCryptFinishHash(hash_handle, hash.data(), hash_len, 0);
-    if (!NT_SUCCESS(status))
-    {
-        goto cleanup;
-    }
-
-cleanup:
-    if (hash_handle)
-    {
-        BCryptDestroyHash(hash_handle);
-    }
-    if (alg_handle)
-    {
-        BCryptCloseAlgorithmProvider(alg_handle, 0);
-    }
-
-    return hash;
-}
-#pragma warning(pop)
+#include <Windows.h>
+#include <openssl/hmac.h>
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
+#include <openssl/bio.h>
+#include <openssl/err.h>
 
 
 RSA * create_rsa(utility::char_t *key, bool is_private) {
@@ -100,17 +48,17 @@ RSA * create_rsa(utility::char_t *key, bool is_private) {
 utility::string_t sha1_sign(const utility::string_t& context, const utility::string_t& key) {
     unsigned char encrypted[8196 * 16] = {};
     unsigned int encrypted_length;
-    unsigned char hash[SHA_DIGEST_LENGTH] = U("");
+    unsigned char hash[SHA_DIGEST_LENGTH] = "";
 
     SHA1((const unsigned char*)context.c_str(), context.size(), hash);
     RSA *rsa = create_rsa((utility::char_t *)key.c_str(), true);
     int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
                        encrypted, &encrypted_length, rsa);
     if (ret == 1) {
-        utility::string_t s(reinterpret_cast<char*>(encrypted));
+        utility::string_t s(reinterpret_cast<wchar_t*>(encrypted));
         return s;
     }
-    return "";
+    return U("");
 }
 
 int sha1_verify(const utility::string_t& context, const utility::string_t& sign, const utility::string_t& key) {
@@ -122,7 +70,7 @@ int sha1_verify(const utility::string_t& context, const utility::string_t& sign,
     memcpy(sigbuf, decoded.data(), decoded.size());
     siglen = decoded.size();
 
-    unsigned char hash[SHA_DIGEST_LENGTH] = U("");
+    unsigned char hash[SHA_DIGEST_LENGTH] = "";
 
     SHA1((const unsigned char*)context.c_str(), context.size(), hash);
 

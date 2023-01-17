@@ -216,7 +216,7 @@ namespace TIGER_API {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            std::string symbol, expiry, right;
+            utility::string_t symbol, expiry, right;
             double strike;
             std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {

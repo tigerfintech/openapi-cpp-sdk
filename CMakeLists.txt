@@ -43,7 +43,41 @@ if(UNIX) # Darwing or Linux
     endif()
 
 elseif(WIN32) # Windows systems including Win64.
-    message(FATAL_ERROR "-- Windows is not supported for now.")
+    #set(CMAKE_PREFIX_PATH "D:/projects/vcpkg/packages/")
+    SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "D:/projects/boost_1_81_0")
+    SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "D:/projects/boost_1_81_0/lib")
+    FIND_PACKAGE(Boost)
+    IF (Boost_FOUND)
+        INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+        ADD_DEFINITIONS( "-DHAS_BOOST" )
+    ENDIF()
+
+    #find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
+    #find_package(Threads REQUIRED)
+
+
+    file(GLOB OPENSSL_ROOT_DIR D:/projects/vcpkg/packages/openssl_x86-windows/*)
+        # Prefer the latest (make the latest one first)
+	list(REVERSE OPENSSL_ROOT_DIR)
+    find_package(OpenSSL REQUIRED)
+
+    #file(GLOB cpprestsdk_DIR D:/projects/vcpkg/packages/cpprestsdk_x86-windows/share/*)
+    #list(REVERSE cpprestsdk_DIR)
+   # find_package(cpprestsdk CONFIG REQUIRED)
+        # cpprest
+    #find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
+    #find_library(CPPREST_LIBRARY NAMES cpprest)
+
+
+
+    #file(GLOB ZLIB_ROOT D:/projects/vcpkg/packages/zlib_x86-windows/*)
+    #(REVERSE ZLIB_ROOT)
+    #find_package(ZLIB REQUIRED)
+
+    #set(CMAKE_PREFIX_PATH "D:/projects/vcpkg/packages/brotli_x86-windows/share/unofficial-brotli")
+    #file(GLOB unofficial-brotli_DIR D:/projects/vcpkg/packages/brotli_x86-windows/*)
+    #list(REVERSE unofficial-brotli_DIR)
+    #find_package(unofficial-brotli CONFIG REQUIRED)
 else()
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
@@ -71,7 +105,8 @@ add_executable(${PROJECT_NAME} src/main.cpp src/base64.h
         include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp include/tigerapi/order_util.h src/contract_util.cpp include/tigerapi/contract_util.h include/tigerapi/client_config.h include/tigerapi/log.h src/common/sign_util.h)
 
 # headers search paths ...
-set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+#set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
 
 # library search paths ...
 if(APPLE)
@@ -79,14 +114,18 @@ if(APPLE)
     set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
 
     set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY})
+elseif(WIN32)
+    set(ZIP_LIBRARY "D:/projects/vcpkg/packages/zlib_x86-windows/zlib_x86-windows/lib/zlib.lib")
+    set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
+    set(LIBRARIES_SEARCH_PATHS  ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES})
+    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
 endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
-message(CPPRESTSDK_LIBRARY " ${CPPRESTSDK_LIBRARY}")
+#message(CPPRESTSDK_LIBRARY " ${CPPRESTSDK_LIBRARY}")
 message(ZLIB_LIBRARY " ${ZLIB_LIBRARY}")
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
@@ -98,6 +137,8 @@ if (APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
+    target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
+
 endif()
 
 #set(CMAKE_INSTALL_PREFIX "./")

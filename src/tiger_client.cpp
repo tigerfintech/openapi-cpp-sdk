@@ -60,7 +60,7 @@ namespace TIGER_API {
         request.headers().clear();
         request.headers().add(U("Accept"), U("application/json"));
         request.headers().set_content_type(U("application/json; charset=UTF-8"));
-        request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + PROJECT_VERSION);
+        request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + U(PROJECT_VERSION));
 
         /************************** set request body ***************************/
 
