@@ -348,6 +348,7 @@ int main(int argc, char *args[]) {
                          U("-----END RSA PRIVATE KEY-----");
     config.tiger_id = U("2");
     config.account = U("402901");
+//    config.lang = U("en_US");
 
 
     /**

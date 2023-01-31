@@ -69,6 +69,9 @@ namespace TIGER_API {
         for (const auto &kvp: common_params.as_object()) {
             params[kvp.first] = kvp.second;
         }
+        if (!client_config.lang.empty()) {
+            body[P_LANG] = value::string(client_config.lang);
+        }
         if (!body.is_null() && body.size() > 0) {
             params[P_BIZ_CONTENT] = value::string(body.serialize());
         }
