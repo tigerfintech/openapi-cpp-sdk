@@ -220,7 +220,7 @@ utility::string_t sha1_sign(const utility::string_t& context, const utility::str
     int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
                        encrypted, &encrypted_length, rsa);
     if (ret == 1) {
-        utility::string_t s(reinterpret_cast<char*>(encrypted));
+        utility::string_t s(encrypted, encrypted + encrypted_length);
         return s;
     }
     return "";
