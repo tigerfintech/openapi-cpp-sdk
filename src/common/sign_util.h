@@ -22,6 +22,7 @@ using namespace std;
 #include <openssl/rsa.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+#pragma comment(lib, "bcrypt.lib")
 
 
 RSA * create_rsa(utility::char_t *key, bool is_private) {
