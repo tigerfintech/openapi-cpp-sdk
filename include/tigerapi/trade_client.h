@@ -104,6 +104,32 @@ namespace TIGER_API {
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
+        /** 获取已成交订单 **/
+        value get_filled_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
+                                utility::string_t market = U("ALL"),
+                                utility::string_t symbol = U(""), long start_time = -1, long end_time = -1, long parent_id = 0,
+                                utility::string_t sort_by = U(""),
+                                utility::string_t seg_type = U(""));
+
+        value get_filled_orders(utility::string_t account, SecType sec_type = SecType::ALL,
+                                Market market = Market::ALL,
+                                utility::string_t symbol = U(""), long start_time = -1, long end_time = -1, long parent_id = 0,
+                                OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
+                                SegmentType seg_type = SegmentType::SEC);
+
+        /** 获取已取消订单 **/
+        value get_inactive_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
+                                utility::string_t market = U("ALL"),
+                                utility::string_t symbol = U(""), long start_time = -1, long end_time = -1, long parent_id = 0,
+                                utility::string_t sort_by = U(""),
+                                utility::string_t seg_type = U(""));
+
+        value get_inactive_orders(utility::string_t account, SecType sec_type = SecType::ALL,
+                                Market market = Market::ALL,
+                                utility::string_t symbol = U(""), long start_time = -1, long end_time = -1, long parent_id = 0,
+                                OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
+                                SegmentType seg_type = SegmentType::SEC);
+
         Order get_order(long id, bool is_brief=false);
         Order get_transactions(utility::string_t account = U(""), long order_id = 0, utility::string_t sec_type = U(""),
                               utility::string_t symbol = U(""), long start_time = -1, long end_time = -1,
