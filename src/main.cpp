@@ -89,7 +89,7 @@ public:
 
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_get_position(trade_client);
+        TestTradeClient::test_place_order(trade_client);
     }
 };
 
@@ -353,15 +353,15 @@ int main(int argc, char *args[]) {
     /**
      * 使用封装后的行情接口 QuoteClient
      */
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+//    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
 //    quote_client->grab_quote_permission();
-    TestQuoteClient::test_quote(quote_client);
+//    TestQuoteClient::test_quote(quote_client);
 
     /**
      * 使用封装后的交易接口 TradeClient
      */
-//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-//    TestTradeClient::test_trade(trade_client);
+    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    TestTradeClient::test_trade(trade_client);
 
     /**
      * 直接使用未封装的 TigerApi

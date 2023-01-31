@@ -42,7 +42,7 @@ public:
     utility::string_t right;
     int multiplier = 0;
     utility::string_t contract_month;
-    long contract_id;
+    long contract_id = 0;
     utility::string_t identifier;
     utility::string_t market;
 };
@@ -63,21 +63,21 @@ public:
 
     Contract contract;
     utility::string_t account;
-    long id;
-    long order_id;
+    long id=0;
+    long order_id=0;
     /**  订单类型, 'MKT' 市价单 / 'LMT' 限价单 / 'STP' 止损单 / 'STP_LMT' 止损限价单 / 'TRAIL' 跟踪止损单 **/
     utility::string_t order_type;
     /** 交易方向, 'BUY' / 'SELL' **/
     utility::string_t action;
     /** 下单数量 **/
-    long total_quantity;
+    long total_quantity=0;
     /** 限价单价格 **/
-    double limit_price;
+    double limit_price=0;
     /** 在止损单中, 表示触发止损单的价格, 在移动止损单中, 表示跟踪的价差 **/
-    double aux_price;
-    double trail_stop_price;
-    double trailing_percent;
-    double percent_offset;
+    double aux_price=0;
+    double trail_stop_price=0;
+    double trailing_percent=0;
+    double percent_offset=0;
     /** 有效期,'DAY' 日内有效 / 'GTC' good till cancel  / 'GTD' good till date **/
     utility::string_t time_in_force;
     /** 是否允许盘前盘后交易(outside of regular trading hours 美股专属). True 允许, False 不允许 **/
@@ -88,7 +88,7 @@ public:
      */
     bool adjust_limit;
     utility::string_t user_mark;
-    long expire_time;
+    long expire_time=0;
 
     // 订单状态
     utility::string_t status;
