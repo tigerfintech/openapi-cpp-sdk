@@ -67,7 +67,7 @@ namespace TIGER_API {
 //                    keywords::format = U("[%TimeStamp%]: %Message%")
 //                    );
             //logging::core::get() returns a pointer to the core singleton
-            logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
+            //logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
         }
     };
 }

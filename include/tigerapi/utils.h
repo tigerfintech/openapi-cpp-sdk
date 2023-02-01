@@ -3,15 +3,16 @@
 #ifndef CPPSDK_UTILS_H
 #define CPPSDK_UTILS_H
 
-#include <ctime>
+#include <time.h>
 #include <string>
 #include <map>
 #include <zlib.h>
 #include <cpprest/json.h>
+#include <cpprest/details/basic_types.h>
 
 utility::string_t get_timestamp();
 
-long date_string_to_timestamp(const utility::string_t &date_string);
+time_t date_string_to_timestamp(const utility::string_t &date_string);
 
 utility::string_t get_device_id();
 
@@ -30,9 +31,6 @@ add_start_end(utility::string_t &key, const utility::string_t &start_marker, con
 utility::string_t fill_private_key_marker(utility::string_t &private_key);
 
 utility::string_t fill_public_key_marker(utility::string_t &public_key);
-
-std::tuple<utility::string_t, utility::string_t, utility::string_t, double>
-extract_option_info(const utility::string_t &identifier);
 
 unsigned int str_hex(unsigned char *str, unsigned char *hex);
 

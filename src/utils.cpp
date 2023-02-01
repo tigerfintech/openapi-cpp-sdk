@@ -1,8 +1,7 @@
-
-
+#include "pch.h"
 #include "../include/tigerapi/utils.h"
 #include "../include/tigerapi/log.h"
-#include "base64.h"
+#include "common/base64.h"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
@@ -53,7 +52,7 @@ bool verify_sign(utility::string_t public_key, const utility::string_t &content,
     int ret = sha1_verify(content, encoded_signature, filled_public_key);
 
     if (ret != 1) {
-                LOGGER(info) << U("Public Decrypt failed");
+                //LOGGER(info) << U("Public Decrypt failed");
         return false;
     }
     return true;
@@ -205,13 +204,14 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 }
 
 utility::string_t get_device_id() {
+    return U("uuuuud---dddd-dfffff");
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis;
     unsigned long long mac = dis(gen);
 
     utility::stringstream_t ss;
-    ss << std::hex << std::setfill('0') << std::setw(12) << mac;
+    //ss << std::hex << std::setfill('0') << std::setw(12) << mac;
     utility::string_t str = ss.str();
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 
@@ -281,26 +281,6 @@ void camel_to_snake(web::json::value &obj) {
             camel_to_snake(value);
         }
     }
-}
-
-
-std::tuple<utility::string_t, utility::string_t, utility::string_t, double> extract_option_info(const utility::string_t &identifier) {
-    /*if (!identifier.empty()) {
-        std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
-        std::smatch matches;
-        if (std::regex_search((const std::string) identifier, matches, pattern) && matches.size() == 5) {
-            utility::string_t underlying_symbol = identifier.substr(0, 3);
-            utility::string_t expiry = U("20") + matches[2].str();
-            utility::string_t right = matches[3];
-            double strike = std::stod(matches[4]) / 1000;
-            if (expiry.size() == 8) {
-                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
-            }
-            right = (right == U("C")) ? U("CALL") : U("PUT");
-            return std::make_tuple(underlying_symbol, expiry, right, strike);
-        }
-    }*/
-    return std::make_tuple(U(""), U(""), U(""), 0.0);
 }
 
 

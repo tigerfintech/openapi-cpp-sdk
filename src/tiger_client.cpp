@@ -1,8 +1,9 @@
+#include "pch.h"
+#include "common/base64.h"
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
-#include "base64.h"
-
-
+#include "../include/tigerapi/contract_util.h"
+#include "../include/tigerapi/utils.h"
 using namespace websocketpp;
 
 namespace TIGER_API {
@@ -87,10 +88,9 @@ namespace TIGER_API {
         utility::string_t result_str;
         try {
             http_client client(client_config.get_server_url());
-            LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str()
-                 << endl;
+            //LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str();
             if (!params.is_null()) {
-               LOGGER(debug)  << U("body:\n") << json_format(params.serialize()) << endl;
+               //LOGGER(debug)  << U("body:\n") << json_format(params.serialize()) << endl;
             }
             // Wait for headers
             response = client.request(request).get();
@@ -100,36 +100,36 @@ namespace TIGER_API {
 
         }
         catch (std::exception &ex) {
-            LOGGER(error) << U("Exception: ") << ex.what() << endl;
+            //LOGGER(error) << U("Exception: ") << ex.what() << endl;
             exit(0);
         }
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
-                LOGGER(error) << U("Exception: api error, response: ") << result << endl;
+                //LOGGER(error) << U("Exception: api error, response: ") << result << endl;
                 exit(-1);
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                LOGGER(error) << U("Exception: api code error, response: ") << result << endl;
+                //LOGGER(error) << U("Exception: api code error, response: ") << result << endl;
                 exit(code);
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
-                LOGGER(error) << U("Exception: response sign verify failed. ") << endl;
+               // LOGGER(error) << U("Exception: response sign verify failed. ") << endl;
                 exit(-1);
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
-            LOGGER(error) << U("get response error :") << e.what() << endl;
+            //LOGGER(error) << U("get response error :") << e.what() << endl;
         }
-        LOGGER(debug) << U("response:\n") << result << endl;
+        //LOGGER(debug) << U("response:\n") << result << endl;
         // json format
-        LOGGER(debug) << U("body:\n") << json_format(result_str) << endl;
-        LOGGER(debug) << endl << endl;
+        //LOGGER(debug) << U("body:\n") << json_format(result_str) << endl;
+        //LOGGER(debug) << endl << endl;
 
         /************************** print response ***************************/
 //        auto fp = fopen(U("result.txt"), U("a"));
