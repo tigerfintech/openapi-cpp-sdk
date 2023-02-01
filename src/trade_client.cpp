@@ -262,7 +262,7 @@ namespace TIGER_API {
         if (!seg_type.empty()) {
             obj[P_SEG_TYPE] = value::string(seg_type);
         }
-        return post(FILLED_ORDERS, obj)[P_ITEMS];
+        return post(INACTIVE_ORDERS, obj)[P_ITEMS];
     }
 
     value

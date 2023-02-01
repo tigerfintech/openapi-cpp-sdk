@@ -131,7 +131,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_timeline(symbols);
+        value result = quote_client->get_timeline(symbols, false, 1675167178931);
         ucout << U("result: ") << result << endl;
     }
 
