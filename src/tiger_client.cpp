@@ -2,7 +2,7 @@
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
 #include "../include/tigerapi/contract_util.h"
-#include "common/easylogging++.h"
+#include "../include/common/easylogging++.h"
 
 using namespace websocketpp;
 
