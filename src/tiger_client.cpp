@@ -88,9 +88,9 @@ namespace TIGER_API {
         utility::string_t result_str;
         try {
             http_client client(client_config.get_server_url());
-            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str();
+            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
-               LOG(DEBUG)  << U("body:\n") << json_format(params.serialize()) << endl;
+               LOG(DEBUG)  << U("body:\n") << json_format(params.serialize());
             }
             // Wait for headers
             response = client.request(request).get();
@@ -107,18 +107,18 @@ namespace TIGER_API {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
-                LOG(ERROR) << U("Exception: api error, response: ") << result << endl;
+                LOG(ERROR) << U("Exception: api error, response: ") << result.serialize();
                 exit(-1);
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                LOG(ERROR) << U("Exception: api code error, response: ") << result << endl;
+                LOG(ERROR) << U("Exception: api code error, response: ") << result.serialize();
                 exit(code);
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
-                LOG(ERROR) << U("Exception: response sign verify failed. ") << endl;
+                LOG(ERROR) << U("Exception: response sign verify failed. ");
                 exit(-1);
             }
             result_data = result[P_DATA];
@@ -126,10 +126,9 @@ namespace TIGER_API {
         catch (const std::exception &e) {
             LOG(ERROR) << U("get response error :") << e.what() << endl;
         }
-        LOG(DEBUG) << U("response:\n") << result << endl;
+        LOG(DEBUG) << U("response:\n") << result.serialize();
         // json format
-        LOG(DEBUG) << U("body:\n") << json_format(result_str) << endl;
-        LOG(DEBUG) << endl << endl;
+        LOG(DEBUG) << U("body:\n") << json_format(result_str);
 
         return result_data;
     }

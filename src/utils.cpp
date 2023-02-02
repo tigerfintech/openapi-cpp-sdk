@@ -203,7 +203,7 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 utility::string_t get_device_id() {
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    return U("mac-addr-win")
+    return U("mac-addr-win");
 #else
     std::random_device rd;
     std::mt19937 gen(rd());
