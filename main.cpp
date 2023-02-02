@@ -1,6 +1,5 @@
 // openapi_cpp_test.cpp : ���ļ����� "main" ����������ִ�н��ڴ˴���ʼ��������
 //
-#include "pch.h"
 #include "include/tigerapi/tiger_client.h"
 #include "include/tigerapi/quote_client.h"
 #include "include/tigerapi/trade_client.h"
