@@ -1,9 +1,10 @@
-#include "pch.h"
+#include "../pch.h"
 #include "common/base64.h"
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
 #include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/utils.h"
+#include "common/easylogging++.h"
+
 using namespace websocketpp;
 
 namespace TIGER_API {
@@ -88,7 +89,7 @@ namespace TIGER_API {
         utility::string_t result_str;
         try {
             http_client client(client_config.get_server_url());
-            //LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str();
+            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str();
             if (!params.is_null()) {
                //LOGGER(debug)  << U("body:\n") << json_format(params.serialize()) << endl;
             }

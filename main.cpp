@@ -1,4 +1,4 @@
-// openapi_cpp_test.cpp : ´ËÎÄ¼þ°üº¬ "main" º¯Êý¡£³ÌÐòÖ´ÐÐ½«ÔÚ´Ë´¦¿ªÊ¼²¢½áÊø¡£
+// openapi_cpp_test.cpp : ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ "main" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð½ï¿½ï¿½Ú´Ë´ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //
 #include "pch.h"
 #include "include/tigerapi/tiger_client.h"
@@ -7,14 +7,16 @@
 #include "include/tigerapi/contract_util.h"
 #include "include/tigerapi/order_util.h"
 #include <cpprest/details/basic_types.h>
+#include "src/common/easylogging++.h"
 
+INITIALIZE_EASYLOGGINGPP
 using namespace std;
 using namespace web;
 using namespace web::json;
 using namespace TIGER_API;
 
 /**
- * µ÷ÓÃ½»Ò×½Ó¿Ú
+ * ï¿½ï¿½ï¿½Ã½ï¿½ï¿½×½Ó¿ï¿½
  */
 class TestTradeClient {
 public:
@@ -98,7 +100,7 @@ public:
 
 
 /**
- * µ÷ÓÃÐÐÇé½Ó¿Ú
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½
  */
 
 class TestQuoteClient {
@@ -185,7 +187,8 @@ public:
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        //ucout << U("result: ") << result << endl;
+//        ucout << U("result: ") << result << endl;
+        LOG(INFO) << U("result: ") << result << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
@@ -305,7 +308,7 @@ public:
 
 
 /**
- * Ö±½ÓÊ¹ÓÃ TigerApi
+ * Ö±ï¿½ï¿½Ê¹ï¿½ï¿½ TigerApi
  */
 class TestTigerApi {
 public:
@@ -329,12 +332,17 @@ public:
     }
 };
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 int CALLBACK WinMain(
     _In_  HINSTANCE hInstance,
     _In_  HINSTANCE hPrevInstance,
     _In_  LPSTR lpCmdLine,
     _In_  int nCmdShow
-) {
+)
+#else
+int main ()
+#endif
+{
     /************************** set config **********************/
     ClientConfig config = ClientConfig(true);
 
@@ -358,20 +366,20 @@ int CALLBACK WinMain(
 
 
     /**
-     * Ê¹ÓÃ·â×°ºóµÄÐÐÇé½Ó¿Ú QuoteClient
+     * Ê¹ï¿½Ã·ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ QuoteClient
      */
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
     //    quote_client->grab_quote_permission();
     TestQuoteClient::test_quote(quote_client);
 
     /**
-     * Ê¹ÓÃ·â×°ºóµÄ½»Ò×½Ó¿Ú TradeClient
+     * Ê¹ï¿½Ã·ï¿½×°ï¿½ï¿½Ä½ï¿½ï¿½×½Ó¿ï¿½ TradeClient
      */
      //    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
      //    TestTradeClient::test_trade(trade_client);
 
          /**
-          * Ö±½ÓÊ¹ÓÃÎ´·â×°µÄ TigerApi
+          * Ö±ï¿½ï¿½Ê¹ï¿½ï¿½Î´ï¿½ï¿½×°ï¿½ï¿½ TigerApi
           */
           //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
           //    TestTigerApi::test_grab_quote_permission(tigerapi);
