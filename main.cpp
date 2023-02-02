@@ -6,7 +6,7 @@
 #include "include/tigerapi/contract_util.h"
 #include "include/tigerapi/order_util.h"
 #include <cpprest/details/basic_types.h>
-#include "src/common/easylogging++.h"
+#include "include/common/easylogging++.h"
 
 INITIALIZE_EASYLOGGINGPP
 using namespace std;
