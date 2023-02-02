@@ -1,8 +1,6 @@
 //
 // Created by sukai on 2022/12/27.
 //
-#include "../pch.h"
-
 #include "../include/tigerapi/contract_util.h"
 
 #include <regex>

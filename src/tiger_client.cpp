@@ -1,4 +1,3 @@
-#include "../pch.h"
 #include "common/base64.h"
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
