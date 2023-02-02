@@ -1,8 +1,6 @@
 //
 // Created by sukai on 2022/12/27.
 //
-#include "../pch.h"
-
 #include "../include/tigerapi/contract_util.h"
 
 #include <regex>
@@ -37,9 +35,26 @@ Contract future_contract(const utility::string_t symbol, const utility::string_t
 
 
 std::tuple<utility::string_t , utility::string_t , utility::string_t , double> extract_option_info(const utility::string_t  identifier) {
- 
-        return std::make_tuple(U(""), U(""), U(""), 0.0);
-    
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    // todo
+    return std::make_tuple(U(""), U(""), U(""), 0.0);
+#else
+    if (!identifier.empty()) {
+        std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
+        std::smatch matches;
+        if (std::regex_search((const std::string) identifier, matches, pattern) && matches.size() == 5) {
+            utility::string_t underlying_symbol = identifier.substr(0, 3);
+            utility::string_t expiry = U("20") + matches[2].str();
+            utility::string_t right = matches[3];
+            double strike = std::stod(matches[4]) / 1000;
+            if (expiry.size() == 8) {
+                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
+            }
+            right = (right == U("C")) ? U("CALL") : U("PUT");
+            return std::make_tuple(underlying_symbol, expiry, right, strike);
+        }
+    }
+#endif
 }
 
 

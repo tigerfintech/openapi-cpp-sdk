@@ -1,7 +1,6 @@
 //
 // Created by sukai on 2022/12/21.
 //
-#include "../pch.h"
 #include "../include/tigerapi/quote_client.h"
 #include "../include/tigerapi/contract_util.h"
 #include "../include/tigerapi/utils.h"
