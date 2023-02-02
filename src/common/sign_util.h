@@ -33,13 +33,14 @@ std::vector<unsigned char> hmac_sha1(const utility::string_t& key, const utility
 
 
 RSA * create_rsa(utility::char_t *key, bool is_private) {
+    RSA* rsa = nullptr;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     auto str1 = utility::conversions::utf16_to_utf8(key);
+    BIO* keybio = BIO_new_mem_buf(str1.c_str(), -1);
 #else
     auto str1 = key;
+    BIO* keybio = BIO_new_mem_buf(str1, -1);
 #endif
-    RSA *rsa = nullptr;
-    BIO *keybio = BIO_new_mem_buf(str1.c_str(), -1);
     if (keybio != nullptr) {
         if (is_private) {
             rsa = PEM_read_bio_RSAPrivateKey(keybio, nullptr, 0, 0);
