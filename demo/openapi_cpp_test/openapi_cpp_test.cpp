@@ -5,7 +5,7 @@
 #include "tigerapi/contract_util.h"
 #include "tigerapi/order_util.h"
 #include <cpprest/details/basic_types.h>
-#include "log/easylogging++.h"
+#include "common/easylogging++.h"
 
 INITIALIZE_EASYLOGGINGPP
 using namespace std;
@@ -330,16 +330,7 @@ public:
     }
 };
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-int CALLBACK WinMain(
-    _In_  HINSTANCE hInstance,
-    _In_  HINSTANCE hPrevInstance,
-    _In_  LPSTR lpCmdLine,
-    _In_  int nCmdShow
-)
-#else
 int main()
-#endif
 {
     /************************** set config **********************/
     ClientConfig config = ClientConfig(true);
