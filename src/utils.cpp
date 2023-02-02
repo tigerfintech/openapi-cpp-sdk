@@ -205,13 +205,6 @@ utility::string_t get_device_id() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     return U("mac-addr-win")
 #else
-//    unsigned char result[6] = {};
-//    if(MACAddressUtility::GetMACAddress(result) == 0) {
-//        char *s = (char *) result;
-//        utility::string_t ss(s);
-//        return ss;
-//    }
-//#endif
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis;
