@@ -2,7 +2,6 @@
 // Created by sukai on 2022/12/23.
 //
 
-#include "pch.h"
 #include "../include/tigerapi/trade_client.h"
 
 namespace TIGER_API {

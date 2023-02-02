@@ -1,6 +1,4 @@
-#include "pch.h"
 #include "../include/tigerapi/utils.h"
-#include "../include/tigerapi/log.h"
 #include "common/base64.h"
 #include <ctime>
 #include <iostream>
@@ -8,7 +6,6 @@
 #include <random>
 #include <algorithm>
 #include <regex>
-//#include "common/rsa_sign.h"
 #include "common/sign_util.h"
 
 using namespace std;

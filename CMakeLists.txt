@@ -100,9 +100,13 @@ endif()
 
 # Project construction ...
 # src files ...
-add_executable(${PROJECT_NAME} src/main.cpp src/base64.h
+add_executable(${PROJECT_NAME} main.cpp src/common/base64.h
         src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
-        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp include/tigerapi/order_util.h src/contract_util.cpp include/tigerapi/contract_util.h include/tigerapi/client_config.h include/tigerapi/log.h src/common/sign_util.h)
+        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h
+        src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp
+        include/tigerapi/order_util.h src/contract_util.cpp include/tigerapi/contract_util.h
+        include/tigerapi/client_config.h src/common/sign_util.h
+        src/common/easylogging++.h src/common/easylogging++.cc)
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
