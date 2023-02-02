@@ -81,6 +81,9 @@
     <ClInclude Include="src\common\base64.h">
       <Filter>src\common</Filter>
     </ClInclude>
+    <ClInclude Include="src\common\easylogging++.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -109,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\easylogging++.cc">
+      <Filter>src\common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
