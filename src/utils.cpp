@@ -201,14 +201,24 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 }
 
 utility::string_t get_device_id() {
-    return U("uuuuud---dddd-dfffff");
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return U("mac-addr-win")
+#else
+//    unsigned char result[6] = {};
+//    if(MACAddressUtility::GetMACAddress(result) == 0) {
+//        char *s = (char *) result;
+//        utility::string_t ss(s);
+//        return ss;
+//    }
+//#endif
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis;
     unsigned long long mac = dis(gen);
 
     utility::stringstream_t ss;
-    //ss << std::hex << std::setfill('0') << std::setw(12) << mac;
+    ss << std::hex << std::setfill('0') << std::setw(12) << mac;
     utility::string_t str = ss.str();
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 
@@ -220,6 +230,7 @@ utility::string_t get_device_id() {
     result.pop_back();
 
     return result;
+#endif
 }
 
 
