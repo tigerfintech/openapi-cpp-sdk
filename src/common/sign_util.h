@@ -34,13 +34,12 @@ std::vector<unsigned char> hmac_sha1(const utility::string_t& key, const utility
 
 RSA * create_rsa(utility::char_t *key, bool is_private) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-
-    auto str1 = utility::conversions::utf16_to_utf8(key).c_str();
+    auto str1 = utility::conversions::utf16_to_utf8(key);
 #else
     auto str1 = key;
 #endif
     RSA *rsa = nullptr;
-    BIO *keybio = BIO_new_mem_buf(str1, -1);
+    BIO *keybio = BIO_new_mem_buf(str1.c_str(), -1);
     if (keybio != nullptr) {
         if (is_private) {
             rsa = PEM_read_bio_RSAPrivateKey(keybio, nullptr, 0, 0);
@@ -63,14 +62,14 @@ utility::string_t sha1_sign(const utility::string_t& context, const utility::str
     unsigned char encrypted[8196 * 16] = {};
     unsigned int encrypted_length;
     unsigned char hash[SHA_DIGEST_LENGTH] = { 0 };
-    int context_size = context.size();
+    
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-
-    auto str1 = utility::conversions::utf16_to_utf8(context);
+    auto str_transfer_content = utility::conversions::utf16_to_utf8(context);
 #else
-    auto str1 = context;
+    auto str_transfer_content = context;
 #endif
-    SHA1((const unsigned char*)str1.c_str(), context_size, hash);
+    int context_size = str_transfer_content.size();
+    SHA1((const unsigned char*)str_transfer_content.c_str(), context_size, hash);
     RSA *rsa = create_rsa((utility::char_t *)key.c_str(), true);
     int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
                        encrypted, &encrypted_length, rsa);

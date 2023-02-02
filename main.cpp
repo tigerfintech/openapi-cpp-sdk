@@ -187,7 +187,7 @@ public:
         //ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
 //        ucout << U("result: ") << result << endl;
-        LOG(INFO) << U("result: ") << result << endl;
+        LOG(INFO) << U("result: ") << result.as_string() << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
