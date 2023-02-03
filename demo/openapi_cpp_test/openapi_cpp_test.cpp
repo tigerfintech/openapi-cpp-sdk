@@ -5,7 +5,7 @@
 #include "tigerapi/contract_util.h"
 #include "tigerapi/order_util.h"
 #include <cpprest/details/basic_types.h>
-#include "common/easylogging++.h"
+//#include "common/easylogging++.h"
 
 using namespace std;
 using namespace web;
@@ -185,7 +185,7 @@ public:
         //ucout << U("symbols ") << symbols << endl;
         value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
         //        ucout << U("result: ") << result << endl;
-        LOG(INFO) << U("result: ") << result.serialize() << endl;
+        //LOG(INFO) << U("result: ") << result.serialize() << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
