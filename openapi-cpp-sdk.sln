@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openapi-cpp-sdk", "openapi-cpp-sdk.vcxproj", "{0D37C07C-17EC-4826-9907-C27B3B9B3EDF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openapi_cpp_test", "demo\openapi_cpp_test\openapi_cpp_test.vcxproj", "{A0427C13-8778-450A-A8F1-9E4984B882A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0D37C07C-17EC-4826-9907-C27B3B9B3EDF} = {0D37C07C-17EC-4826-9907-C27B3B9B3EDF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
