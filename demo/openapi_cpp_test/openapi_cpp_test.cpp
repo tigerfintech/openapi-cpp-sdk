@@ -299,7 +299,7 @@ public:
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_kline(quote_client);
+        TestQuoteClient::test_get_option_brief(quote_client);
     }
 };
 
