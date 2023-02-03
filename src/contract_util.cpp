@@ -36,15 +36,12 @@ Contract future_contract(const utility::string_t symbol, const utility::string_t
 
 std::tuple<utility::string_t , utility::string_t , utility::string_t , double> extract_option_info(const utility::string_t  identifier) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    //return std::make_tuple(U(""), U(""), U(""), 0.0);
     auto trans_identifier = utility::conversions::utf16_to_utf8(identifier);
-
 #else
     auto trans_identifier = identifier;
 #endif
-
     if (!trans_identifier.empty()) {
-        std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
+        std::regex pattern(R"((\w+(?:\.\w+)?)\s*(\d{6})([CP])(\d+))");
         std::smatch matches;
         if (std::regex_search(trans_identifier, matches, pattern) && matches.size() == 5) {
             std::string underlying_symbol = matches[1].str();
@@ -66,6 +63,7 @@ std::tuple<utility::string_t , utility::string_t , utility::string_t , double> e
 #endif
         }
     }
+    return std::make_tuple(U(""), U(""), U(""), 0.0);
 }
 
 
