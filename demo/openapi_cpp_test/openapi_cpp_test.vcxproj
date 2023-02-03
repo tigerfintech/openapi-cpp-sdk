@@ -88,7 +88,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\debug\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib</AdditionalDependencies>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,7 +107,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;boost_log-vc140-mt.lib;boost_log_setup-vc140-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
