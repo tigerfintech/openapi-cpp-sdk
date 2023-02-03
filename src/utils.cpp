@@ -201,25 +201,6 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 }
 
 utility::string_t get_device_id() {
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-//    return U("mac-addr-win");
-     std::mt19937 rng;
-    rng.seed(std::random_device()());
-    std::uniform_int_distribution<> dist(0, 255);
-
-    std::ostringstream macAddressString;
-    macAddressString << std::hex << std::setfill('0');
-    for (int i = 0; i < 6; i++) {
-        int n = dist(rng);
-        macAddressString << std::setw(2) << n;
-        if (i < 5) {
-            macAddressString << ':';
-        }
-    }
-
-    return macAddressString.str();
-#else
     std::mt19937 rng;
     rng.seed(std::random_device()());
     std::uniform_int_distribution<> dist(0, 255);
@@ -233,26 +214,10 @@ utility::string_t get_device_id() {
             macAddressString << ':';
         }
     }
-
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf8_to_utf16(macAddressString.str());
+#else
     return macAddressString.str();
-//    std::random_device rd;
-//    std::mt19937 gen(rd());
-//    std::uniform_int_distribution<unsigned long long> dis;
-//    unsigned long long mac = dis(gen);
-//
-//    utility::stringstream_t ss;
-//    ss << std::hex << std::setfill('0') << std::setw(12) << mac;
-//    utility::string_t str = ss.str();
-//    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-//
-//    utility::string_t result = U("");
-//    for (int i = 0; i < 12; i += 2) {
-//        result += str.substr(i, 2);
-//        result += U(":");
-//    }
-//    result.pop_back();
-//
-//    return result;
 #endif
 }
 
