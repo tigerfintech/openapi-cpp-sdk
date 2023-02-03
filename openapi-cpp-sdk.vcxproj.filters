@@ -57,6 +57,9 @@
     <ClInclude Include="src\common\base64.h">
       <Filter>src\common</Filter>
     </ClInclude>
+    <ClInclude Include="include\tigerapi\win32.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\contract_util.cpp">

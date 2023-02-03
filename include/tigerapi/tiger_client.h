@@ -16,7 +16,7 @@ using namespace web::http::client;
 using namespace web::json;
 
 namespace TIGER_API {
-    class TigerClient {
+    class OPENAPI_EXPORT TigerClient {
     public:
         TigerClient() {};
         TigerClient(const ClientConfig &cf) {

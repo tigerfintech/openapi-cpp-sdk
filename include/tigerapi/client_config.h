@@ -10,10 +10,12 @@
 #include "constants.h"
 #include "../common/easylogging++.h"
 
+#include "win32.h"
+
 using namespace std;
 
 namespace TIGER_API {
-    class ClientConfig {
+    class OPENAPI_EXPORT ClientConfig {
     public:
         ClientConfig(bool sandbox_debug = false) : sandbox_debug(sandbox_debug) {
             if (sandbox_debug) {

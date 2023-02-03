@@ -107,7 +107,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib</AdditionalDependencies>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
