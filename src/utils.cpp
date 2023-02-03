@@ -203,7 +203,39 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 utility::string_t get_device_id() {
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    return U("mac-addr-win");
+//    return U("mac-addr-win");
+    #include <Windows.h>
+    #include <iphlpapi.h>
+    #include <iostream>
+    #include <sstream>
+    #include <iomanip>
+    // Get adapter information
+    IP_ADAPTER_INFO adapterInfo[16];
+    DWORD bufLength = sizeof(adapterInfo);
+    DWORD status = GetAdaptersInfo(adapterInfo, &bufLength);
+    if (status != ERROR_SUCCESS) {
+        std::cerr << "GetAdaptersInfo failed: " << GetLastError() << std::endl;
+        return "";
+    }
+
+    // Loop through all adapters
+    for (IP_ADAPTER_INFO *adapter = adapterInfo; adapter; adapter = adapter->Next) {
+        // Get the MAC address
+        BYTE macAddress[6];
+        memcpy(macAddress, adapter->Address, 6);
+        // Convert the MAC address to a string representation
+        std::ostringstream macAddressString;
+        macAddressString << std::hex << std::setfill('0');
+        for (int i = 0; i < 6; i++) {
+            macAddressString << std::setw(2) << static_cast<int>(macAddress[i]);
+            if (i < 5) {
+                macAddressString << ':';
+            }
+        }
+        return macAddressString.str();
+    }
+    return "";
+
 #else
     std::random_device rd;
     std::mt19937 gen(rd());
