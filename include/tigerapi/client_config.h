@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include "constants.h"
+#include "../common/easylogging++.h"
 
 using namespace std;
 
