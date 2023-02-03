@@ -35,7 +35,7 @@
 .vscode
 *.dSYM
 .idea
-
+.DS_store
 cmake-build-debug
 build
 

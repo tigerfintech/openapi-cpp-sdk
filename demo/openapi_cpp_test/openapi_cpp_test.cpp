@@ -7,7 +7,6 @@
 #include <cpprest/details/basic_types.h>
 #include "common/easylogging++.h"
 
-INITIALIZE_EASYLOGGINGPP
 using namespace std;
 using namespace web;
 using namespace web::json;
