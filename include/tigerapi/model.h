@@ -9,10 +9,11 @@
 //#include <any>
 #include <string>
 #include <cpprest/json.h>
+#include "win32.h"
 
 using namespace std;
 
-class Contract {
+class OPENAPI_EXPORT Contract {
 public:
     Contract() {};
 
@@ -47,7 +48,7 @@ public:
     utility::string_t market;
 };
 
-class Order {
+class OPENAPI_EXPORT Order {
 public:
     Order() {};
 
@@ -211,7 +212,7 @@ public:
 
 };
 
-class Position {
+class OPENAPI_EXPORT Position {
 public:
     Position() {};
 
@@ -288,7 +289,7 @@ public:
     };
 };
 
-class CurrencyAsset {
+class OPENAPI_EXPORT CurrencyAsset {
 public:
     CurrencyAsset() {};
 
@@ -330,7 +331,7 @@ public:
     double unrealized_pl = 0;
 };
 
-class Segment {
+class OPENAPI_EXPORT Segment {
 public:
     Segment() {};
     Segment(const web::json::value &segment_json) {
@@ -430,7 +431,7 @@ public:
 
 };
 
-class PortfolioAccount {
+class OPENAPI_EXPORT PortfolioAccount {
 public:
     PortfolioAccount(){};
     utility::string_t account;

@@ -11,7 +11,7 @@
 #include "service_types.h"
 
 namespace TIGER_API {
-    class QuoteClient : public TigerClient {
+    class OPENAPI_EXPORT QuoteClient : public TigerClient {
     public:
         QuoteClient();
         QuoteClient(const ClientConfig &cf, bool is_grab_permission = true);

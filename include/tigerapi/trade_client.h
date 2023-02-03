@@ -14,7 +14,7 @@
 
 
 namespace TIGER_API {
-    class TradeClient : public TigerClient {
+    class OPENAPI_EXPORT TradeClient : public TigerClient {
     public:
         TradeClient();
         TradeClient(const ClientConfig &cf);
