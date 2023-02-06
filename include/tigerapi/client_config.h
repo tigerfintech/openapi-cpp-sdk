@@ -44,6 +44,7 @@ namespace TIGER_API {
         utility::string_t account;
         utility::string_t charset = U("UTF-8");
         utility::string_t sign_type = U("RSA");
+        utility::string_t device_id = get_device_id();
 
         void set_server_url(const utility::string_t &url) {
             this->server_url = url;
