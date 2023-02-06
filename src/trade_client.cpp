@@ -57,7 +57,7 @@ namespace TIGER_API {
 
     value TradeClient::get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
                                      const utility::string_t &market, const utility::string_t &symbol,
-                                     const value &sub_accounts, long expiry, double strike, const utility::string_t &right) {
+                                     const value &sub_accounts, time_t expiry, double strike, const utility::string_t &right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -88,7 +88,7 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_positions(utility::string_t account, SecType sec_type, Currency currency, Market market, utility::string_t symbol,
-                                     const value &sub_accounts, long expiry, double strike, Right right) {
+                                     const value &sub_accounts, time_t expiry, double strike, Right right) {
         return get_positions(account, enum_to_str(sec_type), enum_to_str(currency), enum_to_str(market),
                              symbol, sub_accounts, expiry, strike, enum_to_str(right));
     }
@@ -96,7 +96,7 @@ namespace TIGER_API {
 
     vector<Position>
     TradeClient::get_position_list(utility::string_t account, utility::string_t sec_type, utility::string_t currency, utility::string_t market, utility::string_t symbol,
-                                   const value &sub_accounts, long expiry, double strike, utility::string_t right) {
+                                   const value &sub_accounts, time_t expiry, double strike, utility::string_t right) {
         std::vector<Position> vec;
         value positions = get_positions(account, sec_type, currency, market, symbol,
                                         sub_accounts, expiry, strike, right);
@@ -108,7 +108,7 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_orders(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &market, const utility::string_t &symbol, long start_time,
-                                  long end_time, int limit, bool is_brief, const value &states, const utility::string_t &sort_by,
+                                  time_t end_time, int limit, bool is_brief, const value &states, const utility::string_t &sort_by,
                                   const utility::string_t &seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -146,14 +146,14 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, long start_time,
-                                  long end_time, int limit, bool is_brief, const value &states, OrderSortBy sort_by,
+                                  time_t end_time, int limit, bool is_brief, const value &states, OrderSortBy sort_by,
                                   SegmentType seg_type) {
         return get_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time, limit,
                           is_brief, states, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
     value TradeClient::get_active_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market, utility::string_t symbol, long start_time,
-                                         long end_time, long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
+                                         time_t end_time, long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -185,13 +185,13 @@ namespace TIGER_API {
 
     value
     TradeClient::get_active_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, long start_time,
-                                   long end_time, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+                                   time_t end_time, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
         return get_active_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time,
                                  parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
 
-    value TradeClient::get_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t currency, utility::string_t exchange, long expiry,
+    value TradeClient::get_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t currency, utility::string_t exchange, time_t expiry,
                                     double strike, utility::string_t right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
@@ -219,7 +219,7 @@ namespace TIGER_API {
         return post(CONTRACT, obj);
     }
 
-    value TradeClient::get_contract(utility::string_t symbol, SecType sec_type, Currency currency, utility::string_t exchange, long expiry,
+    value TradeClient::get_contract(utility::string_t symbol, SecType sec_type, Currency currency, utility::string_t exchange, time_t expiry,
                                     double strike, Right right) {
         return get_contract(symbol, enum_to_str(sec_type), enum_to_str(currency), exchange, expiry, strike,
                             enum_to_str(right));
