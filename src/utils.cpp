@@ -282,13 +282,12 @@ void camel_to_snake(web::json::value &obj) {
 
 utility::string_t double_to_string(double num, int precision)
 {
-    return U("100.0");
-    /*std::ostringstream stream;
+    std::ostringstream stream;
     stream << std::fixed << std::setprecision(precision) << num;
     std::string result = stream.str();
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     return utility::conversions::utf8_to_utf16(result);
 #else
     return result;
-#endif*/
+#endif
 }

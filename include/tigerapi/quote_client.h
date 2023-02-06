@@ -54,7 +54,7 @@ namespace TIGER_API {
         value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null());
         value get_option_brief(value identifiers);
         value get_option_brief(const utility::string_t identifier);
-        value get_option_kline(value identifiers, long begin_time=-1, long end_time=-1);
+        value get_option_kline(value identifiers, long begin_time, long end_time=4070880000000);
         value get_option_trade_tick(value identifiers);
 
         /** 期货行情 Future quote related api **/
