@@ -224,12 +224,13 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_SYMBOL] = value::string(symbol);
-            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
-            obj[P_STRIKE] = value::string(strike);
-            obj[P_RIGHT] = value::string(right);
             obj[P_BEGIN_TIME] = begin_time;
             obj[P_END_TIME] = end_time;
+            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_PERIOD] = value::string(U("day"));
+            obj[P_RIGHT] = value::string(right);
+            obj[P_STRIKE] = value::string(strike);
+            obj[P_SYMBOL] = value::string(symbol);
             options[i] = obj;
         }
         return post(OPTION_KLINE, options);
