@@ -218,8 +218,7 @@ namespace TIGER_API {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            utility::string_t symbol, expiry, right;
-            double strike;
+            utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
@@ -227,7 +226,7 @@ namespace TIGER_API {
             value obj = value::object(true);
             obj[P_SYMBOL] = value::string(symbol);
             obj[P_EXPIRY] = date_string_to_timestamp(expiry);
-            obj[P_STRIKE] = strike;
+            obj[P_STRIKE] = value::string(strike);
             obj[P_RIGHT] = value::string(right);
             obj[P_BEGIN_TIME] = begin_time;
             obj[P_END_TIME] = end_time;
