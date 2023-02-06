@@ -37,4 +37,5 @@ OPENAPI_EXPORT unsigned int str_hex(unsigned char *str, unsigned char *hex);
 
 OPENAPI_EXPORT void hex_str(unsigned char *inchar, unsigned int len, utility::char_t *outtxt);
 
+OPENAPI_EXPORT utility::string_t double_to_string(double num, int precision=1);
 #endif //CPPSDK_UTILS_H

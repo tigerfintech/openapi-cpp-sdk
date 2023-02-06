@@ -22,7 +22,7 @@ public:
                                                         local_symbol(local_symbol), exchange(exchange),
                                                         contract_id(contract_id) {};
 
-    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, double strike, const utility::string_t right,
+    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, const utility::string_t strike, const utility::string_t right,
              const utility::string_t currency, long multiplier, const utility::string_t local_symbol, long contract_id) :
             sec_type(sec_type), symbol(symbol), expiry(expiry), strike(strike), right(right),
             currency(currency), multiplier(multiplier), local_symbol(local_symbol), contract_id(contract_id) {};
@@ -39,7 +39,7 @@ public:
     utility::string_t exchange;
     utility::string_t local_symbol;
     utility::string_t expiry;
-    double strike = 0;
+    utility::string_t strike;
     utility::string_t right;
     int multiplier = 0;
     utility::string_t contract_month;

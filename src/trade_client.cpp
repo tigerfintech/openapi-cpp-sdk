@@ -254,8 +254,8 @@ namespace TIGER_API {
         if (!contract.expiry.empty()) {
             obj[U("expiry")] = value::string(contract.expiry);
         }
-        if (contract.strike != 0) {
-            obj[U("strike")] = contract.strike;
+        if (contract.strike.empty()) {
+            obj[U("strike")] = value::string(contract.strike);
         }
         if (!contract.right.empty()) {
             obj[U("right")] = value::string(contract.right);
