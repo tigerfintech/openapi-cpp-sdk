@@ -41,7 +41,7 @@ namespace TIGER_API {
         common_params[P_CHARSET] = value::string(client_config.charset);
         common_params[P_VERSION] = value::string(OPEN_API_SERVICE_VERSION);
         common_params[P_SIGN_TYPE] = value::string(client_config.sign_type);
-        common_params[P_DEVICE_ID] = value::string(get_device_id());
+        common_params[P_DEVICE_ID] = value::string(client_config.device_id);
         return common_params;
     }
 
