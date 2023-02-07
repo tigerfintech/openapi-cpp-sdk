@@ -1,10 +1,7 @@
-#include "common/base64.h"
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
 #include "../include/tigerapi/contract_util.h"
 #include "../include/common/easylogging++.h"
-
-using namespace TIGER_API;
 
 namespace TIGER_API {
 

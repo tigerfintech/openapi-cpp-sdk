@@ -1,5 +1,4 @@
 #include "../include/tigerapi/utils.h"
-#include "common/base64.h"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
@@ -10,7 +9,6 @@
 
 using namespace std;
 using namespace web;
-using namespace TIGER_API;
 
 utility::string_t str8to16(std::string s) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -29,10 +27,6 @@ std::string str16to8(utility::string_t s) {
 }
 
 utility::string_t get_timestamp() {
-//    time_t t = time(NULL);
-//    utility::char_t tmp[32];
-//    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
-//    return utility::string_t(tmp);
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -58,7 +52,6 @@ utility::string_t get_sign(utility::string_t &private_key, const utility::string
     utility::string_t encrypted = sha1_sign(content, filled_private_key);
     std::vector<unsigned char> vec(encrypted.begin(), encrypted.end());
     return utility::conversions::to_base64(vec);
-//    return TIGER_API::base64_encode(encrypted);
 }
 
 bool verify_sign(utility::string_t public_key, const utility::string_t &content,
