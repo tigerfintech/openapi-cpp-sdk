@@ -37,13 +37,11 @@
 #define _BASE64_HPP_
 
 #include <string>
+#include <cpprest/details/basic_types.h>
 
-namespace websocketpp {
+namespace TIGER_API {
 
-    static utility::string_t  const base64_chars =
-            U("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-            U("abcdefghijklmnopqrstuvwxyz")
-            U("0123456789+/");
+    static utility::string_t base64_chars = U("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 
 /// Test whether a character is a valid base64 character
 /**
@@ -63,7 +61,7 @@ namespace websocketpp {
  * @param len The length of input in bytes
  * @return A base64 encoded string representing input
  */
-    inline utility::string_t  base64_encode(utility::char_t const * input, size_t len) {
+    inline utility::string_t  base64_encode(const utility::char_t * input, size_t len) {
         utility::string_t  ret;
         int i = 0;
         int j = 0;
@@ -116,7 +114,7 @@ namespace websocketpp {
  * @param input The input data
  * @return A base64 encoded string representing input
  */
-    inline utility::string_t  base64_encode(utility::string_t  const & input) {
+    inline utility::string_t  base64_encode(const utility::string_t & input) {
         return base64_encode(
                 reinterpret_cast<const utility::char_t *>(input.data()),
                 input.size()
@@ -128,7 +126,7 @@ namespace websocketpp {
  * @param input The base64 encoded input data
  * @return A string representing the decoded raw bytes
  */
-    inline utility::string_t  base64_decode(utility::string_t  const & input) {
+    inline utility::string_t  base64_decode(const utility::string_t& input) {
         size_t in_len = input.size();
         int i = 0;
         int j = 0;

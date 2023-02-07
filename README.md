@@ -10,9 +10,9 @@
 brew install boost 
 ```
 
-安装方式二：源码安装 
+安装方式二：源码安装
 1. 下载源码到任意路径： https://www.boost.org/users/history/version_1_81_0.html,  
-    以 /usr/local/ 为例
+   以 /usr/local/ 为例
     ```shell
     cd /usr/local/
     wget https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.bz2
@@ -47,26 +47,42 @@ make install
 [参考文档](https://github.com/Microsoft/cpprestsdk/wiki/Getting-Started-Tutorial)
 直接通过包管理软件安装的 cpprestsdk 可能不是最新版本， 可能会有未知问题
 
-### 编译安装 tigerapi sdk
+### 编译 tigerapi sdk
+若使用编译好的sdk，此步骤可跳过  
+准备工作：根据系统环境调整 CMakeLists.txt 的相关路径
+
+1. 进入源码目录
+2. 创建编译目录
+   ```
+   mkdir build
+   cd build
+   ```
+3. 编译
+```
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+make -j 6
+make install
+```
+
+### 安装 tigerapi sdk
+将头文件放入头文件路径， 如 /usr/local/include
+将库文件放入库文件路径， 如 /usr/local/lib/
+
+
+### 验证测试
+编译运行demo项目
+
 
 
 ## Windows
 依赖：Visual Stodio C++ 开发环境 https://visualstudio.microsoft.com/zh-hans/
-下载安装Visual Stodio Installer，勾选 "使用C++的桌面开发" 
+下载安装Visual Stodio Installer，勾选 "使用C++的桌面开发"
+
+使用[vcpkg](https://vcpkg.io/en/getting-started.html)
+
 
 ### 安装 boost
 [参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/windows.html)
-
-- 方式一：使用源码安装
-说明，对于Windows使用Cygwin或WSL的，参考Linux的步骤
-1. 下载 https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.zip
-2. 解压到任意目录， 如 D:\boost_1_81_0
-3. 编译
-    ``` 
-    bootstrap.bat
-    .\b2
-    ```
-- 方式二：使用[vcpkg](https://vcpkg.io/en/getting-started.html)
 ``` 
 vcpkg install boost
 ```
@@ -76,30 +92,12 @@ vcpkg install boost
 vcpkg install openssl
 ```
 
-### 编译安装 cpprestsdk
-
-- 方式一：源码安装  
-1. `git clone https://github.com/Microsoft/cpprestsdk.git`
-2. `vcpkg install --triplet x64-windows zlib openssl boost-system boost-date-time boost-regex boost-interprocess websocketpp brotli`
-3. 编译  
-``` 
-cd cpprestsdk
-
-cpprestsdk> mkdir build.x64
-cpprestsdk> cd build.x64
-cpprestsdk/build.x64> cmake ../Release -A x64 -DCMAKE_TOOLCHAIN_FILE=/REPLACE_THIS_WITH_PATH_TO/vcpkg/scripts/buildsystems/vcpkg.cmake
-```
-
-
-- 方式二：使用vcpkg  
-
+### 安装 cpprestsdk
 ```
 PS> vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
-
-### 编译 tigerapi sdk
-
+### 安装 tigerapi sdk
 
 
 
@@ -110,7 +108,7 @@ dyld: Library not loaded: /usr/local/opt/icu4c/lib/libicudata.70.dylib
   Referenced from: /usr/local/opt/boost/lib/libboost_log-mt.dylib
   Reason: image not found
 ```
-Fix: 
+Fix:
 ``` 
 cd /usr/local/opt/icu4c/lib
 ln -s libicudata.dylib libicudata.70.dylib

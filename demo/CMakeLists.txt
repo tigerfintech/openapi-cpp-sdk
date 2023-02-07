@@ -1,17 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 
-# Find the source file that contains the version information
-find_file(VERSION_FILE include/tigerapi/version.h PATHS ${CMAKE_SOURCE_DIR})
-
-message(version file " ${VERSION_FILE}")
-# Extract the version information from the source file
-file(READ ${VERSION_FILE} VERSION_FILE_CONTENTS)
-string(REGEX MATCH "([0-9]\\.[0-9]\\.[0-9])"
-        PROJECT_VERSION "${VERSION_FILE_CONTENTS}")
-message(PROJECT_VERSION " ${PROJECT_VERSION}")
-
-project(tigerapi VERSION ${PROJECT_VERSION})
+project(openapi_cpp_test)
 
 
 # Configure required libraries ...
@@ -25,6 +15,10 @@ if(UNIX) # Darwing or Linux
     find_library(CPPREST_LIBRARY NAMES cpprest)
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
+
+    # tigerapi
+    find_path(TIGERAPI_INCLUDE_DIR NAMES common/easylogging++.h tigerapi/client_config.h )
+    find_library(TIGERAPI_LIBRARY NAMES libtigerapi.a)
 
     if(APPLE)
         # Prefer a homebrew version of OpenSSL over the one in /usr/lib
@@ -42,8 +36,8 @@ if(UNIX) # Darwing or Linux
         set(OPENSSL_VERSION "1.0.1")
     endif()
 
-elseif(WIN32)
-    message(FATAL_ERROR "-- please compile via Visual Studio ")
+elseif(WIN32) # Windows systems including Win64.
+    message(FATAL_ERROR "-- please compile by visual studio")
 else()
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
@@ -59,38 +53,25 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message("-- configuring gcc options")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DBOOST_LOG_DYN_LINK")
-
 endif()
 
 # Project construction ...
 # src files ...
-add_library(${PROJECT_NAME} src/common/base64.h
-        src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
-        include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h
-        src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp
-        include/tigerapi/order_util.h src/contract_util.cpp include/tigerapi/contract_util.h
-        include/tigerapi/client_config.h src/common/sign_util.h
-        include/common/easylogging++.h src/common/easylogging++.cc)
+add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 
 # headers search paths ...
-#set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
-set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
 
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
     set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
-
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY})
 endif()
 
-message(BOOST_LIBS " ${Boost_LIBRARIES}")
-message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
-#message(CPPRESTSDK_LIBRARY " ${CPPRESTSDK_LIBRARY}")
-message(ZLIB_LIBRARY " ${ZLIB_LIBRARY}")
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
 include_directories(${HEADER_SEARCH_PATHS})
@@ -104,24 +85,3 @@ else()
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
 
 endif()
-
-
-
-
-install(DIRECTORY include/
-        DESTINATION "include"
-        FILES_MATCHING PATTERN "*.h"
-        )
-
-install(TARGETS ${PROJECT_NAME}
-        EXPORT ${PROJECT_NAME}Targets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-        )
-install(EXPORT ${PROJECT_NAME}Targets
-        FILE ${PROJECT_NAME}Targets.cmake
-        NAMESPACE ${PROJECT_NAME}::
-        DESTINATION lib/cmake/${PROJECT_NAME}
-        )

@@ -6,13 +6,14 @@
 #define TIGERAPI_MODEL_H
 
 #include <typeinfo>
-#include <any>
+//#include <any>
 #include <string>
 #include <cpprest/json.h>
+#include "win32.h"
 
 using namespace std;
 
-class Contract {
+class OPENAPI_EXPORT Contract {
 public:
     Contract() {};
 
@@ -21,7 +22,7 @@ public:
                                                         local_symbol(local_symbol), exchange(exchange),
                                                         contract_id(contract_id) {};
 
-    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, double strike, const utility::string_t right,
+    Contract(const utility::string_t sec_type, const utility::string_t symbol, const utility::string_t expiry, const utility::string_t strike, const utility::string_t right,
              const utility::string_t currency, long multiplier, const utility::string_t local_symbol, long contract_id) :
             sec_type(sec_type), symbol(symbol), expiry(expiry), strike(strike), right(right),
             currency(currency), multiplier(multiplier), local_symbol(local_symbol), contract_id(contract_id) {};
@@ -38,7 +39,7 @@ public:
     utility::string_t exchange;
     utility::string_t local_symbol;
     utility::string_t expiry;
-    double strike = 0;
+    utility::string_t strike;
     utility::string_t right;
     int multiplier = 0;
     utility::string_t contract_month;
@@ -47,7 +48,7 @@ public:
     utility::string_t market;
 };
 
-class Order {
+class OPENAPI_EXPORT Order {
 public:
     Order() {};
 
@@ -95,13 +96,13 @@ public:
     // 主订单id, 目前只用于 TigerTrade App端的附加订单中
     long parent_id;
     // 下单时间
-    long open_time;
+    time_t open_time;
     // 下单失败时, 会返回失败原因的描述
     utility::string_t reason;
     // 最新成交时间
-    long latest_time;
+    time_t latest_time;
     // order updated time
-    long update_time;
+    time_t update_time;
     // 成交数量
     long filled_quantity;
     // 包含佣金的平均成交价
@@ -211,7 +212,7 @@ public:
 
 };
 
-class Position {
+class OPENAPI_EXPORT Position {
 public:
     Position() {};
 
@@ -288,7 +289,7 @@ public:
     };
 };
 
-class CurrencyAsset {
+class OPENAPI_EXPORT CurrencyAsset {
 public:
     CurrencyAsset() {};
 
@@ -330,7 +331,7 @@ public:
     double unrealized_pl = 0;
 };
 
-class Segment {
+class OPENAPI_EXPORT Segment {
 public:
     Segment() {};
     Segment(const web::json::value &segment_json) {
@@ -430,7 +431,7 @@ public:
 
 };
 
-class PortfolioAccount {
+class OPENAPI_EXPORT PortfolioAccount {
 public:
     PortfolioAccount(){};
     utility::string_t account;
