@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{646fcf5d-cc13-4fcb-899c-6a3e02e5a859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{d81b79f1-d0ed-4da7-ac37-88e78f8d63b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tigerapi">
+      <UniqueIdentifier>{bfd89a3e-57e3-41ab-9046-00e64bdde15e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{3d6dbfc8-74a7-4caf-a400-57cc960e40a9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\tigerapi\client_config.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\constants.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\contract_util.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\enums.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\model.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\order_util.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\quote_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\service_types.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\tiger_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\trade_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\utils.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\version.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\sign_util.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\base64.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\win32.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\contract_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\order_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\quote_client.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tiger_client.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\trade_client.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\easylogging++.cc">
+      <Filter>src\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

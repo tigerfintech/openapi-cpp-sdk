@@ -1,9 +1,10 @@
+#include "common/base64.h"
 #include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
-#include "base64.h"
+#include "../include/tigerapi/contract_util.h"
+#include "../include/common/easylogging++.h"
 
-
-using namespace websocketpp;
+using namespace TIGER_API;
 
 namespace TIGER_API {
 
@@ -40,7 +41,7 @@ namespace TIGER_API {
         common_params[P_CHARSET] = value::string(client_config.charset);
         common_params[P_VERSION] = value::string(OPEN_API_SERVICE_VERSION);
         common_params[P_SIGN_TYPE] = value::string(client_config.sign_type);
-        common_params[P_DEVICE_ID] = value::string(get_device_id());
+        common_params[P_DEVICE_ID] = value::string(client_config.device_id);
         return common_params;
     }
 
@@ -90,10 +91,9 @@ namespace TIGER_API {
         utility::string_t result_str;
         try {
             http_client client(client_config.get_server_url());
-            LOGGER(debug) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string().c_str()
-                 << endl;
+            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
-               LOGGER(debug)  << U("body:\n") << json_format(params.serialize()) << endl;
+               LOG(DEBUG)  << U("body:\n") << json_format(params.serialize());
             }
             // Wait for headers
             response = client.request(request).get();
@@ -103,48 +103,36 @@ namespace TIGER_API {
 
         }
         catch (std::exception &ex) {
-            LOGGER(error) << U("Exception: ") << ex.what() << endl;
+            LOG(ERROR) << U("Exception: ") << ex.what() << endl;
             exit(0);
         }
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
-                LOGGER(error) << U("Exception: api error, response: ") << result << endl;
+                LOG(ERROR) << U("Exception: api error, response: ") << result.serialize();
                 exit(-1);
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
-                LOGGER(error) << U("Exception: api code error, response: ") << result << endl;
+                LOG(ERROR) << U("Exception: api code error, response: ") << result.serialize();
                 exit(code);
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
-            bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
+            bool is_sign_ok = verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
-                LOGGER(error) << U("Exception: response sign verify failed. ") << endl;
+                LOG(ERROR) << U("Exception: response sign verify failed. ");
                 exit(-1);
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
-            LOGGER(error) << U("get response error :") << e.what() << endl;
+            LOG(ERROR) << U("get response error :") << e.what() << endl;
         }
-        LOGGER(debug) << U("response:\n") << result << endl;
+        LOG(DEBUG) << U("response:\n") << result.serialize();
         // json format
-        LOGGER(debug) << U("body:\n") << json_format(result_str) << endl;
-        LOGGER(debug) << endl << endl;
+        LOG(DEBUG) << U("body:\n") << json_format(result_str);
 
-        /************************** print response ***************************/
-//        auto fp = fopen(U("result.txt"), U("a"));
-//        fputs(U("request:\n"), fp);
-//        fputs(http_method.c_str(), fp);
-//        fputs(params.serialize().c_str(), fp);
-//        fputs(U("\nresponse:\n"), fp);
-//        fputs(str.c_str(), fp);
-//        fputs(U("\n\n"), fp);
-//        fclose(fp);
-
-//        camel_to_snake(result_data);
         return result_data;
     }
 
@@ -152,17 +140,16 @@ namespace TIGER_API {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            utility::string_t  symbol, expiry, right;
-            double strike;
+            utility::string_t  symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_SYMBOL] = value::string(symbol);
             obj[P_EXPIRY] = date_string_to_timestamp(expiry);
-            obj[P_STRIKE] = strike;
             obj[P_RIGHT] = value::string(right);
+            obj[P_STRIKE] = value::string(strike);
+            obj[P_SYMBOL] = value::string(symbol);
             options[i] = obj;
         }
         return options;

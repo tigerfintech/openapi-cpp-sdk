@@ -2,12 +2,16 @@
 // Created by sukai on 2022/12/21.
 //
 #include "../include/tigerapi/quote_client.h"
+#include "../include/tigerapi/contract_util.h"
+#include "../include/tigerapi/utils.h"
 
 
 namespace TIGER_API {
-    QuoteClient::QuoteClient() {};
+    QuoteClient::QuoteClient() {
+        grab_quote_permission();
+    };
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
-
+        grab_quote_permission();
     }
 
     value QuoteClient::grab_quote_permission() {
@@ -59,7 +63,7 @@ namespace TIGER_API {
         return post(STOCK_DETAIL, obj);
     }
 
-    value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, long begin_time) {
+    value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
@@ -67,7 +71,7 @@ namespace TIGER_API {
         return post(TIMELINE, obj);
     }
 
-    value QuoteClient::get_kline(const value &symbols, utility::string_t period, long begin_time, long end_time, utility::string_t right,
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time, utility::string_t right,
                                  int limit, utility::string_t page_token) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
@@ -81,7 +85,7 @@ namespace TIGER_API {
     }
 
     value
-    QuoteClient::get_kline(const value &symbols, BarPeriod period, long begin_time, long end_time, QuoteRight right,
+    QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time, QuoteRight right,
                            int limit, utility::string_t page_token) {
         return get_kline(symbols, enum_to_str(period), begin_time, end_time, enum_to_str(right), limit,
                          page_token);
@@ -185,7 +189,7 @@ namespace TIGER_API {
         return post(OPTION_EXPIRATION, obj);
     }
 
-    value QuoteClient::get_option_chain(const utility::string_t symbol, long expiry, value option_filter) {
+    value QuoteClient::get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter) {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
@@ -197,7 +201,7 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter) {
-        long expiry_ts = date_string_to_timestamp(expiry);
+        time_t expiry_ts = date_string_to_timestamp(expiry);
         return get_option_chain(symbol, expiry_ts, option_filter);
     }
 
@@ -212,23 +216,23 @@ namespace TIGER_API {
         return post(OPTION_BRIEF, options);
     }
 
-    value QuoteClient::get_option_kline(value identifiers, long begin_time, long end_time) {
+    value QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time) {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            utility::string_t symbol, expiry, right;
-            double strike;
+            utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_SYMBOL] = value::string(symbol);
-            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
-            obj[P_STRIKE] = strike;
-            obj[P_RIGHT] = value::string(right);
             obj[P_BEGIN_TIME] = begin_time;
             obj[P_END_TIME] = end_time;
+            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_PERIOD] = value::string(U("day"));
+            obj[P_RIGHT] = value::string(right);
+            obj[P_STRIKE] = value::string(strike);
+            obj[P_SYMBOL] = value::string(symbol);
             options[i] = obj;
         }
         return post(OPTION_KLINE, options);
@@ -276,7 +280,7 @@ namespace TIGER_API {
     }
 
     value
-    QuoteClient::get_future_kline(value contract_codes, BarPeriod period, long begin_time, long end_time, int limit,
+    QuoteClient::get_future_kline(value contract_codes, BarPeriod period, time_t begin_time, time_t end_time, int limit,
                                   utility::string_t page_token) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;

@@ -8,19 +8,20 @@
 #include <string>
 #include <utility>
 #include "constants.h"
-#include "log.h"
+#include "../common/easylogging++.h"
+
+#include "win32.h"
 
 using namespace std;
 
 namespace TIGER_API {
-    class ClientConfig {
+    class OPENAPI_EXPORT ClientConfig {
     public:
         ClientConfig(bool sandbox_debug = false) : sandbox_debug(sandbox_debug) {
             if (sandbox_debug) {
                 server_url = SANDBOX_TIGER_SERVER_URL;
                 server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
             }
-            init_log();
         };
 
         ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account) : tiger_id(std::move(tiger_id)),
@@ -36,7 +37,6 @@ namespace TIGER_API {
                 server_url = SANDBOX_TIGER_SERVER_URL;
                 server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
             }
-            init_log();
         };
 
         utility::string_t tiger_id;
@@ -45,6 +45,7 @@ namespace TIGER_API {
         utility::string_t charset = U("UTF-8");
         utility::string_t sign_type = U("RSA");
         utility::string_t lang;
+        utility::string_t device_id = get_device_id();
 
         void set_server_url(const utility::string_t &url) {
             this->server_url = url;
@@ -54,22 +55,14 @@ namespace TIGER_API {
             return this->server_url;
         }
 
+        utility::string_t get_server_pub_key() {
+            return this->server_public_key;
+        }
+
     private:
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;
         utility::string_t server_public_key = TIGER_PUBLIC_KEY;
-
-        void init_log()
-        {
-//            logging::add_file_log(
-//                    keywords::file_name = U("tigerapi_%N.log"),
-//                    keywords::rotation_size = 10 * 1024 * 1024,
-//                    keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
-//                    keywords::format = U("[%TimeStamp%]: %Message%")
-//                    );
-            //logging::core::get() returns a pointer to the core singleton
-            logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
-        }
     };
 }
 

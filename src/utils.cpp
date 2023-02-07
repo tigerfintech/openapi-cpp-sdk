@@ -1,32 +1,36 @@
-
-
 #include "../include/tigerapi/utils.h"
-#include "../include/tigerapi/log.h"
-#include "base64.h"
+#include "common/base64.h"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
 #include <random>
 #include <algorithm>
 #include <regex>
-//#include "common/rsa_sign.h"
 #include "common/sign_util.h"
 
 using namespace std;
 using namespace web;
-using namespace websocketpp;
+using namespace TIGER_API;
+
+utility::string_t convert_str(std::string s) {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf8_to_utf16(s);
+#else
+    return s;
+#endif
+}
 
 utility::string_t get_timestamp() {
-    time_t t = time(NULL);
-    utility::char_t tmp[32];
-    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
-    return utility::string_t(tmp);
-//    struct tm tm;
 //    time_t t = time(NULL);
-//    gmtime_r(&t, &tm);
-//    char timestamp[32];
-//    strftime(timestamp, sizeof(timestamp), U("%Y-%m-%d %H:%M:%S"), &tm);
-//    return utility::string_t(timestamp);
+//    utility::char_t tmp[32];
+//    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
+//    return utility::string_t(tmp);
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S");
+    std::string result = ss.str();
+    return convert_str(result);
 }
 
 time_t date_string_to_timestamp(const utility::string_t &date_string) {
@@ -44,7 +48,7 @@ utility::string_t get_sign(utility::string_t &private_key, const utility::string
     utility::string_t filled_private_key = fill_private_key_marker(private_key);
 
     utility::string_t encrypted = sha1_sign(content, filled_private_key);
-    return websocketpp::base64_encode(encrypted);
+    return TIGER_API::base64_encode(encrypted);
 }
 
 bool verify_sign(utility::string_t public_key, const utility::string_t &content,
@@ -53,7 +57,7 @@ bool verify_sign(utility::string_t public_key, const utility::string_t &content,
     int ret = sha1_verify(content, encoded_signature, filled_public_key);
 
     if (ret != 1) {
-                LOGGER(info) << U("Public Decrypt failed");
+                //LOGGER(info) << U("Public Decrypt failed");
         return false;
     }
     return true;
@@ -205,24 +209,24 @@ void hex_str(utility::char_t *inchar, unsigned int len, utility::char_t *outtxt)
 }
 
 utility::string_t get_device_id() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned long long> dis;
-    unsigned long long mac = dis(gen);
+    std::mt19937 rng;
+    rng.seed(std::random_device()());
+    std::uniform_int_distribution<> dist(0, 255);
 
-    utility::stringstream_t ss;
-    ss << std::hex << std::setfill('0') << std::setw(12) << mac;
-    utility::string_t str = ss.str();
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-
-    utility::string_t result = U("");
-    for (int i = 0; i < 12; i += 2) {
-        result += str.substr(i, 2);
-        result += U(":");
+    std::ostringstream macAddressString;
+    macAddressString << std::hex << std::setfill('0');
+    for (int i = 0; i < 6; i++) {
+        int n = dist(rng);
+        macAddressString << std::setw(2) << n;
+        if (i < 5) {
+            macAddressString << ':';
+        }
     }
-    result.pop_back();
-
-    return result;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf8_to_utf16(macAddressString.str());
+#else
+    return macAddressString.str();
+#endif
 }
 
 
@@ -284,23 +288,14 @@ void camel_to_snake(web::json::value &obj) {
 }
 
 
-std::tuple<utility::string_t, utility::string_t, utility::string_t, double> extract_option_info(const utility::string_t &identifier) {
-    /*if (!identifier.empty()) {
-        std::regex pattern(R"((\w+)\s*(\d{6})([CP])(\d+))");
-        std::smatch matches;
-        if (std::regex_search((const std::string) identifier, matches, pattern) && matches.size() == 5) {
-            utility::string_t underlying_symbol = identifier.substr(0, 3);
-            utility::string_t expiry = U("20") + matches[2].str();
-            utility::string_t right = matches[3];
-            double strike = std::stod(matches[4]) / 1000;
-            if (expiry.size() == 8) {
-                expiry = expiry.substr(0, 4) + U("-") + expiry.substr(4, 2) + U("-") + expiry.substr(6);
-            }
-            right = (right == U("C")) ? U("CALL") : U("PUT");
-            return std::make_tuple(underlying_symbol, expiry, right, strike);
-        }
-    }*/
-    return std::make_tuple(U(""), U(""), U(""), 0.0);
+utility::string_t double_to_string(double num, int precision)
+{
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(precision) << num;
+    std::string result = stream.str();
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf8_to_utf16(result);
+#else
+    return result;
+#endif
 }
-
-
