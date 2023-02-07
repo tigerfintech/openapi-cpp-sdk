@@ -4,7 +4,7 @@
 #include "../include/tigerapi/contract_util.h"
 #include "../include/common/easylogging++.h"
 
-using namespace websocketpp;
+using namespace TIGER_API;
 
 namespace TIGER_API {
 
@@ -116,7 +116,7 @@ namespace TIGER_API {
                 exit(code);
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
-            bool is_sign_ok = verify_sign(SANDBOX_TIGER_PUBLIC_KEY, params[P_TIMESTAMP].as_string(), res_sign);
+            bool is_sign_ok = verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
                 exit(-1);

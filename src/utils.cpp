@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace web;
-using namespace websocketpp;
+using namespace TIGER_API;
 
 utility::string_t convert_str(std::string s) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -48,7 +48,7 @@ utility::string_t get_sign(utility::string_t &private_key, const utility::string
     utility::string_t filled_private_key = fill_private_key_marker(private_key);
 
     utility::string_t encrypted = sha1_sign(content, filled_private_key);
-    return websocketpp::base64_encode(encrypted);
+    return TIGER_API::base64_encode(encrypted);
 }
 
 bool verify_sign(utility::string_t public_key, const utility::string_t &content,

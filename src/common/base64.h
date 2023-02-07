@@ -39,7 +39,7 @@
 #include <string>
 #include <cpprest/details/basic_types.h>
 
-namespace websocketpp {
+namespace TIGER_API {
 
     static utility::string_t base64_chars = U("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 

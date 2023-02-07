@@ -54,6 +54,10 @@ namespace TIGER_API {
             return this->server_url;
         }
 
+        utility::string_t get_server_pub_key() {
+            return this->server_public_key;
+        }
+
     private:
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;

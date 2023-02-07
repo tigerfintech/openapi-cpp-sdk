@@ -87,7 +87,7 @@ int sha1_verify(const utility::string_t& context, const utility::string_t& sign,
     utility::char_t sigbuf[8196 * 16] = {};
     unsigned int siglen = 0;
 
-    utility::string_t decoded = websocketpp::base64_decode(sign);
+    utility::string_t decoded = TIGER_API::base64_decode(sign);
     memcpy(sigbuf, decoded.data(), decoded.size());
     siglen = decoded.size();
 
