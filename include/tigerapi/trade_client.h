@@ -52,17 +52,17 @@ namespace TIGER_API {
         value get_positions(utility::string_t account = U(""), SecType sec_type = SecType::ALL, Currency currency = Currency::ALL,
                             Market market = Market::ALL,
                             utility::string_t symbol = U(""), const value &sub_accounts = value::array(), time_t expiry = -1,
-                            double strike = 0, Right right = Right::ALL);
+                            utility::string_t strike = U(""), Right right = Right::ALL);
 
         value get_positions(const utility::string_t &account, const utility::string_t &sec_type = U(""), const utility::string_t &currency = U("ALL"),
                             const utility::string_t &market = U("ALL"),
                             const utility::string_t &symbol = U(""), const value &sub_accounts = value::array(), time_t expiry = -1,
-                            double strike = 0, const utility::string_t &right = U(""));
+                            utility::string_t strike = U(""), const utility::string_t &right = U(""));
 
         vector<Position> get_position_list(utility::string_t account = U(""), utility::string_t sec_type = U(""), utility::string_t currency = U("ALL"),
                             utility::string_t market = U("ALL"),
                             utility::string_t symbol = U(""), const value &sub_accounts = value::array(), time_t expiry = -1,
-                            double strike = 0, utility::string_t right = U(""));
+                                           utility::string_t strike = U(""), utility::string_t right = U(""));
         /**
          * 获取订单列表
          * @param account
@@ -80,13 +80,13 @@ namespace TIGER_API {
          */
         value get_orders(const utility::string_t &account = U(""), const utility::string_t &sec_type = U(""),
                          const utility::string_t &market = U("ALL"),
-                         const utility::string_t &symbol = U(""), long start_time = -1, time_t end_time = -1, int limit = 100,
+                         const utility::string_t &symbol = U(""), time_t start_time = -1, time_t end_time = -1, int limit = 100,
                          bool is_brief = false, const value &states = value::array(), const utility::string_t &sort_by = U(""),
                          const utility::string_t &seg_type = U(""));
 
         value get_orders(utility::string_t account, SecType sec_type = SecType::ALL,
                          Market market = Market::ALL,
-                         utility::string_t symbol = U(""), long start_time = -1, time_t end_time = -1, int limit = 100,
+                         utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, int limit = 100,
                          bool is_brief = false, const value &states = value::array(),
                          OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                          SegmentType seg_type = SegmentType::SEC);
@@ -94,13 +94,39 @@ namespace TIGER_API {
         /** 获取未成交订单 **/
         value get_active_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                 utility::string_t market = U("ALL"),
-                                utility::string_t symbol = U(""), long start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
                                 utility::string_t sort_by = U(""),
                                 utility::string_t seg_type = U(""));
 
         value get_active_orders(utility::string_t account, SecType sec_type = SecType::ALL,
                                 Market market = Market::ALL,
-                                utility::string_t symbol = U(""), long start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
+                                SegmentType seg_type = SegmentType::SEC);
+
+        /** 获取已成交订单 **/
+        value get_filled_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
+                                utility::string_t market = U("ALL"),
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t sort_by = U(""),
+                                utility::string_t seg_type = U(""));
+
+        value get_filled_orders(utility::string_t account, SecType sec_type = SecType::ALL,
+                                Market market = Market::ALL,
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
+                                SegmentType seg_type = SegmentType::SEC);
+
+        /** 获取已取消订单 **/
+        value get_inactive_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
+                                utility::string_t market = U("ALL"),
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t sort_by = U(""),
+                                utility::string_t seg_type = U(""));
+
+        value get_inactive_orders(utility::string_t account, SecType sec_type = SecType::ALL,
+                                Market market = Market::ALL,
+                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
@@ -114,14 +140,14 @@ namespace TIGER_API {
         value modify_order(Order &order);
         value modify_order(Order &order, double limit_price=0, long total_quantity=0,  double aux_price=0,
                            double trail_stop_price=0, double trailing_percent=0, double percent_offset=0,
-                           utility::string_t time_in_force=U(""), bool outside_rth=false, long expire_time=0);
+                           utility::string_t time_in_force=U(""), bool outside_rth=false, time_t expire_time=0);
 
 
         value get_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t currency = U(""), utility::string_t exchange = U(""), time_t expiry = -1,
-                     double strike = 0, utility::string_t right = U(""));
+                           utility::string_t strike = U(""), utility::string_t right = U(""));
         value
         get_contract(utility::string_t symbol, SecType sec_type = SecType::STK, Currency currency = Currency::ALL, utility::string_t exchange = U(""), time_t expiry = -1,
-                     double strike = 0, Right right = Right::ALL);
+                     utility::string_t strike = U(""), Right right = Right::ALL);
 
 
 

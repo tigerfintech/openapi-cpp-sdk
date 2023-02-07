@@ -10,6 +10,7 @@ static utility::string_t P_METHOD = U("method");
 static utility::string_t P_CHARSET = U("charset");
 static utility::string_t P_SIGN_TYPE = U("sign_type");
 static utility::string_t P_SIGN = U("sign");
+static utility::string_t P_LANG = U("lang");
 static utility::string_t P_TIMESTAMP = U("timestamp");
 static utility::string_t P_VERSION = U("version");
 static utility::string_t P_ITEMS = U("items");

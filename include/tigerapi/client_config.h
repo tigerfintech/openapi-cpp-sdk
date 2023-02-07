@@ -30,9 +30,9 @@ namespace TIGER_API {
                                                                                                  account(std::move(account)) {};
 
         ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account,
-                     bool sandbox_debug = false) :
+                     bool sandbox_debug = false, utility::string_t lang = U("en_US")) :
                 tiger_id(std::move(tiger_id)), private_key(std::move(private_key)),
-                account(std::move(account)), sandbox_debug(sandbox_debug) {
+                account(std::move(account)), sandbox_debug(sandbox_debug), lang(lang) {
             if (sandbox_debug) {
                 server_url = SANDBOX_TIGER_SERVER_URL;
                 server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
@@ -44,6 +44,7 @@ namespace TIGER_API {
         utility::string_t account;
         utility::string_t charset = U("UTF-8");
         utility::string_t sign_type = U("RSA");
+        utility::string_t lang;
         utility::string_t device_id = get_device_id();
 
         void set_server_url(const utility::string_t &url) {
