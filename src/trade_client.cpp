@@ -483,7 +483,7 @@ namespace TIGER_API {
 
     value TradeClient::modify_order(Order &order, double limit_price, long total_quantity, double aux_price,
                                     double trail_stop_price, double trailing_percent, double percent_offset,
-                                    utility::string_t time_in_force, bool outside_rth, long expire_time) {
+                                    utility::string_t time_in_force, bool outside_rth, time_t expire_time) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(order.account);
 
