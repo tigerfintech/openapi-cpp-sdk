@@ -160,21 +160,22 @@
     <ClInclude Include="include\tigerapi\client_config.h" />
     <ClInclude Include="include\tigerapi\constants.h" />
     <ClInclude Include="include\tigerapi\contract_util.h" />
+    <ClInclude Include="include\tigerapi\easylogging++.h" />
     <ClInclude Include="include\tigerapi\enums.h" />
     <ClInclude Include="include\tigerapi\model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
     <ClInclude Include="include\tigerapi\quote_client.h" />
     <ClInclude Include="include\tigerapi\service_types.h" />
+    <ClInclude Include="include\tigerapi\sign_util.h" />
     <ClInclude Include="include\tigerapi\tiger_client.h" />
     <ClInclude Include="include\tigerapi\trade_client.h" />
     <ClInclude Include="include\tigerapi\utils.h" />
     <ClInclude Include="include\tigerapi\version.h" />
     <ClInclude Include="include\tigerapi\win32.h" />
-    <ClInclude Include="src\common\sign_util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\easylogging++.cc" />
     <ClCompile Include="src\contract_util.cpp" />
+    <ClCompile Include="src\easylogging++.cc" />
     <ClCompile Include="src\order_util.cpp" />
     <ClCompile Include="src\quote_client.cpp" />
     <ClCompile Include="src\tiger_client.cpp" />
