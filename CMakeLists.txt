@@ -64,7 +64,7 @@ endif()
 
 # Project construction ...
 # src files ...
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
         src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
         include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h
         src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp

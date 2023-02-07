@@ -82,22 +82,33 @@ make install
 
 
 ### 安装 boost
+如使用sdk自带的库文件，此步骤可跳过
 [参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/windows.html)
 ``` 
 vcpkg install boost
 ```
 
 ### 安装 openssl
+如使用sdk自带的库文件，此步骤可跳过
 ``` 
 vcpkg install openssl
 ```
 
 ### 安装 cpprestsdk
+如使用sdk自带的库文件，此步骤可跳过
 ```
 PS> vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
 ### 安装 tigerapi sdk
+源码output里的dll或lib为sdk编译后的库，项目配置引入后即可调用sdk
+
+
+
+
+
+# 快速开始
+安装后，可参照demo目录的示例
 
 
 
