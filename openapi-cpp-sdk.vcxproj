@@ -170,7 +170,6 @@
     <ClInclude Include="include\tigerapi\utils.h" />
     <ClInclude Include="include\tigerapi\version.h" />
     <ClInclude Include="include\tigerapi\win32.h" />
-    <ClInclude Include="src\common\base64.h" />
     <ClInclude Include="src\common\sign_util.h" />
   </ItemGroup>
   <ItemGroup>

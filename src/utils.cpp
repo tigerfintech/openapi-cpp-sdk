@@ -216,20 +216,16 @@ utility::string_t get_device_id() {
     rng.seed(std::random_device()());
     std::uniform_int_distribution<> dist(0, 255);
 
-    std::ostringstream macAddressString;
-    macAddressString << std::hex << std::setfill('0');
+    std::ostringstream mac_addr;
+    mac_addr << std::hex << std::setfill('0');
     for (int i = 0; i < 6; i++) {
         int n = dist(rng);
-        macAddressString << std::setw(2) << n;
+        mac_addr << std::setw(2) << n;
         if (i < 5) {
-            macAddressString << ':';
+            mac_addr << ':';
         }
     }
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    return utility::conversions::utf8_to_utf16(macAddressString.str());
-#else
-    return macAddressString.str();
-#endif
+    return str8to16(mac_addr.str());
 }
 
 
@@ -296,9 +292,5 @@ utility::string_t double_to_string(double num, int precision)
     std::ostringstream stream;
     stream << std::fixed << std::setprecision(precision) << num;
     std::string result = stream.str();
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    return utility::conversions::utf8_to_utf16(result);
-#else
-    return result;
-#endif
+    return str8to16(result);
 }
