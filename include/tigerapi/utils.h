@@ -11,7 +11,9 @@
 #include <cpprest/details/basic_types.h>
 #include "win32.h"
 
-OPENAPI_EXPORT utility::string_t convert_str(std::string s);
+OPENAPI_EXPORT utility::string_t str8to16(std::string s);
+
+OPENAPI_EXPORT std::string str16to8(utility::string_t s);
 
 OPENAPI_EXPORT utility::string_t get_timestamp();
 

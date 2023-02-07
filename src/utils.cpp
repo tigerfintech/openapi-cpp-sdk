@@ -12,9 +12,17 @@ using namespace std;
 using namespace web;
 using namespace TIGER_API;
 
-utility::string_t convert_str(std::string s) {
+utility::string_t str8to16(std::string s) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     return utility::conversions::utf8_to_utf16(s);
+#else
+    return s;
+#endif
+}
+
+std::string str16to8(utility::string_t s) {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf16_to_utf8(s);
 #else
     return s;
 #endif
@@ -30,7 +38,7 @@ utility::string_t get_timestamp() {
     std::stringstream ss;
     ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S");
     std::string result = ss.str();
-    return convert_str(result);
+    return str8to16(result);
 }
 
 time_t date_string_to_timestamp(const utility::string_t &date_string) {
@@ -53,12 +61,11 @@ utility::string_t get_sign(utility::string_t &private_key, const utility::string
 
 bool verify_sign(utility::string_t public_key, const utility::string_t &content,
                  const utility::string_t &encoded_signature) {
-    return true;
+    //return true;
     utility::string_t filled_public_key = fill_public_key_marker(public_key);
     int ret = sha1_verify(content, encoded_signature, filled_public_key);
 
     if (ret != 1) {
-                //LOGGER(info) << U("Public Decrypt failed");
         return false;
     }
     return true;

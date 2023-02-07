@@ -64,11 +64,7 @@ utility::string_t sha1_sign(const utility::string_t& context, const utility::str
     unsigned int encrypted_length;
     unsigned char hash[SHA_DIGEST_LENGTH] = { 0 };
     
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    auto str_transfer_content = utility::conversions::utf16_to_utf8(context);
-#else
-    auto str_transfer_content = context;
-#endif
+    auto str_transfer_content = str16to8(context);
     int context_size = str_transfer_content.size();
     SHA1((const unsigned char*)str_transfer_content.c_str(), context_size, hash);
     RSA *rsa = create_rsa((utility::char_t *)key.c_str(), true);
@@ -83,21 +79,22 @@ utility::string_t sha1_sign(const utility::string_t& context, const utility::str
 
 int sha1_verify(const utility::string_t& context, const utility::string_t& sign, const utility::string_t& key) {
 
-    utility::char_t sigbuf[8196 * 16] = {};
+    auto context_s = str16to8(context);
+    unsigned char sigbuf[8196 * 16] = {};
     unsigned int siglen = 0;
 
-    utility::string_t decoded = TIGER_API::base64_decode(sign);
+    std::string decoded = str16to8(TIGER_API::base64_decode(sign));
     memcpy(sigbuf, decoded.data(), decoded.size());
     siglen = decoded.size();
 
     unsigned char hash[SHA_DIGEST_LENGTH] = { 0 };
 
-    SHA1((const unsigned char*)context.c_str(), context.size(), hash);
+    SHA1((const unsigned char*)context_s.c_str(), context_s.size(), hash);
 
     RSA *rsa = create_rsa((utility::char_t *)key.c_str(), false);
 
     int ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH,
-                         reinterpret_cast<unsigned char*>(sigbuf), siglen, rsa);
+                         sigbuf, siglen, rsa);
     return ret;
 
 }
