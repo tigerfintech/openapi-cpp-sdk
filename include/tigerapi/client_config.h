@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 #include "constants.h"
-#include "../common/easylogging++.h"
+#include "easylogging++.h"
 
 #include "win32.h"
 

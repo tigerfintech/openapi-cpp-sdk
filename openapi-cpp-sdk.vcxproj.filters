@@ -51,10 +51,13 @@
     <ClInclude Include="include\tigerapi\version.h">
       <Filter>include\tigerapi</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\sign_util.h">
-      <Filter>src\common</Filter>
-    </ClInclude>
     <ClInclude Include="include\tigerapi\win32.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\easylogging++.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\sign_util.h">
       <Filter>include\tigerapi</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,8 +80,8 @@
     <ClCompile Include="src\utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\easylogging++.cc">
-      <Filter>src\common</Filter>
+    <ClCompile Include="src\easylogging++.cc">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
