@@ -83,7 +83,7 @@ int sha1_verify(const utility::string_t& context, const utility::string_t& sign,
     unsigned char sigbuf[8196 * 16] = {};
     unsigned int siglen = 0;
 
-    std::string decoded = str16to8(TIGER_API::base64_decode(sign));
+    auto decoded = str16to8(TIGER_API::base64_decode(sign));
     memcpy(sigbuf, decoded.data(), decoded.size());
     siglen = decoded.size();
 

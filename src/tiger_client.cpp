@@ -65,7 +65,7 @@ namespace TIGER_API {
 
         /************************** set request body ***************************/
 
-        value params;
+        value params = value::object(true);
         value common_params = build_common_params();
         for (const auto &kvp: common_params.as_object()) {
             params[kvp.first] = kvp.second;
