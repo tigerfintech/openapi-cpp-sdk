@@ -91,7 +91,7 @@ public:
 
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_get_position(trade_client);
+        TestTradeClient::test_place_order(trade_client);
     }
 };
 
@@ -133,7 +133,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_timeline(symbols);
+        value result = quote_client->get_timeline(symbols, false, 1675167178931);
         ucout << U("result: ") << result << endl;
     }
 
@@ -299,7 +299,7 @@ public:
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_option_brief(quote_client);
+        TestQuoteClient::test_get_timeline(quote_client);
     }
 };
 
@@ -351,6 +351,7 @@ int main()
         U("-----END RSA PRIVATE KEY-----");
     config.tiger_id = U("2");
     config.account = U("402901");
+//    config.lang = U("en_US");
 
 
     /**
@@ -363,8 +364,8 @@ int main()
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-     //    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     //    TestTradeClient::test_trade(trade_client);
+//         std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+//         TestTradeClient::test_trade(trade_client);
 
          /**
           * ֱ��ʹ��δ��װ�� TigerApi
