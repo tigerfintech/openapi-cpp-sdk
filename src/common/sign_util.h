@@ -83,20 +83,20 @@ int sha1_verify(const utility::string_t& context, const utility::string_t& sign,
     unsigned char sigbuf[8196 * 16] = {};
     unsigned int siglen = 0;
 
-    auto decoded = str16to8(TIGER_API::base64_decode(sign));
-    memcpy(sigbuf, decoded.data(), decoded.size());
-    siglen = decoded.size();
+    auto vec_base64_decode = utility::conversions::from_base64(sign);
 
     unsigned char hash[SHA_DIGEST_LENGTH] = { 0 };
 
     SHA1((const unsigned char*)context_s.c_str(), context_s.size(), hash);
 
     RSA *rsa = create_rsa((utility::char_t *)key.c_str(), false);
-
-    int ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH,
-                         sigbuf, siglen, rsa);
+    int ret = -1;
+    if (vec_base64_decode.size() > 0)
+    {
+        ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH,
+            &vec_base64_decode[0], vec_base64_decode.size(), rsa);
+    }
     return ret;
-
 }
 
 #endif //TIGERAPI_SIGN_UTIL_H
