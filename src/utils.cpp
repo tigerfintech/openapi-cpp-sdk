@@ -12,17 +12,25 @@ using namespace std;
 using namespace web;
 using namespace websocketpp;
 
+utility::string_t convert_str(std::string s) {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    return utility::conversions::utf8_to_utf16(s);
+#else
+    return s;
+#endif
+}
+
 utility::string_t get_timestamp() {
-    time_t t = time(NULL);
-    utility::char_t tmp[32];
-    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
-    return utility::string_t(tmp);
-//    struct tm tm;
 //    time_t t = time(NULL);
-//    gmtime_r(&t, &tm);
-//    char timestamp[32];
-//    strftime(timestamp, sizeof(timestamp), U("%Y-%m-%d %H:%M:%S"), &tm);
-//    return utility::string_t(timestamp);
+//    utility::char_t tmp[32];
+//    strftime((char*)tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&t));
+//    return utility::string_t(tmp);
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S");
+    std::string result = ss.str();
+    return convert_str(result);
 }
 
 time_t date_string_to_timestamp(const utility::string_t &date_string) {

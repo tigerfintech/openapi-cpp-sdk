@@ -11,6 +11,8 @@
 #include <cpprest/details/basic_types.h>
 #include "win32.h"
 
+OPENAPI_EXPORT utility::string_t convert_str(std::string s);
+
 OPENAPI_EXPORT utility::string_t get_timestamp();
 
 OPENAPI_EXPORT time_t date_string_to_timestamp(const utility::string_t &date_string);
