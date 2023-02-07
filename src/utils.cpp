@@ -56,7 +56,9 @@ utility::string_t get_sign(utility::string_t &private_key, const utility::string
     utility::string_t filled_private_key = fill_private_key_marker(private_key);
 
     utility::string_t encrypted = sha1_sign(content, filled_private_key);
-    return TIGER_API::base64_encode(encrypted);
+    std::vector<unsigned char> vec(encrypted.begin(), encrypted.end());
+    return utility::conversions::to_base64(vec);
+//    return TIGER_API::base64_encode(encrypted);
 }
 
 bool verify_sign(utility::string_t public_key, const utility::string_t &content,
