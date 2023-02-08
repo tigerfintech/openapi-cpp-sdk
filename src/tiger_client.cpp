@@ -138,7 +138,7 @@ namespace TIGER_API {
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
             utility::string_t  symbol, expiry, right, strike;
-            std::tie(symbol, expiry, right, strike) = extract_option_info(identifier.as_string());
+            std::tie(symbol, expiry, right, strike) = ContractUtil::extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
             }
