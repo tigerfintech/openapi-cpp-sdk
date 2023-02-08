@@ -7,6 +7,7 @@ namespace TIGER_API {
 
     void TigerClient::set_config(const ClientConfig &cf) {
         client_config = cf;
+        client_config.check();
     }
 
     utility::string_t TigerClient::build_sign_content(const value &obj) {

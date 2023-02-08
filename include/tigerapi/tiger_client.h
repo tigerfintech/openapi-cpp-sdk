@@ -20,7 +20,7 @@ namespace TIGER_API {
     public:
         TigerClient() {};
         TigerClient(const ClientConfig &cf) {
-            client_config = cf;
+            set_config(cf);
         }
         ~TigerClient() {};
 

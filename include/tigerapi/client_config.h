@@ -47,6 +47,24 @@ namespace TIGER_API {
         utility::string_t lang;
         utility::string_t device_id = Utils::get_device_id();
 
+        void check() {
+            if (this->tiger_id.empty()) {
+                LOG(ERROR) << U("Client Config error: tiger_id can't be empty") << endl;
+                exit(0);
+            }
+            if (this->private_key.empty()) {
+                LOG(ERROR) << U("Client Config error: private_key can't be empty") << endl;
+                exit(0);
+            }
+        }
+
+        void check_account() {
+            if (this->account.empty()) {
+                LOG(ERROR) << U("Client Config error: account can't be empty") << endl;
+                exit(0);
+            }
+        }
+
         void set_server_url(const utility::string_t &url) {
             this->server_url = url;
         }
