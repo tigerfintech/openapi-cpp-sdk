@@ -5,7 +5,6 @@
 #include "tigerapi/contract_util.h"
 #include "tigerapi/order_util.h"
 #include <cpprest/details/basic_types.h>
-//#include "common/easylogging++.h"
 
 using namespace std;
 using namespace web;
@@ -58,7 +57,7 @@ public:
     }
 
     static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
-        Contract contract = stock_contract(U("AAPL"), U("USD"));
+        Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
         Order order = limit_order(contract, U("BUY"), 1, 100.0);
         value res = trade_client->place_order(order);
         long id = res[U("id")].as_integer();
@@ -80,7 +79,7 @@ public:
     }
 
     static void test_modify_order(const std::shared_ptr<TradeClient>& trade_client) {
-        Contract contract = stock_contract(U("AAPL"), U("USD"));
+        Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
         Order order = limit_order(contract, U("BUY"), 1, 100.0);
         long id = (long)trade_client->place_order(order)[U("id")].as_number().to_uint64();
         value res = trade_client->modify_order(order, 105);
