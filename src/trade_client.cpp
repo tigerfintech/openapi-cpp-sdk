@@ -7,8 +7,9 @@
 namespace TIGER_API {
     TradeClient::TradeClient() {}
 
-//    TradeClient::TradeClient(Config &cf) : TigerClient(cf) {}
-    TradeClient::TradeClient(const ClientConfig &cf) : TigerClient(cf) {}
+    TradeClient::TradeClient(const ClientConfig &cf) : TigerClient(cf) {
+        this->client_config.check_account();
+    }
 
     value TradeClient::get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency) {
         value obj = value::object(true);

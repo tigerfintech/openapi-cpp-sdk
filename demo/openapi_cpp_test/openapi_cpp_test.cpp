@@ -299,7 +299,7 @@ public:
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_timeline(quote_client);
+        TestQuoteClient::test_get_quote_delay(quote_client);
     }
 };
 
@@ -334,9 +334,9 @@ int main()
     /************************** set config **********************/
     ClientConfig config = ClientConfig(true);
 
-    config.private_key = U("MIICXQIBAAKBgQC1amZa5YsGTklry7DAsUBOwXJCgrsZZtB21PImw/yLmrbqRfsS3vawvMigLWcCwIDnHa+hpdpeze0eHIwbZzJzUDGvRALYK9t3D8pwPVxpwX1OF8RfHCM7YQvSOvPPnHHuVQvKaR7NNm1/WmvGXC9kVJdkYQ7kCmh52siFoy1MLQIDAQABAoGAVabcmIHTt7ByncBXvUJymDxhE+HhMEcImXJEueTCca8kOUu9FNXMJvmax3VoMzZsJbIwX+OMTEJxd0wHIlEA0gECjDwFK4Q42q+ptO4QABJQVSC6I+dOt2OIY28uvT3rkenOO8KRIDt4F52PFd71ZdB1aaXixORORq1MdSLi8EkCQQDiviAB+L5R/HVxwxvqZfJ530OtFd5IipZC9YZlY1CtXWCmu89LK7UUlEuNXyGsOxyz5jLqFuNRsie5AC23tfEPAkEAzNMCa8axJWfPZIH4tGrbZ1F3I41BQdgp2zBmR7AyUMBDkli86OzmJ7QUCJA/PJxK43/IYUWm4OU5Q+SvXCr3AwJBAJTBj1Y7zwES1CpSitn5EF+MbmX71t1YrsQ3OHkD80YJ4QMCbDkw75gUwox5QSoxjd8ow3Z4laJfc1gYGeZQ41kCQQCCiQwm8cceBq3W6To+iUdw7itWngRz2Ta7uXnFwFYgvpeR4jnq3GfF7+9AkeWrVBQqLtrem0xCUfQP/+N+gudPAkBFLbt78/MpQGEDc7jyu/KE5Mp4wMMDQQwch9VLvsAZwWLysB6rZWpo3jIfp9zZ7c3zOYGNMWAZjtMmNkRJ8COH");
-    config.tiger_id = U("2");
-    config.account = U("402901");
+    config.private_key = U("");
+    config.tiger_id = U("");
+    config.account = U("");
 //    config.lang = U("en_US");
 
 
@@ -344,20 +344,19 @@ int main()
      * ʹ�÷�װ�������ӿ� QuoteClient
      */
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    //    quote_client->grab_quote_permission();
     TestQuoteClient::test_quote(quote_client);
 
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-//         std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-//         TestTradeClient::test_trade(trade_client);
+     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+     TestTradeClient::test_trade(trade_client);
 
-         /**
-          * ֱ��ʹ��δ��װ�� TigerApi
-          */
-          //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-          //    TestTigerApi::test_grab_quote_permission(tigerapi);
+     /**
+      * ֱ��ʹ��δ��װ�� TigerApi
+      */
+      //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+      //    TestTigerApi::test_grab_quote_permission(tigerapi);
 
 
 
