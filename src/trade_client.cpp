@@ -107,8 +107,8 @@ namespace TIGER_API {
         return vec;
     }
 
-    value TradeClient::get_orders(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &market, const utility::string_t &symbol, time_t start_time,
-                                  time_t end_time, int limit, bool is_brief, const value &states, const utility::string_t &sort_by,
+    value TradeClient::get_orders(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &market, const utility::string_t &symbol, time_t start_date,
+                                  time_t end_date, int limit, bool is_brief, const value &states, const utility::string_t &sort_by,
                                   const utility::string_t &seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -121,11 +121,11 @@ namespace TIGER_API {
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
-        if (start_time != -1 && start_time != 0) {
-            obj[P_START_TIME] = start_time;
+        if (start_date != -1 && start_date != 0) {
+            obj[P_START_DATE] = start_date;
         }
-        if (end_time != -1 && end_time != 0) {
-            obj[P_END_TIME] = end_time;
+        if (end_date != -1 && end_date != 0) {
+            obj[P_END_DATE] = end_date;
         }
         if (limit != 0) {
             obj[P_LIMIT] = limit;
@@ -145,15 +145,15 @@ namespace TIGER_API {
         return post(ORDERS, obj)[P_ITEMS];
     }
 
-    value TradeClient::get_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_time,
-                                  time_t end_time, int limit, bool is_brief, const value &states, OrderSortBy sort_by,
+    value TradeClient::get_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
+                                  time_t end_date, int limit, bool is_brief, const value &states, OrderSortBy sort_by,
                                   SegmentType seg_type) {
-        return get_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time, limit,
+        return get_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date, limit,
                           is_brief, states, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
-    value TradeClient::get_active_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market, utility::string_t symbol, time_t start_time,
-                                         time_t end_time, long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
+    value TradeClient::get_active_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market, utility::string_t symbol, time_t start_date,
+                                         time_t end_date, long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -165,11 +165,11 @@ namespace TIGER_API {
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
-        if (start_time != -1 && start_time != 0) {
-            obj[P_START_TIME] = start_time;
+        if (start_date != -1 && start_date != 0) {
+            obj[P_START_DATE] = start_date;
         }
-        if (end_time != -1 && end_time != 0) {
-            obj[P_END_TIME] = end_time;
+        if (end_date != -1 && end_date != 0) {
+            obj[P_END_DATE] = end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -184,16 +184,16 @@ namespace TIGER_API {
     }
 
     value
-    TradeClient::get_active_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_time,
-                                   time_t end_time, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
-        return get_active_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time,
+    TradeClient::get_active_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
+                                   time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+        return get_active_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
                                  parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
 
     value
     TradeClient::get_filled_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market,
-                                   utility::string_t symbol, time_t start_time, time_t end_time, long parent_id,
+                                   utility::string_t symbol, time_t start_date, time_t end_date, long parent_id,
                                    utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -206,11 +206,11 @@ namespace TIGER_API {
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
-        if (start_time != -1 && start_time != 0) {
-            obj[P_START_TIME] = start_time;
+        if (start_date != -1 && start_date != 0) {
+            obj[P_START_DATE] = start_date;
         }
-        if (end_time != -1 && end_time != 0) {
-            obj[P_END_TIME] = end_time;
+        if (end_date != -1 && end_date != 0) {
+            obj[P_END_DATE] = end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -225,17 +225,17 @@ namespace TIGER_API {
     }
 
     value
-    TradeClient::get_filled_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_time,
-                                   time_t end_time, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
-        return get_filled_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time,
+    TradeClient::get_filled_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
+                                   time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+        return get_filled_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
                                  parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
 
     value
     TradeClient::get_inactive_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market,
-                                   utility::string_t symbol, time_t start_time, time_t end_time, long parent_id,
-                                   utility::string_t sort_by, utility::string_t seg_type) {
+                                     utility::string_t symbol, time_t start_date, time_t end_date, long parent_id,
+                                     utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -247,11 +247,11 @@ namespace TIGER_API {
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
-        if (start_time != -1 && start_time != 0) {
-            obj[P_START_TIME] = start_time;
+        if (start_date != -1 && start_date != 0) {
+            obj[P_START_DATE] = start_date;
         }
-        if (end_time != -1 && end_time != 0) {
-            obj[P_END_TIME] = end_time;
+        if (end_date != -1 && end_date != 0) {
+            obj[P_END_DATE] = end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -266,10 +266,10 @@ namespace TIGER_API {
     }
 
     value
-    TradeClient::get_inactive_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_time,
-                                     time_t end_time, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
-        return get_inactive_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_time, end_time,
-                                 parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
+    TradeClient::get_inactive_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
+                                     time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+        return get_inactive_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
+                                   parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
 

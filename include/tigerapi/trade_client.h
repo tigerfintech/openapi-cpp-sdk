@@ -69,8 +69,8 @@ namespace TIGER_API {
          * @param sec_type
          * @param market
          * @param symbol
-         * @param start_time
-         * @param end_time
+         * @param start_date
+         * @param end_date
          * @param limit
          * @param is_brief
          * @param states
@@ -80,13 +80,13 @@ namespace TIGER_API {
          */
         value get_orders(const utility::string_t &account = U(""), const utility::string_t &sec_type = U(""),
                          const utility::string_t &market = U("ALL"),
-                         const utility::string_t &symbol = U(""), time_t start_time = -1, time_t end_time = -1, int limit = 100,
+                         const utility::string_t &symbol = U(""), time_t start_date = -1, time_t end_date = -1, int limit = 100,
                          bool is_brief = false, const value &states = value::array(), const utility::string_t &sort_by = U(""),
                          const utility::string_t &seg_type = U(""));
 
         value get_orders(utility::string_t account, SecType sec_type = SecType::ALL,
                          Market market = Market::ALL,
-                         utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, int limit = 100,
+                         utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, int limit = 100,
                          bool is_brief = false, const value &states = value::array(),
                          OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                          SegmentType seg_type = SegmentType::SEC);
@@ -94,41 +94,41 @@ namespace TIGER_API {
         /** 获取未成交订单 **/
         value get_active_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                 utility::string_t market = U("ALL"),
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
                                 utility::string_t sort_by = U(""),
                                 utility::string_t seg_type = U(""));
 
         value get_active_orders(utility::string_t account, SecType sec_type = SecType::ALL,
                                 Market market = Market::ALL,
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
         /** 获取已成交订单 **/
         value get_filled_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                 utility::string_t market = U("ALL"),
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
                                 utility::string_t sort_by = U(""),
                                 utility::string_t seg_type = U(""));
 
         value get_filled_orders(utility::string_t account, SecType sec_type = SecType::ALL,
                                 Market market = Market::ALL,
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
+                                utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
         /** 获取已取消订单 **/
         value get_inactive_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
-                                utility::string_t market = U("ALL"),
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
-                                utility::string_t sort_by = U(""),
-                                utility::string_t seg_type = U(""));
+                                  utility::string_t market = U("ALL"),
+                                  utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
+                                  utility::string_t sort_by = U(""),
+                                  utility::string_t seg_type = U(""));
 
         value get_inactive_orders(utility::string_t account, SecType sec_type = SecType::ALL,
-                                Market market = Market::ALL,
-                                utility::string_t symbol = U(""), time_t start_time = -1, time_t end_time = -1, long parent_id = 0,
-                                OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
-                                SegmentType seg_type = SegmentType::SEC);
+                                  Market market = Market::ALL,
+                                  utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, long parent_id = 0,
+                                  OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
+                                  SegmentType seg_type = SegmentType::SEC);
 
         Order get_order(long id, bool is_brief=false);
         Order get_transactions(utility::string_t account = U(""), long order_id = 0, utility::string_t sec_type = U(""),
