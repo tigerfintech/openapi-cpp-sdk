@@ -58,7 +58,7 @@ public:
 
     static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
         Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
-        Order order = limit_order(contract, U("BUY"), 1, 100.0);
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
         value res = trade_client->place_order(order);
         long id = res[U("id")].as_integer();
         ucout << U("order id: ") << id << endl;
@@ -67,7 +67,7 @@ public:
 
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
         //        Contract contract = stock_contract(U("AAPL"), U("USD"));
-        //        Order order = limit_order(contract, U("BUY"), 1, 100.0);
+        //        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
         //        trade_client->place_order(order);
         Order my_order = trade_client->get_order(29270263515317248);
         ucout << U("order : ") << my_order.to_string() << endl;
@@ -80,7 +80,7 @@ public:
 
     static void test_modify_order(const std::shared_ptr<TradeClient>& trade_client) {
         Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
-        Order order = limit_order(contract, U("BUY"), 1, 100.0);
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
         long id = (long)trade_client->place_order(order)[U("id")].as_number().to_uint64();
         value res = trade_client->modify_order(order, 105);
         ucout << U("modify order res: ") << res << endl;
