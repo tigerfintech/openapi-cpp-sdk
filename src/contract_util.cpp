@@ -41,7 +41,7 @@ namespace TIGER_API {
 
     std::tuple<utility::string_t, utility::string_t, utility::string_t, utility::string_t>
     ContractUtil::extract_option_info(const utility::string_t identifier) {
-        auto trans_identifier = str16to8(identifier);
+        auto trans_identifier = Utils::str16to8(identifier);
 
         if (!trans_identifier.empty()) {
             std::regex pattern(R"((\w+(?:\.\w+)?)\s*(\d{6})([CP])(\d+))");
@@ -50,12 +50,12 @@ namespace TIGER_API {
                 std::string underlying_symbol = matches[1].str();
                 std::string expiry = "20" + matches[2].str();
                 std::string right = matches[3];
-                utility::string_t strike = double_to_string(std::stod(matches[4]) / 1000);
+                utility::string_t strike = Utils::double_to_string(std::stod(matches[4]) / 1000);
                 if (expiry.size() == 8) {
                     expiry = expiry.substr(0, 4) + "-" + expiry.substr(4, 2) + "-" + expiry.substr(6);
                 }
                 right = (right == "C") ? "CALL" : "PUT";
-                return std::make_tuple(str8to16(underlying_symbol), str8to16(expiry), str8to16(right),
+                return std::make_tuple(Utils::str8to16(underlying_symbol), Utils::str8to16(expiry), Utils::str8to16(right),
                                        strike);
             }
         }

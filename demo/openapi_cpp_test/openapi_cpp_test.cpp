@@ -4,6 +4,7 @@
 #include "tigerapi/trade_client.h"
 #include "tigerapi/contract_util.h"
 #include "tigerapi/order_util.h"
+#include "tigerapi/utils.h"
 #include <cpprest/details/basic_types.h>
 
 using namespace std;

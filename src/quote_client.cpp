@@ -201,7 +201,7 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter) {
-        time_t expiry_ts = date_string_to_timestamp(expiry);
+        time_t expiry_ts = Utils::date_string_to_timestamp(expiry);
         return get_option_chain(symbol, expiry_ts, option_filter);
     }
 
@@ -228,7 +228,7 @@ namespace TIGER_API {
             value obj = value::object(true);
             obj[P_BEGIN_TIME] = begin_time;
             obj[P_END_TIME] = end_time;
-            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_EXPIRY] = Utils::date_string_to_timestamp(expiry);
             obj[P_PERIOD] = value::string(U("day"));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);

@@ -74,10 +74,10 @@ namespace TIGER_API {
             params[P_BIZ_CONTENT] = value::string(body.serialize());
         }
         params[P_METHOD] = value::string(api_method);
-        params[P_TIMESTAMP] = value::string(get_timestamp());
+        params[P_TIMESTAMP] = value::string(Utils::get_timestamp());
 
         utility::string_t sign_content = build_sign_content(params);
-        utility::string_t sign = get_sign(client_config.private_key, sign_content);
+        utility::string_t sign = Utils::get_sign(client_config.private_key, sign_content);
         params[P_SIGN] = value::string(sign);
 //        request.set_body(params.serialize(), U("application/json; charset=UTF-8"));
         request.set_body(params);
@@ -90,7 +90,7 @@ namespace TIGER_API {
             http_client client(client_config.get_server_url());
             LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
-               LOG(DEBUG)  << U("body:\n") << json_format(params.serialize());
+               LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());
             }
             // Wait for headers
             response = client.request(request).get();
@@ -116,7 +116,7 @@ namespace TIGER_API {
                 exit(code);
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
-            bool is_sign_ok = verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
+            bool is_sign_ok = Utils::verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
                 exit(-1);
@@ -128,7 +128,7 @@ namespace TIGER_API {
         }
         LOG(DEBUG) << U("response:\n") << result.serialize();
         // json format
-        LOG(DEBUG) << U("body:\n") << json_format(result_str);
+        LOG(DEBUG) << U("body:\n") << Utils::json_format(result_str);
 
         return result_data;
     }
@@ -143,7 +143,7 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_EXPIRY] = date_string_to_timestamp(expiry);
+            obj[P_EXPIRY] = Utils::date_string_to_timestamp(expiry);
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);

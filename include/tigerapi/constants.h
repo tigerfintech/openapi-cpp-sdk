@@ -32,6 +32,7 @@ static utility::string_t P_PERIOD = U("period");
 static utility::string_t P_BEGIN_TIME = U("begin_time");
 static utility::string_t P_START_TIME = U("start_time");
 static utility::string_t P_END_TIME = U("end_time");
+static utility::string_t P_START_DATE = U("start_date");
 static utility::string_t P_BEGIN_DATE = U("begin_date");
 static utility::string_t P_END_DATE = U("end_date");
 static utility::string_t P_BEGIN_INDEX = U("begin_index");

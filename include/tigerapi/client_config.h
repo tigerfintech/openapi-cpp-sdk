@@ -9,7 +9,7 @@
 #include <utility>
 #include "constants.h"
 #include "easylogging++.h"
-
+#include "utils.h"
 #include "win32.h"
 
 using namespace std;
@@ -45,7 +45,7 @@ namespace TIGER_API {
         utility::string_t charset = U("UTF-8");
         utility::string_t sign_type = U("RSA");
         utility::string_t lang;
-        utility::string_t device_id = get_device_id();
+        utility::string_t device_id = Utils::get_device_id();
 
         void set_server_url(const utility::string_t &url) {
             this->server_url = url;
