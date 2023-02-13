@@ -3,6 +3,7 @@
 #include "tigerapi/quote_client.h"
 #include "tigerapi/trade_client.h"
 #include "tigerapi/contract_util.h"
+#include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
 #include <cpprest/details/basic_types.h>
@@ -150,8 +151,8 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_quote_real_time(symbols);
-        ucout << U("result: ") << result << endl;
+        auto result = quote_client->get_quote_real_time(symbols);
+        ucout << U("result: ") << result.at(0).to_string() << endl;
     }
 
     static void test_get_quote_delay(const std::shared_ptr<QuoteClient> quote_client) {
@@ -183,9 +184,9 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
-        value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        //        ucout << U("result: ") << result << endl;
-        //LOG(INFO) << U("result: ") << result.serialize() << endl;
+//        value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
+        vector<Kline> result = quote_client->get_kline(symbols, "day", -1, -1, 5);
+        cout << result.at(0).to_string() << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
@@ -200,7 +201,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_trade_tick(symbols, 0, 100);
+        value result = quote_client->get_trade_tick(symbols, 0, 100000000);
         ucout << U("Result: ") << result << endl;
     }
 
@@ -248,8 +249,9 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
         ucout << U("symbols ") << symbols << endl;
-        value result = quote_client->get_future_kline(symbols);
-        ucout << U("result: ") << result << endl;
+//        value result = quote_client->get_future_kline(symbols);
+        vector<Kline> result = quote_client->get_future_kline(symbols, BarPeriod::DAY);
+        ucout << U("result: ") << result.at(0).to_string() << endl;
     }
 
     static void test_get_future_tick(std::shared_ptr<QuoteClient> quote_client) {
@@ -261,8 +263,9 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
         ucout << U("symbols ") << symbols << endl;
-        value result = quote_client->get_future_real_time_quote(symbols);
-        ucout << U("result: ") << result << endl;
+//        value result = quote_client->get_future_real_time_quote(symbols);
+        auto result = quote_client->get_future_real_time_quote(symbols);
+        ucout << U("result: ") << result.at(0).to_string() << endl;
     }
 
     static void test_get_option_expiration(std::shared_ptr<QuoteClient> quote_client) {
@@ -280,26 +283,27 @@ public:
 
 
     static void test_get_option_brief(std::shared_ptr<QuoteClient> quote_client) {
-        value result = quote_client->get_option_brief(U("AAPL 230317C000135000"));
+        value result = quote_client->get_option_brief(U("AAPL 230224C000150000"));
         ucout << U("result: ") << result << endl;
     }
 
     static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
-        identifiers[0] = value::string(U("AMD 220819C000165000"));
-        value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
-        ucout << U("result: ") << result << endl;
+        identifiers[0] = value::string(U("AAPL 230224C000150000"));
+//        value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
+        vector<Kline> result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
+        ucout << U("result: ") << result.at(0).to_string() << endl;
     }
 
     static void test_get_option_trade_tick(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
-        identifiers[0] = value::string(U("AAPL 230317C000135000"));
+        identifiers[0] = value::string(U("AAPL 230224C000150000"));
         value result = quote_client->get_option_trade_tick(identifiers);
         ucout << U("result: ") << result << endl;
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_quote_delay(quote_client);
+        TestQuoteClient::test_get_kline(quote_client);
     }
 };
 
@@ -337,6 +341,8 @@ int main()
     config.private_key = U("");
     config.tiger_id = U("");
     config.account = U("");
+
+
 //    config.lang = U("en_US");
 
 
@@ -349,8 +355,8 @@ int main()
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     TestTradeClient::test_trade(trade_client);
+//     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+//     TestTradeClient::test_trade(trade_client);
 
      /**
       * ֱ��ʹ��δ��װ�� TigerApi

@@ -9,6 +9,8 @@
 #include "client_config.h"
 #include "enums.h"
 #include "service_types.h"
+#include "model.h"
+
 
 namespace TIGER_API {
     class OPENAPI_EXPORT QuoteClient : public TigerClient {
@@ -35,11 +37,14 @@ namespace TIGER_API {
                         QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
         value get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
                         utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
+                              int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
         value get_trade_tick(const value &symbols, long begin_index=-1,
                              long end_index=-1, utility::string_t trade_session=U("Regular"), int limit=100);
-        value get_quote_real_time(const value &symbols);
+        value get_quote_real_time_value(const value &symbols);
+        vector<RealtimeQuote> get_quote_real_time(const value &symbols);
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
         value get_quote_depth(const value &symbols, Market market = Market::US);
@@ -54,7 +59,8 @@ namespace TIGER_API {
         value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null());
         value get_option_brief(value identifiers);
         value get_option_brief(const utility::string_t identifier);
-        value get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
+        value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
+        vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         value get_option_trade_tick(value identifiers);
 
         /** 期货行情 Future quote related api **/
@@ -64,9 +70,12 @@ namespace TIGER_API {
         value get_future_contracts(utility::string_t type);
         value get_future_continuous_contracts(utility::string_t type);
         value get_future_current_contract(utility::string_t type);
-        value get_future_kline(value contract_codes, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
+        value get_future_kline(value contract_codes, utility::string_t period=U("day"), time_t begin_time=-1, time_t end_time=-1,
                                int limit=251, utility::string_t page_token=U(""));
-        value get_future_real_time_quote(value contract_codes);
+        vector<Kline> get_future_kline(value contract_codes, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
+                               int limit=251, utility::string_t page_token=U(""));
+        value get_future_real_time_quote_value(value contract_codes);
+        vector<RealtimeQuote> get_future_real_time_quote(value contract_codes);
         value get_future_tick(utility::string_t contract_code, long begin_index=0, long end_index=100, int limit=1000);
         value get_future_trading_date(utility::string_t contract_code, utility::string_t trading_date);
 
