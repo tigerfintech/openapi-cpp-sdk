@@ -185,8 +185,8 @@ public:
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
 //        value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        vector<Kline> result = quote_client->get_kline(symbols, "day", -1, -1, 5);
-        cout << result.at(0).to_string() << endl;
+        vector<Kline> result = quote_client->get_kline(symbols, U("day"), -1, -1, 5);
+        ucout << result.at(0).to_string() << endl;
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
