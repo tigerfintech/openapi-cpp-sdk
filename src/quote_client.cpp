@@ -91,6 +91,31 @@ namespace TIGER_API {
                          page_token);
     }
 
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                          int limit, utility::string_t right, utility::string_t page_token) {
+        value result = get_kline(symbols, period, begin_time, end_time, right, limit, page_token);
+        json::array obj = result.as_array();
+        vector<Kline> klines;
+        for (const auto &bar: obj) {
+            json::array items = bar.at(U("items")).as_array();
+            vector<KlineItem> kline_items;
+            for (const auto &item: items) {
+                KlineItem kline_item;
+                kline_item.from_json(item);
+                kline_items.push_back(kline_item);
+            }
+            utility::string_t symbol = bar.at(U("symbol")).as_string();
+            utility::string_t period = bar.at(U("period")).as_string();
+            Kline kline;
+            kline.symbol = symbol;
+            kline.items = kline_items;
+            kline.period = period;
+            klines.push_back(kline);
+        }
+
+        return klines;
+    }
+
     value QuoteClient::get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
@@ -116,10 +141,25 @@ namespace TIGER_API {
         return post(TRADE_TICK, obj);
     }
 
-    value QuoteClient::get_quote_real_time(const value &symbols) {
+    value QuoteClient::get_quote_real_time_value(const value &symbols) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         return post(QUOTE_REAL_TIME, obj);
+    }
+
+    vector<RealtimeQuote> QuoteClient::get_quote_real_time(const value &symbols) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        value result = post(QUOTE_REAL_TIME, obj);
+        json::array result_array = result.as_array();
+        vector<RealtimeQuote> quotes;
+        for (const auto &item: result_array) {
+            RealtimeQuote realtime_quote;
+            realtime_quote.from_json(item);
+            quotes.push_back(realtime_quote);
+
+        }
+        return quotes;
     }
 
     value QuoteClient::get_quote_delay(const value &symbols) {
@@ -216,7 +256,7 @@ namespace TIGER_API {
         return post(OPTION_BRIEF, options);
     }
 
-    value QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time) {
+    value QuoteClient::get_option_kline_value(value identifiers, time_t begin_time, time_t end_time) {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
@@ -236,6 +276,30 @@ namespace TIGER_API {
             options[i] = obj;
         }
         return post(OPTION_KLINE, options);
+    }
+
+    vector<Kline> QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time) {
+        value result = get_option_kline_value(identifiers, begin_time, end_time);
+        json::array obj = result.as_array();
+        vector<Kline> klines;
+        for (const auto &bar: obj) {
+            json::array items = bar.at(U("items")).as_array();
+            vector<KlineItem> kline_items;
+            for (const auto &item: items) {
+                KlineItem kline_item;
+                kline_item.from_json(item);
+                kline_items.push_back(kline_item);
+            }
+            utility::string_t symbol = bar.at(U("symbol")).as_string();
+            utility::string_t period = bar.at(U("period")).as_string();
+            Kline kline;
+            kline.symbol = symbol;
+            kline.items = kline_items;
+            kline.period = period;
+            klines.push_back(kline);
+        }
+
+        return klines;
     }
 
     value QuoteClient::get_option_trade_tick(value identifiers) {
@@ -280,11 +344,11 @@ namespace TIGER_API {
     }
 
     value
-    QuoteClient::get_future_kline(value contract_codes, BarPeriod period, time_t begin_time, time_t end_time, int limit,
+    QuoteClient::get_future_kline(value contract_codes, utility::string_t period, time_t begin_time, time_t end_time, int limit,
                                   utility::string_t page_token) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
-        obj[P_PERIOD] = value::string(enum_to_str(period));
+        obj[P_PERIOD] = value::string(period);
         obj[P_BEGIN_TIME] = begin_time;
         obj[P_END_TIME] = end_time;
         obj[P_LIMIT] = limit;
@@ -292,11 +356,48 @@ namespace TIGER_API {
         return post(FUTURE_KLINE, obj);
     }
 
-    value QuoteClient::get_future_real_time_quote(value contract_codes) {
+    vector<Kline> QuoteClient::get_future_kline(value contract_codes, BarPeriod period, time_t begin_time,
+                                                time_t end_time, int limit, utility::string_t page_token) {
+        value result = get_future_kline(contract_codes, enum_to_str(period), begin_time, end_time, limit, page_token);
+        json::array obj = result.as_array();
+        vector<Kline> klines;
+        for (const auto &bar: obj) {
+            json::array items = bar.at(U("items")).as_array();
+            vector<KlineItem> kline_items;
+            for (const auto &item: items) {
+                KlineItem kline_item;
+                kline_item.from_json(item);
+                kline_items.push_back(kline_item);
+            }
+            utility::string_t symbol = bar.at(U("contractCode")).as_string();
+            Kline kline;
+            kline.symbol = symbol;
+            kline.contract_code = symbol;
+            kline.items = kline_items;
+            klines.push_back(kline);
+        }
+        return klines;
+    }
+
+    value QuoteClient::get_future_real_time_quote_value(value contract_codes) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
         return post(FUTURE_REAL_TIME_QUOTE, obj);
     }
+
+    vector<RealtimeQuote> QuoteClient::get_future_real_time_quote(value contract_codes) {
+        value result = get_future_real_time_quote_value(contract_codes);
+        json::array result_array = result.as_array();
+        vector<RealtimeQuote> quotes;
+        for (const auto &item: result_array) {
+            RealtimeQuote realtime_quote;
+            realtime_quote.from_json(item);
+            quotes.push_back(realtime_quote);
+
+        }
+        return quotes;
+    }
+
 
     value QuoteClient::get_future_tick(utility::string_t contract_code, long begin_index, long end_index, int limit) {
         value obj = value::object(true);

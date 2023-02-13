@@ -458,6 +458,158 @@ namespace TIGER_API {
             return ss.str();
         };
     };
+
+    class OPENAPI_EXPORT KlineItem {
+    public:
+        double open = 0;
+        double high = 0;
+        double low = 0;
+        double close = 0;
+        time_t time;
+        long volume = 0;
+        time_t last_time;
+        long open_interest = 0;
+        double settlement = 0;
+
+        void from_json(const web::json::value& j) {
+            if (j.has_field(U("open"))) {
+                open = j.at(U("open")).as_double();
+            }
+            if (j.has_field(U("high"))) {
+                high = j.at(U("high")).as_double();
+            }
+            if (j.has_field(U("low"))) {
+                low = j.at(U("low")).as_double();
+            }
+            if (j.has_field(U("close"))) {
+                close = j.at(U("close")).as_double();
+            }
+            if (j.has_field(U("time"))) {
+                time = j.at(U("time")).as_number().to_int64();
+            }
+            if (j.has_field(U("lastTime"))) {
+                last_time = j.at(U("lastTime")).as_number().to_int64();
+            }
+            if (j.has_field(U("volume"))) {
+                volume = j.at(U("volume")).as_number().to_int64();
+            }
+            if (j.has_field(U("settlement"))) {
+                settlement = j.at(U("settlement")).as_double();
+            }
+            if (j.has_field(U("openInterest"))) {
+                open_interest = j.at(U("openInterest")).as_number().to_int64();
+            }
+
+        }
+    };
+
+    class OPENAPI_EXPORT Kline {
+    public:
+        vector<KlineItem> items;
+        utility::string_t symbol;
+        utility::string_t contract_code;
+        utility::string_t period;
+        time_t expiry;
+        utility::string_t right;
+        utility::string_t strike;
+
+        utility::string_t to_string() {
+            return U("Kline of " + symbol + U(" ") + std::to_string(items.size()) + U(" items"));
+        }
+    };
+
+    class OPENAPI_EXPORT RealtimeQuote {
+    public:
+        double open = 0;
+        double high = 0;
+        double low = 0;
+        double close = 0;
+        long volume = 0;
+        double adj_pre_close = 0;
+        double pre_close = 0;
+        double ask_price = 0;
+        double ask_size = 0;
+        double bid_price = 0;
+        double bid_size = 0;
+        double latest_price = 0;
+        time_t latest_time;
+        long latest_size = 0;
+        utility::string_t status;
+        utility::string_t symbol;
+
+        utility::string_t contract_code;
+        long open_interest = 0;
+        int limit_down = 0;
+        int limit_up = 0;
+
+
+        void from_json(const web::json::value &j) {
+            if (j.has_field(U("open")))
+                open = j.at(U("open")).as_double();
+
+            if (j.has_field(U("high")))
+                high = j.at(U("high")).as_double();
+
+            if (j.has_field(U("low")))
+                low = j.at(U("low")).as_double();
+
+            if (j.has_field(U("close")))
+                close = j.at(U("close")).as_double();
+
+            if (j.has_field(U("volume")))
+                volume = j.at(U("volume")).as_number().to_int64();
+
+            if (j.has_field(U("adjPreClose")))
+                adj_pre_close = j.at(U("adjPreClose")).as_double();
+
+            if (j.has_field(U("preClose")))
+                pre_close = j.at(U("preClose")).as_double();
+
+            if (j.has_field(U("askPrice")))
+                ask_price = j.at(U("askPrice")).as_double();
+
+            if (j.has_field(U("askSize")))
+                ask_size = j.at(U("askSize")).as_double();
+
+            if (j.has_field(U("bidPrice")))
+                bid_price = j.at(U("bidPrice")).as_double();
+
+            if (j.has_field(U("bidSize")))
+                bid_size = j.at(U("bidSize")).as_double();
+
+            if (j.has_field(U("latestPrice")))
+                latest_price = j.at(U("latestPrice")).as_double();
+
+            if (j.has_field(U("latestTime")))
+                latest_time = j.at(U("latestTime")).as_number().to_int64();
+
+            if (j.has_field(U("latestSize")))
+                latest_size = j.at(U("latestSize")).as_number().to_int64();
+
+            if (j.has_field(U("status")))
+                status = j.at(U("status")).as_string();
+
+            if (j.has_field(U("symbol")))
+                symbol = j.at(U("symbol")).as_string();
+
+            if (j.has_field(U("contractCode")))
+                contract_code = j.at(U("contractCode")).as_string();
+
+            if (j.has_field(U("openInterest")))
+                open_interest = j.at(U("openInterest")).as_number().to_int64();
+
+            if (j.has_field(U("limitDown")))
+                limit_down = j.at(U("limitDown")).as_integer();
+
+            if (j.has_field(U("limitUp")))
+                limit_up = j.at(U("limitUp")).as_integer();
+        }
+
+        utility::string_t to_string() {
+            return U("RealtimeQuote<" + symbol + U("> ") + std::to_string(latest_price));
+        }
+    };
+
 }
 
 
