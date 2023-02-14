@@ -1,0 +1,60 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+.vs
+.vscode
+*.dSYM
+.idea
+.DS_store
+cmake-build-debug
+build
+*-build
+        demo/openapi_cpp_test/Debug/
+        demo/openapi_cpp_test/Release/
+        demo/openapi_cpp_test/myeasylog.log
+        output/Debug/openapi-cpp-sdk.exp
+        output/Debug/openapi-cpp-sdk.ilk
+        output/Debug/openapi-cpp-sdk.pdb
+        output/Debug/openapi_cpp_test.ilk
+        output/Debug/openapi_cpp_test.pdb
+        output/Release/openapi-cpp-sdk.exp
+        output/Release/openapi-cpp-sdk.pdb
+        output/Release/openapi_cpp_test.iobj
+        output/Release/openapi_cpp_test.ipdb
+        output/Release/openapi_cpp_test.pdb
+/output/Release/openapi-cpp-sdk.ipdb
+/output/Release/openapi-cpp-sdk.iobj
+
+Debug/
+Release/
+*.log
