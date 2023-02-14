@@ -9,6 +9,7 @@
 //#include <any>
 #include <string>
 #include <cpprest/json.h>
+#include <cpprest/details/basic_types.h>
 #include "win32.h"
 
 using namespace std;
@@ -514,7 +515,7 @@ namespace TIGER_API {
         utility::string_t strike;
 
         utility::string_t to_string() {
-            return U("Kline of " + symbol + U(" ") + std::to_string(items.size()) + U(" items"));
+            return U("Kline of ") + symbol;
         }
     };
 
@@ -606,7 +607,7 @@ namespace TIGER_API {
         }
 
         utility::string_t to_string() {
-            return U("RealtimeQuote<" + symbol + U("> ") + std::to_string(latest_price));
+            return U("RealtimeQuote<") + symbol + U("> ");
         }
     };
 
