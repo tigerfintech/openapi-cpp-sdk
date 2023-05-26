@@ -46,7 +46,7 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(account);
         obj[U("segment")] = segment;
         obj[U("market_value")] = market_value;
-        return post(PRIME_ASSETS, obj);
+        return post(ASSETS, obj);
     }
 
     value TradeClient::get_account_param(const utility::string_t &account) {
