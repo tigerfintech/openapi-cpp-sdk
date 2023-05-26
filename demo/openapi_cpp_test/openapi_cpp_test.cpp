@@ -328,7 +328,7 @@ public:
     static void test_get_positions(std::shared_ptr<TigerClient>  tigerapi) {
         value obj = value::object(true);
         obj[U("market")] = value::string(U("US"));
-        obj[P_ACCOUNT] = value::string(U("402901"));
+        obj[P_ACCOUNT] = value::string(U("1111"));
         tigerapi->post(POSITIONS, obj);
     }
 };
@@ -336,7 +336,7 @@ public:
 int main()
 {
     /************************** set config **********************/
-    ClientConfig config = ClientConfig(true);
+    ClientConfig config = ClientConfig();
 
     config.private_key = U("");
     config.tiger_id = U("");
