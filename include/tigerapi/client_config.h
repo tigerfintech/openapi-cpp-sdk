@@ -50,18 +50,18 @@ namespace TIGER_API {
         void check() {
             if (this->tiger_id.empty()) {
                 LOG(ERROR) << U("Client Config error: tiger_id can't be empty") << endl;
-                exit(0);
+                throw std::runtime_error("Client Config error: tiger_id can't be empty");
             }
             if (this->private_key.empty()) {
                 LOG(ERROR) << U("Client Config error: private_key can't be empty") << endl;
-                exit(0);
+                throw std::runtime_error("Client Config error: private_key can't be empty");
             }
         }
 
         void check_account() {
             if (this->account.empty()) {
                 LOG(ERROR) << U("Client Config error: account can't be empty") << endl;
-                exit(0);
+                throw std::runtime_error("Client Config error: account can't be empty");
             }
         }
 

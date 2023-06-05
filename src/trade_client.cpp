@@ -11,6 +11,11 @@ namespace TIGER_API {
         this->client_config.check_account();
     }
 
+    value TradeClient::get_accounts() {
+        value obj = value::object(true);
+        return post(ACCOUNTS, obj);
+    }
+
     value TradeClient::get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -366,7 +371,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = order.total_quantity;
+            obj[U("total_quantity")] = (int64_t) order.total_quantity;
         }
         if (order.limit_price != 0) {
             obj[U("limit_price")] = order.limit_price;
@@ -419,7 +424,7 @@ namespace TIGER_API {
             return order;
         } else {
             ucout << U("Exception: order ") << id << U(" not exist, result: ") << res << endl;
-            exit(-1);
+            throw std::runtime_error(Utils::str16to8(res.serialize()).c_str());
         }
     }
 

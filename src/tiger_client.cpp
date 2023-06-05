@@ -102,30 +102,31 @@ namespace TIGER_API {
         }
         catch (std::exception &ex) {
             LOG(ERROR) << U("Exception: ") << ex.what() << endl;
-            exit(0);
+            throw ex;
         }
         try {
             result = response.extract_json().get();
             result_str = result.serialize();
             if (result[P_CODE].is_null()) {
                 LOG(ERROR) << U("Exception: api error, response: ") << result.serialize();
-                exit(-1);
+                throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
                 LOG(ERROR) << U("Exception: api code error, response: ") << result.serialize();
-                exit(code);
+                throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = Utils::verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
-                exit(-1);
+                throw std::runtime_error("Exception: response sign verify failed");
             }
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
             LOG(ERROR) << U("get response error :") << e.what() << endl;
+            throw e;
         }
         LOG(DEBUG) << U("response:\n") << result.serialize();
         // json format

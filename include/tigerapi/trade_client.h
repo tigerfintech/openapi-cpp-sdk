@@ -18,6 +18,10 @@ namespace TIGER_API {
     public:
         TradeClient();
         TradeClient(const ClientConfig &cf);
+
+        /** 获取账户列表 **/
+        value get_accounts();
+
         /**
          * 获取资产(适用综合/模拟账户) get asset
          * @param account
