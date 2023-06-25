@@ -402,8 +402,8 @@ namespace TIGER_API {
     value QuoteClient::get_future_tick(utility::string_t contract_code, long begin_index, long end_index, int limit) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODE] = value::string(contract_code);
-        obj[P_BEGIN_INDEX] = begin_index;
-        obj[P_END_INDEX] = end_index;
+        obj[P_BEGIN_INDEX] = (int64_t) begin_index;
+        obj[P_END_INDEX] = (int64_t) end_index;
         obj[P_LIMIT] = limit;
         return post(FUTURE_TICK, obj);
     }
