@@ -65,7 +65,7 @@ namespace TIGER_API {
         unsigned char hash[SHA_DIGEST_LENGTH] = {0};
 
         auto str_transfer_content = Utils::str16to8(context);
-        int context_size = str_transfer_content.size();
+        unsigned int context_size = str_transfer_content.size();
         SHA1((const unsigned char *) str_transfer_content.c_str(), context_size, hash);
         RSA *rsa = create_rsa((utility::char_t *) key.c_str(), true);
         int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
