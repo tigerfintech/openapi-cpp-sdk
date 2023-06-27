@@ -62,21 +62,46 @@ public:
         Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
         Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
         value res = trade_client->place_order(order);
-        long id = res[U("id")].as_integer();
-        ucout << U("order id: ") << id << endl;
+        unsigned long long id = res[U("id")].as_number().to_uint64();
+        ucout << U("return id: ") << id << endl;
+        ucout << U("order id: ") << order.id << endl;
         ucout << U("place order result: ") << res << endl;
     }
+
+    static void test_place_future_order(const std::shared_ptr<TradeClient>& trade_client) {
+        Contract contract = ContractUtil::future_contract(U("NG2308"), U("USD"));
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 1.5);
+        value res = trade_client->place_order(order);
+        unsigned long long id = res[U("id")].as_number().to_uint64();
+        ucout << U("return id: ") << id << endl;
+        ucout << U("order id: ") << order.id << endl;
+        ucout << U("place order result: ") << res << endl;
+    }
+
+    static void test_place_option_order(const std::shared_ptr<TradeClient>& trade_client) {
+        Contract contract = ContractUtil::option_contract(U("AAPL"), U("20230721"), U("185.0"), U("CALL"), U("USD"));
+        //Contract contract = ContractUtil::option_contract(U("AAPL"), U("20230721"), U("185.0"), U("PUT"), U("USD"));
+        //Contract contract = ContractUtil::option_contract(U("AAPL 230721C00185000"));
+        //Contract contract = ContractUtil::option_contract(U("AAPL 230721P00185000"));
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 1.5);
+        value res = trade_client->place_order(order);                          
+        //unsigned long long id = res[U("id")].as_number().to_uint64();
+        ucout << U("order id: ") << order.id << endl;
+        ucout << U("place order result: ") << res << endl;
+    }
+
 
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
         //        Contract contract = stock_contract(U("AAPL"), U("USD"));
         //        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
         //        trade_client->place_order(order);
-        Order my_order = trade_client->get_order(29270263515317248);
+        Order my_order = trade_client->get_order(31318009878020096);
+        ucout << U("order id ") << my_order.id << endl;
         ucout << U("order : ") << my_order.to_string() << endl;
     }
 
     static void test_cancel_order(const std::shared_ptr<TradeClient>& trade_client) {
-        value res = trade_client->cancel_order(29270263515317248);
+        value res = trade_client->cancel_order(31319396151853056);
         ucout << U("cancel order : ") << res << endl;
     }
 
@@ -92,7 +117,7 @@ public:
 
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_place_order(trade_client);
+        TestTradeClient::test_get_orders(trade_client);
     }
 };
 
@@ -303,7 +328,7 @@ public:
     }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_kline(quote_client);
+        TestQuoteClient::test_get_quote_real_time(quote_client);
     }
 };
 
@@ -337,13 +362,13 @@ int main()
 {
     /************************** set config **********************/
     ClientConfig config = ClientConfig();
-
     config.private_key = U("");
     config.tiger_id = U("");
     config.account = U("");
 
 
-//    config.lang = U("en_US");
+
+    //config.lang = U("en_US");
 
 
     /**
@@ -355,8 +380,8 @@ int main()
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-//     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-//     TestTradeClient::test_trade(trade_client);
+     //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+     //TestTradeClient::test_trade(trade_client);
 
      /**
       * ֱ��ʹ��δ��װ�� TigerApi

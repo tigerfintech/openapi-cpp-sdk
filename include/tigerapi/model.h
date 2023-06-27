@@ -62,12 +62,12 @@ namespace TIGER_API {
         Order() {};
 
         Order(const utility::string_t order_type, const utility::string_t account, Contract &contract,
-              const utility::string_t action, long total_quantity) :
+              const utility::string_t action, long long total_quantity) :
                 order_type(order_type), account(account), contract(contract), action(action),
                 total_quantity(total_quantity) {};
 
         Order(const utility::string_t order_type, const utility::string_t account, Contract &contract,
-              const utility::string_t action, long total_quantity,
+              const utility::string_t action, long long total_quantity,
               double limit_price, double aux_price = 0, double trailing_percent = 0) :
                 order_type(order_type), account(account), contract(contract), action(action),
                 total_quantity(total_quantity),
@@ -75,14 +75,14 @@ namespace TIGER_API {
 
         Contract contract;
         utility::string_t account;
-        long id = 0;
+        unsigned long long id = 0;
         long order_id = 0;
         /**  订单类型, 'MKT' 市价单 / 'LMT' 限价单 / 'STP' 止损单 / 'STP_LMT' 止损限价单 / 'TRAIL' 跟踪止损单 **/
         utility::string_t order_type;
         /** 交易方向, 'BUY' / 'SELL' **/
         utility::string_t action;
         /** 下单数量 **/
-        long total_quantity = 0;
+        long long total_quantity = 0;
         /** 限价单价格 **/
         double limit_price = 0;
         /** 在止损单中, 表示触发止损单的价格, 在移动止损单中, 表示跟踪的价差 **/
@@ -100,12 +100,12 @@ namespace TIGER_API {
          */
         bool adjust_limit;
         utility::string_t user_mark;
-        long expire_time = 0;
+        time_t expire_time = 0;
 
         // 订单状态
         utility::string_t status;
         // 主订单id, 目前只用于 TigerTrade App端的附加订单中
-        long parent_id;
+        unsigned long long parent_id;
         // 下单时间
         time_t open_time;
         // 下单失败时, 会返回失败原因的描述
@@ -115,7 +115,7 @@ namespace TIGER_API {
         // order updated time
         time_t update_time;
         // 成交数量
-        long filled_quantity;
+        long long filled_quantity;
         // 包含佣金的平均成交价
         double avg_fill_price;
         // 实现盈亏
@@ -179,31 +179,31 @@ namespace TIGER_API {
                 user_mark = json.at(U("userMark")).as_string();
             }
             if (json.has_field(U("expireTime"))) {
-                expire_time = json.at(U("expireTime")).as_integer();
+                expire_time = json.at(U("expireTime")).as_number().to_int64();
             }
             if (json.has_field(U("status"))) {
                 status = json.at(U("status")).as_string();
             }
             if (json.has_field(U("parentId"))) {
-                parent_id = json.at(U("parentId")).as_integer();
+                parent_id = json.at(U("parentId")).as_number().to_uint64();
             }
             if (json.has_field(U("openTime"))) {
-                open_time = json.at(U("openTime")).as_integer();
+                open_time = json.at(U("openTime")).as_number().to_int64();
             }
             if (json.has_field(U("reason"))) {
                 reason = json.at(U("reason")).as_string();
             }
             if (json.has_field(U("latestTime"))) {
-                latest_time = json.at(U("latestTime")).as_integer();
+                latest_time = json.at(U("latestTime")).as_number().to_int64();
             }
             if (json.has_field(U("updateTime"))) {
-                update_time = json.at(U("updateTime")).as_integer();
+                update_time = json.at(U("updateTime")).as_number().to_int64();
             }
             if (json.has_field(U("filledQuantity"))) {
-                filled_quantity = json.at(U("filledQuantity")).as_integer();
+                filled_quantity = json.at(U("filledQuantity")).as_number().to_int64();
             }
             if (json.has_field(U("totalQuantity"))) {
-                total_quantity = json.at(U("totalQuantity")).as_integer();
+                total_quantity = json.at(U("totalQuantity")).as_number().to_int64();
             }
             if (json.has_field(U("avgFillPrice"))) {
                 avg_fill_price = json.at(U("avgFillPrice")).as_double();
@@ -228,7 +228,7 @@ namespace TIGER_API {
     public:
         Position() {};
 
-        Position(const utility::string_t &account, const Contract &contract, int position = 0,
+        Position(const utility::string_t &account, const Contract &contract, long long position = 0,
                  double average_cost = 0.0,
                  double latest_price = 0.0, double market_value = 0.0, double realized_pnl = 0.0,
                  double unrealized_pnl = 0.0)
@@ -276,7 +276,7 @@ namespace TIGER_API {
                 latest_price = json.at(U("latestPrice")).as_double();
             }
             if (json.has_field(U("updateTimestamp"))) {
-                update_timestamp = (long) json.at(U("updateTimestamp")).as_number().to_uint64();
+                update_timestamp = json.at(U("updateTimestamp")).as_number().to_uint64();
             }
             if (json.has_field(U("status"))) {
                 status = json.at(U("status")).as_integer();
@@ -285,14 +285,14 @@ namespace TIGER_API {
 
         utility::string_t account;
         Contract contract;
-        long position;
+        long long position;
         double average_cost;
         double market_value;
         double realized_pnl;
         double unrealized_pnl;
         double latest_price;
         int status;
-        long update_timestamp;
+        time_t update_timestamp;
 
 
         utility::string_t to_string() {
@@ -467,9 +467,9 @@ namespace TIGER_API {
         double low = 0;
         double close = 0;
         time_t time;
-        long volume = 0;
+        long long volume = 0;
         time_t last_time;
-        long open_interest = 0;
+        long long open_interest = 0;
         double settlement = 0;
 
         void from_json(const web::json::value& j) {
@@ -525,7 +525,7 @@ namespace TIGER_API {
         double high = 0;
         double low = 0;
         double close = 0;
-        long volume = 0;
+        long long volume = 0;
         double adj_pre_close = 0;
         double pre_close = 0;
         double ask_price = 0;
@@ -534,12 +534,12 @@ namespace TIGER_API {
         double bid_size = 0;
         double latest_price = 0;
         time_t latest_time;
-        long latest_size = 0;
+        long long latest_size = 0;
         utility::string_t status;
         utility::string_t symbol;
 
         utility::string_t contract_code;
-        long open_interest = 0;
+        long long open_interest = 0;
         int limit_down = 0;
         int limit_up = 0;
 

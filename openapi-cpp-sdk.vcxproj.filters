@@ -10,9 +10,6 @@
     <Filter Include="include\tigerapi">
       <UniqueIdentifier>{bfd89a3e-57e3-41ab-9046-00e64bdde15e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\common">
-      <UniqueIdentifier>{3d6dbfc8-74a7-4caf-a400-57cc960e40a9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\tigerapi\client_config.h">
