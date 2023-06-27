@@ -159,7 +159,7 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_active_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market, utility::string_t symbol, time_t start_date,
-                                         time_t end_date, long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
+                                         time_t end_date, unsigned long long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         if (!sec_type.empty()) {
@@ -191,7 +191,7 @@ namespace TIGER_API {
 
     value
     TradeClient::get_active_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
-                                   time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+                                   time_t end_date, unsigned long long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
         return get_active_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
                                  parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
@@ -199,7 +199,7 @@ namespace TIGER_API {
 
     value
     TradeClient::get_filled_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market,
-                                   utility::string_t symbol, time_t start_date, time_t end_date, long parent_id,
+                                   utility::string_t symbol, time_t start_date, time_t end_date, unsigned long long parent_id,
                                    utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -232,7 +232,7 @@ namespace TIGER_API {
 
     value
     TradeClient::get_filled_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
-                                   time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+                                   time_t end_date, unsigned long long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
         return get_filled_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
                                  parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
@@ -240,7 +240,7 @@ namespace TIGER_API {
 
     value
     TradeClient::get_inactive_orders(utility::string_t account, utility::string_t sec_type, utility::string_t market,
-                                     utility::string_t symbol, time_t start_date, time_t end_date, long parent_id,
+                                     utility::string_t symbol, time_t start_date, time_t end_date, unsigned long long parent_id,
                                      utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
@@ -273,7 +273,7 @@ namespace TIGER_API {
 
     value
     TradeClient::get_inactive_orders(utility::string_t account, SecType sec_type, Market market, utility::string_t symbol, time_t start_date,
-                                     time_t end_date, long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
+                                     time_t end_date, unsigned long long parent_id, OrderSortBy sort_by, SegmentType seg_type) {
         return get_inactive_orders(account, enum_to_str(sec_type), enum_to_str(market), symbol, start_date, end_date,
                                    parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
@@ -342,7 +342,7 @@ namespace TIGER_API {
         if (!contract.expiry.empty()) {
             obj[U("expiry")] = value::string(contract.expiry);
         }
-        if (contract.strike.empty()) {
+        if (!contract.strike.empty()) {
             obj[U("strike")] = value::string(contract.strike);
         }
         if (!contract.right.empty()) {
@@ -413,7 +413,7 @@ namespace TIGER_API {
         return res;
     }
 
-    Order TradeClient::get_order(long id, bool is_brief) {
+    Order TradeClient::get_order(unsigned long long id, bool is_brief) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
         obj[U("id")] = id;
@@ -428,7 +428,7 @@ namespace TIGER_API {
         }
     }
 
-    value TradeClient::cancel_order(long id) {
+    value TradeClient::cancel_order(unsigned long long id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
         obj[U("id")] = id;

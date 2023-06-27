@@ -21,7 +21,7 @@ namespace TIGER_API {
         static Contract
         option_contract(const utility::string_t symbol, const utility::string_t expiry, const utility::string_t strike,
                         const utility::string_t right,
-                        const utility::string_t currency, long multiplier = 100,
+                        const utility::string_t currency = U("USD"), long multiplier = 100,
                         const utility::string_t local_symbol = U(""),
                         long contract_id = 0);
 
