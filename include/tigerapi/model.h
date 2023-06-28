@@ -8,8 +8,8 @@
 #include <typeinfo>
 //#include <any>
 #include <string>
-#include <cpprest/json.h>
-#include <cpprest/details/basic_types.h>
+#include "cpprest/json.h"
+#include "cpprest/details/basic_types.h"
 #include "win32.h"
 
 using namespace std;
