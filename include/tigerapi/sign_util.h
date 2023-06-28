@@ -10,7 +10,7 @@
 #include <openssl/rsa.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
-#include <cpprest/details/basic_types.h>
+#include "cpprest/details/basic_types.h"
 
 using namespace std;
 #pragma warning (disable: 4996)
