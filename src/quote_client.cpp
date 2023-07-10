@@ -67,7 +67,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
-        obj[P_BEGIN_TIME] = begin_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
         return post(TIMELINE, obj);
     }
 
@@ -76,8 +76,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = begin_time;
-        obj[P_END_TIME] = end_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_END_TIME] = (long long) end_time;
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
@@ -135,8 +135,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_TRADE_SESSION] = value::string(trade_session);
-        obj[P_BEGIN_INDEX] = begin_index;
-        obj[P_END_INDEX] = end_index;
+        obj[P_BEGIN_INDEX] = (long long) begin_index;
+        obj[P_END_INDEX] = (long long) end_index;
         obj[P_LIMIT] = limit;
         return post(TRADE_TICK, obj);
     }
@@ -233,7 +233,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
-        basic[P_EXPIRY] = expiry;
+        basic[P_EXPIRY] = (long long) expiry;
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
@@ -266,9 +266,9 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_BEGIN_TIME] = begin_time;
-            obj[P_END_TIME] = end_time;
-            obj[P_EXPIRY] = Utils::date_string_to_timestamp(expiry);
+            obj[P_BEGIN_TIME] = (long long) begin_time;
+            obj[P_END_TIME] = (long long) end_time;
+            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
             obj[P_PERIOD] = value::string(U("day"));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
@@ -349,8 +349,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = begin_time;
-        obj[P_END_TIME] = end_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_END_TIME] = (long long) end_time;
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
         return post(FUTURE_KLINE, obj);

@@ -23,12 +23,12 @@ if(UNIX) # Darwing or Linux
     if(APPLE)
         # Prefer a homebrew version of OpenSSL over the one in /usr/lib
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
-        file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/*)
+        file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
         # Prefer the latest (make the latest one first)
         list(REVERSE OPENSSL_ROOT_DIR)
 
-        find_package(OpenSSL 1.1 REQUIRED)
-        set(OPENSSL_VERSION "1.1.1q")
+        find_package(OpenSSL REQUIRED)
+#        set(OPENSSL_VERSION "1.1.1q")
 
 
     else()
@@ -46,7 +46,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
-    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+#    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
@@ -65,7 +66,7 @@ set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_IN
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
+#    set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
     set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY})
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")

@@ -26,16 +26,20 @@ if(UNIX) # Darwing or Linux
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
 
+
+
     if(APPLE)
         # Prefer a homebrew version of OpenSSL over the one in /usr/lib
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
-        file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/*)
+        file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
         # Prefer the latest (make the latest one first)
         list(REVERSE OPENSSL_ROOT_DIR)
 
-        find_package(OpenSSL 1.1 REQUIRED)
-        set(OPENSSL_VERSION "1.1.1q")
+        find_package(OpenSSL REQUIRED)
+#        set(OPENSSL_VERSION "1.1.1q")
 
+        set(ZLIB_LIBRARY  /opt/homebrew/Cellar/zlib/1.2.13/lib/libz.dylib )
+        message(ZLIB_LIBRARY " ${ZLIB_LIBRARY}")
 
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
@@ -52,7 +56,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
-    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+#    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
@@ -64,13 +69,14 @@ endif()
 
 # Project construction ...
 # src files ...
+file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h")
 add_library(${PROJECT_NAME}
         src/tiger_client.cpp include/tigerapi/tiger_client.h include/tigerapi/constants.h
         include/tigerapi/utils.h src/utils.cpp include/tigerapi/service_types.h include/tigerapi/quote_client.h
         src/quote_client.cpp src/trade_client.cpp include/tigerapi/model.h src/order_util.cpp
         include/tigerapi/order_util.h src/contract_util.cpp include/tigerapi/contract_util.h
         include/tigerapi/client_config.h include/tigerapi/sign_util.h
-        include/tigerapi/easylogging++.h src/easylogging++.cc)
+        include/tigerapi/easylogging++.h cpprest/ src/easylogging++.cc ${MY_SOURCE_FILES})
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
@@ -79,7 +85,7 @@ set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
+#    set(ZIP_LIBRARY ZLIB::ZLIB)
 
     set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY})
 else()

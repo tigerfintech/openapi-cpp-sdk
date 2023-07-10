@@ -145,7 +145,7 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_EXPIRY] = Utils::date_string_to_timestamp(expiry);
+            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);
