@@ -82,7 +82,7 @@ namespace TIGER_API {
             obj[U("sub_accounts")] = sub_accounts;
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = expiry;
+            obj[P_EXPIRY] = (long long) expiry;
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -128,10 +128,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (limit != 0) {
             obj[P_LIMIT] = limit;
@@ -172,10 +172,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -213,10 +213,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -254,10 +254,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -296,7 +296,7 @@ namespace TIGER_API {
             obj[P_EXCHANGE] = value::string(exchange);
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = expiry;
+            obj[P_EXPIRY] = (long long) expiry;
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -359,7 +359,7 @@ namespace TIGER_API {
         }
 
         if (order.order_id != 0) {
-            obj[U("order_id")] = order.order_id;
+            obj[U("order_id")] = (long long) order.order_id;
         }
         if (order.id != 0) {
             obj[U("id")] = order.id;
@@ -401,7 +401,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = order.expire_time;
+            obj[U("expire_time")] = (long long) order.expire_time;
         }
         value res = post(PLACE_ORDER, obj);
         try {
@@ -481,7 +481,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = order.expire_time;
+            obj[U("expire_time")] = (long long) order.expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
@@ -503,7 +503,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (total_quantity != 0) {
-            obj[U("total_quantity")] = total_quantity;
+            obj[U("total_quantity")] = (long long) total_quantity;
         } else {
             obj[U("total_quantity")] = order.total_quantity;
         }
@@ -529,7 +529,7 @@ namespace TIGER_API {
             obj[U("outside_rth")] = outside_rth;
         }
         if (expire_time) {
-            obj[U("expire_time")] = expire_time;
+            obj[U("expire_time")] = (long long) expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
