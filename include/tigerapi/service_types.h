@@ -24,6 +24,11 @@ static utility::string_t  FILLED_ORDERS = U("filled_orders");  // 已成交订�
 static utility::string_t  ORDER_TRANSACTIONS = U("order_transactions");  // 订单成交记录
 static utility::string_t  ANALYTICS_ASSET = U("analytics_asset");
 static utility::string_t  USER_LICENSE = U("user_license");
+static utility::string_t  ESTIMATE_TRADABLE_QUANTITY = U("estimate_tradable_quantity");
+static utility::string_t  SEGMENT_FUND_HISTORY = U("segment_fund_history");
+static utility::string_t  SEGMENT_FUND_AVAILABLE = U("segment_fund_available");
+static utility::string_t  TRANSFER_SEGMENT_FUND = U("transfer_segment_fund");
+static utility::string_t  PLACE_FOREX_ORDER = U("place_forex_order");
 
 //合约
 static utility::string_t CONTRACT = U("contract");

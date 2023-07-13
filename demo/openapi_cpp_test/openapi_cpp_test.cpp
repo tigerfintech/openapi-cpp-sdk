@@ -53,9 +53,34 @@ public:
         ucout << U("active orders: ") << res << endl;
     }
 
+    static void test_get_transactions(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_transactions(trade_client->client_config.account, U("AAPL"));
+        ucout << U("transactions: ") << res << endl;
+    }
+
     static void test_get_contract(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_contract(U("AAPL"));
         ucout << U("contract: ") << res << endl;
+    }
+
+    static void test_get_contracts(const std::shared_ptr<TradeClient>& trade_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("AAPL"));
+        symbols[1] = value::string(U("JD"));
+        value res = trade_client->get_contracts(symbols, U("STK"));
+        ucout << U("contracts: ") << res << endl;
+    }
+
+    static void test_get_quote_contract(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_quote_contract(U("00700"), U("IOPT"), U("20230728"));
+        ucout << U("quote contract: ") << res << endl;
+    }
+
+    static void test_get_estimate_tradable_quantity(const std::shared_ptr<TradeClient>& trade_client) {
+        Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
+        value res = trade_client->get_estimate_tradable_quantity(order);
+        ucout << U("estimate tradable quantity: ") << res << endl;
     }
 
     static void test_place_order(const std::shared_ptr<TradeClient>& trade_client) {
@@ -113,6 +138,32 @@ public:
         ucout << U("modify order res: ") << res << endl;
         Order mod_order = trade_client->get_order(id);
         ucout << U("modified order: ") << mod_order.to_string() << endl;
+    }
+
+    static void test_get_analytics_asset(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_analytics_asset(trade_client->client_config.account, U("2023-11-01"),
+                                                      U("2023-12-31"));
+        ucout << U("analytics asset: ") << res << endl;
+    }
+
+    static void test_get_segment_fund_history(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_segment_fund_history();
+        ucout << U("segment fund history: ") << res << endl;
+    }
+
+    static void test_get_segment_fund_available(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_segment_fund_available(U("SEC"));
+        ucout << U("segment fund available: ") << res << endl;
+    }
+
+    static void test_transfer_segment_fund(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->transfer_segment_fund(U("SEC"), U("FUT"), 10.0);
+        ucout << U("transfer segment fund: ") << res << endl;
+    }
+
+    static void test_place_forex_order(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->place_forex_order(U("SEC"), U("USD"), U("HKD"), 1.0);
+        ucout << U("place forex order: ") << res << endl;
     }
 
 
@@ -368,20 +419,21 @@ int main()
 
 
 
+
     //config.lang = U("en_US");
 
 
     /**
      * ʹ�÷�װ�������ӿ� QuoteClient
      */
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    TestQuoteClient::test_quote(quote_client);
+    //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    //TestQuoteClient::test_quote(quote_client);
 
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-     //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     //TestTradeClient::test_trade(trade_client);
+     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+     TestTradeClient::test_trade(trade_client);
 
      /**
       * ֱ��ʹ��δ��װ�� TigerApi
