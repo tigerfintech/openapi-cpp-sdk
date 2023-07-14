@@ -58,6 +58,7 @@ static utility::string_t TRADING_CALENDAR = U("trading_calendar");
 static utility::string_t STOCK_BROKER = U("stock_broker");  // 港股股票实时经纪队列
 static utility::string_t CAPITAL_DISTRIBUTION = U("capital_distribution");  // 股票当日资金分布
 static utility::string_t CAPITAL_FLOW = U("capital_flow");  // 股票资金流向
+static utility::string_t KLINE_QUOTA = U("kline_quota"); // 历史k线额度
 
 // 期权行情
 static utility::string_t OPTION_EXPIRATION = U("option_expiration");
@@ -65,6 +66,8 @@ static utility::string_t OPTION_CHAIN = U("option_chain");
 static utility::string_t OPTION_BRIEF = U("option_brief");
 static utility::string_t OPTION_KLINE = U("option_kline");
 static utility::string_t OPTION_TRADE_TICK = U("option_trade_tick");
+static utility::string_t WARRANT_FILTER = U("warrant_filter");
+static utility::string_t WARRANT_REAL_TIME_QUOTE = U("warrant_real_time_quote");
 
 // 期货行情
 static utility::string_t FUTURE_EXCHANGE = U("future_exchange");

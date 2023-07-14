@@ -51,6 +51,12 @@ static utility::string_t P_CURRENCY = U("currency");
 static utility::string_t P_EXCHANGE = U("exchange");
 static utility::string_t P_TYPE = U("type");
 static utility::string_t P_EXCHANGE_CODE = U("exchange_code");
+static utility::string_t P_PAGE = U("page");
+static utility::string_t P_PAGE_SIZE = U("page_size");
+static utility::string_t P_SORT_DIR = U("sort_dir");
+static utility::string_t P_SORT_FIELD_NAME = U("sort_field_name");
+static utility::string_t P_WITH_DETAILS = U("with_details");
+
 
 static utility::string_t OPEN_API_SERVICE_VERSION = U("3.0");
 

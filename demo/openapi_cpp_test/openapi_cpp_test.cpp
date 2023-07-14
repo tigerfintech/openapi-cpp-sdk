@@ -378,8 +378,24 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    static void test_get_warrant_real_time_quote(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_warrant_real_time_quote(U("15792"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_warrant_filter(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_warrant_filter("00700");
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_kline_quota(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_kline_quota();
+        ucout << U("result: ") << result << endl;
+    }
+
+
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_quote_real_time(quote_client);
+        TestQuoteClient::test_get_kline_quota(quote_client);
     }
 };
 
@@ -412,7 +428,7 @@ public:
 int main()
 {
     /************************** set config **********************/
-    ClientConfig config = ClientConfig();
+    ClientConfig config = ClientConfig(true);
     config.private_key = U("");
     config.tiger_id = U("");
     config.account = U("");
@@ -426,14 +442,14 @@ int main()
     /**
      * ʹ�÷�װ�������ӿ� QuoteClient
      */
-    //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    //TestQuoteClient::test_quote(quote_client);
+    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    TestQuoteClient::test_quote(quote_client);
 
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     TestTradeClient::test_trade(trade_client);
+     //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+     //TestTradeClient::test_trade(trade_client);
 
      /**
       * ֱ��ʹ��δ��װ�� TigerApi
