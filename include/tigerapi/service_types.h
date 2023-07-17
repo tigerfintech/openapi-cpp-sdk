@@ -24,6 +24,11 @@ static utility::string_t  FILLED_ORDERS = U("filled_orders");  // 已成交订�
 static utility::string_t  ORDER_TRANSACTIONS = U("order_transactions");  // 订单成交记录
 static utility::string_t  ANALYTICS_ASSET = U("analytics_asset");
 static utility::string_t  USER_LICENSE = U("user_license");
+static utility::string_t  ESTIMATE_TRADABLE_QUANTITY = U("estimate_tradable_quantity");
+static utility::string_t  SEGMENT_FUND_HISTORY = U("segment_fund_history");
+static utility::string_t  SEGMENT_FUND_AVAILABLE = U("segment_fund_available");
+static utility::string_t  TRANSFER_SEGMENT_FUND = U("transfer_segment_fund");
+static utility::string_t  PLACE_FOREX_ORDER = U("place_forex_order");
 
 //合约
 static utility::string_t CONTRACT = U("contract");
@@ -53,6 +58,7 @@ static utility::string_t TRADING_CALENDAR = U("trading_calendar");
 static utility::string_t STOCK_BROKER = U("stock_broker");  // 港股股票实时经纪队列
 static utility::string_t CAPITAL_DISTRIBUTION = U("capital_distribution");  // 股票当日资金分布
 static utility::string_t CAPITAL_FLOW = U("capital_flow");  // 股票资金流向
+static utility::string_t KLINE_QUOTA = U("kline_quota"); // 历史k线额度
 
 // 期权行情
 static utility::string_t OPTION_EXPIRATION = U("option_expiration");
@@ -60,6 +66,8 @@ static utility::string_t OPTION_CHAIN = U("option_chain");
 static utility::string_t OPTION_BRIEF = U("option_brief");
 static utility::string_t OPTION_KLINE = U("option_kline");
 static utility::string_t OPTION_TRADE_TICK = U("option_trade_tick");
+static utility::string_t WARRANT_FILTER = U("warrant_filter");
+static utility::string_t WARRANT_REAL_TIME_QUOTE = U("warrant_real_time_quote");
 
 // 期货行情
 static utility::string_t FUTURE_EXCHANGE = U("future_exchange");

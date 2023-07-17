@@ -6,9 +6,9 @@
 #include <time.h>
 #include <string>
 #include <map>
-#include <zlib.h>
-#include <cpprest/json.h>
-#include <cpprest/details/basic_types.h>
+#include "zlib.h"
+#include "cpprest/json.h"
+#include "cpprest/details/basic_types.h"
 #include "win32.h"
 
 namespace TIGER_API {

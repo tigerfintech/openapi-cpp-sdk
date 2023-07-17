@@ -67,7 +67,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
-        obj[P_BEGIN_TIME] = begin_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
         return post(TIMELINE, obj);
     }
 
@@ -76,8 +76,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = begin_time;
-        obj[P_END_TIME] = end_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_END_TIME] = (long long) end_time;
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
@@ -135,8 +135,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_TRADE_SESSION] = value::string(trade_session);
-        obj[P_BEGIN_INDEX] = begin_index;
-        obj[P_END_INDEX] = end_index;
+        obj[P_BEGIN_INDEX] = (long long) begin_index;
+        obj[P_END_INDEX] = (long long) end_index;
         obj[P_LIMIT] = limit;
         return post(TRADE_TICK, obj);
     }
@@ -233,7 +233,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
-        basic[P_EXPIRY] = expiry;
+        basic[P_EXPIRY] = (long long) expiry;
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
@@ -266,9 +266,9 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_BEGIN_TIME] = begin_time;
-            obj[P_END_TIME] = end_time;
-            obj[P_EXPIRY] = Utils::date_string_to_timestamp(expiry);
+            obj[P_BEGIN_TIME] = (long long) begin_time;
+            obj[P_END_TIME] = (long long) end_time;
+            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
             obj[P_PERIOD] = value::string(U("day"));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
@@ -349,8 +349,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = begin_time;
-        obj[P_END_TIME] = end_time;
+        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_END_TIME] = (long long) end_time;
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
         return post(FUTURE_KLINE, obj);
@@ -413,6 +413,43 @@ namespace TIGER_API {
         obj[P_CONTRACT_CODE] = value::string(contract_code);
         obj[P_TRADING_DATE] = value::string(trading_date);
         return post(FUTURE_TRADING_DATE, obj);
+    }
+
+    value QuoteClient::get_warrant_real_time_quote(const value &symbols) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        return post(WARRANT_REAL_TIME_QUOTE, obj)[P_ITEMS];
+    }
+
+    value QuoteClient::get_warrant_real_time_quote(const utility::string_t symbol) {
+        value symbols = value::array();
+        symbols[0] = value::string(symbol);
+        return get_warrant_real_time_quote(symbols);
+    }
+
+    value QuoteClient::get_warrant_filter(const utility::string_t symbol, int page_size, int page,
+                                          utility::string_t sort_field_name, utility::string_t sort_dir) {
+        value obj = value::object(true);
+        obj[P_SYMBOL] = value::string(symbol);
+        if (page > 0) {
+            obj[P_PAGE] = page;
+        }
+        if (page_size > 0) {
+            obj[P_PAGE_SIZE] = page_size;
+        }
+        if (!sort_field_name.empty()) {
+            obj[P_SORT_FIELD_NAME] = value::string(sort_field_name);
+        }
+        if (!sort_dir.empty()) {
+            obj[P_SORT_DIR] = value::string(sort_dir);
+        }
+        return post(WARRANT_FILTER, obj)[P_ITEMS];
+    }
+
+    value QuoteClient::get_kline_quota(bool with_details) {
+        value obj = value::object(true);
+        obj[P_WITH_DETAILS] = with_details;
+        return post(KLINE_QUOTA, obj);
     }
 
 
