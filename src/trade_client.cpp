@@ -82,7 +82,7 @@ namespace TIGER_API {
             obj[U("sub_accounts")] = sub_accounts;
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = expiry;
+            obj[P_EXPIRY] = (long long) expiry;
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -128,10 +128,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (limit != 0) {
             obj[P_LIMIT] = limit;
@@ -172,10 +172,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -213,10 +213,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -254,10 +254,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = start_date;
+            obj[P_START_DATE] = (long long) start_date;
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = end_date;
+            obj[P_END_DATE] = (long long) end_date;
         }
         if (parent_id != 0) {
             obj[U("parent_id")] = parent_id;
@@ -278,6 +278,48 @@ namespace TIGER_API {
                                    parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
+    value TradeClient::get_transactions(utility::string_t account, long order_id) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        obj[U("order_id")] = (long long) order_id;
+        return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
+    }
+
+    value TradeClient::get_transactions(utility::string_t account, utility::string_t symbol, utility::string_t sec_type,
+                                        long start_time, time_t end_time,
+                                        int limit, utility::string_t expiry, utility::string_t strike, utility::string_t right,
+                                        long order_id) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        if (order_id != 0) {
+            obj[U("order_id")] = (long long) order_id;
+        }
+        if (!sec_type.empty()) {
+            obj[U("sec_type")] = value::string(sec_type);
+        }
+        if (!symbol.empty()) {
+            obj[U("symbol")] = value::string(symbol);
+        }
+        if (!expiry.empty()) {
+            obj[U("expiry")] = value::string(expiry);
+        }
+        if (!strike.empty()) {
+            obj[U("strike")] = value::string(strike);
+        }
+        if (!right.empty()) {
+            obj[U("right")] = value::string(right);
+        }
+        if (start_time != 0) {
+            obj[U("start_time")] = (long long) start_time;
+        }
+        if (end_time != 0) {
+            obj[U("end_time")] = (long long) end_time;
+        }
+        if (limit != 0) {
+            obj[U("limit")] = (long long) limit;
+        }
+        return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
+    }
 
     value TradeClient::get_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t currency, utility::string_t exchange, time_t expiry,
                                     utility::string_t strike, utility::string_t right) {
@@ -296,7 +338,7 @@ namespace TIGER_API {
             obj[P_EXCHANGE] = value::string(exchange);
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = expiry;
+            obj[P_EXPIRY] = (long long) expiry;
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -313,8 +355,50 @@ namespace TIGER_API {
                             enum_to_str(right));
     }
 
-    value TradeClient::place_order(value &order) {
+    value TradeClient::get_contracts(const value &symbols, utility::string_t sec_type, utility::string_t currency,
+                                     utility::string_t exchange, time_t expiry, utility::string_t strike,
+                                     utility::string_t right) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        obj[P_SYMBOLS] = symbols;
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
+        if (!currency.empty()) {
+            obj[P_CURRENCY] = value::string(currency);
+        }
+        if (!exchange.empty()) {
+            obj[P_EXCHANGE] = value::string(exchange);
+        }
+        if (expiry != -1 && expiry != 0) {
+            obj[P_EXPIRY] = (long long) expiry;
+        }
+        if (!strike.empty()) {
+            obj[P_STRIKE] = value::string(strike);
+        }
+        if (!right.empty()) {
+            obj[P_RIGHT] = value::string(right);
+        }
+        return post(CONTRACTS, obj)[P_ITEMS];
+    }
 
+    value
+    TradeClient::get_quote_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t expiry) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        if (!symbol.empty()) {
+            obj[P_SYMBOL] = value::string(symbol);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
+        if (!expiry.empty()) {
+            obj[P_EXPIRY] = value::string(expiry);
+        }
+        return post(QUOTE_CONTRACT, obj)[P_ITEMS];
+    }
+
+    value TradeClient::place_order(value &order) {
         value obj = value::object(true);
         for (const auto &kvp: order.as_object()) {
             obj[kvp.first] = kvp.second;
@@ -359,7 +443,7 @@ namespace TIGER_API {
         }
 
         if (order.order_id != 0) {
-            obj[U("order_id")] = order.order_id;
+            obj[U("order_id")] = (long long) order.order_id;
         }
         if (order.id != 0) {
             obj[U("id")] = order.id;
@@ -401,7 +485,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = order.expire_time;
+            obj[U("expire_time")] = (long long) order.expire_time;
         }
         value res = post(PLACE_ORDER, obj);
         try {
@@ -481,7 +565,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = order.expire_time;
+            obj[U("expire_time")] = (long long) order.expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
@@ -503,7 +587,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (total_quantity != 0) {
-            obj[U("total_quantity")] = total_quantity;
+            obj[U("total_quantity")] = (long long) total_quantity;
         } else {
             obj[U("total_quantity")] = order.total_quantity;
         }
@@ -529,11 +613,131 @@ namespace TIGER_API {
             obj[U("outside_rth")] = outside_rth;
         }
         if (expire_time) {
-            obj[U("expire_time")] = expire_time;
+            obj[U("expire_time")] = (long long) expire_time;
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
     }
 
+    value TradeClient::get_estimate_tradable_quantity(Order &order, utility::string_t seg_type) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(order.account);
+        obj[U("seg_type")] = value::string(seg_type);
+        Contract contract = order.contract;
+        if (!contract.symbol.empty()) {
+            obj[U("symbol")] = value::string(contract.symbol);
+        }
+        if (!contract.sec_type.empty()) {
+            obj[U("sec_type")] = value::string(contract.sec_type);
+        }
+        if (!contract.expiry.empty()) {
+            obj[U("expiry")] = value::string(contract.expiry);
+        }
+        if (!contract.strike.empty()) {
+            obj[U("strike")] = value::string(contract.strike);
+        }
+        if (!contract.right.empty()) {
+            obj[U("right")] = value::string(contract.right);
+        }
+        if (!order.order_type.empty()) {
+            obj[U("order_type")] = value::string(order.order_type);
+        }
+        if (!order.action.empty()) {
+            obj[U("action")] = value::string(order.action);
+        }
+        if (order.total_quantity) {
+            obj[U("total_quantity")] = order.total_quantity;
+        }
+        if (order.limit_price != 0) {
+            obj[U("limit_price")] = order.limit_price;
+        }
+        if (order.aux_price != 0) {
+            obj[U("stop_price")] = order.aux_price;
+        }
+        return post(ESTIMATE_TRADABLE_QUANTITY, obj);
+    }
+
+    value TradeClient::get_analytics_asset(utility::string_t account, utility::string_t start_date,
+                                           utility::string_t end_date, utility::string_t seg_type,
+                                           utility::string_t currency, utility::string_t sub_account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        if (!start_date.empty()) {
+            obj[U("start_date")] = value::string(start_date);
+        }
+        if (!end_date.empty()) {
+            obj[U("end_date")] = value::string(end_date);
+        }
+        if (!seg_type.empty()) {
+            obj[U("seg_type")] = value::string(seg_type);
+        }
+        if (!currency.empty()) {
+            obj[U("currency")] = value::string(currency);
+        }
+        if (!sub_account.empty()) {
+            obj[U("sub_account")] = value::string(sub_account);
+        }
+        return post(ANALYTICS_ASSET, obj);
+    }
+
+    value TradeClient::get_segment_fund_history(int limit) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        if (limit > 0) {
+            obj[U("limit")] = limit;
+        }
+        return post(SEGMENT_FUND_HISTORY, obj);
+    }
+
+    value TradeClient::get_segment_fund_available(utility::string_t from_segment, utility::string_t currency) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        if (!from_segment.empty()) {
+            obj[U("from_segment")] = value::string(from_segment);
+        }
+        if (!currency.empty()) {
+            obj[U("currency")] = value::string(currency);
+        }
+        return post(SEGMENT_FUND_AVAILABLE, obj);
+    }
+
+    value
+    TradeClient::transfer_segment_fund(utility::string_t from_segment, utility::string_t to_segment, double amount,
+                                       utility::string_t currency) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        if (!from_segment.empty()) {
+            obj[U("from_segment")] = value::string(from_segment);
+        }
+        if (!to_segment.empty()) {
+            obj[U("to_segment")] = value::string(to_segment);
+        }
+        if (!currency.empty()) {
+            obj[U("currency")] = value::string(currency);
+        }
+        if (amount != 0) {
+            obj[U("amount")] = amount;
+        }
+        return post(TRANSFER_SEGMENT_FUND, obj);
+    }
+
+    value TradeClient::place_forex_order(utility::string_t seg_type, utility::string_t source_currency,
+                                         utility::string_t target_currency, double source_amount) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        if (!seg_type.empty()) {
+            obj[U("seg_type")] = value::string(seg_type);
+        }
+        if (!source_currency.empty()) {
+            obj[U("source_currency")] = value::string(source_currency);
+        }
+        if (!target_currency.empty()) {
+            obj[U("target_currency")] = value::string(target_currency);
+        }
+        if (source_amount != 0) {
+            obj[U("source_amount")] = source_amount;
+        }
+        return post(PLACE_FOREX_ORDER, obj);
+    }
 
 }

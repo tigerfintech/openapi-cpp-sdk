@@ -62,6 +62,11 @@ namespace TIGER_API {
         value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         value get_option_trade_tick(value identifiers);
+        value get_warrant_real_time_quote(const value &symbols);
+        value get_warrant_real_time_quote(const utility::string_t symbol);
+        value get_warrant_filter(const utility::string_t symbol, int page_size = 100, int page = 0,
+                                 utility::string_t sort_field_name = U(""), utility::string_t sort_dir = U("SortDir_Ascend"));
+
 
         /** 期货行情 Future quote related api **/
         value get_future_exchange(SecType sec_type=SecType::FUT);
@@ -90,6 +95,9 @@ namespace TIGER_API {
 
         // 选股
         value get_market_scanner();
+
+        // 通用
+        value get_kline_quota(bool with_details = false);
 
     };
 }
