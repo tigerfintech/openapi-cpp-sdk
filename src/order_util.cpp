@@ -23,6 +23,17 @@ namespace TIGER_API {
         return Order(U("LMT"), U(""), contract, action, quantity, limit_price);
     }
 
+    Order OrderUtil::limit_order(Contract& contract, const utility::string_t action, long quantity, utility::string_t limit_price) {
+        // 限价单, 价格为字符串类型
+        Order order = Order();
+        order.order_type = U("LMT");
+        order.contract = contract;
+        order.action = action;
+        order.total_quantity = quantity;
+        order.s_limit_price = limit_price;
+        return order;
+    }
+
     Order OrderUtil::stop_order(const utility::string_t account, Contract &contract, const utility::string_t action, long quantity,
                      double aux_price) {
         // 止损单

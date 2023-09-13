@@ -85,6 +85,7 @@ namespace TIGER_API {
         long long total_quantity = 0;
         /** 限价单价格 **/
         double limit_price = 0;
+        utility::string_t s_limit_price;
         /** 在止损单中, 表示触发止损单的价格, 在移动止损单中, 表示跟踪的价差 **/
         double aux_price = 0;
         double trail_stop_price = 0;
@@ -98,7 +99,7 @@ namespace TIGER_API {
          * 价格微调幅度（默认为0表示不调整，正数为向上调整，负数向下调整），对传入价格自动调整到合法价位上.
               例如：0.001 代表向上调整且幅度不超过 0.1%；-0.001 代表向下调整且幅度不超过 0.1%。默认 0 表示不调整
          */
-        bool adjust_limit;
+        double adjust_limit;
         utility::string_t user_mark;
         time_t expire_time = 0;
 
@@ -173,7 +174,7 @@ namespace TIGER_API {
                 outside_rth = json.at(U("outsideRth")).as_bool();
             }
             if (json.has_field(U("adjustLimit"))) {
-                adjust_limit = json.at(U("adjustLimit")).as_bool();
+                adjust_limit = json.at(U("adjustLimit")).as_double();
             }
             if (json.has_field(U("userMark"))) {
                 user_mark = json.at(U("userMark")).as_string();

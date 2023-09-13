@@ -24,6 +24,10 @@ namespace TIGER_API {
         limit_order(Contract &contract, const utility::string_t action, long quantity, double limit_price);
 
         static Order
+            limit_order(Contract& contract, const utility::string_t action, long quantity, const utility::string_t limit_price);
+
+
+        static Order
         stop_order(const utility::string_t account, Contract &contract, const utility::string_t action, long quantity,
                    double aux_price);
 
