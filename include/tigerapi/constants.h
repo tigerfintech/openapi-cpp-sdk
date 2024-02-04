@@ -23,6 +23,7 @@ static utility::string_t P_SDK_VERSION_PREFIX = U("openapi-cpp-sdk-");
 static utility::string_t P_USER_AGENT = U("User-Agent");
 static utility::string_t P_BIZ_CONTENT = U("biz_content");
 static utility::string_t P_ACCOUNT = U("account");
+static utility::string_t P_SECRET_KEY =  U("secret_key");
 static utility::string_t P_MARKET = U("market");
 static utility::string_t P_SYMBOLS = U("symbols");
 static utility::string_t P_SYMBOL = U("symbol");

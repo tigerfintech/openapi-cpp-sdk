@@ -172,6 +172,8 @@ namespace TIGER_API {
 
     private:
         value get_account_param(const utility::string_t &account=U(""));
+
+        void set_secret_key(value &obj);
     };
 }
 
