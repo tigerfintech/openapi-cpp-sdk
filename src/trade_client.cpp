@@ -479,7 +479,10 @@ namespace TIGER_API {
             obj[U("total_quantity")] = (int64_t) order.total_quantity;
         }
         if (order.limit_price != 0) {
-            obj[U("limit_price")] = order.limit_price;
+           obj[U("limit_price")] = order.limit_price;
+        }
+        if (!order.s_limit_price.empty()) {
+            obj[U("limit_price")] = value::string(order.s_limit_price);
         }
         if (order.aux_price != 0) {
             obj[U("aux_price")] = order.aux_price;
@@ -500,7 +503,7 @@ namespace TIGER_API {
             obj[U("outside_rth")] = order.outside_rth;
         }
         if (order.adjust_limit) {
-            obj[U("adjust_limit")] = order.adjust_limit;
+            obj[U("adjust_limit")] = value::number(order.adjust_limit);
         }
         if (!order.user_mark.empty()) {
             obj[U("user_mark")] = value::string(order.user_mark);

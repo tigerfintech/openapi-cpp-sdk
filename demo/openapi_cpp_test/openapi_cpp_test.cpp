@@ -104,11 +104,12 @@ public:
     }
 
     static void test_place_option_order(const std::shared_ptr<TradeClient>& trade_client) {
-        Contract contract = ContractUtil::option_contract(U("AAPL"), U("20230721"), U("185.0"), U("CALL"), U("USD"));
+        Contract contract = ContractUtil::option_contract(U("TQQQ"), U("20230915"), U("43.0"), U("CALL"), U("USD"));
         //Contract contract = ContractUtil::option_contract(U("AAPL"), U("20230721"), U("185.0"), U("PUT"), U("USD"));
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721C00185000"));
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721P00185000"));
-        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 1.5);
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 3, U("0.18"));
+       // order.adjust_limit = 0.01;
         value res = trade_client->place_order(order);                          
         //unsigned long long id = res[U("id")].as_number().to_uint64();
         ucout << U("order id: ") << order.id << endl;
@@ -168,7 +169,7 @@ public:
 
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_get_contract(trade_client);
+        TestTradeClient::test_place_option_order(trade_client);
     }
 };
 
