@@ -66,7 +66,7 @@ namespace TIGER_API {
 
     void TradeClient::set_secret_key(value &obj) {
         if (!client_config.secret_key.empty()) {
-            obj[U("secretKey")] = value::string(client_config.secret_key);
+            obj[U("secret_key")] = value::string(client_config.secret_key);
         }
     }
 
