@@ -83,6 +83,8 @@ namespace TIGER_API {
         utility::string_t action;
         /** 下单数量 **/
         long long total_quantity = 0;
+        /** 下单数量偏移位数，如 total_quantity 为 5, total_quantity_scale 为 1， 则实际下单数量为 5 * 10^-1 = 0.5 **/
+        long total_quantity_scale = 0;
         /** 限价单价格 **/
         double limit_price = 0;
         utility::string_t s_limit_price;
@@ -117,6 +119,8 @@ namespace TIGER_API {
         time_t update_time;
         // 成交数量
         long long filled_quantity;
+        // 成交金额偏移位数
+        long filled_quantity_scale;
         // 包含佣金的平均成交价
         double avg_fill_price;
         // 实现盈亏
@@ -125,6 +129,7 @@ namespace TIGER_API {
         web::json::value sub_ids;
         utility::string_t algo_strategy;
         double commission;
+        double gst;
 
         utility::string_t to_string() {
             utility::stringstream_t ss;
@@ -215,12 +220,25 @@ namespace TIGER_API {
             if (json.has_field(U("commission"))) {
                 commission = json.at(U("commission")).as_double();
             }
+            if (json.has_field(U("gst"))) {
+                gst = json.at(U("gst")).as_double();
+            }
             if (json.has_field(U("subIds"))) {
                 sub_ids = json.at(U("subIds"));
             }
             if (json.has_field(U("algoStrategy"))) {
                 algo_strategy = json.at(U("algoStrategy")).as_string();
             }
+            if (json.has_field(U("total_quantity_scale"))) {
+                total_quantity_scale = json.at(U("total_quantity_scale")).as_number().to_int64();
+            }
+            if (json.has_field(U("filled_quantity_scale"))) {
+                filled_quantity_scale = json.at(U("filled_quantity_scale")).as_number().to_int64();
+            }
+            if (json.has_field(U("secret_key"))) {
+                secret_key = json.at(U("secret_key")).as_string();
+            }
+
         };
 
     };

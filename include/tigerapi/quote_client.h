@@ -22,9 +22,9 @@ namespace TIGER_API {
 
         /** 股票行情 Stock quote related api **/
 
-        value get_symbols(Market market = Market::ALL);
-        value get_all_symbol_names(Market market = Market::ALL);
-        value get_all_symbol_names(utility::string_t market=U("ALL"));
+        value get_symbols(Market market = Market::ALL, bool include_otc=false);
+        value get_all_symbol_names(Market market = Market::ALL, bool include_otc=false);
+        value get_all_symbol_names(utility::string_t market = U("ALL"), bool include_otc=false);
         value get_market_state(utility::string_t market);
         value get_trading_calendar(Market market, utility::string_t begin_date, utility::string_t end_date);
         value get_trading_calendar(utility::string_t market, utility::string_t begin_date, utility::string_t end_date);

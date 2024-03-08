@@ -19,9 +19,10 @@ namespace TIGER_API {
         return post(GRAB_QUOTE_PERMISSION, obj);
     }
 
-    value QuoteClient::get_symbols(Market market) {
+    value QuoteClient::get_symbols(Market market, bool include_otc) {
         value obj = value::object(true);
         obj[P_MARKET] = value::string(enum_to_str(market));
+        obj[P_INCLUDE_OTC] = value::boolean(include_otc);
         return post(ALL_SYMBOLS, obj);
     }
 
@@ -31,13 +32,14 @@ namespace TIGER_API {
         return post(QUOTE_STOCK_TRADE, obj);
     }
 
-    value QuoteClient::get_all_symbol_names(Market market) {
-        return get_all_symbol_names(enum_to_str(market));
+    value QuoteClient::get_all_symbol_names(Market market, bool include_otc) {
+        return get_all_symbol_names(enum_to_str(market), include_otc);
     }
 
-    value QuoteClient::get_all_symbol_names(utility::string_t market) {
+    value QuoteClient::get_all_symbol_names(utility::string_t market, bool include_otc) {
         value obj = value::object(true);
         obj[P_MARKET] = value::string(market);
+        obj[P_INCLUDE_OTC] = value::boolean(include_otc);
         return post(ALL_SYMBOL_NAMES, obj);
     }
 
