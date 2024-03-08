@@ -328,6 +328,7 @@ namespace TIGER_API {
 
     enum class OrderStatus {
         PendingNew,
+        PendingSubmit,
         Initial,
         Submitted,
         PartiallyFilled,
@@ -342,6 +343,8 @@ namespace TIGER_API {
         switch (status) {
             case OrderStatus::PendingNew:
                 return U("PendingNew");
+            case OrderStatus::PendingSubmit:
+                return U("PendingSubmit");
             case OrderStatus::Initial:
                 return U("Initial");
             case OrderStatus::Submitted:
@@ -362,6 +365,23 @@ namespace TIGER_API {
                 return U("");
         }
     }
+
+    enum class TickSizeType {
+        OPEN,
+        OPEN_CLOSED,
+        CLOSED_OPEN,
+        CLOSED
+    };
+
+    inline  utility::string_t enum_to_str(TickSizeType type) {
+        switch (type) {
+            case TickSizeType::OPEN: return U("OPEN"); break;
+            case TickSizeType::OPEN_CLOSED: return U("OPEN_CLOSED"); break;
+            case TickSizeType::CLOSED_OPEN: return U("CLOSED_OPEN"); break;
+            case TickSizeType::CLOSED: return U("CLOSED"); break;
+            default: return U(""); break;
+        }
+    };
 }
 
 

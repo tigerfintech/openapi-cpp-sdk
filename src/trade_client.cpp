@@ -13,12 +13,14 @@ namespace TIGER_API {
 
     value TradeClient::get_accounts() {
         value obj = value::object(true);
+        set_secret_key(obj);
         return post(ACCOUNTS, obj);
     }
 
     value TradeClient::get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         obj[U("base_currency")] = value::string(base_currency);
         return post(PRIME_ASSETS, obj);
     }
@@ -49,6 +51,7 @@ namespace TIGER_API {
     value TradeClient::get_asset(utility::string_t account, const value &sub_accounts, bool segment, bool market_value) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         obj[U("segment")] = segment;
         obj[U("market_value")] = market_value;
         return post(ASSETS, obj);
@@ -61,11 +64,18 @@ namespace TIGER_API {
         return value::string(account);
     }
 
+    void TradeClient::set_secret_key(value &obj) {
+        if (!client_config.secret_key.empty()) {
+            obj[U("secret_key")] = value::string(client_config.secret_key);
+        }
+    }
+
     value TradeClient::get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
                                      const utility::string_t &market, const utility::string_t &symbol,
                                      const value &sub_accounts, time_t expiry, utility::string_t strike, const utility::string_t &right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
         }
@@ -118,6 +128,7 @@ namespace TIGER_API {
                                   const utility::string_t &seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
         }
@@ -162,6 +173,7 @@ namespace TIGER_API {
                                          time_t end_date, unsigned long long parent_id, utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
         }
@@ -203,6 +215,7 @@ namespace TIGER_API {
                                    utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
         }
@@ -244,6 +257,7 @@ namespace TIGER_API {
                                      utility::string_t sort_by, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
         }
@@ -281,6 +295,7 @@ namespace TIGER_API {
     value TradeClient::get_transactions(utility::string_t account, long order_id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         obj[U("order_id")] = (long long) order_id;
         return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
     }
@@ -291,6 +306,7 @@ namespace TIGER_API {
                                         long order_id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (order_id != 0) {
             obj[U("order_id")] = (long long) order_id;
         }
@@ -325,6 +341,7 @@ namespace TIGER_API {
                                     utility::string_t strike, utility::string_t right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
@@ -360,6 +377,7 @@ namespace TIGER_API {
                                      utility::string_t right) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         obj[P_SYMBOLS] = symbols;
         if (!sec_type.empty()) {
             obj[P_SEC_TYPE] = value::string(sec_type);
@@ -386,6 +404,7 @@ namespace TIGER_API {
     TradeClient::get_quote_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t expiry) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (!symbol.empty()) {
             obj[P_SYMBOL] = value::string(symbol);
         }
@@ -404,6 +423,7 @@ namespace TIGER_API {
             obj[kvp.first] = kvp.second;
         }
         obj[P_ACCOUNT] = get_account_param(order[P_ACCOUNT].as_string());
+        set_secret_key(obj);
         value res = post(PLACE_ORDER, obj);
         return res;
     }
@@ -437,6 +457,7 @@ namespace TIGER_API {
         }
 
         obj[P_ACCOUNT] = get_account_param(order.account);
+        set_secret_key(obj);
 
         if (!order.secret_key.empty()) {
             obj[U("secret_key")] = value::string(order.secret_key);
@@ -458,7 +479,10 @@ namespace TIGER_API {
             obj[U("total_quantity")] = (int64_t) order.total_quantity;
         }
         if (order.limit_price != 0) {
-            obj[U("limit_price")] = order.limit_price;
+           obj[U("limit_price")] = order.limit_price;
+        }
+        if (!order.s_limit_price.empty()) {
+            obj[U("limit_price")] = value::string(order.s_limit_price);
         }
         if (order.aux_price != 0) {
             obj[U("aux_price")] = order.aux_price;
@@ -479,7 +503,7 @@ namespace TIGER_API {
             obj[U("outside_rth")] = order.outside_rth;
         }
         if (order.adjust_limit) {
-            obj[U("adjust_limit")] = order.adjust_limit;
+            obj[U("adjust_limit")] = value::number(order.adjust_limit);
         }
         if (!order.user_mark.empty()) {
             obj[U("user_mark")] = value::string(order.user_mark);
@@ -500,6 +524,7 @@ namespace TIGER_API {
     Order TradeClient::get_order(unsigned long long id, bool is_brief) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         obj[U("id")] = id;
         obj[U("is_brief")] = is_brief;
         value res = post(ORDERS, obj);
@@ -515,6 +540,7 @@ namespace TIGER_API {
     value TradeClient::cancel_order(unsigned long long id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         obj[U("id")] = id;
         value res = post(CANCEL_ORDER, obj);
         return res;
@@ -524,7 +550,7 @@ namespace TIGER_API {
         value obj = value::object(true);
 
         obj[P_ACCOUNT] = get_account_param(order.account);
-
+        set_secret_key(obj);
         if (order.id != 0) {
             obj[U("id")] = order.id;
         }
@@ -576,7 +602,7 @@ namespace TIGER_API {
                                     utility::string_t time_in_force, bool outside_rth, time_t expire_time) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(order.account);
-
+        set_secret_key(obj);
         if (order.id != 0) {
             obj[U("id")] = order.id;
         }
@@ -622,6 +648,7 @@ namespace TIGER_API {
     value TradeClient::get_estimate_tradable_quantity(Order &order, utility::string_t seg_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(order.account);
+        set_secret_key(obj);
         obj[U("seg_type")] = value::string(seg_type);
         Contract contract = order.contract;
         if (!contract.symbol.empty()) {
@@ -662,6 +689,7 @@ namespace TIGER_API {
                                            utility::string_t currency, utility::string_t sub_account) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
         if (!start_date.empty()) {
             obj[U("start_date")] = value::string(start_date);
         }
@@ -683,6 +711,7 @@ namespace TIGER_API {
     value TradeClient::get_segment_fund_history(int limit) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (limit > 0) {
             obj[U("limit")] = limit;
         }
@@ -692,6 +721,7 @@ namespace TIGER_API {
     value TradeClient::get_segment_fund_available(utility::string_t from_segment, utility::string_t currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (!from_segment.empty()) {
             obj[U("from_segment")] = value::string(from_segment);
         }
@@ -706,6 +736,7 @@ namespace TIGER_API {
                                        utility::string_t currency) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (!from_segment.empty()) {
             obj[U("from_segment")] = value::string(from_segment);
         }
@@ -725,6 +756,7 @@ namespace TIGER_API {
                                          utility::string_t target_currency, double source_amount) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
         if (!seg_type.empty()) {
             obj[U("seg_type")] = value::string(seg_type);
         }

@@ -46,6 +46,7 @@ namespace TIGER_API {
         utility::string_t sign_type = U("RSA");
         utility::string_t lang;
         utility::string_t device_id = Utils::get_device_id();
+        utility::string_t secret_key;
 
         void check() {
             if (this->tiger_id.empty()) {

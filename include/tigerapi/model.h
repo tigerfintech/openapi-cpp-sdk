@@ -83,8 +83,11 @@ namespace TIGER_API {
         utility::string_t action;
         /** 下单数量 **/
         long long total_quantity = 0;
+        /** 下单数量偏移位数，如 total_quantity 为 5, total_quantity_scale 为 1， 则实际下单数量为 5 * 10^-1 = 0.5 **/
+        long total_quantity_scale = 0;
         /** 限价单价格 **/
         double limit_price = 0;
+        utility::string_t s_limit_price;
         /** 在止损单中, 表示触发止损单的价格, 在移动止损单中, 表示跟踪的价差 **/
         double aux_price = 0;
         double trail_stop_price = 0;
@@ -98,7 +101,7 @@ namespace TIGER_API {
          * 价格微调幅度（默认为0表示不调整，正数为向上调整，负数向下调整），对传入价格自动调整到合法价位上.
               例如：0.001 代表向上调整且幅度不超过 0.1%；-0.001 代表向下调整且幅度不超过 0.1%。默认 0 表示不调整
          */
-        bool adjust_limit;
+        double adjust_limit;
         utility::string_t user_mark;
         time_t expire_time = 0;
 
@@ -116,6 +119,8 @@ namespace TIGER_API {
         time_t update_time;
         // 成交数量
         long long filled_quantity;
+        // 成交金额偏移位数
+        long filled_quantity_scale;
         // 包含佣金的平均成交价
         double avg_fill_price;
         // 实现盈亏
@@ -124,6 +129,7 @@ namespace TIGER_API {
         web::json::value sub_ids;
         utility::string_t algo_strategy;
         double commission;
+        double gst;
 
         utility::string_t to_string() {
             utility::stringstream_t ss;
@@ -173,7 +179,7 @@ namespace TIGER_API {
                 outside_rth = json.at(U("outsideRth")).as_bool();
             }
             if (json.has_field(U("adjustLimit"))) {
-                adjust_limit = json.at(U("adjustLimit")).as_bool();
+                adjust_limit = json.at(U("adjustLimit")).as_double();
             }
             if (json.has_field(U("userMark"))) {
                 user_mark = json.at(U("userMark")).as_string();
@@ -214,12 +220,25 @@ namespace TIGER_API {
             if (json.has_field(U("commission"))) {
                 commission = json.at(U("commission")).as_double();
             }
+            if (json.has_field(U("gst"))) {
+                gst = json.at(U("gst")).as_double();
+            }
             if (json.has_field(U("subIds"))) {
                 sub_ids = json.at(U("subIds"));
             }
             if (json.has_field(U("algoStrategy"))) {
                 algo_strategy = json.at(U("algoStrategy")).as_string();
             }
+            if (json.has_field(U("total_quantity_scale"))) {
+                total_quantity_scale = json.at(U("total_quantity_scale")).as_number().to_int64();
+            }
+            if (json.has_field(U("filled_quantity_scale"))) {
+                filled_quantity_scale = json.at(U("filled_quantity_scale")).as_number().to_int64();
+            }
+            if (json.has_field(U("secret_key"))) {
+                secret_key = json.at(U("secret_key")).as_string();
+            }
+
         };
 
     };
