@@ -328,6 +328,7 @@ namespace TIGER_API {
 
     enum class OrderStatus {
         PendingNew,
+        PendingSubmit,
         Initial,
         Submitted,
         PartiallyFilled,
@@ -342,6 +343,8 @@ namespace TIGER_API {
         switch (status) {
             case OrderStatus::PendingNew:
                 return U("PendingNew");
+            case OrderStatus::PendingSubmit:
+                return U("PendingSubmit");
             case OrderStatus::Initial:
                 return U("Initial");
             case OrderStatus::Submitted:
