@@ -1,4 +1,5 @@
 ﻿// openapi_cpp_test.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+#include "tigerapi/push_client.h"
 #include "tigerapi/tiger_client.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/trade_client.h"
@@ -238,7 +239,7 @@ public:
         symbols[1] = value::string(U("JD"));
         auto result = quote_client->get_quote_real_time_value(symbols);
         vector<RealtimeQuote> result1 = quote_client->get_quote_real_time(symbols);
-        ucout << U("result: ") << result.at(0).to_string() << endl;
+        ucout << U("result: ") << result.at(0).serialize() << endl;
     }
 
     static void test_get_quote_delay(const std::shared_ptr<QuoteClient> quote_client) {
@@ -439,13 +440,36 @@ int main()
 {
     /************************** set config **********************/
     ClientConfig config = ClientConfig();
-    config.private_key = U("");
-    config.tiger_id = U("");
-    config.account = U("");
+#if 1
+	config.private_key = U("");
+	config.tiger_id = U("");
+	config.account = U("");
+    config.socket_url = U("");
+    config.socket_port = U("");
+#else
+	config.private_key = U("");
+	config.tiger_id = U("");
+	config.account = U("");
+	config.socket_url = U("");
+	config.socket_port = U("");
+#endif
 
+	auto push_client = PushClient::create_push_client(config);
+	push_client->connect(config);
+	std::string input;
+	while (true)
+    {
+		std::cout << "Enter command (type 'exit' to quit): ";
+		std::getline(std::cin, input);
 
-
-
+		if (input == "exit") {
+			std::cout << "Exiting loop." << std::endl;
+            push_client->disconnect();
+			break;
+		}
+		// Process other commands or input here
+		std::cout << "You entered: " << input << std::endl;
+	}
 
     //config.lang = U("en_US");
 
@@ -459,8 +483,8 @@ int main()
     /**
      * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
      */
-     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     TestTradeClient::test_trade(trade_client);
+     //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+     //TestTradeClient::test_trade(trade_client);
 
      /**
       * ֱ��ʹ��δ��װ�� TigerApi
