@@ -1,0 +1,28 @@
+syntax = "proto3";
+import public "SocketCommon.proto";
+
+package tigeropen.push.pb;
+
+message Request {
+  SocketCommon.Command command = 1;
+  uint32 id = 2;
+  Subscribe subscribe = 3;
+  Connect connect = 4;
+
+  message Connect {
+    string tigerId = 1;
+    string sign = 2;
+    string sdkVersion = 3;
+    string acceptVersion = 4;
+    uint32 sendInterval = 5;
+    uint32 receiveInterval = 6;
+    bool useFullTick = 7;
+  }
+
+  message Subscribe {
+    SocketCommon.DataType dataType = 1;
+    string symbols = 2;
+    string account = 3;
+    string market = 4;
+  }
+}
