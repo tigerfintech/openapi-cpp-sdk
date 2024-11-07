@@ -22,6 +22,18 @@
     <Filter Include="include\pplx">
       <UniqueIdentifier>{6349fe22-02aa-4283-bb3d-9dd379fff18e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\openapi_pb">
+      <UniqueIdentifier>{c5467ef1-c0bb-48bb-a760-d3a219d4159a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\openapi_pb\pb_source">
+      <UniqueIdentifier>{288767a9-2c9a-4655-92be-feb614a924c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tigerapi\push_socket">
+      <UniqueIdentifier>{460a7239-a923-4233-a836-cb2e24b6a10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\push_socket">
+      <UniqueIdentifier>{4c729de5-8904-4290-8392-881731e0bc87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\tigerapi\client_config.h">
@@ -603,6 +615,66 @@
     <ClInclude Include="include\pplx\pplxwin.h">
       <Filter>include\pplx</Filter>
     </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\AssetData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\KlineData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\OptionTopData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\OrderStatusData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\OrderTransactionData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\PositionData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\PushData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteBasicData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteBBOData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteDepthData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\Request.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\Response.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\SocketCommon.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\StockTopData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\TickData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\openapi_pb\pb_source\TradeTickData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\push_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\push_socket\push_frame_serialize.h">
+      <Filter>include\tigerapi\push_socket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\push_socket\push_socket.h">
+      <Filter>include\tigerapi\push_socket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\contract_util.cpp">
@@ -628,6 +700,66 @@
     </ClCompile>
     <ClCompile Include="include\openssl\applink.c">
       <Filter>include\openssl</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\AssetData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\KlineData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\OptionTopData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\OrderStatusData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\OrderTransactionData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\PositionData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\PushData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteBasicData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteBBOData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteDepthData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\Request.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\Response.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\SocketCommon.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\StockTopData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\TickData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\push_client.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\push_socket\push_frame_serialize.cpp">
+      <Filter>src\push_socket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\push_socket\push_socket.cpp">
+      <Filter>src\push_socket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
