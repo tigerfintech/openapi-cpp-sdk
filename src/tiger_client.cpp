@@ -3,6 +3,8 @@
 #include "../include/tigerapi/contract_util.h"
 #include "../include/tigerapi/easylogging++.h"
 
+INITIALIZE_EASYLOGGINGPP
+
 namespace TIGER_API {
 
     void TigerClient::set_config(const ClientConfig &cf) {
