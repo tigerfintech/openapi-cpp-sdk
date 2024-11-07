@@ -1,6 +1,7 @@
 
 #ifndef CPPSDK_CONSTANTS_H
 #define CPPSDK_CONSTANTS_H
+#include "cpprest/details/basic_types.h"
 
 static utility::string_t GET = U("GET");
 static utility::string_t POST = U("POST");

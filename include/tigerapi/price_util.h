@@ -18,7 +18,7 @@ namespace TIGER_API {
 
     class PriceUtil {
     public:
-        static const std::string INF;
+        static const utility::string_t INF;
         static const double RELATIVE_TOLERANCE;
         static const utility::string_t TICK_SIZE;
 

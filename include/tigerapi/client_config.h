@@ -47,6 +47,12 @@ namespace TIGER_API {
         utility::string_t lang;
         utility::string_t device_id = Utils::get_device_id();
         utility::string_t secret_key;
+        bool user_full_tick = false;
+		utility::string_t socket_url;
+		utility::string_t socket_port;
+		utility::string_t socket_ca_certs;
+        unsigned int send_interval = 10 * 1000;
+        unsigned int receive_interval = 10 * 1000;
 
         void check() {
             if (this->tiger_id.empty()) {
@@ -70,14 +76,13 @@ namespace TIGER_API {
             this->server_url = url;
         }
 
-        utility::string_t get_server_url() {
+        const utility::string_t& get_server_url() {
             return this->server_url;
         }
 
-        utility::string_t get_server_pub_key() {
+        const utility::string_t& get_server_pub_key() {
             return this->server_public_key;
         }
-
     private:
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;
