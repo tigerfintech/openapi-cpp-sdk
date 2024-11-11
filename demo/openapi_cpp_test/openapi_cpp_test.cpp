@@ -454,8 +454,8 @@ int main()
 	config.socket_port = U("");
 #endif
 
-	auto push_client = PushClient::create_push_client(config);
-	push_client->connect(config);
+	auto push_client = IPushClient::create_push_client(config);
+	push_client->connect();
 	std::string input;
 	while (true)
     {

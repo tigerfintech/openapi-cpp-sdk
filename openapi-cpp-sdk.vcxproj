@@ -98,7 +98,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\debug\lib;lib\x86\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -118,7 +118,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\debug\lib;lib\x64\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,7 +143,7 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\lib;lib\x86\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +167,7 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\lib;lib\x64\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -372,6 +372,7 @@
     <ClInclude Include="include\tigerapi\model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
     <ClInclude Include="include\tigerapi\push_client.h" />
+    <ClInclude Include="include\tigerapi\push_socket\push_client_impl.h" />
     <ClInclude Include="include\tigerapi\push_socket\push_frame_serialize.h" />
     <ClInclude Include="include\tigerapi\push_socket\push_socket.h" />
     <ClInclude Include="include\tigerapi\quote_client.h" />
@@ -407,7 +408,7 @@
     <ClCompile Include="src\contract_util.cpp" />
     <ClCompile Include="src\easylogging++.cc" />
     <ClCompile Include="src\order_util.cpp" />
-    <ClCompile Include="src\push_client.cpp" />
+    <ClCompile Include="src\push_socket\push_client_impl.cpp" />
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />
     <ClCompile Include="src\push_socket\push_socket.cpp" />
     <ClCompile Include="src\quote_client.cpp" />
