@@ -1,16 +1,16 @@
-#include "tigerapi/push_client.h"
+#include "tigerapi/push_socket/push_client_impl.h"
 #include "tigerapi/client_config.h"
 #include "tigerapi/push_socket/push_socket.h"
 #include "openapi_pb\pb_source\PushData.pb.h"
 #include <iostream>
 #include "google/protobuf/util/json_util.h"
 
-std::shared_ptr<TIGER_API::PushClient> TIGER_API::PushClient::create_push_client(const TIGER_API::ClientConfig& client_config)
+std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_push_client_impl(const TIGER_API::ClientConfig& client_config)
 {
-	return std::shared_ptr<TIGER_API::PushClient>(new TIGER_API::PushClient());
+	return std::shared_ptr<TIGER_API::PushClientImpl>(new TIGER_API::PushClientImpl(client_config));
 }
 
-TIGER_API::PushClient::~PushClient()
+TIGER_API::PushClientImpl::~PushClientImpl()
 {
 	io_service_.stop();
 
@@ -20,18 +20,19 @@ TIGER_API::PushClient::~PushClient()
 	}
 }
 
-TIGER_API::PushClient::PushClient()
+TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
+	:client_config_(client_config)
 {
 
 }
 
-void TIGER_API::PushClient::connect(const TIGER_API::ClientConfig& client_config)
+void TIGER_API::PushClientImpl::connect()
 {
 	LOG(INFO) << "create a worker thread to perform asynchronous network connections";
 	//启动工作线程
-	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this, client_config]
+	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{
-		socket_ = PushSocket::create_push_socket(&io_service_, client_config);
+		socket_ = PushSocket::create_push_socket(&io_service_, client_config_);
 		socket_->connect();
 
 		LOG(INFO) << "io_service run on work thread";
@@ -39,13 +40,13 @@ void TIGER_API::PushClient::connect(const TIGER_API::ClientConfig& client_config
 	}));
 }
 
-void TIGER_API::PushClient::disconnect()
+void TIGER_API::PushClientImpl::disconnect()
 {
 	//跨线程调用，需要异步投递任务
-	io_service_.post(boost::bind(&PushClient::do_disconnect, this));
+	io_service_.post(boost::bind(&PushClientImpl::do_disconnect, this));
 }
 
-void TIGER_API::PushClient::set_connected_callback(const std::function<void()>& cb)
+void TIGER_API::PushClientImpl::set_connected_callback(const std::function<void()>& cb)
 {
 	if (socket_)
 	{
@@ -53,7 +54,7 @@ void TIGER_API::PushClient::set_connected_callback(const std::function<void()>& 
 	}
 }
 
-void TIGER_API::PushClient::set_disconnected_callback(const std::function<void()>& cb)
+void TIGER_API::PushClientImpl::set_disconnected_callback(const std::function<void()>& cb)
 {
 	if (socket_)
 	{
@@ -61,7 +62,7 @@ void TIGER_API::PushClient::set_disconnected_callback(const std::function<void()
 	}
 }
 
-void TIGER_API::PushClient::set_inner_error_callback(const std::function<void(std::string)>& cb)
+void TIGER_API::PushClientImpl::set_inner_error_callback(const std::function<void(std::string)>& cb)
 {
 	if (socket_)
 	{
@@ -69,12 +70,12 @@ void TIGER_API::PushClient::set_inner_error_callback(const std::function<void(st
 	}
 }
 
-void TIGER_API::PushClient::set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb)
+void TIGER_API::PushClientImpl::set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb)
 {
 	asset_changed_ = cb;
 }
 
-bool TIGER_API::PushClient::subscribe_asset(const std::string& account)
+bool TIGER_API::PushClientImpl::subscribe_asset(const std::string& account)
 {
 	if (!socket_)
 	{
@@ -97,7 +98,7 @@ bool TIGER_API::PushClient::subscribe_asset(const std::string& account)
 	return true;
 }
 
-bool TIGER_API::PushClient::unsubscribe_asset(const std::string& account)
+bool TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 {
 	if (!socket_)
 	{
@@ -120,7 +121,7 @@ bool TIGER_API::PushClient::unsubscribe_asset(const std::string& account)
 	return true;
 }
 
-bool TIGER_API::PushClient::send_frame(const tigeropen::push::pb::Request& request)
+bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& request)
 {
 	//序列化pb对象到字符串
 	std::string packed_frame = request.SerializeAsString();
@@ -136,12 +137,12 @@ bool TIGER_API::PushClient::send_frame(const tigeropen::push::pb::Request& reque
 	LOG(DEBUG) << "send frame:" << packed_frame_json;
 
 	//跨线程，异步投递任务
-	io_service_.post(boost::bind(&PushClient::do_write, this, packed_frame));
+	io_service_.post(boost::bind(&PushClientImpl::do_write, this, packed_frame));
 
 	return true;
 }
 
-void TIGER_API::PushClient::do_write(const std::string& frame)
+void TIGER_API::PushClientImpl::do_write(const std::string& frame)
 {
 	if (socket_)
 	{
@@ -149,7 +150,7 @@ void TIGER_API::PushClient::do_write(const std::string& frame)
 	}
 }
 
-void TIGER_API::PushClient::do_disconnect()
+void TIGER_API::PushClientImpl::do_disconnect()
 {
 	if (socket_)
 	{
@@ -157,7 +158,7 @@ void TIGER_API::PushClient::do_disconnect()
 	}
 }
 
-void TIGER_API::PushClient::on_message(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)
+void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)
 {
 	if (response_pb_object->body().datatype() == tigeropen::push::pb::SocketCommon_DataType_Asset && asset_changed_)
 	{
