@@ -454,6 +454,7 @@ int main()
 	config.socket_port = U("");
 #endif
 
+
 	auto push_client = PushClient::create_push_client(config);
 	push_client->connect(config);
 	std::string input;
@@ -475,19 +476,19 @@ int main()
 
 
     /**
-     * ʹ�÷�װ�������ӿ� QuoteClient
+     *  QuoteClient
      */
     //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
     //TestQuoteClient::test_quote(quote_client);
 
     /**
-     * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
+     * TradeClient
      */
      //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
      //TestTradeClient::test_trade(trade_client);
 
      /**
-      * ֱ��ʹ��δ��װ�� TigerApi
+      *  TigerApi
       */
       //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
       //    TestTigerApi::test_grab_quote_permission(tigerapi);
