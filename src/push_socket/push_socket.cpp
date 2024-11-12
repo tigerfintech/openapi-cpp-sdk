@@ -31,10 +31,7 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
 	client_config_ = client_config;
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
-
-	init_socket();
-	socket_->set_verify_callback(boost::bind(&PushSocket::verify_certificate, this, _1, _2));
-
+	
 	//初始化内存池，防止接收数据频繁的内存分配和释放引起的性能问题和内存碎片问题
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
 	
@@ -78,6 +75,8 @@ void TIGER_API::PushSocket::connect()
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
+		init_socket();
+
 		socket_->lowest_layer().async_connect(*rit,
 			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error, ++rit));
 
@@ -95,12 +94,6 @@ void TIGER_API::PushSocket::disconnect()
 	{
 		keep_alive_timer_->cancel();
 	}
-
-	if (reconnect_timer_)
-	{
-		reconnect_timer_->cancel();
-	}
-
 	close_session();
 }
 
@@ -148,6 +141,8 @@ void TIGER_API::PushSocket::init_socket()
 	}
 
 	socket_.emplace(*io_service_, ssl_content);
+
+	socket_->set_verify_callback(boost::bind(&PushSocket::verify_certificate, this, _1, _2));
 }
 
 bool TIGER_API::PushSocket::verify_certificate(bool preverified, boost::asio::ssl::verify_context& ctx)
@@ -175,6 +170,11 @@ uint32_t TIGER_API::PushSocket::get_next_id()
 
 void TIGER_API::PushSocket::close_session()
 {
+	if (reconnect_timer_)
+	{
+		reconnect_timer_->cancel();
+	}
+	
 	LOG(INFO) << "close socket";
 	socket_state_ = SocketState::DISCONNECTED;
 
@@ -259,7 +259,7 @@ void TIGER_API::PushSocket::send_heart_beat()
 
 void TIGER_API::PushSocket::auto_reconnect()
 {
-	LOG(INFO) << "try reconnecting after" << reconnect_interval_ / 1000 << "seconds...";
+	LOG(INFO) << "try reconnecting after " << reconnect_interval_ / 1000 << " seconds...";
 	socket_state_  = SocketState::CONNECTING;
 	reconnect_timer_->expires_from_now(boost::posix_time::milliseconds(reconnect_interval_));
 	reconnect_timer_->async_wait([this](const boost::system::error_code& error) 
