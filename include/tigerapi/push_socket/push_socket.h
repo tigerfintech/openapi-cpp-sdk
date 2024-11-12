@@ -27,7 +27,6 @@ namespace TIGER_API
 	{
 		CONNECTING,			//正在连接
 		CONNECTED,			//已连接
-		DISCONNECTING,		//正在断开
 		DISCONNECTED		//已断开
 	};
 	
