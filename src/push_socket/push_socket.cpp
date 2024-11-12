@@ -96,6 +96,11 @@ void TIGER_API::PushSocket::disconnect()
 		keep_alive_timer_->cancel();
 	}
 
+	if (reconnect_timer_)
+	{
+		reconnect_timer_->cancel();
+	}
+
 	close_session();
 }
 
