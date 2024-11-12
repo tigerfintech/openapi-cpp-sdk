@@ -666,13 +666,16 @@
     <ClInclude Include="include\openapi_pb\pb_source\TradeTickData.pb.h">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClInclude>
-    <ClInclude Include="include\tigerapi\push_client.h">
-      <Filter>include\tigerapi</Filter>
-    </ClInclude>
     <ClInclude Include="include\tigerapi\push_socket\push_frame_serialize.h">
       <Filter>include\tigerapi\push_socket</Filter>
     </ClInclude>
     <ClInclude Include="include\tigerapi\push_socket\push_socket.h">
+      <Filter>include\tigerapi\push_socket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\push_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\push_socket\push_client_impl.h">
       <Filter>include\tigerapi\push_socket</Filter>
     </ClInclude>
   </ItemGroup>
@@ -752,13 +755,13 @@
     <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClCompile>
-    <ClCompile Include="src\push_client.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp">
       <Filter>src\push_socket</Filter>
     </ClCompile>
     <ClCompile Include="src\push_socket\push_socket.cpp">
+      <Filter>src\push_socket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\push_socket\push_client_impl.cpp">
       <Filter>src\push_socket</Filter>
     </ClCompile>
   </ItemGroup>
