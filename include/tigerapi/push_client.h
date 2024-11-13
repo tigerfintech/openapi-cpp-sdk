@@ -5,7 +5,7 @@
 #include "tigerapi/win32.h"
 #include "openapi_pb/pb_source/AssetData.pb.h"
 #include "openapi_pb/pb_source/PositionData.pb.h"
-#include "openapi_pb/pb_source/OrderData.pb.h"
+#include "openapi_pb/pb_source/OrderStatusData.pb.h"
 #include "openapi_pb/pb_source/QuoteData.pb.h"
 #include "openapi_pb/pb_source/KlineData.pb.h"
 #include "openapi_pb/pb_source/TickData.pb.h"
