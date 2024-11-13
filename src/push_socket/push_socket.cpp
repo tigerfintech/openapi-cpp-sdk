@@ -93,7 +93,12 @@ void TIGER_API::PushSocket::disconnect()
 {
 	if (keep_alive_timer_)
 	{
-		keep_alive_timer_->cancel();
+		boost::system::error_code ec;
+		keep_alive_timer_->cancel(ec);
+		if (ec)
+		{
+			LOG(ERROR) << ec;
+		}
 	}
 	close_session();
 }
@@ -171,10 +176,7 @@ unsigned int TIGER_API::PushSocket::get_next_id()
 
 void TIGER_API::PushSocket::close_session()
 {
-	if (reconnect_timer_)
-	{
-		reconnect_timer_->cancel();
-	}
+	cancel_reconnect_timer();
 	
 	LOG(INFO) << "close socket";
 	socket_state_ = SocketState::DISCONNECTED;
@@ -278,6 +280,19 @@ void TIGER_API::PushSocket::auto_reconnect()
 			socket_state_ = SocketState::DISCONNECTED;
 		}
 	});
+}
+
+void TIGER_API::PushSocket::cancel_reconnect_timer()
+{
+	if (reconnect_timer_)
+	{
+		boost::system::error_code ec;
+		reconnect_timer_->cancel(ec);
+		if (ec)
+		{
+			LOG(ERROR) << ec;
+		}
+	}
 }
 
 void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
@@ -479,10 +494,7 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 		}
 		else if (socket_state_ == SocketState::DISCONNECTED)
 		{
-			if (reconnect_timer_)
-			{
-				reconnect_timer_->cancel();
-			}
+			cancel_reconnect_timer();
 			auto_reconnect();
 		}
 
