@@ -54,6 +54,7 @@ namespace TIGER_API
 		void start_keep_alive();
 		void send_heart_beat();
 		void auto_reconnect();
+		void cancel_reconnect_timer();
 
 		void handle_connect(const boost::system::error_code& error, 
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
