@@ -1,17 +1,14 @@
 #ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
-#include <memory>
-#include <string>
 #include "boost/asio.hpp"
 #include "boost/asio/ssl.hpp"
 #include "boost/bind.hpp"
 #include "boost/pool/pool.hpp"
 #include "boost/optional.hpp"
-#include "cpprest/details/basic_types.h"
+
 #include "tigerapi/client_config.h"
 #include "push_frame_serialize.h"
-
 #include "openapi_pb/pb_source/Request.pb.h"
 #include "openapi_pb/pb_source/Response.pb.h"
 

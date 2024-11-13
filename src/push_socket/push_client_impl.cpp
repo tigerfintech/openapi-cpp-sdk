@@ -2,7 +2,6 @@
 #include "tigerapi/client_config.h"
 #include "tigerapi/push_socket/push_socket.h"
 #include "openapi_pb\pb_source\PushData.pb.h"
-#include <iostream>
 #include "google/protobuf/util/json_util.h"
 
 std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_push_client_impl(const TIGER_API::ClientConfig& client_config)

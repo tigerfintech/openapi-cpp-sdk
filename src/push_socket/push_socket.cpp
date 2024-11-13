@@ -1,13 +1,9 @@
 #include "tigerapi/push_socket/push_socket.h"
 #include "tigerapi/version.h"
-#include <iomanip>
 #include <bitset>
 #include <regex>
-#include <vector>
 #include "google/protobuf/util/json_util.h"
 #include "cpprest/json.h"
-#include <boost/endian/conversion.hpp>
-#include <boost/algorithm/string.hpp>
 
 static const int MEMORY_POOL_PAGE_SIZE = 1024;
 static const int MEMORY_POOL_BLOCK_NUM = 1024;
