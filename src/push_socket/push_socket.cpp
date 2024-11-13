@@ -60,6 +60,9 @@ void TIGER_API::PushSocket::set_inner_error_callback(const std::function<void(st
 
 void TIGER_API::PushSocket::connect()
 {
+	//启动保活监测定时任务
+	start_keep_alive();
+	
 	try
 	{
 		boost::asio::ip::tcp::resolver resolver(*io_service_);
@@ -81,6 +84,7 @@ void TIGER_API::PushSocket::connect()
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
+		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
 
@@ -265,31 +269,16 @@ void TIGER_API::PushSocket::auto_reconnect()
 		if (!error) 
 		{
 			LOG(INFO) << "start automatic reconnection";
-			try 
-			{
-				boost::asio::ip::tcp::resolver resolver(*io_service_);
-				boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
-					utility::conversions::to_utf8string(client_config_.socket_port));
-				boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-
-				init_socket();
-
-				socket_->lowest_layer().async_connect(*iterator,
-					boost::bind(&PushSocket::handle_connect, this,
-						boost::asio::placeholders::error, ++iterator));
-
-				socket_state_ = SocketState::CONNECTING;
-			}
-			catch (const boost::system::system_error& e)
-			{
-				LOG(ERROR) << e.what();
-				socket_state_ = SocketState::DISCONNECTED;
-			}
+			connect();
 		}
 		else 
 		{
 			LOG(ERROR) << "reconnection timer error: " << error.message();
 			socket_state_ = SocketState::DISCONNECTED;
+			if (reconnect_timer_)
+			{
+				reconnect_timer_->cancel();
+			}
 		}
 	});
 }
@@ -345,10 +334,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 			//设置socket选项
 			socket_->lowest_layer().set_option(boost::asio::ip::tcp::acceptor::linger(true, 0));
 			socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(true));
-
-			//启动保活监测定时任务
-			start_keep_alive();
-
+			
 			//启动异步读任务，保持IO循环的运行
 			read_head();
 
