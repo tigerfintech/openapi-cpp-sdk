@@ -85,6 +85,8 @@ namespace TIGER_API
 		void do_write(const std::string& frame);
 		void do_disconnect();
 		void on_message(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object);
+		bool send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account);
+		bool send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols, const std::string& market);
 	private:
 		std::function<void(const tigeropen::push::pb::AssetData& asset_data)> asset_changed_;
 		std::function<void(const tigeropen::push::pb::PositionData& position_data)> position_changed_;
