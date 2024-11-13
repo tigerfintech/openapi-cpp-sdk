@@ -35,7 +35,7 @@ namespace TIGER_API
 		virtual bool subscribe_position(const std::string& account) = 0;
 		virtual bool unsubscribe_position(const std::string& account) = 0;
 
-		virtual void set_order_changed_callback(const std::function<void(const tigeropen::push::pb::OrderData&)>& cb) = 0;
+		virtual void set_order_changed_callback(const std::function<void(const tigeropen::push::pb::OrderStatusData&)>& cb) = 0;
 		virtual bool subscribe_order(const std::string& account) = 0;
 		virtual bool unsubscribe_order(const std::string& account) = 0;
 

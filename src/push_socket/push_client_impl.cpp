@@ -110,7 +110,7 @@ bool TIGER_API::PushClientImpl::unsubscribe_position(const std::string& account)
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Position, account);
 }
 
-void TIGER_API::PushClientImpl::set_order_changed_callback(const std::function<void(const tigeropen::push::pb::OrderData&)>& cb)
+void TIGER_API::PushClientImpl::set_order_changed_callback(const std::function<void(const tigeropen::push::pb::OrderStatusData&)>& cb)
 {
 	order_changed_ = cb;
 }
