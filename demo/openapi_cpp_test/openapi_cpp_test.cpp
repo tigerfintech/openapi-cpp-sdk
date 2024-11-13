@@ -444,19 +444,29 @@ int main()
 	config.private_key = U("");
 	config.tiger_id = U("");
 	config.account = U("");
-    config.socket_url = U("");
-    config.socket_port = U("");
 #else
 	config.private_key = U("");
 	config.tiger_id = U("");
 	config.account = U("");
-	config.socket_url = U("");
-	config.socket_port = U("");
 #endif
 
 
 	auto push_client = IPushClient::create_push_client(config);
-	push_client->connect();
+    push_client->set_position_changed_callback([](const tigeropen::push::pb::PositionData& data) {
+        std::cout << "Position changed: " << data.DebugString() << std::endl;
+    });
+    push_client->set_order_changed_callback([](const tigeropen::push::pb::OrderData& data) {
+        std::cout << "Order changed: " << data.DebugString() << std::endl;
+    });
+    push_client->set_asset_changed_callback([](const tigeropen::push::pb::AssetData& data) {
+        std::cout << "Asset changed: " << data.DebugString() << std::endl;
+    });
+
+    push_client->subscribe_position();
+    push_client->subscribe_order();
+    push_client->subscribe_asset();
+    
+    push_client->connect();
 	std::string input;
 	while (true)
     {

@@ -2,7 +2,7 @@
 #define PUSH_SOCKET_H
 
 #ifdef _WIN32
-#define NOMINMAX  // ·ÀÖ¹ Windows ¶¨ÒåµÄ min/max ºê¸ÉÈÅ
+#define NOMINMAX  // ï¿½ï¿½Ö¹ Windows ï¿½ï¿½ï¿½ï¿½ï¿½ min/max ï¿½ï¿½ï¿½ï¿½ï¿½
 #endif
 
 #include <memory>
@@ -25,10 +25,10 @@ namespace TIGER_API
 {
 	enum class SocketState
 	{
-		CONNECTING,			//ÕýÔÚÁ¬½Ó
-		CONNECTED,			//ÒÑÁ¬½Ó
-		DISCONNECTING,		//ÕýÔÚ¶Ï¿ª
-		DISCONNECTED		//ÒÑ¶Ï¿ª
+		CONNECTING,			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		CONNECTED,			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		DISCONNECTING,		//ï¿½ï¿½ï¿½Ú¶Ï¿ï¿½
+		DISCONNECTED		//ï¿½Ñ¶Ï¿ï¿½
 	};
 	
 	class PushSocket : public std::enable_shared_from_this<PushSocket>
@@ -93,6 +93,21 @@ namespace TIGER_API
 		std::function<void()> disconnected_callback_;
 		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
 		std::function<void(std::string)> on_inner_error_callback_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> asset_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> position_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> order_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> transaction_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> query_subscribed_symbols_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_bbo_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_depth_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> kline_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> full_tick_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> tick_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> stock_top_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> option_top_changed_;
+	
+
 	private:
 		TIGER_API::ClientConfig client_config_;
 		
@@ -110,9 +125,9 @@ namespace TIGER_API
 	private:
 		std::time_t last_send_heart_beat_time_ = 0;
 		std::time_t last_io_time_ = 0;
-		int reconnect_interval_ = 10 * 1000; //µ¥Î»£ºms
-		int send_interval_ = 10 * 1000;	//µ¥Î»£ºms
-		int recv_interval_ = 10 * 1000; //µ¥Î»£ºms
+		int reconnect_interval_ = 10 * 1000; //ï¿½ï¿½Î»ï¿½ï¿½ms
+		int send_interval_ = 10 * 1000;	//ï¿½ï¿½Î»ï¿½ï¿½ms
+		int recv_interval_ = 10 * 1000; //ï¿½ï¿½Î»ï¿½ï¿½ms
 	};
 }
 #endif // PUSH_SOCKET_H

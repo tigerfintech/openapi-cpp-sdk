@@ -78,5 +78,10 @@ static utility::string_t SANDBOX_TIGER_PUBLIC_KEY = U("MIGfMA0GCSqGSIb3DQEBAQUAA
 static utility::string_t TIGER_SERVER_URL = U("https://openapi.tigerfintech.com/gateway");
 static utility::string_t SANDBOX_TIGER_SERVER_URL = U("https://openapi-sandbox.tigerfintech.com/gateway");
 
-                           
+/** 长连接推送服务地址 **/
+static utility::string_t TIGER_SOCKET_HOST = U("openapi.tigerfintech.com");
+static utility::string_t SANDBOX_TIGER_SOCKET_HOST = U("openapi-sandbox.tigerfintech.com");
+static utility::string_t TIGER_SOCKET_PORT = U("9883");
+static utility::string_t SANDBOX_TIGER_SOCKET_PORT = U("9885");
+
 #endif //CPPSDK_CONSTANTS_H

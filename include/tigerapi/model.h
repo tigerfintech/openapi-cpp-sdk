@@ -630,6 +630,112 @@ namespace TIGER_API {
         }
     };
 
+
+
+    class OPENAPI_EXPORT TradeTickItem {
+    public:
+        std::string tick_type;
+        double price;
+        int volume;
+        std::string part_code;
+        std::string part_code_name;
+        std::string cond;
+        std::string time;
+        std::string sn;
+
+    public:
+        // Constructor
+        TradeTickItem() : 
+            price(0), 
+            volume(0) 
+        {}
+
+        // Getters
+        const std::string& get_ticktype() const { return tick_type; }
+        double get_price() const { return price; }
+        int get_volume() const { return volume; }
+        const std::string& get_partcode() const { return part_code; }
+        const std::string& get_partcodename() const { return part_code_name; }
+        const std::string& get_cond() const { return cond; }
+        const std::string& get_time() const { return time; }
+        const std::string& get_sn() const { return sn; }
+
+        // Setters
+        void set_ticktype(const std::string& value) { tick_type = value; }
+        void set_price(double value) { price = value; }
+        void set_volume(int value) { volume = value; }
+        void set_partcode(const std::string& value) { part_code = value; }
+        void set_partcodename(const std::string& value) { part_code_name = value; }
+        void set_cond(const std::string& value) { cond = value; }
+        void set_time(const std::string& value) { time = value; }
+        void set_sn(const std::string& value) { sn = value; }
+
+        // toString equivalent
+        std::string to_string() const {
+            std::ostringstream oss;
+            oss << "TradeTickItem<{tick_type: " << tick_type
+            << ", price: " << price
+            << ", volume: " << volume
+            << ", part_code: " << part_code
+            << ", part_code_name: " << part_code_name
+            << ", cond: " << cond
+            << ", time: " << time
+            << ", sn: " << sn
+            << "}>";
+        return oss.str();
+        }
+    };
+
+    class OPENAPI_EXPORT TradeTick {
+    public:
+        std::string symbol;
+        std::string sec_type;
+        std::string quote_level;
+        std::string timestamp;
+        std::vector<TradeTickItem> ticks;
+
+    public:
+        // Constructor
+        TradeTick() {}
+
+        // Getters
+        const std::string& get_symbol() const { return symbol; }
+        const std::string& get_sectype() const { return sec_type; }
+        const std::string& get_quotelevel() const { return quote_level; }
+        const std::string& get_timestamp() const { return timestamp; }
+        const std::vector<TradeTickItem>& get_ticks() const { return ticks; }
+
+        // Setters
+        void set_symbol(const std::string& value) { symbol = value; }
+        void set_sectype(const std::string& value) { sec_type = value; }
+        void set_quotelevel(const std::string& value) { quote_level = value; }
+        void set_timestamp(const std::string& value) { timestamp = value; }
+        void set_ticks(const std::vector<TradeTickItem>& value) { ticks = value; }
+
+    // Add single tick
+        void addTick(const TradeTickItem& tick) {
+            ticks.push_back(tick);
+        }
+
+        // toString equivalent
+        std::string to_string() const {
+            std::ostringstream oss;
+            oss << "TradeTick<{symbol: " << symbol
+            << ", sec_type: " << sec_type
+            << ", quote_level: " << quote_level
+            << ", timestamp: " << timestamp
+            << ", ticks: [";
+        
+        for (size_t i = 0; i < ticks.size(); ++i) {
+            if (i > 0) oss << ", ";
+            oss << ticks[i].toString();
+        }
+        oss << "]}>";
+        return oss.str();
+    }
+};
+
+
 }
 
 

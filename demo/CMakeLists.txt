@@ -48,7 +48,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message("-- configuring clang options")
 #    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
     set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
