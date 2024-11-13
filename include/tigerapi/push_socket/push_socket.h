@@ -23,6 +23,9 @@ namespace TIGER_API
 {
 	enum class SocketState
 	{
+		CONNECTING,
+		CONNECTED,
+		DISCONNECTED
 		CONNECTING,			//
 		CONNECTED,			//
 		DISCONNECTED		//
@@ -89,6 +92,7 @@ namespace TIGER_API
 	private:
 		std::function<void()> connected_callback_;
 		std::function<void()> disconnected_callback_;
+		std::function<void(std::string)> on_inner_error_callback_;
 		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
 		std::function<void(std::string)> on_inner_error_callback_;
 

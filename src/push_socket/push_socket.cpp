@@ -28,13 +28,8 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
 	
-	//��ʼ���ڴ�أ���ֹ��������Ƶ�����ڴ������ͷ����������������ڴ���Ƭ����
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
-	
-	//����һ�����ʱ��
 	keep_alive_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
-	
-	//����������ʱ��
 	reconnect_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
 }
 
@@ -60,9 +55,7 @@ void TIGER_API::PushSocket::set_inner_error_callback(const std::function<void(st
 
 void TIGER_API::PushSocket::connect()
 {
-	//���������ⶨʱ����
 	start_keep_alive();
-	
 	try
 	{
 		socket_state_ = SocketState::CONNECTING;
@@ -71,8 +64,7 @@ void TIGER_API::PushSocket::connect()
 		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.get_socket_url()),
 			utility::conversions::to_utf8string(client_config_.get_socket_port()));
 		boost::asio::ip::tcp::resolver::iterator rit = resolver.resolve(query);
-
-		//��ӡdns����֮���IP��ַ
+		
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
@@ -84,7 +76,6 @@ void TIGER_API::PushSocket::connect()
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
-		//dns����ʧ��/�쳣����״̬�޸�Ϊ��DISCONNECTED
 		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
@@ -110,11 +101,9 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 		return false;
 	}
 
-	//Э����
 	TIGER_API::PushFrameEncoder encoder;
 	std::vector<unsigned char> data = encoder.encode_frame(msg);
 
-	//�첽����
 	boost::asio::async_write(*socket_,
 		boost::asio::buffer(data, data.size()),
 		boost::bind(&PushSocket::handle_write, this,
@@ -125,7 +114,7 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 
 void TIGER_API::PushSocket::init_socket()
 {
-	//����ssl�����ģ�ָ��ssl�汾
+	//set ssl version
 	boost::asio::ssl::context ssl_content(boost::asio::ssl::context::sslv23);
 #if 1
 	ssl_content.set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::single_dh_use);
@@ -134,12 +123,10 @@ void TIGER_API::PushSocket::init_socket()
 #endif
 	if (client_config_.socket_ca_certs.empty())
 	{
-		//����֤����֤
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_none);
 	}
 	else
 	{
-		//��֤֤��
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_peer);
 		ssl_content.set_verify_mode(boost::asio::ssl::context::verify_peer
 			| boost::asio::ssl::context::verify_fail_if_no_peer_cert);
@@ -213,15 +200,13 @@ void TIGER_API::PushSocket::close_session()
 
 void TIGER_API::PushSocket::send_authentication()
 {
-	//��tiger_id����private_key����ǩ��
+	//tiger_id sign by private_key
 	utility::string_t sign = Utils::get_sign(client_config_.private_key, client_config_.tiger_id);
-
-	// ����һ�� Request ����
+	
 	tigeropen::push::pb::Request request;
 	request.set_command(tigeropen::push::pb::SocketCommon_Command_CONNECT);
 	request.set_id(get_next_id());
 
-	// ����һ�� Request_Connect ����
 	tigeropen::push::pb::Request_Connect* connect_request = request.mutable_connect();
 	connect_request->set_tigerid(utility::conversions::to_utf8string(client_config_.tiger_id));
 	connect_request->set_sign(utility::conversions::to_utf8string(sign));
@@ -231,7 +216,6 @@ void TIGER_API::PushSocket::send_authentication()
 	connect_request->set_receiveinterval(client_config_.receive_interval);
 	connect_request->set_usefulltick(client_config_.user_full_tick);
 	
-	//���л�pb�����ַ���
 	std::string packed_frame = request.SerializeAsString();
 	if (!packed_frame.empty())
 	{
@@ -302,7 +286,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 		if (!error)
 		{
 			LOG(INFO) << "connect success";
-			//ssl���ӳɹ�֮����Ҫasync_handshake()���ɹ�֮����ܷ����첽��д��
+			//start handshake
 			socket_->async_handshake(boost::asio::ssl::stream_base::client,
 				boost::bind(&PushSocket::handle_handshake, this,
 					boost::asio::placeholders::error));
@@ -319,8 +303,6 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 		{
 			LOG(ERROR) << "[connect failed]: " << error;
 			dispatch_inner_error_callback(error.message());
-
-			//����ʧ�ܹرջỰ
 			close_session();
 		}
 	}
@@ -339,27 +321,19 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 		if (!error)
 		{
 			LOG(INFO) << "handshake success";
-
-			//���ֳɹ�֮������״̬ΪCONNECTED
 			socket_state_ = SocketState::CONNECTED;
-
-			//����socketѡ��
 			socket_->lowest_layer().set_option(boost::asio::ip::tcp::acceptor::linger(true, 0));
 			socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(true));
-			
-			//�����첽�����񣬱���IOѭ��������
+
 			read_head();
 
-			//������֤
 			send_authentication();
 
-			//���ӻص���ֻ�н������ӳɹ�֮��Ż�ص�
 			dispatch_connected_callback();
 		}
 		else
 		{
 			LOG(ERROR) << "[handshake failed]: " << error;
-			//����ʧ�ܹرջỰ
 			dispatch_inner_error_callback(error.message());
 			close_session();
 		}
@@ -395,7 +369,6 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 	else
 	{	
 #if	1
-		// ѭ����ӡÿ���ֽڵĶ�����ֵ
 		for (size_t i = 0; i < bytes_transferred; ++i) 
 		{
 			std::bitset<8> binary(head_buff_[i]);
@@ -405,13 +378,11 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 		last_io_time_ = time(nullptr);
 		if (frame_decoder_.push_byte(head_buff_[0]))
 		{
-			//ͷ���Ѿ���ȡ��ϣ���ʼ��ȡbody
 			auto frame_len = frame_decoder_.get_frame_size();
 			read_body(frame_len);
 		}
 		else
 		{
-			//������ȡͷ��
 			read_head();
 		}
 	}
@@ -458,17 +429,14 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 
 	if (on_message_callback_)
 	{
-		//�·�����
 		on_message_callback_(response_pb_object);
 	}
 
-	//���滹���ڴ��
 	if (recv_buff)
 	{
 		recv_buff_pool_->ordered_free(recv_buff, page_num);
 	}
 
-	//������ȡ��һ������
 	read_head();
 }
 
@@ -479,12 +447,10 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 	{
 		if (socket_state_ == SocketState::CONNECTED)
 		{
-			// ����Ƿ���Ҫ��������
 			if (now_time - last_send_heart_beat_time_ > send_interval_ / 1000)
 			{
 				send_heart_beat();
 			}
-			//������״̬�Ƿ�೤ʱ��û���յ����ݣ��Ͽ�����
 			if (now_time - last_io_time_ > recv_interval_ / 1000)
 			{
 				LOG(ERROR) << "heart beat timeout";
@@ -497,8 +463,6 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 			cancel_reconnect_timer();
 			auto_reconnect();
 		}
-
-		// �ٴ�������ʱ��
 		start_keep_alive(); 
 	}
 	else 
@@ -557,7 +521,6 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 {
 	if (response_pb_object->command() == tigeropen::push::pb::SocketCommon_Command_CONNECTED)
 	{
-		//���ӳɹ���Ϣ
 		const std::string& str_msg = response_pb_object->msg();
 		if (str_msg.find(CONNECTED_HEART_BEAT_CFG_KEY) != std::wstring::npos)
 		{
