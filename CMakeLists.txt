@@ -69,10 +69,8 @@ endif()
 
 # Project construction ...
 # src files ...
-file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" "include/tigerapi/push_socket/*.h" "include/tigerapi/*.h")
-add_library(${PROJECT_NAME}
-        src/tiger_client.cpp src/quote_client.cpp src/trade_client.cpp src/order_util.cpp
-        cpprest/ src/easylogging++.cc ${MY_SOURCE_FILES})
+file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" "include/tigerapi/push_socket/*.h" "include/tigerapi/*.h" "src/*.cpp" "src/push_socket/*.cpp")
+add_library(${PROJECT_NAME} cpprest/  ${MY_SOURCE_FILES})
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})

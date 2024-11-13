@@ -87,12 +87,12 @@ void TIGER_API::PushClientImpl::set_asset_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_asset(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Asset, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Asset, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
 }
 
 void TIGER_API::PushClientImpl::set_position_changed_callback(const std::function<void(const tigeropen::push::pb::PositionData&)>& cb)
@@ -102,12 +102,12 @@ void TIGER_API::PushClientImpl::set_position_changed_callback(const std::functio
 
 bool TIGER_API::PushClientImpl::subscribe_position(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Position, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_position(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Position, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account);
 }
 
 void TIGER_API::PushClientImpl::set_order_changed_callback(const std::function<void(const tigeropen::push::pb::OrderStatusData&)>& cb)
@@ -117,12 +117,12 @@ void TIGER_API::PushClientImpl::set_order_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_order(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Order, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OrderStatus, account);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_order(const std::string& account)
 {
-	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Order, account);
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OrderStatus  , account);
 }
 
 void TIGER_API::PushClientImpl::set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteData&)>& cb)
@@ -132,13 +132,13 @@ void TIGER_API::PushClientImpl::set_quote_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
 }
 
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
 }
 
 void TIGER_API::PushClientImpl::set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteData&)>& cb)
@@ -148,12 +148,12 @@ void TIGER_API::PushClientImpl::set_quote_bbo_changed_callback(const std::functi
 
 bool TIGER_API::PushClientImpl::subscribe_quote_bbo(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote_bbo(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
 }
 
 void TIGER_API::PushClientImpl::set_quote_depth_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteDepthData&)>& cb)
@@ -163,12 +163,12 @@ void TIGER_API::PushClientImpl::set_quote_depth_changed_callback(const std::func
 
 bool TIGER_API::PushClientImpl::subscribe_quote_depth(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_QuoteDepth, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols);
 }	
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote_depth(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_QuoteDepth, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols);
 }
 
 void TIGER_API::PushClientImpl::set_kline_changed_callback(const std::function<void(const tigeropen::push::pb::KlineData&)>& cb)
@@ -178,12 +178,12 @@ void TIGER_API::PushClientImpl::set_kline_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_kline(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Kline, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols);
 }	
 
 bool TIGER_API::PushClientImpl::unsubscribe_kline(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Kline, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols);
 }
 
 void TIGER_API::PushClientImpl::set_full_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb)
@@ -193,12 +193,12 @@ void TIGER_API::PushClientImpl::set_full_tick_changed_callback(const std::functi
 
 bool TIGER_API::PushClientImpl::subscribe_full_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
 }		
 
 bool TIGER_API::PushClientImpl::unsubscribe_full_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
 }
 
 void TIGER_API::PushClientImpl::set_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb)
@@ -208,22 +208,22 @@ void TIGER_API::PushClientImpl::set_tick_changed_callback(const std::function<vo
 
 bool TIGER_API::PushClientImpl::subscribe_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
 }
 
 bool TIGER_API::PushClientImpl::subscribe_market(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, {}, market);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_market(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_Quote, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, {}, market);
 }
 
 void TIGER_API::PushClientImpl::set_stock_top_changed_callback(const std::function<void(const tigeropen::push::pb::StockTopData&)>& cb)
@@ -233,12 +233,12 @@ void TIGER_API::PushClientImpl::set_stock_top_changed_callback(const std::functi
 
 bool TIGER_API::PushClientImpl::subscribe_stock_top(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_StockTop, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_StockTop, {}, market);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_stock_top(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_StockTop, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_StockTop, {}, market);
 }
 
 void TIGER_API::PushClientImpl::set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb)
@@ -248,12 +248,12 @@ void TIGER_API::PushClientImpl::set_option_top_changed_callback(const std::funct
 
 bool TIGER_API::PushClientImpl::subscribe_option_top(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_OptionTop, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OptionTop, {}, market);
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_option_top(const std::string& market)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType_OptionTop, {}, market);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OptionTop, {}, market);
 }
 
 bool TIGER_API::PushClientImpl::send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols, const std::string& market)
@@ -280,6 +280,11 @@ bool TIGER_API::PushClientImpl::send_quote_request(tigeropen::push::pb::SocketCo
 
 	send_frame(request);
 	return true;
+}
+
+bool TIGER_API::PushClientImpl::send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols)
+{
+	return send_quote_request(command, datatype, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account)

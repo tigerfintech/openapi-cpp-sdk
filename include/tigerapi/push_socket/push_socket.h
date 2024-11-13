@@ -1,9 +1,6 @@
 #ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
-#ifdef _WIN32
-#define NOMINMAX  // ��ֹ Windows ����� min/max ����� 
-#endif
 
 #include <memory>
 #include <string>
