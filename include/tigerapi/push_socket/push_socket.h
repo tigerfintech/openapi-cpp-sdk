@@ -26,9 +26,6 @@ namespace TIGER_API
 		CONNECTING,
 		CONNECTED,
 		DISCONNECTED
-		CONNECTING,			//
-		CONNECTED,			//
-		DISCONNECTED		//
 	};
 	
 	class PushSocket : public std::enable_shared_from_this<PushSocket>
@@ -94,7 +91,6 @@ namespace TIGER_API
 		std::function<void()> disconnected_callback_;
 		std::function<void(std::string)> on_inner_error_callback_;
 		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
-		std::function<void(std::string)> on_inner_error_callback_;
 
 
 	private:
