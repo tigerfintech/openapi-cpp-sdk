@@ -1,23 +1,14 @@
 #ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
-#ifdef _WIN32
-#define NOMINMAX  // 防止 Windows 定义的 min/max 宏干扰
-#endif
-
-#include <memory>
-#include <string>
 #include "boost/asio.hpp"
-#include "boost/asio/io_service.hpp"
-#include "boost/asio/ip/tcp.hpp"
 #include "boost/asio/ssl.hpp"
 #include "boost/bind.hpp"
 #include "boost/pool/pool.hpp"
-#include <boost/optional.hpp>
-#include "cpprest/details/basic_types.h"
+#include "boost/optional.hpp"
+
 #include "tigerapi/client_config.h"
 #include "push_frame_serialize.h"
-
 #include "openapi_pb/pb_source/Request.pb.h"
 #include "openapi_pb/pb_source/Response.pb.h"
 
@@ -27,7 +18,6 @@ namespace TIGER_API
 	{
 		CONNECTING,			//正在连接
 		CONNECTED,			//已连接
-		DISCONNECTING,		//正在断开
 		DISCONNECTED		//已断开
 	};
 	
@@ -54,7 +44,7 @@ namespace TIGER_API
 		void connect();
 		void disconnect();
 		bool send_message(const std::string& msg);
-		uint32_t get_next_id();
+		unsigned int get_next_id();
 	private:
 		void init_socket();
 		bool verify_certificate(bool preverified,
@@ -64,20 +54,21 @@ namespace TIGER_API
 		void start_keep_alive();
 		void send_heart_beat();
 		void auto_reconnect();
+		void cancel_reconnect_timer();
 
 		void handle_connect(const boost::system::error_code& error, 
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 		void handle_handshake(const boost::system::error_code& error);
 		void handle_write(const boost::system::error_code& error,
 			size_t bytes_transferred,
-			unsigned int frame_len);
+			size_t frame_len);
 		void handle_read_head(const boost::system::error_code& error,
 			size_t bytes_transferred);
 		void handle_read_body(const boost::system::error_code& error,
 			size_t bytes_transferred,
 			char* recv_buff,
 			int page_num,
-			unsigned int frame_len);
+			size_t frame_len);
 		void handle_timer(const boost::system::error_code& error);
 
 		void read_head();
@@ -102,7 +93,7 @@ namespace TIGER_API
 		std::shared_ptr<boost::asio::deadline_timer> reconnect_timer_;
 		std::atomic<SocketState> socket_state_ = SocketState::DISCONNECTED;
 
-		std::atomic<uint32_t> id_counter_ = 0;
+		std::atomic<unsigned int> id_counter_ = 0;
 
 		char head_buff_[1024];
 		boost::shared_ptr<boost::pool<>> recv_buff_pool_;
@@ -110,9 +101,9 @@ namespace TIGER_API
 	private:
 		std::time_t last_send_heart_beat_time_ = 0;
 		std::time_t last_io_time_ = 0;
-		int reconnect_interval_ = 10 * 1000; //单位：ms
-		int send_interval_ = 10 * 1000;	//单位：ms
-		int recv_interval_ = 10 * 1000; //单位：ms
+		int reconnect_interval_ = 10 * 1000;	//单位：ms
+		int send_interval_ = 10 * 1000;			//单位：ms
+		int recv_interval_ = 10 * 1000;			//单位：ms
 	};
 }
 #endif // PUSH_SOCKET_H

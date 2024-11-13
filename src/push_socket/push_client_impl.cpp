@@ -2,7 +2,6 @@
 #include "tigerapi/client_config.h"
 #include "tigerapi/push_socket/push_socket.h"
 #include "openapi_pb\pb_source\PushData.pb.h"
-#include <iostream>
 #include "google/protobuf/util/json_util.h"
 
 std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_push_client_impl(const TIGER_API::ClientConfig& client_config)
@@ -21,9 +20,8 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 }
 
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
-	:client_config_(client_config)
 {
-
+	socket_ = PushSocket::create_push_socket(&io_service_, client_config);
 }
 
 void TIGER_API::PushClientImpl::connect()
@@ -32,7 +30,7 @@ void TIGER_API::PushClientImpl::connect()
 	//启动工作线程
 	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{
-		socket_ = PushSocket::create_push_socket(&io_service_, client_config_);
+		
 		socket_->connect();
 
 		LOG(INFO) << "io_service run on work thread";
@@ -48,26 +46,17 @@ void TIGER_API::PushClientImpl::disconnect()
 
 void TIGER_API::PushClientImpl::set_connected_callback(const std::function<void()>& cb)
 {
-	if (socket_)
-	{
-		socket_->set_connected_callback(cb);
-	}
+	socket_->set_connected_callback(cb);
 }
 
 void TIGER_API::PushClientImpl::set_disconnected_callback(const std::function<void()>& cb)
 {
-	if (socket_)
-	{
-		socket_->set_disconnected_callback(cb);
-	}
+	socket_->set_disconnected_callback(cb);
 }
 
 void TIGER_API::PushClientImpl::set_inner_error_callback(const std::function<void(std::string)>& cb)
 {
-	if (socket_)
-	{
-		socket_->set_inner_error_callback(cb);
-	}
+	socket_->set_inner_error_callback(cb);
 }
 
 void TIGER_API::PushClientImpl::set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb)
@@ -77,7 +66,7 @@ void TIGER_API::PushClientImpl::set_asset_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_asset(const std::string& account)
 {
-	if (!socket_)
+	if (account.empty())
 	{
 		return false;
 	}
@@ -100,7 +89,7 @@ bool TIGER_API::PushClientImpl::subscribe_asset(const std::string& account)
 
 bool TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 {
-	if (!socket_)
+	if (account.empty())
 	{
 		return false;
 	}
@@ -144,18 +133,12 @@ bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& r
 
 void TIGER_API::PushClientImpl::do_write(const std::string& frame)
 {
-	if (socket_)
-	{
-		socket_->send_message(frame);
-	}
+	socket_->send_message(frame);
 }
 
 void TIGER_API::PushClientImpl::do_disconnect()
 {
-	if (socket_)
-	{
-		socket_->disconnect();
-	}
+	socket_->disconnect();
 }
 
 void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)

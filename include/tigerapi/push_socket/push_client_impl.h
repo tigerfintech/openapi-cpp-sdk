@@ -38,7 +38,6 @@ namespace TIGER_API
 	private:
 		std::function<void(const tigeropen::push::pb::AssetData&)> asset_changed_;
 	private:
-		ClientConfig client_config_;
 		boost::asio::io_service io_service_;
 		std::shared_ptr<TIGER_API::PushSocket> socket_;
 		std::shared_ptr<std::thread> worker_thread_;

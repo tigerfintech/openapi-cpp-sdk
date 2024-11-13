@@ -1,13 +1,9 @@
 #include "tigerapi/push_socket/push_socket.h"
 #include "tigerapi/version.h"
-#include <iomanip>
 #include <bitset>
 #include <regex>
-#include <vector>
 #include "google/protobuf/util/json_util.h"
 #include "cpprest/json.h"
-#include <boost/endian/conversion.hpp>
-#include <boost/algorithm/string.hpp>
 
 static const int MEMORY_POOL_PAGE_SIZE = 1024;
 static const int MEMORY_POOL_BLOCK_NUM = 1024;
@@ -31,10 +27,7 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
 	client_config_ = client_config;
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
-
-	init_socket();
-	socket_->set_verify_callback(boost::bind(&PushSocket::verify_certificate, this, _1, _2));
-
+	
 	//初始化内存池，防止接收数据频繁的内存分配和释放引起的性能问题和内存碎片问题
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
 	
@@ -67,8 +60,13 @@ void TIGER_API::PushSocket::set_inner_error_callback(const std::function<void(st
 
 void TIGER_API::PushSocket::connect()
 {
+	//启动保活监测定时任务
+	start_keep_alive();
+	
 	try
 	{
+		socket_state_ = SocketState::CONNECTING;
+
 		boost::asio::ip::tcp::resolver resolver(*io_service_);
 		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
 			utility::conversions::to_utf8string(client_config_.socket_port));
@@ -78,14 +76,16 @@ void TIGER_API::PushSocket::connect()
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
+		init_socket();
+
 		socket_->lowest_layer().async_connect(*rit,
 			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error, ++rit));
-
-		socket_state_ = SocketState::CONNECTING;
 	}
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
+		//dns解析失败/异常连接状态修改为：DISCONNECTED
+		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
 
@@ -93,9 +93,13 @@ void TIGER_API::PushSocket::disconnect()
 {
 	if (keep_alive_timer_)
 	{
-		keep_alive_timer_->cancel();
+		boost::system::error_code ec;
+		keep_alive_timer_->cancel(ec);
+		if (ec)
+		{
+			LOG(ERROR) << ec;
+		}
 	}
-
 	close_session();
 }
 
@@ -143,6 +147,8 @@ void TIGER_API::PushSocket::init_socket()
 	}
 
 	socket_.emplace(*io_service_, ssl_content);
+
+	socket_->set_verify_callback(boost::bind(&PushSocket::verify_certificate, this, _1, _2));
 }
 
 bool TIGER_API::PushSocket::verify_certificate(bool preverified, boost::asio::ssl::verify_context& ctx)
@@ -163,13 +169,15 @@ bool TIGER_API::PushSocket::verify_certificate(bool preverified, boost::asio::ss
 	return preverified;
 }
 
-uint32_t TIGER_API::PushSocket::get_next_id()
+unsigned int TIGER_API::PushSocket::get_next_id()
 {
 	return ++id_counter_;
 }
 
 void TIGER_API::PushSocket::close_session()
 {
+	cancel_reconnect_timer();
+	
 	LOG(INFO) << "close socket";
 	socket_state_ = SocketState::DISCONNECTED;
 
@@ -182,12 +190,14 @@ void TIGER_API::PushSocket::close_session()
 			socket_->lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 			if (ec)
 			{
+				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
 
 			socket_->lowest_layer().close(ec);
 			if (ec)
 			{
+				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
 		}
@@ -254,7 +264,7 @@ void TIGER_API::PushSocket::send_heart_beat()
 
 void TIGER_API::PushSocket::auto_reconnect()
 {
-	LOG(INFO) << "try reconnecting after" << reconnect_interval_ / 1000 << "seconds...";
+	LOG(INFO) << "try reconnecting after " << reconnect_interval_ / 1000 << " seconds...";
 	socket_state_  = SocketState::CONNECTING;
 	reconnect_timer_->expires_from_now(boost::posix_time::milliseconds(reconnect_interval_));
 	reconnect_timer_->async_wait([this](const boost::system::error_code& error) 
@@ -262,26 +272,7 @@ void TIGER_API::PushSocket::auto_reconnect()
 		if (!error) 
 		{
 			LOG(INFO) << "start automatic reconnection";
-			try 
-			{
-				boost::asio::ip::tcp::resolver resolver(*io_service_);
-				boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
-					utility::conversions::to_utf8string(client_config_.socket_port));
-				boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-
-				init_socket();
-
-				socket_->lowest_layer().async_connect(*iterator,
-					boost::bind(&PushSocket::handle_connect, this,
-						boost::asio::placeholders::error, ++iterator));
-
-				socket_state_ = SocketState::CONNECTING;
-			}
-			catch (const boost::system::system_error& e)
-			{
-				LOG(ERROR) << e.what();
-				socket_state_ = SocketState::DISCONNECTED;
-			}
+			connect();
 		}
 		else 
 		{
@@ -289,6 +280,19 @@ void TIGER_API::PushSocket::auto_reconnect()
 			socket_state_ = SocketState::DISCONNECTED;
 		}
 	});
+}
+
+void TIGER_API::PushSocket::cancel_reconnect_timer()
+{
+	if (reconnect_timer_)
+	{
+		boost::system::error_code ec;
+		reconnect_timer_->cancel(ec);
+		if (ec)
+		{
+			LOG(ERROR) << ec;
+		}
+	}
 }
 
 void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
@@ -342,10 +346,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 			//设置socket选项
 			socket_->lowest_layer().set_option(boost::asio::ip::tcp::acceptor::linger(true, 0));
 			socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(true));
-
-			//启动保活监测定时任务
-			start_keep_alive();
-
+			
 			//启动异步读任务，保持IO循环的运行
 			read_head();
 
@@ -357,7 +358,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 		}
 		else
 		{
-			LOG(ERROR) << "Handshake Failed: " << error;
+			LOG(ERROR) << "[handshake failed]: " << error;
 			//握手失败关闭会话
 			dispatch_inner_error_callback(error.message());
 			close_session();
@@ -373,7 +374,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 
 void TIGER_API::PushSocket::handle_write(const boost::system::error_code& error,
 	size_t bytes_transferred,
-	unsigned int frame_len)
+	size_t frame_len)
 {
 	if (error || frame_len != bytes_transferred)
 	{
@@ -392,8 +393,7 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 		close_session();
 	}
 	else
-	{
-		
+	{	
 #if	1
 		// 循环打印每个字节的二进制值
 		for (size_t i = 0; i < bytes_transferred; ++i) 
@@ -421,13 +421,17 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 	size_t bytes_transferred,
 	char* recv_buff,
 	int page_num,
-	unsigned int frame_len)
+	size_t frame_len)
 {
 	if (error || 0 == bytes_transferred || bytes_transferred != frame_len)
 	{
 		LOG(ERROR) << "[read body failed]: " << error;
 		dispatch_inner_error_callback(error.message());
 		close_session();
+		if (recv_buff)
+		{
+			recv_buff_pool_->ordered_free(recv_buff, page_num);
+		}
 		return;
 	}
 
@@ -437,6 +441,10 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 	if (!response_pb_object->ParseFromArray(recv_buff, frame_len))
 	{
 		close_session();
+		if (recv_buff)
+		{
+			recv_buff_pool_->ordered_free(recv_buff, page_num);
+		}
 		return;
 	}
 #if 1
@@ -486,6 +494,7 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 		}
 		else if (socket_state_ == SocketState::DISCONNECTED)
 		{
+			cancel_reconnect_timer();
 			auto_reconnect();
 		}
 
@@ -507,7 +516,7 @@ void TIGER_API::PushSocket::read_head()
 
 void TIGER_API::PushSocket::read_body(size_t frame_len)
 {
-	unsigned int page_num = frame_len / MEMORY_POOL_PAGE_SIZE + 1;
+	size_t page_num = frame_len / MEMORY_POOL_PAGE_SIZE + 1;
 
 	char* recv_buff = (char*)recv_buff_pool_->ordered_malloc(page_num);
 	if (!recv_buff)
