@@ -27,7 +27,6 @@ TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_
 void TIGER_API::PushClientImpl::connect()
 {
 	LOG(INFO) << "create a worker thread to perform asynchronous network connections";
-	//启动工作线程
 	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{
 		
@@ -40,7 +39,7 @@ void TIGER_API::PushClientImpl::connect()
 
 void TIGER_API::PushClientImpl::disconnect()
 {
-	//跨线程调用，需要异步投递任务
+	//post task to work thread
 	io_service_.post(boost::bind(&PushClientImpl::do_disconnect, this));
 }
 
@@ -112,7 +111,6 @@ bool TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 
 bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& request)
 {
-	//序列化pb对象到字符串
 	std::string packed_frame = request.SerializeAsString();
 	if (packed_frame.empty())
 	{
@@ -124,8 +122,6 @@ bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& r
 	MessageToJsonString(request, &packed_frame_json, options).ok();
 
 	LOG(DEBUG) << "send frame:" << packed_frame_json;
-
-	//跨线程，异步投递任务
 	io_service_.post(boost::bind(&PushClientImpl::do_write, this, packed_frame));
 
 	return true;
