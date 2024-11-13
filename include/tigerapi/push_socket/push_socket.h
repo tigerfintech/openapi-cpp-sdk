@@ -91,20 +91,7 @@ namespace TIGER_API
 		std::function<void()> disconnected_callback_;
 		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
 		std::function<void(std::string)> on_inner_error_callback_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> asset_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> position_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> order_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> transaction_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> query_subscribed_symbols_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_bbo_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> quote_depth_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> kline_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> full_tick_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> tick_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> stock_top_changed_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> option_top_changed_;
-	
+
 
 	private:
 		TIGER_API::ClientConfig client_config_;

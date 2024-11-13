@@ -19,6 +19,18 @@ namespace TIGER_API
 		PushClientImpl& operator=(const PushClientImpl&) = delete;
 	private:
 		PushClientImpl(const TIGER_API::ClientConfig& client_config);
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::AssetData>& asset_data)> asset_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::PositionData>& position_data)> position_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::OrderStatusData>& order_data)> order_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::QuoteData>& quote_data)> quote_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::QuoteData>& quote_bbo_data)> quote_bbo_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::QuoteDepthData>& quote_depth_data)> quote_depth_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::KlineData>& kline_data)> kline_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::TickData>& full_tick_data)> full_tick_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::TickData>& tick_data)> tick_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::StockTopData>& stock_top_data)> stock_top_changed_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::OptionTopData>& option_top_data)> option_top_changed_;
+	
 	public:
 		virtual void connect() override;
 		virtual void disconnect() override;
