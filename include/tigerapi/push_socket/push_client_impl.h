@@ -89,6 +89,7 @@ namespace TIGER_API
 		std::function<void(const tigeropen::push::pb::AssetData& asset_data)> asset_changed_;
 		std::function<void(const tigeropen::push::pb::PositionData& position_data)> position_changed_;
 		std::function<void(const tigeropen::push::pb::OrderStatusData& order_status_data)> order_changed_;
+		std::function<void(const std::vector<std::string>& symbols)> query_subscribed_symbols_changed_;
 		std::function<void(const tigeropen::push::pb::QuoteData& quote_data)> quote_changed_;
 		std::function<void(const tigeropen::push::pb::QuoteData& quote_bbo_data)> quote_bbo_changed_;
 		std::function<void(const tigeropen::push::pb::QuoteDepthData& quote_depth_data)> quote_depth_changed_;
