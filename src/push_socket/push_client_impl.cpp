@@ -598,15 +598,15 @@ tigeropen::push::pb::QuoteBboData* TIGER_API::PushClientImpl::convert_to_bbo_dat
 tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const tigeropen::push::pb::TradeTickData& data) {
     // Get basic data
     std::string symbol = data.symbol;
-    double priceOffset = std::pow(10, data.priceoffset);
-    double priceBase = data.pricebase;
+    double price_offset = std::pow(10, data.priceoffset);
+    double price_base = data.pricebase;
     int64_t timestamp = data.timestamp;
-    int secType = data.sectype;
-    int quoteLevel = data.quotelevel;
+    int sec_type = data.sectype;
+    int quote_level = data.quotelevel;
     int64_t sn = data.sn;
 
     // Calculate size for vectors
-    size_t dataSize = data.time_size;  // Assuming all arrays are same size
+    size_t data_size = data.time_size;  // Assuming all arrays are same size
     
     // Process all parallel arrays
     std::vector<double> prices;
@@ -619,82 +619,82 @@ tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const ti
     std::vector<int64_t> sn_list;
     
     // Process prices
-    prices.reserve(dataSize);
+    prices.reserve(data_size);
     for (const auto& price : data.price()) {
-        prices.push_back((static_cast<double>(price) + priceBase) / priceOffset);
+        prices.push_back((static_cast<double>(price) + price_base) / price_offset);
     }
 
     // Process times (accumulate)
-    times.reserve(dataSize);
-    int64_t timeAccum = 0;
+    times.reserve(data_size);
+    int64_t time_accum = 0;
     for (const auto& time : data.time()) {
-        timeAccum += time;
-        times.push_back(timeAccum);
+        time_accum += time;
+        times.push_back(time_accum);
     }
 
     // Process volumes
-    volumes.reserve(dataSize);
+    volumes.reserve(data_size);
     for (const auto& vol : data.volume()) {
         volumes.push_back(static_cast<int64_t>(vol));
     }
 
     // Process tick types
-    tick_types.reserve(dataSize);
+    tick_types.reserve(data_size);
     if (data.type_size() > 0) {
         for (const auto& type : data.type()) {
             tick_types.push_back(type);
         }
     } else {
-        tick_types.resize(dataSize, 0);  // Default value
+        tick_types.resize(data_size, 0);  // Default value
     }
 
     // Process part codes
-    part_codes.reserve(dataSize);
-    part_code_names.reserve(dataSize);
+    part_codes.reserve(data_size);
+    part_code_names.reserve(data_size);
     if (data.part_code_size() > 0) {
         for (const auto& code : data.part_code()) {
             part_codes.push_back(get_part_code(code));
             part_code_names.push_back(get_part_code_name(code));
         }
     } else {
-        part_codes.resize(dataSize);
-        part_code_names.resize(dataSize);
+        part_codes.resize(data_size);
+        part_code_names.resize(data_size);
     }
 
     // Process conditions
-    conditions.reserve(dataSize);
-    auto cond_map = get_trade_condition_map(quoteLevel);
+    conditions.reserve(data_size);
+    auto cond_map = get_trade_condition_map(quote_level);
     if (data.cond_size() > 0) {
         for (const auto& cond : data.cond()) {
             conditions.push_back(get_trade_condition(cond, cond_map));
         }
     } else {
-        conditions.resize(dataSize);
+        conditions.resize(data_size);
     }
 
     // Generate sequential SN list
-    sn_list.reserve(dataSize);
-    for (size_t i = 0; i < dataSize; ++i) {
+    sn_list.reserve(data_size);
+    for (size_t i = 0; i < data_size; ++i) {
         sn_list.push_back(sn + i);
     }
 
     // Create result container
     tigeropen::push::pb::TradeTick result;
     result.set_symbol(symbol);
-    result.set_sectype(secType);
-    result.set_quotelevel(quoteLevel);
+    result.set_sectype(sec_type);
+    result.set_quotelevel(quote_level);
     result.set_timestamp(timestamp);
 
     // Process all items
-    for (size_t i = 0; i < dataSize; ++i) {
+    for (size_t i = 0; i < data_size; ++i) {
         if (i < data.merged_vols_size() && data.merged_vols(i).vol_size() > 0) {
             // Handle merged volumes
-            const auto& mergedVol = data.merged_vols(i);
-            for (int j = 0; j < mergedVol.vol_size(); ++j) {
+            const auto& merged_vol = data.merged_vols(i);
+            for (int j = 0; j < merged_vol.vol_size(); ++j) {
                 auto* tick = result.add_ticks();
                 tick.set_ticktype(tick_types[i]);
                 tick.set_price(prices[i]);
-                tick.set_volume(mergedVol.vol(j));
+                tick.set_volume(merged_vol.vol(j));
                 tick.set_partcode(part_codes[i]);
                 tick.set_partcodename(part_code_names[i]);
                 tick.set_cond(conditions[i]);
