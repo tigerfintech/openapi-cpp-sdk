@@ -159,7 +159,7 @@ bool TIGER_API::PushSocket::verify_certificate(bool preverified, boost::asio::ss
 	return preverified;
 }
 
-uint32_t TIGER_API::PushSocket::get_next_id()
+unsigned int TIGER_API::PushSocket::get_next_id()
 {
 	return ++id_counter_;
 }
@@ -374,7 +374,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 
 void TIGER_API::PushSocket::handle_write(const boost::system::error_code& error,
 	size_t bytes_transferred,
-	unsigned int frame_len)
+	size_t frame_len)
 {
 	if (error || frame_len != bytes_transferred)
 	{
@@ -422,7 +422,7 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 	size_t bytes_transferred,
 	char* recv_buff,
 	int page_num,
-	unsigned int frame_len)
+	size_t frame_len)
 {
 	if (error || 0 == bytes_transferred || bytes_transferred != frame_len)
 	{
@@ -508,7 +508,7 @@ void TIGER_API::PushSocket::read_head()
 
 void TIGER_API::PushSocket::read_body(size_t frame_len)
 {
-	unsigned int page_num = frame_len / MEMORY_POOL_PAGE_SIZE + 1;
+	size_t page_num = frame_len / MEMORY_POOL_PAGE_SIZE + 1;
 
 	char* recv_buff = (char*)recv_buff_pool_->ordered_malloc(page_num);
 	if (!recv_buff)
