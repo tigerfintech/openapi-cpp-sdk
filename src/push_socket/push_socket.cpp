@@ -183,12 +183,14 @@ void TIGER_API::PushSocket::close_session()
 			socket_->lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 			if (ec)
 			{
+				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
 
 			socket_->lowest_layer().close(ec);
 			if (ec)
 			{
+				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
 		}
