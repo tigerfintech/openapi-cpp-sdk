@@ -4,6 +4,15 @@
 #include <functional>
 #include "tigerapi/win32.h"
 #include "openapi_pb/pb_source/AssetData.pb.h"
+#include "openapi_pb/pb_source/PositionData.pb.h"
+#include "openapi_pb/pb_source/OrderData.pb.h"
+#include "openapi_pb/pb_source/QuoteData.pb.h"
+#include "openapi_pb/pb_source/KlineData.pb.h"
+#include "openapi_pb/pb_source/TickData.pb.h"
+#include "openapi_pb/pb_source/StockTopData.pb.h"
+#include "openapi_pb/pb_source/OptionTopData.pb.h"
+#include "openapi_pb/pb_source/QuoteDepthData.pb.h"
+
 
 namespace TIGER_API
 {

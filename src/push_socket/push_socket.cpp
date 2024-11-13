@@ -28,13 +28,13 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
 	
-	//³õÊ¼»¯ÄÚ´æ³Ø£¬·ÀÖ¹½ÓÊÕÊý¾ÝÆµ·±µÄÄÚ´æ·ÖÅäºÍÊÍ·ÅÒýÆðµÄÐÔÄÜÎÊÌâºÍÄÚ´æËéÆ¬ÎÊÌâ
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú´ï¿½Ø£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
 	
-	//´´½¨Ò»¸ö±£»î¶¨Ê±Æ÷
+	//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½î¶¨Ê±ï¿½ï¿½
 	keep_alive_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
 	
-	//´´½¨ÖØÁ¬¶¨Ê±Æ÷
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 	reconnect_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
 }
 
@@ -60,7 +60,7 @@ void TIGER_API::PushSocket::set_inner_error_callback(const std::function<void(st
 
 void TIGER_API::PushSocket::connect()
 {
-	//Æô¶¯±£»î¼à²â¶¨Ê±ÈÎÎñ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¶¨Ê±ï¿½ï¿½ï¿½ï¿½
 	start_keep_alive();
 	
 	try
@@ -68,11 +68,11 @@ void TIGER_API::PushSocket::connect()
 		socket_state_ = SocketState::CONNECTING;
 
 		boost::asio::ip::tcp::resolver resolver(*io_service_);
-		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
-			utility::conversions::to_utf8string(client_config_.socket_port));
+		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.get_socket_url()),
+			utility::conversions::to_utf8string(client_config_.get_socket_port()));
 		boost::asio::ip::tcp::resolver::iterator rit = resolver.resolve(query);
 
-		//´òÓ¡dns½âÎöÖ®ºóµÄIPµØÖ·
+		//ï¿½ï¿½Ó¡dnsï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½IPï¿½ï¿½Ö·
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
@@ -84,7 +84,7 @@ void TIGER_API::PushSocket::connect()
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
-		//dns½âÎöÊ§°Ü/Òì³£Á¬½Ó×´Ì¬ÐÞ¸ÄÎª£ºDISCONNECTED
+		//dnsï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½/ï¿½ì³£ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Þ¸ï¿½Îªï¿½ï¿½DISCONNECTED
 		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
@@ -110,11 +110,11 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 		return false;
 	}
 
-	//Ð­Òé·â°ü
+	//Ð­ï¿½ï¿½ï¿½ï¿½
 	TIGER_API::PushFrameEncoder encoder;
 	std::vector<unsigned char> data = encoder.encode_frame(msg);
 
-	//Òì²½·¢ËÍ
+	//ï¿½ì²½ï¿½ï¿½ï¿½ï¿½
 	boost::asio::async_write(*socket_,
 		boost::asio::buffer(data, data.size()),
 		boost::bind(&PushSocket::handle_write, this,
@@ -125,7 +125,7 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 
 void TIGER_API::PushSocket::init_socket()
 {
-	//´´½¨sslÉÏÏÂÎÄ£¬Ö¸¶¨ssl°æ±¾
+	//ï¿½ï¿½ï¿½ï¿½sslï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½Ö¸ï¿½ï¿½sslï¿½æ±¾
 	boost::asio::ssl::context ssl_content(boost::asio::ssl::context::sslv23);
 #if 1
 	ssl_content.set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::single_dh_use);
@@ -134,12 +134,12 @@ void TIGER_API::PushSocket::init_socket()
 #endif
 	if (client_config_.socket_ca_certs.empty())
 	{
-		//½ûÓÃÖ¤ÊéÑéÖ¤
+		//ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Ö¤
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_none);
 	}
 	else
 	{
-		//ÑéÖ¤Ö¤Êé
+		//ï¿½ï¿½Ö¤Ö¤ï¿½ï¿½
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_peer);
 		ssl_content.set_verify_mode(boost::asio::ssl::context::verify_peer
 			| boost::asio::ssl::context::verify_fail_if_no_peer_cert);
@@ -213,15 +213,15 @@ void TIGER_API::PushSocket::close_session()
 
 void TIGER_API::PushSocket::send_authentication()
 {
-	//¶Ôtiger_id¸ù¾Ýprivate_key½øÐÐÇ©Ãû
+	//ï¿½ï¿½tiger_idï¿½ï¿½ï¿½ï¿½private_keyï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
 	utility::string_t sign = Utils::get_sign(client_config_.private_key, client_config_.tiger_id);
 
-	// ´´½¨Ò»¸ö Request ¶ÔÏó
+	// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ Request ï¿½ï¿½ï¿½ï¿½
 	tigeropen::push::pb::Request request;
 	request.set_command(tigeropen::push::pb::SocketCommon_Command_CONNECT);
 	request.set_id(get_next_id());
 
-	// ´´½¨Ò»¸ö Request_Connect ¶ÔÏó
+	// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ Request_Connect ï¿½ï¿½ï¿½ï¿½
 	tigeropen::push::pb::Request_Connect* connect_request = request.mutable_connect();
 	connect_request->set_tigerid(utility::conversions::to_utf8string(client_config_.tiger_id));
 	connect_request->set_sign(utility::conversions::to_utf8string(sign));
@@ -231,7 +231,7 @@ void TIGER_API::PushSocket::send_authentication()
 	connect_request->set_receiveinterval(client_config_.receive_interval);
 	connect_request->set_usefulltick(client_config_.user_full_tick);
 	
-	//ÐòÁÐ»¯pb¶ÔÏóµ½×Ö·û´®
+	//ï¿½ï¿½ï¿½Ð»ï¿½pbï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
 	std::string packed_frame = request.SerializeAsString();
 	if (!packed_frame.empty())
 	{
@@ -302,7 +302,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 		if (!error)
 		{
 			LOG(INFO) << "connect success";
-			//sslÁ¬½Ó³É¹¦Ö®ºóÐèÒªasync_handshake()£¬³É¹¦Ö®ºó²ÅÄÜ·¢ÆðÒì²½¶ÁÐ´¡£
+			//sslï¿½ï¿½ï¿½Ó³É¹ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Òªasync_handshake()ï¿½ï¿½ï¿½É¹ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Ü·ï¿½ï¿½ï¿½ï¿½ì²½ï¿½ï¿½Ð´ï¿½ï¿½
 			socket_->async_handshake(boost::asio::ssl::stream_base::client,
 				boost::bind(&PushSocket::handle_handshake, this,
 					boost::asio::placeholders::error));
@@ -320,7 +320,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 			LOG(ERROR) << "[connect failed]: " << error;
 			dispatch_inner_error_callback(error.message());
 
-			//Á¬½ÓÊ§°Ü¹Ø±Õ»á»°
+			//ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü¹Ø±Õ»á»°
 			close_session();
 		}
 	}
@@ -340,26 +340,26 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 		{
 			LOG(INFO) << "handshake success";
 
-			//ÎÕÊÖ³É¹¦Ö®ºó£¬ÉèÖÃ×´Ì¬ÎªCONNECTED
+			//ï¿½ï¿½ï¿½Ö³É¹ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ÎªCONNECTED
 			socket_state_ = SocketState::CONNECTED;
 
-			//ÉèÖÃsocketÑ¡Ïî
+			//ï¿½ï¿½ï¿½ï¿½socketÑ¡ï¿½ï¿½
 			socket_->lowest_layer().set_option(boost::asio::ip::tcp::acceptor::linger(true, 0));
 			socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(true));
 			
-			//Æô¶¯Òì²½¶ÁÈÎÎñ£¬±£³ÖIOÑ­»·µÄÔËÐÐ
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ì²½ï¿½ï¿½ï¿½ï¿½ï¿½ñ£¬±ï¿½ï¿½ï¿½IOÑ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			read_head();
 
-			//Éí·ÝÈÏÖ¤
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤
 			send_authentication();
 
-			//Á¬½Ó»Øµ÷£¬Ö»ÓÐ½¨Á¢Á¬½Ó³É¹¦Ö®ºó²Å»á»Øµ÷
+			//ï¿½ï¿½ï¿½Ó»Øµï¿½ï¿½ï¿½Ö»ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³É¹ï¿½Ö®ï¿½ï¿½Å»ï¿½Øµï¿½
 			dispatch_connected_callback();
 		}
 		else
 		{
 			LOG(ERROR) << "[handshake failed]: " << error;
-			//ÎÕÊÖÊ§°Ü¹Ø±Õ»á»°
+			//ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü¹Ø±Õ»á»°
 			dispatch_inner_error_callback(error.message());
 			close_session();
 		}
@@ -395,7 +395,7 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 	else
 	{	
 #if	1
-		// Ñ­»·´òÓ¡Ã¿¸ö×Ö½ÚµÄ¶þ½øÖÆÖµ
+		// Ñ­ï¿½ï¿½ï¿½ï¿½Ó¡Ã¿ï¿½ï¿½ï¿½Ö½ÚµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 		for (size_t i = 0; i < bytes_transferred; ++i) 
 		{
 			std::bitset<8> binary(head_buff_[i]);
@@ -405,13 +405,13 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 		last_io_time_ = time(nullptr);
 		if (frame_decoder_.push_byte(head_buff_[0]))
 		{
-			//Í·²¿ÒÑ¾­¶ÀÈ¡Íê±Ï£¬¿ªÊ¼¶ÁÈ¡body
+			//Í·ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ï£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½È¡body
 			auto frame_len = frame_decoder_.get_frame_size();
 			read_body(frame_len);
 		}
 		else
 		{
-			//¼ÌÐø¶ÁÈ¡Í·²¿
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Í·ï¿½ï¿½
 			read_head();
 		}
 	}
@@ -458,17 +458,17 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 
 	if (on_message_callback_)
 	{
-		//ÏÂ·¢Êý¾Ý
+		//ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½
 		on_message_callback_(response_pb_object);
 	}
 
-	//»º´æ»¹»ØÄÚ´æ³Ø
+	//ï¿½ï¿½ï¿½æ»¹ï¿½ï¿½ï¿½Ú´ï¿½ï¿½
 	if (recv_buff)
 	{
 		recv_buff_pool_->ordered_free(recv_buff, page_num);
 	}
 
-	//¼ÌÐø¶ÁÈ¡ÏÂÒ»°üÊý¾Ý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	read_head();
 }
 
@@ -479,12 +479,12 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 	{
 		if (socket_state_ == SocketState::CONNECTED)
 		{
-			// ¼ì²éÊÇ·ñÐèÒª·¢ËÍÐÄÌø
+			// ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (now_time - last_send_heart_beat_time_ > send_interval_ / 1000)
 			{
 				send_heart_beat();
 			}
-			//¼ì²é¿ÕÏÐ×´Ì¬ÊÇ·ñ¶à³¤Ê±¼äÃ»ÓÐÊÕµ½Êý¾Ý£¬¶Ï¿ªÖØÁ¬
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Ç·ï¿½à³¤Ê±ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (now_time - last_io_time_ > recv_interval_ / 1000)
 			{
 				LOG(ERROR) << "heart beat timeout";
@@ -498,7 +498,7 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 			auto_reconnect();
 		}
 
-		// ÔÙ´ÎÆô¶¯¶¨Ê±Æ÷
+		// ï¿½Ù´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		start_keep_alive(); 
 	}
 	else 
@@ -557,7 +557,7 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 {
 	if (response_pb_object->command() == tigeropen::push::pb::SocketCommon_Command_CONNECTED)
 	{
-		//Á¬½Ó³É¹¦ÏûÏ¢
+		//ï¿½ï¿½ï¿½Ó³É¹ï¿½ï¿½ï¿½Ï¢
 		const std::string& str_msg = response_pb_object->msg();
 		if (str_msg.find(CONNECTED_HEART_BEAT_CFG_KEY) != std::wstring::npos)
 		{
