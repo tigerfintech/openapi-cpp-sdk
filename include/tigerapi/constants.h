@@ -66,7 +66,7 @@ static utility::string_t P_WITH_DETAILS = U("with_details");
 
 static utility::string_t OPEN_API_SERVICE_VERSION = U("3.0");
 
-// 老虎证券开放平台公钥
+// Tiger Brokers public key
 static utility::string_t TIGER_PUBLIC_KEY = U("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDNF3G8SoEcCZh2rshUbayDgLLrj6rKgzNMxDL2HS"
                    "nKcB0+GPOsndqSv+a4IBu9+I3fyBp5hkyMMG2+AXugd9pMpy6VxJxlNjhX1MYbNTZJUT4nudki4uh+LM"
                    "OkIBHOceGNXjgB+cXqmlUnjlqha/HgboeHSnSgpM3dKSJQlIOsDwIDAQAB");
@@ -74,11 +74,11 @@ static utility::string_t SANDBOX_TIGER_PUBLIC_KEY = U("MIGfMA0GCSqGSIb3DQEBAQUAA
                            "MidihTvHHf+tJ0PYD0o3PruI0hl3qhEjHTAxb75T5YD3SGK4IBhHn/Rk6mhqlGgI+bBrBVYaXixm"
                            "HfRo75RpUUuWACyeqQkZckgR0McxuW9xRMIa2cXZOoL1E4SL4lXKGhKoWbwIDAQAB");
 
-/** http 接口服务地址 **/
+/** HTTP interface service address **/
 static utility::string_t TIGER_SERVER_URL = U("https://openapi.tigerfintech.com/gateway");
 static utility::string_t SANDBOX_TIGER_SERVER_URL = U("https://openapi-sandbox.tigerfintech.com/gateway");
 
-/** 长连接推送服务地址 **/
+/** Push service address **/ 
 static utility::string_t TIGER_SOCKET_HOST = U("openapi.tigerfintech.com");
 static utility::string_t SANDBOX_TIGER_SOCKET_HOST = U("openapi-sandbox.tigerfintech.com");
 static utility::string_t TIGER_SOCKET_PORT = U("9883");

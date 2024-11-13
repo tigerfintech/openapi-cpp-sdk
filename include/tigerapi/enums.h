@@ -17,10 +17,10 @@ namespace TIGER_API {
 
     enum class Market {
         ALL,
-        US,  // 美股
-        HK,  // 港股
-        CN,  // A股
-        SG   // 新加坡
+        US,  // United States
+        HK,  // Hong Kong
+        CN,  // China
+        SG   // Singapore
     };
 
     inline utility::string_t enum_to_str(Market market) {
@@ -42,9 +42,9 @@ namespace TIGER_API {
 
 
     enum class TradingSession {
-        PreMarket,  // 盘前
-        Regular,    // 盘中
-        AfterHours  // 盘后
+        PreMarket,  // PreMarket
+        Regular,    // Regular
+        AfterHours  // AfterHours
     };
 
     inline utility::string_t enum_to_str(TradingSession session) {
@@ -60,13 +60,13 @@ namespace TIGER_API {
 
     enum class SecType {
         ALL,
-        STK,  // 股票
-        OPT,  // 期权
-        WAR,  // 窝轮
-        IOPT, // 权证(牛熊证)
-        FUT,  // 期货
-        FOP,  // 期货期权
-        CASH  // 外汇
+        STK,  // Stock
+        OPT,  // Option
+        WAR,  // Warrant
+        IOPT, // IOPT (Bull/Bear)
+        FUT,  // Future
+        FOP,  // Future Option
+        CASH  // Cash
     };
 
     inline utility::string_t enum_to_str(SecType secType) {
@@ -217,20 +217,20 @@ namespace TIGER_API {
         FIVE_DAYS = 2,
     };
 
-// 定义字符串数组
+// Define string array
     static const utility::string_t timeline_period_names[] = {
-            U(""),  // 由于数组的下标从0开始，因此第一个元素需要留空
+            U(""),  // Since the array index starts from 0, the first element needs to be left blank
             U("day"),
             U("5day"),
     };
 
-// 获取 TimelinePeriod 名称的函数
+// Get TimelinePeriod name function
     inline utility::string_t get_timeline_period_value(TimelinePeriod period) {
         return timeline_period_names[static_cast<int>(period)];
     }
 
 
-// BarPeriod 枚举类
+    // BarPeriod enum class
     enum class BarPeriod {
         DAY,
         WEEK,
@@ -250,7 +250,7 @@ namespace TIGER_API {
         SIX_HOURS,
     };
 
-// 获取 BarPeriod 名称的函数
+// Get BarPeriod name function
     inline utility::string_t enum_to_str(BarPeriod period) {
         switch (period) {
             case BarPeriod::DAY:
@@ -443,45 +443,45 @@ namespace TIGER_API {
 
     // US trade condition mapping
     const std::map<std::string, std::string> US_TRADE_COND_MAP = {
-        {" ", "US_REGULAR_SALE"},         // 自动对盘
-        {"B", "US_BUNCHED_TRADE"},        // 批量交易
-        {"C", "US_CASH_TRADE"},          // 现金交易
-        {"F", "US_INTERMARKET_SWEEP"},    // 跨市场交易
-        {"G", "US_BUNCHED_SOLD_TRADE"},   // 批量卖出
-        {"H", "US_PRICE_VARIATION_TRADE"},// 离价交易
-        {"I", "US_ODD_LOT_TRADE"},       // 碎股交易
-        {"K", "US_RULE_127_OR_155_TRADE"},// 纽交所 第127条交易 或 第155条交易
-        {"L", "US_SOLD_LAST"},           // 延迟交易
-        {"M", "US_MARKET_CENTER_CLOSE_PRICE"},// 中央收市价
-        {"N", "US_NEXT_DAY_TRADE"},      // 隔日交易
-        {"O", "US_MARKET_CENTER_OPENING_TRADE"},// 中央开盘价交易
-        {"P", "US_PRIOR_REFERENCE_PRICE"},// 前参考价
-        {"Q", "US_MARKET_CENTER_OPEN_PRICE"},// 中央开盘价
-        {"R", "US_SELLER"},              // 卖方
-        {"T", "US_FORM_T"},              // 盘前盘后交易
-        {"U", "US_EXTENDED_TRADING_HOURS"},// 延长交易时段
-        {"V", "US_CONTINGENT_TRADE"},    // 合单交易
-        {"W", "US_AVERAGE_PRICE_TRADE"}, // 均价交易
-        {"X", "US_CROSS_TRADE"},         //
-        {"Z", "US_SOLD_OUT_OF_SEQUENCE"},// 场外售出
-        {"0", "US_ODD_LOST_CROSS_TRADE"},// 碎股跨市场交易
-        {"4", "US_DERIVATIVELY_PRICED"}, // 衍生工具定价
-        {"5", "US_MARKET_CENTER_RE_OPENING_TRADE"},// 再开盘定价
-        {"6", "US_MARKET_CENTER_CLOSING_TRADE"},   // 收盘定价
-        {"7", "US_QUALIFIED_CONTINGENT_TRADE"},    // 合单交易
-        {"9", "US_CONSOLIDATED_LAST_PRICE_PER_LISTING_PACKET"}// 综合延迟价格
+        {" ", "US_REGULAR_SALE"},         // Regular sale
+        {"B", "US_BUNCHED_TRADE"},        // Bunched trade
+        {"C", "US_CASH_TRADE"},          // Cash trade
+        {"F", "US_INTERMARKET_SWEEP"},    // Intermarket sweep
+        {"G", "US_BUNCHED_SOLD_TRADE"},   // Bunched sold trade
+        {"H", "US_PRICE_VARIATION_TRADE"},// Price variation trade
+        {"I", "US_ODD_LOT_TRADE"},       // Odd lot trade
+        {"K", "US_RULE_127_OR_155_TRADE"},// US Rule 127 or 155 trade
+        {"L", "US_SOLD_LAST"},           // Delayed trade
+        {"M", "US_MARKET_CENTER_CLOSE_PRICE"},// Market center close price
+        {"N", "US_NEXT_DAY_TRADE"},      // Next day trade
+        {"O", "US_MARKET_CENTER_OPENING_TRADE"},// Market center opening trade
+        {"P", "US_PRIOR_REFERENCE_PRICE"},// Prior reference price
+        {"Q", "US_MARKET_CENTER_OPEN_PRICE"},// Market center opening price
+        {"R", "US_SELLER"},              // Seller
+        {"T", "US_FORM_T"},              // Form T
+        {"U", "US_EXTENDED_TRADING_HOURS"},// Extended trading hours
+        {"V", "US_CONTINGENT_TRADE"},    // Contingent trade
+        {"W", "US_AVERAGE_PRICE_TRADE"}, // Average price trade
+        {"X", "US_CROSS_TRADE"},         // Cross trade
+        {"Z", "US_SOLD_OUT_OF_SEQUENCE"},// Sold out of sequence
+        {"0", "US_ODD_LOST_CROSS_TRADE"},// Odd lot cross trade
+        {"4", "US_DERIVATIVELY_PRICED"}, // Derivatively priced
+        {"5", "US_MARKET_CENTER_RE_OPENING_TRADE"},// Market center re-opening trade
+        {"6", "US_MARKET_CENTER_CLOSING_TRADE"},   // Market center closing trade
+        {"7", "US_QUALIFIED_CONTINGENT_TRADE"},    // Qualified contingent trade
+        {"9", "US_CONSOLIDATED_LAST_PRICE_PER_LISTING_PACKET"}// Consolidated last price per listing packet
     };
 
     // HK trade condition mapping
     const std::map<std::string, std::string> HK_TRADE_COND_MAP = {
-        {" ", "HK_AUTOMATCH_NORMAL"},         // 自动对盘
-        {"D", "HK_ODD_LOT_TRADE"},           // 碎股交易
-        {"U", "HK_AUCTION_TRADE"},           // 竞价交易
-        {"*", "HK_OVERSEAS_TRADE"},          // 场外交易
-        {"P", "HK_LATE_TRADE_OFF_EXCHG"},    // 开市前成交
-        {"M", "HK_NON_DIRECT_OFF_EXCHG_TRADE"}, // 非自动对盘
-        {"X", "HK_DIRECT_OFF_EXCHG_TRADE"},     // 同券商自动对盘
-        {"Y", "HK_AUTOMATIC_INTERNALIZED"}      // 同券商非自动对盘
+        {" ", "HK_AUTOMATCH_NORMAL"},         // Normal auto-match
+        {"D", "HK_ODD_LOT_TRADE"},           // Odd lot trade
+        {"U", "HK_AUCTION_TRADE"},           // Auction trade
+        {"*", "HK_OVERSEAS_TRADE"},          // Overseas trade
+        {"P", "HK_LATE_TRADE_OFF_EXCHG"},    // Late trade off exchange
+        {"M", "HK_NON_DIRECT_OFF_EXCHG_TRADE"}, // Non-auto-match
+        {"X", "HK_DIRECT_OFF_EXCHG_TRADE"},     // Auto-match within the same broker
+        {"Y", "HK_AUTOMATIC_INTERNALIZED"}      // Automatic internalization
     };
 }
 

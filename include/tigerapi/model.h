@@ -695,29 +695,24 @@ namespace TIGER_API {
         std::vector<TradeTickItem> ticks;
 
     public:
-        // Constructor
         TradeTick() {}
 
-        // Getters
         const std::string& get_symbol() const { return symbol; }
         const std::string& get_sectype() const { return sec_type; }
         const std::string& get_quotelevel() const { return quote_level; }
         const std::string& get_timestamp() const { return timestamp; }
         const std::vector<TradeTickItem>& get_ticks() const { return ticks; }
 
-        // Setters
         void set_symbol(const std::string& value) { symbol = value; }
         void set_sectype(const std::string& value) { sec_type = value; }
         void set_quotelevel(const std::string& value) { quote_level = value; }
         void set_timestamp(const std::string& value) { timestamp = value; }
         void set_ticks(const std::vector<TradeTickItem>& value) { ticks = value; }
 
-    // Add single tick
         void addTick(const TradeTickItem& tick) {
             ticks.push_back(tick);
         }
 
-        // toString equivalent
         std::string to_string() const {
             std::ostringstream oss;
             oss << "TradeTick<{symbol: " << symbol
@@ -726,14 +721,14 @@ namespace TIGER_API {
             << ", timestamp: " << timestamp
             << ", ticks: [";
         
-        for (size_t i = 0; i < ticks.size(); ++i) {
-            if (i > 0) oss << ", ";
-            oss << ticks[i].toString();
+            for (size_t i = 0; i < ticks.size(); ++i) {
+                if (i > 0) oss << ", ";
+                oss << ticks[i].toString();
+            }
+            oss << "]}>";
+            return oss.str();
         }
-        oss << "]}>";
-        return oss.str();
-    }
-};
+    };
 
 
 }

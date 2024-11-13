@@ -8,16 +8,16 @@
 
 namespace TIGER_API {
 
-    // 返回交易所代码
+    // Returns exchange code
     std::optional<std::string> get_part_code(const std::string& code);
 
-    // 返回交易所完整名称
+    // Returns full exchange name
     std::optional<std::string> get_part_code_name(const std::string& code);
 
-    // 根据quote_level获取对应的交易条件映射表
+    // Get trade condition mapping table based on quote level
     const std::map<std::string, std::string>& get_trade_condition_map(const std::string& quote_level);
 
-    // 根据条件代码和条件映射表获取交易条件描述
+    // Get trade condition description based on condition code and condition mapping table
     std::optional<std::string> get_trade_condition(
         const std::string& cond, 
         const std::map<std::string, std::string>& cond_map

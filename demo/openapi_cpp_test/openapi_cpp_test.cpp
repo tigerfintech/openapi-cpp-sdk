@@ -16,7 +16,7 @@ using namespace web::json;
 using namespace TIGER_API;
 
 /**
- * ���ý��׽ӿ�
+ * Test Trade Client
  */
 class TestTradeClient {
 public:
@@ -184,7 +184,7 @@ public:
 
 
 /**
- * ��������ӿ�
+ * Test Quote Client
  */
 
 class TestQuoteClient {
@@ -412,7 +412,7 @@ public:
 
 
 /**
- * ֱ��ʹ�� TigerApi
+ * Directly use TigerApi
  */
 class TestTigerApi {
 public:

@@ -34,7 +34,7 @@ TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_
 void TIGER_API::PushClientImpl::connect()
 {
 	LOG(INFO) << "create a worker thread to perform asynchronous network connections";
-	//���������߳�
+	// create a worker thread to perform asynchronous network connections
 	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{
 		socket_ = PushSocket::create_push_socket(&io_service_, client_config_);
@@ -47,7 +47,7 @@ void TIGER_API::PushClientImpl::connect()
 
 void TIGER_API::PushClientImpl::disconnect()
 {
-	//���̵߳��ã���Ҫ�첽Ͷ������
+	// cross-thread call, need to post a task asynchronouly
 	io_service_.post(boost::bind(&PushClientImpl::do_disconnect, this));
 }
 
@@ -314,7 +314,7 @@ bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCo
 
 bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& request)
 {
-	//���л�pb�����ַ���
+	// serialize pb object to string
 	std::string packed_frame = request.SerializeAsString();
 	if (packed_frame.empty())
 	{
@@ -327,7 +327,7 @@ bool TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Request& r
 
 	LOG(DEBUG) << "send frame:" << packed_frame_json;
 
-	//���̣߳��첽Ͷ������
+	// cross-thread call, need to post a task asynchronouly
 	io_service_.post(boost::bind(&PushClientImpl::do_write, this, packed_frame));
 
 	return true;
