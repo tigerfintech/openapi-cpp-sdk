@@ -723,7 +723,7 @@ namespace TIGER_API {
         
             for (size_t i = 0; i < ticks.size(); ++i) {
                 if (i > 0) oss << ", ";
-                oss << ticks[i].toString();
+                oss << ticks[i].to_string();
             }
             oss << "]}>";
             return oss.str();
