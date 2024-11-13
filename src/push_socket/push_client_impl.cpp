@@ -469,13 +469,13 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
                     }
                     break;
                 default:
-                    logger_->warn("unhandled frame: {}", frame->DebugString());
+                    LOG(ERROR) << "unhandled frame: " << frame->DebugString();
                     break;
             }
         }
     }
     catch (const std::exception& e) {
-        logger_->error("error in on_message: {}", e.what());
+        LOG(ERROR) << "error in on_message: " << e.what();
     }
 }
 
