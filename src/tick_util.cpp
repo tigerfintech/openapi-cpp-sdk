@@ -5,7 +5,7 @@
 namespace TIGER_API {
 
 namespace {
-    // 辅助函数：将字符串转换为小写
+    // convert string to lowercase
     std::string to_lower(std::string str) {
         std::transform(str.begin(), str.end(), str.begin(), 
             [](unsigned char c) { return std::tolower(c); });

@@ -123,9 +123,9 @@ namespace TIGER_API
 	private:
 		std::time_t last_send_heart_beat_time_ = 0;
 		std::time_t last_io_time_ = 0;
-		int reconnect_interval_ = 10 * 1000;	//
-		int send_interval_ = 10 * 1000;			//
-		int recv_interval_ = 10 * 1000;			//
+		int reconnect_interval_ = 10 * 1000;	// unit: ms
+		int send_interval_ = 10 * 1000;			// unit: ms
+		int recv_interval_ = 10 * 1000;			// unit: ms
 	};
 }
 #endif // PUSH_SOCKET_H
