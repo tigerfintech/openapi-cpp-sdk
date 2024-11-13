@@ -16,9 +16,9 @@ namespace TIGER_API
 {
 	enum class SocketState
 	{
-		CONNECTING,			//正在连接
-		CONNECTED,			//已连接
-		DISCONNECTED		//已断开
+		CONNECTING,
+		CONNECTED,
+		DISCONNECTED
 	};
 	
 	class PushSocket : public std::enable_shared_from_this<PushSocket>
@@ -82,8 +82,8 @@ namespace TIGER_API
 	private:
 		std::function<void()> connected_callback_;
 		std::function<void()> disconnected_callback_;
-		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
 		std::function<void(std::string)> on_inner_error_callback_;
+		std::function<void(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object)> on_message_callback_;
 	private:
 		TIGER_API::ClientConfig client_config_;
 		
@@ -101,9 +101,9 @@ namespace TIGER_API
 	private:
 		std::time_t last_send_heart_beat_time_ = 0;
 		std::time_t last_io_time_ = 0;
-		int reconnect_interval_ = 10 * 1000;	//单位：ms
-		int send_interval_ = 10 * 1000;			//单位：ms
-		int recv_interval_ = 10 * 1000;			//单位：ms
+		int reconnect_interval_ = 10 * 1000;	//ms
+		int send_interval_ = 10 * 1000;			//ms
+		int recv_interval_ = 10 * 1000;			//ms
 	};
 }
 #endif // PUSH_SOCKET_H

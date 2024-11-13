@@ -28,13 +28,8 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
 	
-	//初始化内存池，防止接收数据频繁的内存分配和释放引起的性能问题和内存碎片问题
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
-	
-	//创建一个保活定时器
 	keep_alive_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
-	
-	//创建重连定时器
 	reconnect_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
 }
 
@@ -60,9 +55,7 @@ void TIGER_API::PushSocket::set_inner_error_callback(const std::function<void(st
 
 void TIGER_API::PushSocket::connect()
 {
-	//启动保活监测定时任务
 	start_keep_alive();
-	
 	try
 	{
 		socket_state_ = SocketState::CONNECTING;
@@ -71,8 +64,7 @@ void TIGER_API::PushSocket::connect()
 		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
 			utility::conversions::to_utf8string(client_config_.socket_port));
 		boost::asio::ip::tcp::resolver::iterator rit = resolver.resolve(query);
-
-		//打印dns解析之后的IP地址
+		
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
@@ -84,7 +76,6 @@ void TIGER_API::PushSocket::connect()
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
-		//dns解析失败/异常连接状态修改为：DISCONNECTED
 		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
@@ -110,11 +101,9 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 		return false;
 	}
 
-	//协议封包
 	TIGER_API::PushFrameEncoder encoder;
 	std::vector<unsigned char> data = encoder.encode_frame(msg);
 
-	//异步发送
 	boost::asio::async_write(*socket_,
 		boost::asio::buffer(data, data.size()),
 		boost::bind(&PushSocket::handle_write, this,
@@ -125,7 +114,7 @@ bool TIGER_API::PushSocket::send_message(const std::string& msg)
 
 void TIGER_API::PushSocket::init_socket()
 {
-	//创建ssl上下文，指定ssl版本
+	//set ssl version
 	boost::asio::ssl::context ssl_content(boost::asio::ssl::context::sslv23);
 #if 1
 	ssl_content.set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::single_dh_use);
@@ -134,12 +123,10 @@ void TIGER_API::PushSocket::init_socket()
 #endif
 	if (client_config_.socket_ca_certs.empty())
 	{
-		//禁用证书验证
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_none);
 	}
 	else
 	{
-		//验证证书
 		ssl_content.set_verify_mode(boost::asio::ssl::verify_peer);
 		ssl_content.set_verify_mode(boost::asio::ssl::context::verify_peer
 			| boost::asio::ssl::context::verify_fail_if_no_peer_cert);
@@ -213,15 +200,13 @@ void TIGER_API::PushSocket::close_session()
 
 void TIGER_API::PushSocket::send_authentication()
 {
-	//对tiger_id根据private_key进行签名
+	//tiger_id sign by private_key
 	utility::string_t sign = Utils::get_sign(client_config_.private_key, client_config_.tiger_id);
-
-	// 创建一个 Request 对象
+	
 	tigeropen::push::pb::Request request;
 	request.set_command(tigeropen::push::pb::SocketCommon_Command_CONNECT);
 	request.set_id(get_next_id());
 
-	// 创建一个 Request_Connect 对象
 	tigeropen::push::pb::Request_Connect* connect_request = request.mutable_connect();
 	connect_request->set_tigerid(utility::conversions::to_utf8string(client_config_.tiger_id));
 	connect_request->set_sign(utility::conversions::to_utf8string(sign));
@@ -231,7 +216,6 @@ void TIGER_API::PushSocket::send_authentication()
 	connect_request->set_receiveinterval(client_config_.receive_interval);
 	connect_request->set_usefulltick(client_config_.user_full_tick);
 	
-	//序列化pb对象到字符串
 	std::string packed_frame = request.SerializeAsString();
 	if (!packed_frame.empty())
 	{
@@ -302,7 +286,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 		if (!error)
 		{
 			LOG(INFO) << "connect success";
-			//ssl连接成功之后需要async_handshake()，成功之后才能发起异步读写。
+			//start handshake
 			socket_->async_handshake(boost::asio::ssl::stream_base::client,
 				boost::bind(&PushSocket::handle_handshake, this,
 					boost::asio::placeholders::error));
@@ -319,8 +303,6 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 		{
 			LOG(ERROR) << "[connect failed]: " << error;
 			dispatch_inner_error_callback(error.message());
-
-			//连接失败关闭会话
 			close_session();
 		}
 	}
@@ -339,27 +321,19 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 		if (!error)
 		{
 			LOG(INFO) << "handshake success";
-
-			//握手成功之后，设置状态为CONNECTED
 			socket_state_ = SocketState::CONNECTED;
-
-			//设置socket选项
 			socket_->lowest_layer().set_option(boost::asio::ip::tcp::acceptor::linger(true, 0));
 			socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(true));
-			
-			//启动异步读任务，保持IO循环的运行
+
 			read_head();
 
-			//身份认证
 			send_authentication();
 
-			//连接回调，只有建立连接成功之后才会回调
 			dispatch_connected_callback();
 		}
 		else
 		{
 			LOG(ERROR) << "[handshake failed]: " << error;
-			//握手失败关闭会话
 			dispatch_inner_error_callback(error.message());
 			close_session();
 		}
@@ -395,7 +369,6 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 	else
 	{	
 #if	1
-		// 循环打印每个字节的二进制值
 		for (size_t i = 0; i < bytes_transferred; ++i) 
 		{
 			std::bitset<8> binary(head_buff_[i]);
@@ -405,13 +378,11 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 		last_io_time_ = time(nullptr);
 		if (frame_decoder_.push_byte(head_buff_[0]))
 		{
-			//头部已经独取完毕，开始读取body
 			auto frame_len = frame_decoder_.get_frame_size();
 			read_body(frame_len);
 		}
 		else
 		{
-			//继续读取头部
 			read_head();
 		}
 	}
@@ -458,17 +429,14 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 
 	if (on_message_callback_)
 	{
-		//下发数据
 		on_message_callback_(response_pb_object);
 	}
 
-	//缓存还回内存池
 	if (recv_buff)
 	{
 		recv_buff_pool_->ordered_free(recv_buff, page_num);
 	}
 
-	//继续读取下一包数据
 	read_head();
 }
 
@@ -479,12 +447,10 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 	{
 		if (socket_state_ == SocketState::CONNECTED)
 		{
-			// 检查是否需要发送心跳
 			if (now_time - last_send_heart_beat_time_ > send_interval_ / 1000)
 			{
 				send_heart_beat();
 			}
-			//检查空闲状态是否多长时间没有收到数据，断开重连
 			if (now_time - last_io_time_ > recv_interval_ / 1000)
 			{
 				LOG(ERROR) << "heart beat timeout";
@@ -497,8 +463,6 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 			cancel_reconnect_timer();
 			auto_reconnect();
 		}
-
-		// 再次启动定时器
 		start_keep_alive(); 
 	}
 	else 
@@ -557,7 +521,6 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 {
 	if (response_pb_object->command() == tigeropen::push::pb::SocketCommon_Command_CONNECTED)
 	{
-		//连接成功消息
 		const std::string& str_msg = response_pb_object->msg();
 		if (str_msg.find(CONNECTED_HEART_BEAT_CFG_KEY) != std::wstring::npos)
 		{
