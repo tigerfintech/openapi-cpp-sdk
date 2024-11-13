@@ -44,7 +44,7 @@ namespace TIGER_API
 		void connect();
 		void disconnect();
 		bool send_message(const std::string& msg);
-		uint32_t get_next_id();
+		unsigned int get_next_id();
 	private:
 		void init_socket();
 		bool verify_certificate(bool preverified,
@@ -60,14 +60,14 @@ namespace TIGER_API
 		void handle_handshake(const boost::system::error_code& error);
 		void handle_write(const boost::system::error_code& error,
 			size_t bytes_transferred,
-			unsigned int frame_len);
+			size_t frame_len);
 		void handle_read_head(const boost::system::error_code& error,
 			size_t bytes_transferred);
 		void handle_read_body(const boost::system::error_code& error,
 			size_t bytes_transferred,
 			char* recv_buff,
 			int page_num,
-			unsigned int frame_len);
+			size_t frame_len);
 		void handle_timer(const boost::system::error_code& error);
 
 		void read_head();
@@ -92,7 +92,7 @@ namespace TIGER_API
 		std::shared_ptr<boost::asio::deadline_timer> reconnect_timer_;
 		std::atomic<SocketState> socket_state_ = SocketState::DISCONNECTED;
 
-		std::atomic<uint32_t> id_counter_ = 0;
+		std::atomic<unsigned int> id_counter_ = 0;
 
 		char head_buff_[1024];
 		boost::shared_ptr<boost::pool<>> recv_buff_pool_;

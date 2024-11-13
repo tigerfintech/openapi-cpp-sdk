@@ -18,12 +18,12 @@ namespace TIGER_API
 		~PushFrameDecoder() = default;
 
 		bool push_byte(unsigned char value);
-		uint64_t get_frame_size() const;
+		uint32_t get_frame_size() const;
 
 	private:
-		uint64_t decode_varint();
+		uint32_t decode_varint();
 		std::vector<unsigned char> frame_header_buffer_;
-		uint64_t frame_len_ = 0;
+		uint32_t frame_len_ = 0;
 	};
 
 }
