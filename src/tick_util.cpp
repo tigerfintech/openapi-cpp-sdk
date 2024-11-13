@@ -12,20 +12,20 @@ namespace TIGER_API {
     }
 
 
-    std::optional<std::string> get_part_code(const std::string& code) {
+    std::string get_part_code(const std::string& code) {
         auto it = PART_CODE_MAP.find(code);
         if (it != PART_CODE_MAP.end()) {
             return it->second;
         }
-        return std::nullopt;
+        return "";
     }
 
-    std::optional<std::string> get_part_code_name(const std::string& code) {
+    std::string get_part_code_name(const std::string& code) {
         auto it = PART_CODE_NAME_MAP.find(code);
         if (it != PART_CODE_NAME_MAP.end()) {
             return it->second;
         }
-        return std::nullopt;
+        return "";
     }
 
     const std::map<std::string, std::string>& get_trade_condition_map(
@@ -41,7 +41,7 @@ namespace TIGER_API {
         return US_TRADE_COND_MAP;
     }
 
-    std::optional<std::string> get_trade_condition(
+    std::string get_trade_condition(
         const std::string& cond,
         const std::map<std::string, std::string>& cond_map)
     {
@@ -49,7 +49,7 @@ namespace TIGER_API {
         if (it != cond_map.end()) {
             return it->second;
         }
-        return std::nullopt;
+        return "";
     }
 
 } // namespace TIGER_API
