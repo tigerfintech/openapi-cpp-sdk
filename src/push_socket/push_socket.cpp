@@ -65,6 +65,8 @@ void TIGER_API::PushSocket::connect()
 	
 	try
 	{
+		socket_state_ = SocketState::CONNECTING;
+
 		boost::asio::ip::tcp::resolver resolver(*io_service_);
 		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
 			utility::conversions::to_utf8string(client_config_.socket_port));
@@ -78,12 +80,11 @@ void TIGER_API::PushSocket::connect()
 
 		socket_->lowest_layer().async_connect(*rit,
 			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error, ++rit));
-
-		socket_state_ = SocketState::CONNECTING;
 	}
 	catch (const boost::system::system_error& e)
 	{
 		LOG(ERROR) << e.what();
+		//dns解析失败/异常连接状态修改为：DISCONNECTED
 		socket_state_ = SocketState::DISCONNECTED;
 	}
 }
@@ -275,10 +276,6 @@ void TIGER_API::PushSocket::auto_reconnect()
 		{
 			LOG(ERROR) << "reconnection timer error: " << error.message();
 			socket_state_ = SocketState::DISCONNECTED;
-			if (reconnect_timer_)
-			{
-				reconnect_timer_->cancel();
-			}
 		}
 	});
 }
@@ -346,7 +343,7 @@ void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& er
 		}
 		else
 		{
-			LOG(ERROR) << "Handshake Failed: " << error;
+			LOG(ERROR) << "[handshake failed]: " << error;
 			//握手失败关闭会话
 			dispatch_inner_error_callback(error.message());
 			close_session();
@@ -381,8 +378,7 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 		close_session();
 	}
 	else
-	{
-		
+	{	
 #if	1
 		// 循环打印每个字节的二进制值
 		for (size_t i = 0; i < bytes_transferred; ++i) 
@@ -417,6 +413,10 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 		LOG(ERROR) << "[read body failed]: " << error;
 		dispatch_inner_error_callback(error.message());
 		close_session();
+		if (recv_buff)
+		{
+			recv_buff_pool_->ordered_free(recv_buff, page_num);
+		}
 		return;
 	}
 
@@ -426,6 +426,10 @@ void TIGER_API::PushSocket::handle_read_body(const boost::system::error_code& er
 	if (!response_pb_object->ParseFromArray(recv_buff, frame_len))
 	{
 		close_session();
+		if (recv_buff)
+		{
+			recv_buff_pool_->ordered_free(recv_buff, page_num);
+		}
 		return;
 	}
 #if 1
@@ -475,6 +479,10 @@ void TIGER_API::PushSocket::handle_timer(const boost::system::error_code& error)
 		}
 		else if (socket_state_ == SocketState::DISCONNECTED)
 		{
+			if (reconnect_timer_)
+			{
+				reconnect_timer_->cancel();
+			}
 			auto_reconnect();
 		}
 
