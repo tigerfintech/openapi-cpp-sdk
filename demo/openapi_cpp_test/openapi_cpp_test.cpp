@@ -444,7 +444,6 @@ int main()
 	config.private_key = U("");
 	config.tiger_id = U("");
 	config.account = U("");
-        
 #else
 	config.private_key = U("");
 	config.tiger_id = U("");
