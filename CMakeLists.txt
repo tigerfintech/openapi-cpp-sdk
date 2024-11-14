@@ -19,6 +19,8 @@ if(UNIX) # Darwing or Linux
 
     find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
     find_package(Threads REQUIRED)
+    find_package(absl REQUIRED)
+
 
     # cpprest
     find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
@@ -57,7 +59,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
 #    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++14 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
@@ -74,18 +76,17 @@ add_library(${PROJECT_NAME} cpprest/  ${MY_SOURCE_FILES})
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
-set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${Protobuf_INCLUDE_DIRS})
 
 # library search paths ...
-if(APPLE)
-    set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
+#if(APPLE)
+set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
 #    set(ZIP_LIBRARY ZLIB::ZLIB)
-
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY})
-else()
-    set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
-endif()
+set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY} ${Protobuf_LIBRARIES})
+#else()
+#    set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
+#    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
+#endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
@@ -99,6 +100,11 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework Security")
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
+    target_link_libraries(${PROJECT_NAME}
+            absl::base
+            absl::utility
+            protobuf::libprotobuf
+    )
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)

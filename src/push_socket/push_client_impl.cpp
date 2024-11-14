@@ -1,8 +1,8 @@
-#include "tigerapi/push_socket/push_client_impl.h"
-#include "tigerapi/client_config.h"
-#include "tigerapi/push_socket/push_socket.h"
-#include "tigerapi/tick_util.h"
-#include "openapi_pb\pb_source\PushData.pb.h"
+#include "../include/tigerapi/push_socket/push_client_impl.h"
+#include "../include/tigerapi/client_config.h"
+#include "../include/tigerapi/push_socket/push_socket.h"
+#include "../include/tigerapi/tick_util.h"
+#include "../include/openapi_pb/pb_source/PushData.pb.h"
 #include "google/protobuf/util/json_util.h"
 #include <vector>
 #include <memory>

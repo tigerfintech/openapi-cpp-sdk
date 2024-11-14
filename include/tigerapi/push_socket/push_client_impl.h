@@ -2,10 +2,10 @@
 #define PUSH_CLIENT_IMPL_H
 
 #include "boost/asio/io_service.hpp"
-#include "tigerapi/push_client.h"
-#include "tigerapi/client_config.h"
-#include "openapi_pb/pb_source/Request.pb.h"
-#include "openapi_pb/pb_source/Response.pb.h"
+#include "../include/tigerapi/push_client.h"
+#include "../include/tigerapi/client_config.h"
+#include "../include/openapi_pb/pb_source/Request.pb.h"
+#include "../include/openapi_pb/pb_source/Response.pb.h"
 
 namespace TIGER_API
 {

@@ -11,10 +11,10 @@
 #include "boost/pool/pool.hpp"
 #include "boost/optional.hpp"
 
-#include "tigerapi/client_config.h"
-#include "push_frame_serialize.h"
-#include "openapi_pb/pb_source/Request.pb.h"
-#include "openapi_pb/pb_source/Response.pb.h"
+#include "../include/tigerapi/client_config.h"
+#include "../include/tigerapi/push_socket/push_frame_serialize.h"
+#include "../include/openapi_pb/pb_source/Request.pb.h"
+#include "../include/openapi_pb/pb_source/Response.pb.h"
 
 namespace TIGER_API
 {

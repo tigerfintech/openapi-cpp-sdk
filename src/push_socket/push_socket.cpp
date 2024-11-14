@@ -1,5 +1,5 @@
-#include "tigerapi/push_socket/push_socket.h"
-#include "tigerapi/version.h"
+#include "../include/tigerapi/push_socket/push_socket.h"
+#include "../include/tigerapi/version.h"
 #include <bitset>
 #include <regex>
 #include "google/protobuf/util/json_util.h"

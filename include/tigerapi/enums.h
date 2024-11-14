@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include "cpprest/details/basic_types.h"
 
 // Quote level prefixes
 const std::string HK_QUOTE_LEVEL_PREFIX = "hk";
