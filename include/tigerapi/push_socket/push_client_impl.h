@@ -6,6 +6,7 @@
 #include "../include/tigerapi/client_config.h"
 #include "../include/openapi_pb/pb_source/Request.pb.h"
 #include "../include/openapi_pb/pb_source/Response.pb.h"
+#include "../include/openapi_pb/pb_source/SocketCommon.pb.h"
 
 namespace TIGER_API
 {
@@ -27,6 +28,10 @@ namespace TIGER_API
 		virtual void set_connected_callback(const std::function<void()>& cb) override;
 		virtual void set_disconnected_callback(const std::function<void()>& cb) override;
 		virtual void set_inner_error_callback(const std::function<void(std::string)>& cb) override;
+
+		virtual void set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
+		virtual void set_unsubscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
+		virtual void set_error_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
 		
 		virtual void set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb) override;
 		virtual bool subscribe_asset(const std::string& account) override;
@@ -88,6 +93,9 @@ namespace TIGER_API
 		bool send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account);
 		bool send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols, const std::string& market);
 	private:
+		std::function<void(const tigeropen::push::pb::Response& subscribe_response)> subscribe_callback_;
+		std::function<void(const tigeropen::push::pb::Response& unsubscribe_response)> unsubscribe_callback_;
+		std::function<void(const tigeropen::push::pb::Response& error_response)> error_callback_;
 		std::function<void(const tigeropen::push::pb::AssetData& asset_data)> asset_changed_;
 		std::function<void(const tigeropen::push::pb::PositionData& position_data)> position_changed_;
 		std::function<void(const tigeropen::push::pb::OrderStatusData& order_status_data)> order_changed_;

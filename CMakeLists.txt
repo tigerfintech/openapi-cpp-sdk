@@ -21,17 +21,24 @@ if(UNIX) # Darwing or Linux
     find_package(Threads REQUIRED)
     find_package(absl REQUIRED)
 
-
     # cpprest
     find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
     find_library(CPPREST_LIBRARY NAMES cpprest)
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
+    
+    set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
+    set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
+    set(Protobuf_PROTOC_LIBRARY "/usr/local/opt/protobuf/lib/libprotoc.dylib")
+    set(Protobuf_PROTOC_EXECUTABLE "/usr/local/opt/protobuf/bin/protoc")
 
-
+    # 查找 Protobuf 包
+    find_package(Protobuf REQUIRED)
+    message(STATUS "Protobuf version: ${Protobuf_VERSION}")
+    message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
+    message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
 
     if(APPLE)
-        # Prefer a homebrew version of OpenSSL over the one in /usr/lib
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
         file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
         # Prefer the latest (make the latest one first)
@@ -71,22 +78,18 @@ endif()
 
 # Project construction ...
 # src files ...
-file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" "include/tigerapi/push_socket/*.h" "include/tigerapi/*.h" "src/*.cpp" "src/push_socket/*.cpp")
+file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" 
+"include/tigerapi/push_socket/*.h" "include/tigerapi/*.h" "src/*.cpp" "src/push_socket/*.cpp")
 add_library(${PROJECT_NAME} cpprest/  ${MY_SOURCE_FILES})
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
-set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${Protobuf_INCLUDE_DIRS})
+set(HEADER_SEARCH_PATHS ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${PROTOBUF_INCLUDE_DIR})
 
-# library search paths ...
-#if(APPLE)
+
 set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-#    set(ZIP_LIBRARY ZLIB::ZLIB)
-set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY} ${Protobuf_LIBRARIES})
-#else()
-#    set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-#    set(LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY} ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY})
-#endif()
+set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY} ${Protobuf_LIBRARY} ${Protobuf_PROTOC_LIBRARY})
+
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
@@ -96,19 +99,22 @@ message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
 include_directories(${HEADER_SEARCH_PATHS})
 if (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework CoreFoundation")
-    target_link_libraries(${PROJECT_NAME} "-framework Security")
-    target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
-    target_link_libraries(${PROJECT_NAME}
-            absl::base
-            absl::utility
-            protobuf::libprotobuf
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        "-framework CoreFoundation"
+        "-framework Security"
+        ${LIBRARIES_SEARCH_PATHS}
+        absl::base
+        absl::utility
+    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+        LINK_FLAGS "-W1, -F/Library/Frameworks"
     )
 else()
-    target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
-    target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
-
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${LIBRARIES_SEARCH_PATHS}
+        OpenSSL::SSL 
+        OpenSSL::Crypto
+    )
 endif()
 
 

@@ -67,6 +67,21 @@ void TIGER_API::PushClientImpl::set_inner_error_callback(const std::function<voi
 	}
 }
 
+void TIGER_API::PushClientImpl::set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
+{
+	subscribe_callback_ = cb;
+}
+
+void TIGER_API::PushClientImpl::set_unsubscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
+{
+	unsubscribe_callback_ = cb;
+}
+
+void TIGER_API::PushClientImpl::set_error_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
+{
+	error_callback_ = cb;
+}
+
 void TIGER_API::PushClientImpl::query_subscribed_symbols()
 {
     tigeropen::push::pb::Request request;
@@ -133,6 +148,16 @@ void TIGER_API::PushClientImpl::set_quote_changed_callback(const std::function<v
 bool TIGER_API::PushClientImpl::subscribe_quote(const std::vector<std::string>& symbols)
 {
 	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
+}
+
+bool TIGER_API::PushClientImpl::subscribe_future_quote(const std::vector<std::string>& symbols)
+{
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Future, symbols);
+}
+
+bool TIGER_API::PushClientImpl::subscribe_option_quote(const std::vector<std::string>& symbols)
+{
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Option, symbols);
 }
 
 
@@ -344,8 +369,8 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
 {
     try {
         if (frame->code() == ResponseType::GET_SUB_SYMBOLS_END) {
-            if (query_subscribed_callback_) {
-                query_subscribed_callback_(frame->msg());
+            if (query_subscribed_symbols_changed_) {
+                query_subscribed_symbols_changed_(frame->msg());
             }
         }
         else if (frame->code() == ResponseType::GET_SUBSCRIBE_END) {
