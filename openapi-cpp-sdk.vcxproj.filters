@@ -698,9 +698,6 @@
     <ClCompile Include="src\utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\easylogging++.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="include\openssl\applink.c">
       <Filter>include\openssl</Filter>
     </ClCompile>
@@ -763,6 +760,12 @@
     </ClCompile>
     <ClCompile Include="src\push_socket\push_client_impl.cpp">
       <Filter>src\push_socket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tick_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\easylogging++.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
