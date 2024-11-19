@@ -1,4 +1,5 @@
 ﻿// openapi_cpp_test.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+#include <functional>
 #include "tigerapi/push_client.h"
 #include "tigerapi/tiger_client.h"
 #include "tigerapi/quote_client.h"
@@ -436,6 +437,25 @@ public:
     }
 };
 
+void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
+    ucout << "Position changed:" << std::endl;
+    ucout << "- symbol: " << data.symbol() << std::endl;
+    ucout << "- positionqty: " << data.positionqty() << std::endl;
+    ucout << "- salableqty: " << data.salableqty() << std::endl;
+    ucout << "- marketvalue: " << data.marketvalue() << std::endl;
+    ucout << "- averagecost: " << data.averagecost() << std::endl;
+}
+
+void order_changed_callback(const tigeropen::push::pb::OrderStatusData& data) {
+    ucout << "Order changed:" << std::endl;
+    ucout << "- id: " << data.id() << std::endl;
+}
+
+void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
+    ucout << "Asset changed:" << std::endl;
+    ucout << "- cashbalance: " << data.cashbalance() << std::endl;
+}
+
 int main()
 {
     /************************** set config **********************/
@@ -452,19 +472,13 @@ int main()
 
 
 	auto push_client = IPushClient::create_push_client(config);
-    push_client->set_position_changed_callback([](const tigeropen::push::pb::PositionData& data) {
-        std::cout << "Position changed: " << data.DebugString() << std::endl;
-    });
-    push_client->set_order_changed_callback([](const tigeropen::push::pb::OrderData& data) {
-        std::cout << "Order changed: " << data.DebugString() << std::endl;
-    });
-    push_client->set_asset_changed_callback([](const tigeropen::push::pb::AssetData& data) {
-        std::cout << "Asset changed: " << data.DebugString() << std::endl;
-    });
+    // push_client->set_position_changed_callback(std::function<void(const tigeropen::push::pb::PositionData&)>(position_changed_callback));
+    // push_client->set_order_changed_callback(std::function<void(const tigeropen::push::pb::OrderStatusData&)>(order_changed_callback));
+    // push_client->set_asset_changed_callback(std::function<void(const tigeropen::push::pb::AssetData&)>(asset_changed_callback));
 
-    push_client->subscribe_position();
-    push_client->subscribe_order();
-    push_client->subscribe_asset();
+    push_client->subscribe_position("");
+    push_client->subscribe_order("");
+    push_client->subscribe_asset("");
     
     push_client->connect();
 	std::string input;

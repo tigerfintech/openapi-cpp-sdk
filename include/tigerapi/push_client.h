@@ -15,6 +15,7 @@
 #include "../include/openapi_pb/pb_source/OptionTopData.pb.h"
 #include "../include/openapi_pb/pb_source/QuoteDepthData.pb.h"
 #include "../include/openapi_pb/pb_source/Response.pb.h"
+#include "../include/tigerapi/model.h"
 
 
 namespace TIGER_API

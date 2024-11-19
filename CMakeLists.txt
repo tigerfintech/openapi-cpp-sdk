@@ -45,6 +45,9 @@ if(UNIX) # Darwing or Linux
         list(REVERSE OPENSSL_ROOT_DIR)
 
         find_package(OpenSSL REQUIRED)
+        message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
+        message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
+    
 #        set(OPENSSL_VERSION "1.1.1q")
 
         set(ZLIB_LIBRARY  /opt/homebrew/Cellar/zlib/1.2.13/lib/libz.dylib )

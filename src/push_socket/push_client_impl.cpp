@@ -438,6 +438,9 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
                                 }
                             }
                             break;
+                        default:
+                            LOG(ERROR) << "unknown quote type";
+                            break;
                     }
                     break;
                 }
