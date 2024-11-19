@@ -11,6 +11,10 @@
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
 
+#include "tigerapi/easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
+
 using namespace std;
 using namespace web;
 using namespace web::json;

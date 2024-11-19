@@ -533,8 +533,8 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 
 				std::vector<utility::string_t> tokens;
 				utility::string_t heart_beat_str = heart_beart_mag;
-				std::basic_regex regex(U(","));
-				std::regex_token_iterator it(heart_beat_str.begin(), heart_beat_str.end(), regex, -1);
+				std::basic_regex<utility::char_t> regex(U(","));
+				std::regex_token_iterator<utility::string_t::iterator> it(heart_beat_str.begin(), heart_beat_str.end(), regex, -1);
 				std::regex_token_iterator<utility::string_t::iterator> end;
 
 				while (it != end)

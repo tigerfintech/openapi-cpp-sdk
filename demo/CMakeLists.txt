@@ -17,7 +17,8 @@ if(UNIX) # Darwing or Linux
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
 
     # tigerapi
-    find_path(TIGERAPI_INCLUDE_DIR NAMES common/easylogging++.h tigerapi/client_config.h )
+    find_path(TIGERAPI_INCLUDE_DIR NAMES tigerapi/easylogging++.h tigerapi/client_config.h )
+    message(TIGERAPI_INCLUDE_DIR " ${TIGERAPI_INCLUDE_DIR}")
     find_library(TIGERAPI_LIBRARY NAMES libtigerapi.a)
 
     set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
