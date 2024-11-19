@@ -44,7 +44,7 @@ uint32_t TIGER_API::PushFrameDecoder::get_frame_size() const
 
 uint32_t TIGER_API::PushFrameDecoder::decode_varint()
 {
-	const uint32_t mask = (1U << 32) - 1;
+	const uint32_t mask = (1ULL << 32) - 1;
 	uint32_t result = 0;
 	int shift = 0;
 
