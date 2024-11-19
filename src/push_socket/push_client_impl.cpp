@@ -3,11 +3,15 @@
 #include "../include/tigerapi/push_socket/push_socket.h"
 #include "../include/tigerapi/tick_util.h"
 #include "../include/openapi_pb/pb_source/PushData.pb.h"
+#include "../include/tigerapi/enums.h"
+#include "../include/openapi_pb/pb_source/SocketCommon.pb.h"
+
 #include "google/protobuf/util/json_util.h"
 #include <vector>
 #include <memory>
 #include <cmath>
 #include <numeric>
+#include <boost/algorithm/string.hpp>
 
 std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_push_client_impl(const TIGER_API::ClientConfig& client_config)
 {
@@ -27,6 +31,7 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
 {
 	socket_ = PushSocket::create_push_socket(&io_service_, client_config);
+    client_config_ = client_config;
 }
 
 void TIGER_API::PushClientImpl::connect()
@@ -90,7 +95,7 @@ void TIGER_API::PushClientImpl::query_subscribed_symbols()
     send_frame(request);
 }
 
-void TIGER_API::PushClientImpl::set_query_subscribed_symbols_changed_callback(const std::function<void(const std::vector<std::string>& symbols)>& cb)
+void TIGER_API::PushClientImpl::set_query_subscribed_symbols_changed_callback(const std::function<void(const tigeropen::push::pb::Response& query_subscribed_symbols_response)>& cb)
 {
 	query_subscribed_symbols_changed_ = cb;
 }
@@ -140,45 +145,60 @@ bool TIGER_API::PushClientImpl::unsubscribe_order(const std::string& account)
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OrderStatus  , account);
 }
 
-void TIGER_API::PushClientImpl::set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteData&)>& cb)
+void TIGER_API::PushClientImpl::set_transaction_changed_callback(const std::function<void(const tigeropen::push::pb::OrderTransactionData&)>& cb)
+{
+	transaction_changed_ = cb;
+}
+
+bool TIGER_API::PushClientImpl::subscribe_transaction(const std::string& account)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OrderTransaction, account);
+}
+
+bool TIGER_API::PushClientImpl::unsubscribe_transaction(const std::string& account)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_OrderTransaction, account);
+}
+
+void TIGER_API::PushClientImpl::set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBasicData&)>& cb)
 {
 	quote_changed_ = cb;
 }
 
 bool TIGER_API::PushClientImpl::subscribe_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::subscribe_future_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Future, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Future, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::subscribe_option_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Option, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Option, symbols, "");
 }
 
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
 }
 
-void TIGER_API::PushClientImpl::set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteData&)>& cb)
+void TIGER_API::PushClientImpl::set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBBOData&)>& cb)
 {
 	quote_bbo_changed_ = cb;
 }
 
 bool TIGER_API::PushClientImpl::subscribe_quote_bbo(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote_bbo(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
 }
 
 void TIGER_API::PushClientImpl::set_quote_depth_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteDepthData&)>& cb)
@@ -188,12 +208,12 @@ void TIGER_API::PushClientImpl::set_quote_depth_changed_callback(const std::func
 
 bool TIGER_API::PushClientImpl::subscribe_quote_depth(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols, "");
 }	
 
 bool TIGER_API::PushClientImpl::unsubscribe_quote_depth(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_QuoteDepth, symbols, "");
 }
 
 void TIGER_API::PushClientImpl::set_kline_changed_callback(const std::function<void(const tigeropen::push::pb::KlineData&)>& cb)
@@ -203,12 +223,12 @@ void TIGER_API::PushClientImpl::set_kline_changed_callback(const std::function<v
 
 bool TIGER_API::PushClientImpl::subscribe_kline(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols, "");
 }	
 
 bool TIGER_API::PushClientImpl::unsubscribe_kline(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Kline, symbols, "");
 }
 
 void TIGER_API::PushClientImpl::set_full_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb)
@@ -218,27 +238,27 @@ void TIGER_API::PushClientImpl::set_full_tick_changed_callback(const std::functi
 
 bool TIGER_API::PushClientImpl::subscribe_full_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
 }		
 
 bool TIGER_API::PushClientImpl::unsubscribe_full_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
 }
 
-void TIGER_API::PushClientImpl::set_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb)
+void TIGER_API::PushClientImpl::set_tick_changed_callback(const std::function<void(const TradeTick&)>& cb)
 {
 	tick_changed_ = cb;
 }
 
 bool TIGER_API::PushClientImpl::subscribe_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::unsubscribe_tick(const std::vector<std::string>& symbols)
 {
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols);
+	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
 }
 
 bool TIGER_API::PushClientImpl::subscribe_market(const std::string& market)
@@ -368,43 +388,43 @@ void TIGER_API::PushClientImpl::do_disconnect()
 void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push::pb::Response>& frame)
 {
     try {
-        if (frame->code() == ResponseType::GET_SUB_SYMBOLS_END) {
+        if (frame->code() == static_cast<int>(ResponseType::GET_SUB_SYMBOLS_END)) {
             if (query_subscribed_symbols_changed_) {
-                query_subscribed_symbols_changed_(frame->msg());
+                query_subscribed_symbols_changed_(*frame);
             }
         }
-        else if (frame->code() == ResponseType::GET_SUBSCRIBE_END) {
+        else if (frame->code() == static_cast<int>(ResponseType::GET_SUBSCRIBE_END)) {
             if (subscribe_callback_) {
-                subscribe_callback_(frame);
+                subscribe_callback_(*frame);
             }
         }
-        else if (frame->code() == ResponseType::GET_CANCEL_SUBSCRIBE_END) {
+        else if (frame->code() == static_cast<int>(ResponseType::GET_CANCEL_SUBSCRIBE_END)) {
             if (unsubscribe_callback_) {
-                unsubscribe_callback_(frame);
+                unsubscribe_callback_(*frame);
             }
         }
-        else if (frame->code() == ResponseType::ERROR_END) {
+        else if (frame->code() == static_cast<int>(ResponseType::ERROR_END)) {
             if (error_callback_) {
-                error_callback_(frame);
+                error_callback_(*frame);
             }
         }
         else {
             const auto& body = frame->body();
             switch (body.datatype()) {
-                case SocketCommon::DataType::Quote: {
+                case tigeropen::push::pb::SocketCommon_DataType_Quote: {
                     const auto& quote_data = body.quotedata();
                     switch (quote_data.type()) {
-                        case SocketCommon::QuoteType::BASIC:
+                        case tigeropen::push::pb::SocketCommon_QuoteType_BASIC:
                             if (quote_changed_) {
-                                quote_changed_(quote_data);
+                                quote_changed_(*convert_to_basic_data(quote_data));
                             }
                             break;
-                        case SocketCommon::QuoteType::BBO:
+                        case tigeropen::push::pb::SocketCommon_QuoteType_BBO:
                             if (quote_bbo_changed_) {
-                                quote_bbo_changed_(quote_data);
+                                quote_bbo_changed_(*convert_to_bbo_data(quote_data));
                             }
                             break;
-                        case SocketCommon::QuoteType::ALL:
+                        case tigeropen::push::pb::SocketCommon_QuoteType_ALL:
                             if (quote_changed_) {
                                 auto basic_data = convert_to_basic_data(quote_data);
                                 if (basic_data) {
@@ -421,8 +441,8 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
                     }
                     break;
                 }
-                case SocketCommon::DataType::Future:
-                case SocketCommon::DataType::Option: {
+                case tigeropen::push::pb::SocketCommon_DataType_Future:
+                case tigeropen::push::pb::SocketCommon_DataType_Option: {
                     if (quote_changed_) {
                         auto basic_data = convert_to_basic_data(body.quotedata());
                         if (basic_data) {
@@ -437,58 +457,58 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
                     }
                     break;
                 }
-                case SocketCommon::DataType::QuoteDepth:
+                case tigeropen::push::pb::SocketCommon_DataType_QuoteDepth:
                     if (quote_depth_changed_) {
                         quote_depth_changed_(body.quotedepthdata());
                     }
                     break;
-                case SocketCommon::DataType::TradeTick:
-                    if (use_full_tick_) {
+                case tigeropen::push::pb::SocketCommon_DataType_TradeTick:
+                    if (client_config_.use_full_tick) {
                         if (full_tick_changed_) {
                             full_tick_changed_(body.tickdata());
                         }
                     }
                     else {
                         if (tick_changed_) {
-                            tick_changed_(convert_tick(body.tradetickdata()));
+                            tick_changed_(*convert_tick(body.tradetickdata()));
                         }
                     }
                     break;
-                case SocketCommon::DataType::OrderStatus:
+                case tigeropen::push::pb::SocketCommon_DataType_OrderStatus:
                     if (order_changed_) {
                         auto order_status_data = body.orderstatusdata();
-                        order_status_data.set_status(
-                            get_order_status(order_status_data.status(),
-                                           order_status_data.filledquantity()).name());
+                        // order_status_data.set_status(
+                        //     get_order_status(order_status_data.status(),
+                        //                    order_status_data.filledquantity()).name());
                         order_changed_(order_status_data);
                     }
                     break;
-                case SocketCommon::DataType::OrderTransaction:
+                case tigeropen::push::pb::SocketCommon_DataType_OrderTransaction:
                     if (transaction_changed_) {
                         transaction_changed_(body.ordertransactiondata());
                     }
                     break;
-                case SocketCommon::DataType::Asset:
+                case tigeropen::push::pb::SocketCommon_DataType_Asset:
                     if (asset_changed_) {
                         asset_changed_(body.assetdata());
                     }
                     break;
-                case SocketCommon::DataType::Position:
+                case tigeropen::push::pb::SocketCommon_DataType_Position:
                     if (position_changed_) {
                         position_changed_(body.positiondata());
                     }
                     break;
-                case SocketCommon::DataType::StockTop:
+                case tigeropen::push::pb::SocketCommon_DataType_StockTop:
                     if (stock_top_changed_) {
                         stock_top_changed_(body.stocktopdata());
                     }
                     break;
-                case SocketCommon::DataType::OptionTop:
+                case tigeropen::push::pb::SocketCommon_DataType_OptionTop:
                     if (option_top_changed_) {
                         option_top_changed_(body.optiontopdata());
                     }
                     break;
-                case SocketCommon::DataType::Kline:
+                case tigeropen::push::pb::SocketCommon_DataType_Kline:
                     if (kline_changed_) {
                         kline_changed_(body.klinedata());
                     }
@@ -506,142 +526,135 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
 
 
 
-tigeropen::push::pb::QuoteBasicData* TIGER_API::PushClientImpl::convert_to_basic_data(const tigeropen::push::pb::QuoteData& quoteData) {
+std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::convert_to_basic_data(const tigeropen::push::pb::QuoteData& quote_data) {
     // Check for valid input
-    if (!quoteData.has_type()) {
+    if (!quote_data.type()) {
         return nullptr;
     }
 
-    QuoteType quoteType = quoteData.type();
-    if (quoteType != SocketCommon::QuoteType::ALL && 
-        quoteType != SocketCommon::QuoteType::BASIC) {
+    tigeropen::push::pb::SocketCommon_QuoteType quoteType = quote_data.type();
+    if (quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
+        quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
         return nullptr;
     }
 
     // Create and initialize builder
     // auto* builder = new QuoteBasicData();
-    tigeropen::push::pb::QuoteBasicData builder;
+    auto builder = std::make_shared<tigeropen::push::pb::QuoteBasicData>();
     // Set required fields
-    builder.set_symbol(quoteData.symbol);
-    builder.set_type(SocketCommon::QuoteType::BASIC);
-    builder.set_timestamp(quoteData.timestamp);
-    builder.set_latest_price(quoteData.latest_price);
-    builder.set_latest_time(quoteData.latesttime);
-    builder.set_pre_close(quoteData.pre_close);
-    builder.set_volume(quoteData.volume);
+    builder->set_symbol(quote_data.symbol());
+    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC);
+    builder->set_timestamp(quote_data.timestamp());
+    builder->set_latestprice(quote_data.latestprice());
+    builder->set_latesttime(quote_data.latesttime());
+    builder->set_preclose(quote_data.preclose());
+    builder->set_volume(quote_data.volume());
 
     // Set optional fields if they exist
-    if (quoteData.servertimestamp) {
-        builder.set_servertimestamp(quoteData.servertimestamp);
+    if (quote_data.servertimestamp()) {
+        builder->set_servertimestamp(quote_data.servertimestamp());
     }
     
-    if (quoteData.avgfillprice) {
-        builder.set_avgfillprice(quoteData.avgfillprice);
+    if (quote_data.avgprice() != 0) {
+        builder->set_avgprice(quote_data.avgprice());
     }
     
-    if (quoteData.latestpricetimestamp) {
-        builder.set_latestpricetimestamp(quoteData.latestpricetimestamp);
+    if (quote_data.latestpricetimestamp()) {
+        builder->set_latestpricetimestamp(quote_data.latestpricetimestamp());
     }
     
-    if (quoteData.amount) {
-            builder.set_amount(quoteData.amount);
+    if (quote_data.amount() != 0) {
+            builder->set_amount(quote_data.amount());
     }
     
-    if (quoteData.open) {
-        builder.set_open(quoteData.open);
+    if (quote_data.open() != 0) {
+        builder->set_open(quote_data.open());
     }
     
-    if (quoteData.high) {
-        builder.set_high(quoteData.high);
+    if (quote_data.high() != 0) {
+        builder->set_high(quote_data.high());
     }
     
-    if (quoteData.low) {
-        builder.set_low(quoteData.low);
+    if (quote_data.low() != 0) {
+        builder->set_low(quote_data.low());
     }
     
-    if (quoteData.hour_trading_tag) {
-            builder.set_hour_trading_tag(quoteData.hour_trading_tag);
+    if (!quote_data.hourtradingtag().empty()) {
+            builder->set_hourtradingtag(quote_data.hourtradingtag());
     }
     
-    if (quoteData.market_status) {
-        builder.set_market_status(quoteData.market_status);
+    if (!quote_data.marketstatus().empty()) {
+        builder->set_marketstatus(quote_data.marketstatus());
     }
     
-    if (quoteData.identifier) {
-        builder.set_identifier(quoteData.identifier);
+    if (!quote_data.identifier().empty()) {
+        builder->set_identifier(quote_data.identifier());
     }
     
-    if (quoteData.open_int) {
-        builder.set_open_int(quoteData.open_int);
+    if (quote_data.openint() != 0) {
+        builder->set_openint(quote_data.openint());
     }
     
-    if (quoteData.trade_time) {
-        builder.set_trade_time(quoteData.trade_time);
+    if (quote_data.tradetime()) {
+        builder->set_tradetime(quote_data.tradetime());
     }
     
-    if (quoteData.presettlement) {
-        builder.set_pre_settlement(quoteData.presettlement);
+    if (quote_data.presettlement() != 0) {
+        builder->set_presettlement(quote_data.presettlement());
     }
     
-    if (quoteData.min_tick) {
-        builder.set_min_tick(quoteData.min_tick);
+    if (quote_data.mintick() != 0) {
+        builder->set_mintick(quote_data.mintick());
     }
     
-    if (quoteData.mi) {
-        builder.mutable_mi()->CopyFrom(quoteData.mi);
-    }
+    builder->mutable_mi()->CopyFrom(quote_data.mi());
+
 
     return builder;
 }
 
-tigeropen::push::pb::QuoteBboData* TIGER_API::PushClientImpl::convert_to_bbo_data(const tigeropen::push::pb::QuoteData& quoteData) {
-    if (!quoteData.has_type()) {
+std::shared_ptr<tigeropen::push::pb::QuoteBBOData> TIGER_API::PushClientImpl::convert_to_bbo_data(const tigeropen::push::pb::QuoteData& quote_data) {
+    if (!quote_data.type()) {
         return nullptr;
     }
 
-    QuoteType quoteType = quoteData.type();
-    if (quoteType != SocketCommon::QuoteType::BBO) {
+    tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
+    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO) {
         return nullptr;
     }
 
     // Create and initialize builder
-    tigeropen::push::pb::QuoteBboData builder;
-    builder.set_symbol(quoteData.symbol);
-    builder.set_type(SocketCommon::QuoteType::BBO);
-    builder.set_timestamp(quoteData.timestamp);
-    builder.set_latestprice(quoteData.latest_price);
-    builder.set_latesttime(quoteData.latesttime);
-    builder.set_bidprice(quoteData.bid_price);
-    builder.set_bidsize(quoteData.bid_size);
-    builder.set_askprice(quoteData.ask_price);
-    builder.set_asksize(quoteData.ask_size);
-    if (quoteData.asktimestamp) {
-        builder.set_asktimestamp(quoteData.asktimestamp);
-    }
-    if (quoteData.bidtimestamp) {
-        builder.set_bidtimestamp(quoteData.bidtimestamp);
-    }
+    auto builder = std::make_shared<tigeropen::push::pb::QuoteBBOData>();
+    builder->set_symbol(quote_data.symbol());
+    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO);
+    builder->set_timestamp(quote_data.timestamp());
+    builder->set_bidprice(quote_data.bidprice());
+    builder->set_bidsize(quote_data.bidsize());
+    builder->set_askprice(quote_data.askprice());
+    builder->set_asksize(quote_data.asksize());
+    builder->set_asktimestamp(quote_data.asktimestamp());
+    builder->set_bidtimestamp(quote_data.bidtimestamp());
     return builder;
 }
 
 
-tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const tigeropen::push::pb::TradeTickData& data) {
+shared_ptr<TIGER_API::TradeTick> TIGER_API::PushClientImpl::convert_tick(const tigeropen::push::pb::TradeTickData& data) {
     // Get basic data
-    std::string symbol = data.symbol;
-    double price_offset = std::pow(10, data.priceoffset);
-    double price_base = data.pricebase;
-    int64_t timestamp = data.timestamp;
-    int sec_type = data.sectype;
-    int quote_level = data.quotelevel;
-    int64_t sn = data.sn;
+    std::string symbol = data.symbol();
+    double price_offset = std::pow(10, data.priceoffset());
+    double price_base = data.pricebase();
+    int64_t timestamp = data.timestamp();
+    std::string sec_type = data.sectype();
+    std::string quote_level = data.quotelevel();
+    int64_t sn = data.sn();
 
     // Calculate size for vectors
-    size_t data_size = data.time_size;  // Assuming all arrays are same size
+    size_t data_size = data.time_size();  // Assuming all arrays are same size
     
     // Process all parallel arrays
     std::vector<double> prices;
     std::vector<int64_t> times;
-    std::vector<int64_t> volumes;
+    std::vector<long> volumes;
     std::vector<int> tick_types;
     std::vector<std::string> part_codes;
     std::vector<std::string> part_code_names;
@@ -670,7 +683,7 @@ tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const ti
 
     // Process tick types
     tick_types.reserve(data_size);
-    if (data.type_size() > 0) {
+    if (data.type().size() > 0) {
         for (const auto& type : data.type()) {
             tick_types.push_back(type);
         }
@@ -681,8 +694,8 @@ tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const ti
     // Process part codes
     part_codes.reserve(data_size);
     part_code_names.reserve(data_size);
-    if (data.part_code_size() > 0) {
-        for (const auto& code : data.part_code()) {
+    if (data.partcode_size() > 0) {
+        for (const auto& code : data.partcode()) {
             part_codes.push_back(get_part_code(code));
             part_code_names.push_back(get_part_code_name(code));
         }
@@ -694,9 +707,9 @@ tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const ti
     // Process conditions
     conditions.reserve(data_size);
     auto cond_map = get_trade_condition_map(quote_level);
-    if (data.cond_size() > 0) {
+    if (data.cond().size() > 0) {
         for (const auto& cond : data.cond()) {
-            conditions.push_back(get_trade_condition(cond, cond_map));
+            conditions.push_back(get_trade_condition(std::string(1, cond), cond_map));
         }
     } else {
         conditions.resize(data_size);
@@ -709,39 +722,41 @@ tigeropen::push::pb::TradeTick* TIGER_API::PushClientImpl::convert_tick(const ti
     }
 
     // Create result container
-    tigeropen::push::pb::TradeTick result;
-    result.set_symbol(symbol);
-    result.set_sectype(sec_type);
-    result.set_quotelevel(quote_level);
-    result.set_timestamp(timestamp);
+    auto result = std::make_shared<TIGER_API::TradeTick>();
+    result->set_symbol(symbol);
+    result->set_sectype(sec_type);
+    result->set_quotelevel(quote_level);
+    result->set_timestamp(std::to_string(timestamp));
 
     // Process all items
     for (size_t i = 0; i < data_size; ++i) {
-        if (i < data.merged_vols_size() && data.merged_vols(i).vol_size() > 0) {
+        if (i < data.mergedvols_size() && data.mergedvols(i).vol_size() > 0) {
             // Handle merged volumes
-            const auto& merged_vol = data.merged_vols(i);
+            const auto& merged_vol = data.mergedvols(i);
             for (int j = 0; j < merged_vol.vol_size(); ++j) {
-                auto* tick = result.add_ticks();
-                tick.set_ticktype(tick_types[i]);
+                TIGER_API::TradeTickItem tick;
+                tick.set_ticktype(std::to_string(tick_types[i]));
                 tick.set_price(prices[i]);
                 tick.set_volume(merged_vol.vol(j));
                 tick.set_partcode(part_codes[i]);
                 tick.set_partcodename(part_code_names[i]);
                 tick.set_cond(conditions[i]);
-                tick.set_time(times[i]);
-                tick.set_sn(sn_list[i] * 10 + j);
+                tick.set_time(std::to_string(times[i]));
+                tick.set_sn(std::to_string(sn_list[i] * 10 + j));
+                result->addTick(tick);
             }
         } else {
             // Handle regular tick
-            auto* tick = result.add_ticks();
-            tick.set_ticktype(tick_types[i]);
+            TIGER_API::TradeTickItem tick;
+            tick.set_ticktype(std::to_string(tick_types[i]));
             tick.set_price(prices[i]);
             tick.set_volume(volumes[i]);
             tick.set_partcode(part_codes[i]);
             tick.set_partcodename(part_code_names[i]);
             tick.set_cond(conditions[i]);
-            tick.set_time(times[i]);
-            tick.set_sn(sn_list[i]);
+            tick.set_time(std::to_string(times[i]));
+            tick.set_sn(std::to_string(sn_list[i]));
+            result->addTick(tick);
         }
     }
 

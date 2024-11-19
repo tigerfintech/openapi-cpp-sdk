@@ -653,7 +653,7 @@ namespace TIGER_API {
         // Getters
         const std::string& get_ticktype() const { return tick_type; }
         double get_price() const { return price; }
-        int get_volume() const { return volume; }
+        long long get_volume() const { return volume; }
         const std::string& get_partcode() const { return part_code; }
         const std::string& get_partcodename() const { return part_code_name; }
         const std::string& get_cond() const { return cond; }
@@ -663,7 +663,7 @@ namespace TIGER_API {
         // Setters
         void set_ticktype(const std::string& value) { tick_type = value; }
         void set_price(double value) { price = value; }
-        void set_volume(int value) { volume = value; }
+        void set_volume(long long value) { volume = value; }
         void set_partcode(const std::string& value) { part_code = value; }
         void set_partcodename(const std::string& value) { part_code_name = value; }
         void set_cond(const std::string& value) { cond = value; }

@@ -49,7 +49,7 @@ namespace TIGER_API {
         utility::string_t lang;
         utility::string_t device_id = Utils::get_device_id();
         utility::string_t secret_key;
-        bool user_full_tick = false;
+        bool use_full_tick = false;
 		utility::string_t socket_ca_certs;
         unsigned int send_interval = 10 * 1000;
         unsigned int receive_interval = 10 * 1000;

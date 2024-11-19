@@ -214,7 +214,7 @@ void TIGER_API::PushSocket::send_authentication()
 	connect_request->set_acceptversion("3");
 	connect_request->set_sendinterval(client_config_.send_interval);
 	connect_request->set_receiveinterval(client_config_.receive_interval);
-	connect_request->set_usefulltick(client_config_.user_full_tick);
+	connect_request->set_usefulltick(client_config_.use_full_tick);
 	
 	std::string packed_frame = request.SerializeAsString();
 	if (!packed_frame.empty())
@@ -526,15 +526,16 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 		{
 			LOG(INFO) << str_msg;
 			web::json::value json_value = web::json::value::parse(str_msg);
-			auto utf16_key = utility::conversions::to_utf16string(CONNECTED_HEART_BEAT_CFG_KEY);
+			auto utf16_key = utility::conversions::to_string_t(CONNECTED_HEART_BEAT_CFG_KEY);
 			if (json_value.has_field(utf16_key) && json_value[utf16_key].is_string()) 
 			{
 				auto heart_beart_mag = json_value[utf16_key].as_string();
 
-				std::vector<std::wstring> tokens;
-				std::wregex regex(L",");
-				std::wsregex_token_iterator it(heart_beart_mag.begin(), heart_beart_mag.end(), regex, -1);
-				std::wsregex_token_iterator end;
+				std::vector<utility::string_t> tokens;
+				utility::string_t heart_beat_str = heart_beart_mag;
+				std::basic_regex regex(U(","));
+				std::regex_token_iterator it(heart_beat_str.begin(), heart_beat_str.end(), regex, -1);
+				std::regex_token_iterator<utility::string_t::iterator> end;
 
 				while (it != end)
 				{

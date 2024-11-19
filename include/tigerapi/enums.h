@@ -392,6 +392,39 @@ namespace TIGER_API {
         }
     };
 
+    enum class ResponseType {
+        // 交易相关
+        GET_ORDER_NO_END = 1,
+        PREVIEW_ORDER_END = 2,
+        PLACE_ORDER_END = 3,
+        CANCEL_ORDER_END = 4,
+        MODIFY_ORDER_END = 5,
+        GET_ASSET_END = 6,
+        GET_POSITION_END = 7,
+        GET_ACCOUNT_END = 8,
+        SUBSCRIBE_ORDER_STATUS = 9,
+        SUBSCRIBE_POSITION = 10,
+        SUBSCRIBE_ASSET = 11,
+        SUBSCRIBE_TRADE_EXECUTION = 12,
+
+        // 行情相关
+        GET_MARKET_STATE_END = 101,
+        GET_ALL_SYMBOLS_END = 102,
+        GET_ALL_SYMBOL_NAMES_END = 103,
+        GET_BRIEF_INFO_END = 104,
+        GET_STOCK_DETAIL_END = 105,
+        GET_TIME_LINE_END = 106,
+        GET_HOUR_TRADING_TIME_LINE_END = 107,
+        GET_KLINE_END = 108,
+        GET_TRADING_TICK_END = 109,
+        GET_QUOTE_CHANGE_END = 110,
+
+        GET_SUB_SYMBOLS_END = 111,
+        GET_SUBSCRIBE_END = 112,
+        GET_CANCEL_SUBSCRIBE_END = 113,
+
+        ERROR_END = 200
+    };
 
 
     // Part code name mapping
