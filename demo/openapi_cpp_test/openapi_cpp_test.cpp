@@ -440,7 +440,7 @@ public:
         tigerapi->post(POSITIONS, obj);
     }
 };
-
+//
 void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
 	ucout << "Position changed:" << std::endl;
 	ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
@@ -465,9 +465,9 @@ int main()
     /************************** set config **********************/
     ClientConfig config = ClientConfig();
 #if 1
-	config.private_key = U("");
-	config.tiger_id = U("");
-	config.account = U("");
+	// config.private_key = U("");
+	// config.tiger_id = U("");
+	// config.account = U("");
 #else
 	config.private_key = U("");
 	config.tiger_id = U("");
@@ -493,7 +493,7 @@ int main()
 
 		if (input == "exit") {
 			std::cout << "Exiting loop." << std::endl;
-            push_client->disconnect();
+            // push_client->disconnect();
 			break;
 		}
 		// Process other commands or input here

@@ -34,6 +34,7 @@ if(UNIX) # Darwing or Linux
 
 
     if(APPLE)
+#        set(CMAKE_OSX_DEPLOYMENT_TARGET "13.7")
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
         file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
         # Prefer the latest (make the latest one first)

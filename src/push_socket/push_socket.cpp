@@ -316,6 +316,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 
 void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& error)
 {
+	LOG(INFO) << "handshake callback";
 	try
 	{
 		if (!error)

@@ -81,9 +81,15 @@ endif()
 
 # Project construction ...
 # src files ...
-file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" 
+file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" "include/openapi_pb/pb_source/*.*" 
 "include/tigerapi/push_socket/*.h" "include/tigerapi/*.h" "src/*.cpp" "src/push_socket/*.cpp")
-add_library(${PROJECT_NAME} cpprest/  ${MY_SOURCE_FILES})
+add_library(${PROJECT_NAME} cpprest/ ${MY_SOURCE_FILES})
+message(MY_SOURCE_FILES " ${MY_SOURCE_FILES}")
+# 确保生成动态库
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    SOVERSION ${PROJECT_VERSION}
+    VERSION ${PROJECT_VERSION}
+)
 
 # headers search paths ...
 #set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
@@ -125,7 +131,9 @@ endif()
 
 install(DIRECTORY include/
         DESTINATION "include"
-        FILES_MATCHING PATTERN "*.h"
+        FILES_MATCHING 
+        PATTERN "*.h"
+        PATTERN "*.cc"
         )
 
 install(TARGETS ${PROJECT_NAME}
