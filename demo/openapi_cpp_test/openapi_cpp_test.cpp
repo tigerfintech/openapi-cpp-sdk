@@ -10,10 +10,10 @@
 #include "tigerapi/utils.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
-
 #include "tigerapi/easylogging++.h"
+#include <chrono>
+#include <thread>
 
-//INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 using namespace web;
@@ -440,67 +440,146 @@ public:
         tigerapi->post(POSITIONS, obj);
     }
 };
-//
-void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
-	ucout << "Position changed:" << std::endl;
-	ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
-	ucout << "- positionqty: " << data.positionqty() << std::endl;
-	ucout << "- salableqty: " << data.salableqty() << std::endl;
-	ucout << "- marketvalue: " << data.marketvalue() << std::endl;
-	ucout << "- averagecost: " << data.averagecost() << std::endl;
-}
 
-void order_changed_callback(const tigeropen::push::pb::OrderStatusData& data) {
-	ucout << "Order changed:" << std::endl;
-	ucout << "- id: " << data.id() << std::endl;
-}
-
-void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
-	ucout << "Asset changed:" << std::endl;
-	ucout << "- cashbalance: " << data.cashbalance() << std::endl;
-}
 
 std::atomic<bool> keep_running(true);
+
 void signal_handler(int signal)
 {
-	if (signal == SIGINT || signal == SIGTERM)
+    if (signal == SIGINT || signal == SIGTERM)
     {
-		keep_running = false;
-	}
+        keep_running = false;
+    }
 }
+
+
+class TestPushClient {
+private:
+    // 保存 push_client 实例作为成员变量
+    std::shared_ptr<IPushClient> push_client;
+
+public:
+    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {}
+
+    // 将回调方法改为非静态成员函数
+    void connected_callback() {
+        ucout << "Connected to push server" << std::endl;
+    }
+
+    void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
+        ucout << "Position changed:" << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- positionqty: " << data.positionqty() << std::endl;
+    }
+
+    void order_changed_callback(const tigeropen::push::pb::OrderStatusData& data) {
+        ucout << "Order changed:" << std::endl;
+        ucout << "- id: " << data.id() << std::endl;
+    }
+
+    void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
+        ucout << "Asset changed:" << std::endl;
+        ucout << "- cashbalance: " << data.cashbalance() << std::endl;
+    }
+
+    void tick_changed_callback(const TradeTick& data) {
+        ucout << "TradeTick changed: " << std::endl;
+        ucout << "- data: " << data.to_string() << std::endl;
+    }
+
+    void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
+        ucout << "BasicQuote changed: " << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- latestPrice: " << data.latestprice() << std::endl;
+        ucout << "- volume: " << data.volume() << std::endl;
+    }
+
+    void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
+        ucout << "Kline changed: " << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- open: " << data.open() << std::endl;
+        ucout << "- high: " << data.high() << std::endl;
+        ucout << "- low: " << data.low() << std::endl;
+        ucout << "- close: " << data.close() << std::endl;
+    }
+
+    void start_test() {
+        push_client->connect();
+
+        // sleep 10 seconds
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+
+        // 使用 std::bind 绑定成员函数
+        push_client->set_connected_callback(std::bind(&TestPushClient::connected_callback, this));
+        push_client->set_position_changed_callback(std::bind(&TestPushClient::position_changed_callback, this, std::placeholders::_1));
+        push_client->set_order_changed_callback(std::bind(&TestPushClient::order_changed_callback, this, std::placeholders::_1));
+        push_client->set_asset_changed_callback(std::bind(&TestPushClient::asset_changed_callback, this, std::placeholders::_1));
+        push_client->set_tick_changed_callback(std::bind(&TestPushClient::tick_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_changed_callback(std::bind(&TestPushClient::quote_changed_callback, this, std::placeholders::_1));
+        push_client->set_kline_changed_callback(std::bind(&TestPushClient::kline_changed_callback, this, std::placeholders::_1));
+        push_client->subscribe_position("");
+        push_client->subscribe_order("");
+        push_client->subscribe_asset("");
+
+        std::vector<std::string> symbols = {"NVDA", "00700"};
+        push_client->subscribe_tick(symbols);
+        push_client->subscribe_quote(symbols);
+
+        std::signal(SIGINT, signal_handler);  //Ctrl+C
+        std::signal(SIGTERM, signal_handler); //kill
+        while (keep_running)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        push_client->disconnect();
+    }
+
+    static void test_push_client(std::shared_ptr<IPushClient> push_client) {
+        TestPushClient test(push_client);
+        test.start_test();
+    }
+};
+
 
 int main()
 {
     /************************** set config **********************/
-    bool sandbox_debug = false;
-    ClientConfig config = ClientConfig(sandbox_debug);
-    if (sandbox_debug)
-    {
-		config.private_key = U("");
-		config.tiger_id = U("");
-		config.account = U("");
-    }
-    else
-    {
-		config.private_key = U("");
-		config.tiger_id = U("");
-		config.account = U("");
-    }
+    ClientConfig config = ClientConfig();
+#if 1
+	// config.private_key = U("");
+	// config.tiger_id = U("");
+	// config.account = U("");
 
-	auto push_client = IPushClient::create_push_client(config);
-    push_client->set_position_changed_callback(std::function<void(const tigeropen::push::pb::PositionData&)>(position_changed_callback));
-    push_client->set_order_changed_callback(std::function<void(const tigeropen::push::pb::OrderStatusData&)>(order_changed_callback));
-    push_client->set_asset_changed_callback(std::function<void(const tigeropen::push::pb::AssetData&)>(asset_changed_callback));
 
-    push_client->subscribe_position("");
-    push_client->subscribe_order("");
-    push_client->subscribe_asset("");
-    
-    push_client->connect();
+
+#else
+	config.private_key = U("");
+	config.tiger_id = U("");
+	config.account = U("");
+#endif
+
+
+
+	// std::string input;
+	// while (true)
+ //    {
+	// 	std::cout << "Enter command (type 'exit' to quit): ";
+	// 	std::getline(std::cin, input);
+ //
+	// 	if (input == "exit") {
+	// 		std::cout << "Exiting loop." << std::endl;
+ //            // push_client->disconnect();
+	// 		break;
+	// 	}
+	// 	// Process other commands or input here
+	// 	std::cout << "You entered: " << input << std::endl;
+	// }
 
     //config.lang = U("en_US");
 
-
+    auto push_client = IPushClient::create_push_client(config);
+    TestPushClient::test_push_client(push_client);
     /**
      *  QuoteClient
      */
@@ -519,14 +598,7 @@ int main()
       //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
       //    TestTigerApi::test_grab_quote_permission(tigerapi);
 	
-	std::signal(SIGINT, signal_handler);  //Ctrl+C
-	std::signal(SIGTERM, signal_handler); //kill
-	while (keep_running)
-    {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
 
-    push_client->disconnect();
 
     return 0;
 }

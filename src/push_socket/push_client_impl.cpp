@@ -31,6 +31,8 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
 {
 	socket_ = PushSocket::create_push_socket(&io_service_, client_config);
+    socket_->set_on_message_callback(
+        [this](auto && message) { on_message(std::forward<decltype(message)>(message)); });
     client_config_ = client_config;
 }
 

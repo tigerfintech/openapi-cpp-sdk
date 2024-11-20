@@ -378,7 +378,7 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 	}
 	else
 	{	
-#if	1
+#if	0
 		for (size_t i = 0; i < bytes_transferred; ++i) 
 		{
 			std::bitset<8> binary(head_buff_[i]);
@@ -503,8 +503,7 @@ void TIGER_API::PushSocket::read_body(size_t frame_len)
 			boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, recv_buff, page_num, frame_len));
 }
 
-void TIGER_API::PushSocket::dispatch_connected_callback()
-{
+void TIGER_API::PushSocket::dispatch_connected_callback() {
 	if (connected_callback_)
 	{
 		connected_callback_();

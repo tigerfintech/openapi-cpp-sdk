@@ -133,7 +133,7 @@ install(DIRECTORY include/
         DESTINATION "include"
         FILES_MATCHING 
         PATTERN "*.h"
-        PATTERN "*.cc"
+        # PATTERN "*.cc"
         )
 
 install(TARGETS ${PROJECT_NAME}
