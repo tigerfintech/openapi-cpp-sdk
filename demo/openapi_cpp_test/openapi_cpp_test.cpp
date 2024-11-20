@@ -460,20 +460,32 @@ void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
 	ucout << "- cashbalance: " << data.cashbalance() << std::endl;
 }
 
+std::atomic<bool> keep_running(true);
+void signal_handler(int signal)
+{
+	if (signal == SIGINT || signal == SIGTERM)
+    {
+		keep_running = false;
+	}
+}
+
 int main()
 {
     /************************** set config **********************/
-    ClientConfig config = ClientConfig();
-#if 1
-	// config.private_key = U("");
-	// config.tiger_id = U("");
-	// config.account = U("");
-#else
-	config.private_key = U("");
-	config.tiger_id = U("");
-	config.account = U("");
-#endif
-
+    bool sandbox_debug = false;
+    ClientConfig config = ClientConfig(sandbox_debug);
+    if (sandbox_debug)
+    {
+		config.private_key = U("");
+		config.tiger_id = U("");
+		config.account = U("");
+    }
+    else
+    {
+		config.private_key = U("");
+		config.tiger_id = U("");
+		config.account = U("");
+    }
 
 	auto push_client = IPushClient::create_push_client(config);
     push_client->set_position_changed_callback(std::function<void(const tigeropen::push::pb::PositionData&)>(position_changed_callback));
@@ -485,20 +497,6 @@ int main()
     push_client->subscribe_asset("");
     
     push_client->connect();
-	std::string input;
-	while (true)
-    {
-		std::cout << "Enter command (type 'exit' to quit): ";
-		std::getline(std::cin, input);
-
-		if (input == "exit") {
-			std::cout << "Exiting loop." << std::endl;
-            // push_client->disconnect();
-			break;
-		}
-		// Process other commands or input here
-		std::cout << "You entered: " << input << std::endl;
-	}
 
     //config.lang = U("en_US");
 
@@ -520,8 +518,15 @@ int main()
       */
       //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
       //    TestTigerApi::test_grab_quote_permission(tigerapi);
+	
+	std::signal(SIGINT, signal_handler);  //Ctrl+C
+	std::signal(SIGTERM, signal_handler); //kill
+	while (keep_running)
+    {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
 
-
+    push_client->disconnect();
 
     return 0;
 }

@@ -54,6 +54,7 @@ namespace TIGER_API
 		
 		virtual void set_query_subscribed_symbols_changed_callback(const std::function<void(const tigeropen::push::pb::Response& query_subscribed_symbols_response)>& cb) = 0;
 		virtual void query_subscribed_symbols() = 0;
+		
 		virtual void set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBasicData&)>& cb) = 0;
 		virtual bool subscribe_quote(const std::vector<std::string>& symbols) = 0;
 		virtual bool subscribe_future_quote(const std::vector<std::string>& symbols) = 0;
@@ -90,10 +91,6 @@ namespace TIGER_API
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) = 0;
 		virtual bool subscribe_option_top(const std::string& market) = 0;
 		virtual bool unsubscribe_option_top(const std::string& market) = 0;
-
-
-		
-		//TODO:other
 	};
 }
 
