@@ -208,6 +208,17 @@ void TIGER_API::PushSocket::close_session()
 
 void TIGER_API::PushSocket::send_authentication()
 {
+	if (client_config_.tiger_id.empty())
+	{
+		LOG(ERROR) << "tiger_id is empty";
+		return;
+	}
+	if (client_config_.private_key.empty())
+	{
+		LOG(ERROR) << "private_key is empty";
+		return;
+	}
+
 	//tiger_id sign by private_key
 	utility::string_t sign = Utils::get_sign(client_config_.private_key, client_config_.tiger_id);
 	

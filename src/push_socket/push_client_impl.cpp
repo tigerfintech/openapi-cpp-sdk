@@ -40,7 +40,6 @@ void TIGER_API::PushClientImpl::connect()
 	// create a worker thread to perform asynchronous network connections
 	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{
-		
 		socket_->connect();
 
 		LOG(INFO) << "io_service run on work thread";
