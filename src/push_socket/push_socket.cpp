@@ -84,6 +84,7 @@ void TIGER_API::PushSocket::disconnect()
 {
 	if (keep_alive_timer_)
 	{
+		LOG(INFO) << "stop keep alive scheduled task";
 		boost::system::error_code ec;
 		keep_alive_timer_->cancel(ec);
 		if (ec)
@@ -173,6 +174,7 @@ void TIGER_API::PushSocket::close_session()
 		bool open = socket_->lowest_layer().is_open();
 		if (open)
 		{
+			LOG(INFO) << "socket shutdown both";
 			boost::system::error_code ec;
 			socket_->lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 			if (ec)
@@ -181,12 +183,17 @@ void TIGER_API::PushSocket::close_session()
 				dispatch_inner_error_callback(ec.message());
 			}
 
+			LOG(INFO) << "socket execute close";
 			socket_->lowest_layer().close(ec);
 			if (ec)
 			{
 				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
+		}
+		else
+		{
+			LOG(INFO) << "socket already closed";
 		}
 	}
 	catch (const boost::system::system_error& e)
@@ -195,6 +202,7 @@ void TIGER_API::PushSocket::close_session()
 		dispatch_inner_error_callback(e.what());
 	}
 
+	LOG(INFO) << "socket close success";
 	dispatch_disconnected_callback();
 }
 
@@ -268,6 +276,7 @@ void TIGER_API::PushSocket::auto_reconnect()
 
 void TIGER_API::PushSocket::cancel_reconnect_timer()
 {
+	LOG(INFO) << "stop auto reconnect scheduled task";
 	if (reconnect_timer_)
 	{
 		boost::system::error_code ec;
