@@ -455,15 +455,26 @@ void signal_handler(int signal)
 
 class TestPushClient {
 private:
-    // 保存 push_client 实例作为成员变量
     std::shared_ptr<IPushClient> push_client;
+    std::vector<std::string> symbols;
 
 public:
-    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {}
+    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {
+        std::vector<std::string> hk_option_symbols = {"TCH.HK 20241230 410.00 CALL"};
+        std::vector<std::string> future_symbols = {"CL2412"};
+        symbols = future_symbols;
+    }
 
-    // 将回调方法改为非静态成员函数
     void connected_callback() {
         ucout << "Connected to push server" << std::endl;
+        push_client->subscribe_position(push_client->get_client_config().account);
+        push_client->subscribe_order(push_client->get_client_config().account);
+        push_client->subscribe_asset(push_client->get_client_config().account);
+        // push_client->query_subscribed_symbols();
+        push_client->subscribe_quote(symbols);
+        // push_client->subscribe_kline(symbols);
+        // push_client->subscribe_quote_depth(symbols);
+        push_client->subscribe_tick(symbols);
     }
 
     void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
@@ -473,13 +484,22 @@ public:
     }
 
     void order_changed_callback(const tigeropen::push::pb::OrderStatusData& data) {
+        // example: {"dataType":"OrderStatus","orderStatusData":{"id":"37129891133115200","account":"123123123","symbol":"PDD","identifier":"PDD","multiplier":1,
+        // "action":"BUY","market":"US","currency":"USD","segType":"S","secType":"STK","orderType":"LMT","isLong":true,"totalQuantity":"1","limitPrice":50,
+        // "status":"PendingSubmit","replaceStatus":"NONE","cancelStatus":"NONE","outsideRth":true,"canModify":true,"canCancel":true,"name":"PDD Holdings","source":"openapi","openTime":"1732177851000","timestamp":"1732177851874"}}
         ucout << "Order changed:" << std::endl;
         ucout << "- id: " << data.id() << std::endl;
+        ucout << "- status: " << data.status() << std::endl;
+        ucout << "- avgfillprice: " << data.avgfillprice() << std::endl;
     }
 
     void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
+        // example: {"dataType":"Asset","assetData":{"account":"111111111111","segType":"S","availableFunds":797832.55572773679,
+        // "excessLiquidity":826227.79308567208,"netLiquidation":944515.55984458746,"equityWithLoan":944494.85984458751,"buyingPower":3191330.2229109472,
+        // "cashBalance":656046.6059349241,"grossPositionValue":288448.25390966347,"initMarginReq":146662.30411685078,"maintMarginReq":118287.76675891539,"timestamp":"1732177851891"}}
         ucout << "Asset changed:" << std::endl;
         ucout << "- cashbalance: " << data.cashbalance() << std::endl;
+        ucout << "- netliquidation: " << data.netliquidation() << std::endl;
     }
 
     void tick_changed_callback(const TradeTick& data) {
@@ -487,11 +507,36 @@ public:
         ucout << "- data: " << data.to_string() << std::endl;
     }
 
+    void full_tick_changed_callback(const tigeropen::push::pb::TickData& data) {
+        ucout << "Full TickData changed: " << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- tick size: " << data.ticks_size() << std::endl;
+    }
+
+    void query_subscribed_symbols_changed_callback(const tigeropen::push::pb::Response& data) {
+        ucout << "QuerySubscribedSymbols changed: " << std::endl;
+        ucout << "- data: " << data.msg() << std::endl;
+    }
+
     void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
         ucout << "BasicQuote changed: " << std::endl;
         ucout << "- symbol: " << data.symbol() << std::endl;
         ucout << "- latestPrice: " << data.latestprice() << std::endl;
         ucout << "- volume: " << data.volume() << std::endl;
+    }
+
+    void quote_bbo_changed_callback(const tigeropen::push::pb::QuoteBBOData& data) {
+        ucout << "BBOQuote changed: " << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- bidPrice: " << data.bidprice() << std::endl;
+        ucout << "- askPrice: " << data.askprice() << std::endl;
+    }
+
+    void quote_depth_changed_callback(const tigeropen::push::pb::QuoteDepthData& data) {
+        ucout << "QuoteDepth changed: " << std::endl;
+        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- ask price size: " << data.ask().price_size() << std::endl;
+        ucout << "- bid price size: " << data.bid().price_size() << std::endl;
     }
 
     void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
@@ -503,27 +548,21 @@ public:
         ucout << "- close: " << data.close() << std::endl;
     }
 
-    void start_test() {
-        push_client->connect();
-
-        // sleep 10 seconds
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-
-        // 使用 std::bind 绑定成员函数
+    void start_test(ClientConfig config) {
         push_client->set_connected_callback(std::bind(&TestPushClient::connected_callback, this));
         push_client->set_position_changed_callback(std::bind(&TestPushClient::position_changed_callback, this, std::placeholders::_1));
         push_client->set_order_changed_callback(std::bind(&TestPushClient::order_changed_callback, this, std::placeholders::_1));
         push_client->set_asset_changed_callback(std::bind(&TestPushClient::asset_changed_callback, this, std::placeholders::_1));
         push_client->set_tick_changed_callback(std::bind(&TestPushClient::tick_changed_callback, this, std::placeholders::_1));
+        push_client->set_full_tick_changed_callback(std::bind(&TestPushClient::full_tick_changed_callback, this, std::placeholders::_1));
+        push_client->set_query_subscribed_symbols_changed_callback(std::bind(&TestPushClient::query_subscribed_symbols_changed_callback, this, std::placeholders::_1));
         push_client->set_quote_changed_callback(std::bind(&TestPushClient::quote_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_bbo_changed_callback(std::bind(&TestPushClient::quote_bbo_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_depth_changed_callback(std::bind(&TestPushClient::quote_depth_changed_callback, this, std::placeholders::_1));
         push_client->set_kline_changed_callback(std::bind(&TestPushClient::kline_changed_callback, this, std::placeholders::_1));
-        push_client->subscribe_position("");
-        push_client->subscribe_order("");
-        push_client->subscribe_asset("");
 
-        std::vector<std::string> symbols = {"NVDA", "00700"};
-        push_client->subscribe_tick(symbols);
-        push_client->subscribe_quote(symbols);
+
+        push_client->connect();
 
         std::signal(SIGINT, signal_handler);  //Ctrl+C
         std::signal(SIGTERM, signal_handler); //kill
@@ -532,12 +571,19 @@ public:
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
+        push_client->unsubscribe_quote(symbols);
+        push_client->unsubscribe_kline(symbols);
+        push_client->unsubscribe_quote_depth(symbols);
+        push_client->unsubscribe_tick(symbols);
+        push_client->unsubscribe_asset(config.account);
+        push_client->unsubscribe_position(config.account);
+        push_client->unsubscribe_order(config.account);
         push_client->disconnect();
     }
 
-    static void test_push_client(std::shared_ptr<IPushClient> push_client) {
+    static void test_push_client(std::shared_ptr<IPushClient> push_client, ClientConfig config) {
         TestPushClient test(push_client);
-        test.start_test();
+        test.start_test(config);
     }
 };
 
@@ -551,7 +597,7 @@ int main()
 	// config.tiger_id = U("");
 	// config.account = U("");
 
-
+    config.use_full_tick = true;
 
 #else
 	config.private_key = U("");
@@ -559,27 +605,10 @@ int main()
 	config.account = U("");
 #endif
 
-
-
-	// std::string input;
-	// while (true)
- //    {
-	// 	std::cout << "Enter command (type 'exit' to quit): ";
-	// 	std::getline(std::cin, input);
- //
-	// 	if (input == "exit") {
-	// 		std::cout << "Exiting loop." << std::endl;
- //            // push_client->disconnect();
-	// 		break;
-	// 	}
-	// 	// Process other commands or input here
-	// 	std::cout << "You entered: " << input << std::endl;
-	// }
-
     //config.lang = U("en_US");
 
     auto push_client = IPushClient::create_push_client(config);
-    TestPushClient::test_push_client(push_client);
+    TestPushClient::test_push_client(push_client, config);
     /**
      *  QuoteClient
      */

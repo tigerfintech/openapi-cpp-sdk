@@ -192,16 +192,6 @@ void TIGER_API::PushClientImpl::set_quote_bbo_changed_callback(const std::functi
 	quote_bbo_changed_ = cb;
 }
 
-bool TIGER_API::PushClientImpl::subscribe_quote_bbo(const std::vector<std::string>& symbols)
-{
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
-}
-
-bool TIGER_API::PushClientImpl::unsubscribe_quote_bbo(const std::vector<std::string>& symbols)
-{
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Quote, symbols, "");
-}
-
 void TIGER_API::PushClientImpl::set_quote_depth_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteDepthData&)>& cb)
 {
 	quote_depth_changed_ = cb;
@@ -235,16 +225,6 @@ bool TIGER_API::PushClientImpl::unsubscribe_kline(const std::vector<std::string>
 void TIGER_API::PushClientImpl::set_full_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb)
 {
 	full_tick_changed_ = cb;
-}
-
-bool TIGER_API::PushClientImpl::subscribe_full_tick(const std::vector<std::string>& symbols)
-{
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
-}		
-
-bool TIGER_API::PushClientImpl::unsubscribe_full_tick(const std::vector<std::string>& symbols)
-{
-	return send_quote_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_TradeTick, symbols, "");
 }
 
 void TIGER_API::PushClientImpl::set_tick_changed_callback(const std::function<void(const TradeTick&)>& cb)
@@ -389,7 +369,16 @@ void TIGER_API::PushClientImpl::do_disconnect()
 void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push::pb::Response>& frame)
 {
     try {
-        if (frame->code() == static_cast<int>(ResponseType::GET_SUB_SYMBOLS_END)) {
+        if (frame->command() == tigeropen::push::pb::SocketCommon_Command_CONNECTED) {
+            LOG(DEBUG) << "recv connected";
+        }
+        else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_DISCONNECT) {
+            LOG(DEBUG) << "disconnected";
+        }
+        else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_HEARTBEAT) {
+            LOG(DEBUG) << "heartbeat";
+        }
+        else if (frame->code() == static_cast<int>(ResponseType::GET_SUB_SYMBOLS_END)) {
             if (query_subscribed_symbols_changed_) {
                 query_subscribed_symbols_changed_(*frame);
             }
@@ -765,4 +754,8 @@ shared_ptr<TIGER_API::TradeTick> TIGER_API::PushClientImpl::convert_tick(const t
     }
 
     return result;
+}
+
+const TIGER_API::ClientConfig& TIGER_API::PushClientImpl::get_client_config() const {
+    return client_config_;
 }

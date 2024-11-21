@@ -25,6 +25,8 @@ namespace TIGER_API
 	{
 	public:
 		static std::shared_ptr<IPushClient> create_push_client(const TIGER_API::ClientConfig& client_config);
+		virtual const ClientConfig& get_client_config() const = 0;
+
 		virtual void connect() = 0;
 		virtual void disconnect() = 0;
 
@@ -56,14 +58,11 @@ namespace TIGER_API
 		virtual void query_subscribed_symbols() = 0;
 		
 		virtual void set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBasicData&)>& cb) = 0;
+		virtual void set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBBOData&)>& cb) = 0;
 		virtual bool subscribe_quote(const std::vector<std::string>& symbols) = 0;
 		virtual bool subscribe_future_quote(const std::vector<std::string>& symbols) = 0;
 		virtual bool subscribe_option_quote(const std::vector<std::string>& symbols) = 0;
 		virtual bool unsubscribe_quote(const std::vector<std::string>& symbols) = 0;
-
-		virtual void set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBBOData&)>& cb) = 0;
-		virtual bool subscribe_quote_bbo(const std::vector<std::string>& symbols) = 0;
-		virtual bool unsubscribe_quote_bbo(const std::vector<std::string>& symbols) = 0;
 
 		virtual void set_quote_depth_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteDepthData&)>& cb) = 0;
 		virtual bool subscribe_quote_depth(const std::vector<std::string>& symbols) = 0;
@@ -74,9 +73,6 @@ namespace TIGER_API
 		virtual bool unsubscribe_kline(const std::vector<std::string>& symbols) = 0;
 
 		virtual void set_full_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb) = 0;
-		virtual bool subscribe_full_tick(const std::vector<std::string>& symbols) = 0;
-		virtual bool unsubscribe_full_tick(const std::vector<std::string>& symbols) = 0;
-
 		virtual void set_tick_changed_callback(const std::function<void(const TradeTick&)>& cb) = 0;
 		virtual bool subscribe_tick(const std::vector<std::string>& symbols) = 0;
 		virtual bool unsubscribe_tick(const std::vector<std::string>& symbols) = 0;
@@ -91,7 +87,9 @@ namespace TIGER_API
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) = 0;
 		virtual bool subscribe_option_top(const std::string& market) = 0;
 		virtual bool unsubscribe_option_top(const std::string& market) = 0;
+
 	};
 }
 
 #endif // PUSH_CLIENT_H
+

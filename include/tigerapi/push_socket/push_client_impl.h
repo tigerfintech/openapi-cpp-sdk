@@ -66,14 +66,11 @@ namespace TIGER_API
 		virtual void set_query_subscribed_symbols_changed_callback(const std::function<void(const tigeropen::push::pb::Response& query_subscribed_symbols_response)>& cb) override;
 		virtual void query_subscribed_symbols() override;
 		virtual void set_quote_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBasicData&)>& cb) override;
+		virtual void set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBBOData&)>& cb) override;
 		virtual bool subscribe_quote(const std::vector<std::string>& symbols) override;
 		virtual bool subscribe_future_quote(const std::vector<std::string>& symbols) override;
 		virtual bool subscribe_option_quote(const std::vector<std::string>& symbols) override;
 		virtual bool unsubscribe_quote(const std::vector<std::string>& symbols) override;
-
-		virtual void set_quote_bbo_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteBBOData&)>& cb) override;
-		virtual bool subscribe_quote_bbo(const std::vector<std::string>& symbols) override;
-		virtual bool unsubscribe_quote_bbo(const std::vector<std::string>& symbols) override;
 
 		virtual void set_quote_depth_changed_callback(const std::function<void(const tigeropen::push::pb::QuoteDepthData&)>& cb) override;
 		virtual bool subscribe_quote_depth(const std::vector<std::string>& symbols) override;
@@ -84,9 +81,6 @@ namespace TIGER_API
 		virtual bool unsubscribe_kline(const std::vector<std::string>& symbols) override;
 
 		virtual void set_full_tick_changed_callback(const std::function<void(const tigeropen::push::pb::TickData&)>& cb) override;
-		virtual bool subscribe_full_tick(const std::vector<std::string>& symbols) override;
-		virtual bool unsubscribe_full_tick(const std::vector<std::string>& symbols) override;
-
 		virtual void set_tick_changed_callback(const std::function<void(const TradeTick&)>& cb) override;
 		virtual bool subscribe_tick(const std::vector<std::string>& symbols) override;
 		virtual bool unsubscribe_tick(const std::vector<std::string>& symbols) override;
@@ -101,6 +95,8 @@ namespace TIGER_API
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) override;
 		virtual bool subscribe_option_top(const std::string& market) override;
 		virtual bool unsubscribe_option_top(const std::string& market) override;
+
+		virtual const ClientConfig& get_client_config() const override;
 
 	private:
 		bool send_frame(const tigeropen::push::pb::Request& request);
