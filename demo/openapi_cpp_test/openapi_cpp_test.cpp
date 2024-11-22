@@ -467,9 +467,9 @@ public:
 
     void connected_callback() {
         ucout << "Connected to push server" << std::endl;
-        push_client->subscribe_position(push_client->get_client_config().account);
-        push_client->subscribe_order(push_client->get_client_config().account);
-        push_client->subscribe_asset(push_client->get_client_config().account);
+        push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
         // push_client->query_subscribed_symbols();
         push_client->subscribe_quote(symbols);
         // push_client->subscribe_kline(symbols);
