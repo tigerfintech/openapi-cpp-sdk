@@ -1,4 +1,9 @@
 # 编译步骤
+## 环境要求
+- Linux/Mac: GCC/Clang, CMake 3.0+
+- Windows: Visual Studio 2019+, vcpkg
+
+
 
 ## Linux/Mac
 
@@ -46,6 +51,24 @@ make install
 **说明**
 [参考文档](https://github.com/Microsoft/cpprestsdk/wiki/Getting-Started-Tutorial)
 直接通过包管理软件安装的 cpprestsdk 可能不是最新版本， 可能会有未知问题
+
+### 编译安装 protobuf
+使用 v3.1.0 版本
+```
+cd /tmp  # 选择暂存源码的目录，此处用 /tmp，也可根据本机环境指定其他系统路径
+git clone https://github.com/protocolbuffers/protobuf
+cd protobuf
+git checkout v3.1.0
+mkdir cmake_build
+cd cmake_build
+cmake ../cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -Dprotobuf_BUILD_SHARED_LIBS=ON
+make -j 8
+make install
+```
 
 ### 编译 tigerapi sdk
 若使用编译好的sdk，此步骤可跳过  
