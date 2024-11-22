@@ -406,12 +406,13 @@
     <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="include\openssl\applink.c" />
     <ClCompile Include="src\contract_util.cpp" />
-    <ClCompile Include="src\easylogging++.cc" />
+    <ClCompile Include="src\easylogging++.cpp" />
     <ClCompile Include="src\order_util.cpp" />
     <ClCompile Include="src\push_socket\push_client_impl.cpp" />
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />
     <ClCompile Include="src\push_socket\push_socket.cpp" />
     <ClCompile Include="src\quote_client.cpp" />
+    <ClCompile Include="src\tick_util.cpp" />
     <ClCompile Include="src\tiger_client.cpp" />
     <ClCompile Include="src\trade_client.cpp" />
     <ClCompile Include="src\utils.cpp" />
