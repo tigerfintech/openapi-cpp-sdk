@@ -1,4 +1,4 @@
-#include "tigerapi/push_socket/push_frame_serialize.h"
+#include "../include/tigerapi/push_socket/push_frame_serialize.h"
 
 std::vector<unsigned char> TIGER_API::PushFrameEncoder::encode_frame(const std::string& packed_frame)
 {
@@ -44,7 +44,7 @@ uint32_t TIGER_API::PushFrameDecoder::get_frame_size() const
 
 uint32_t TIGER_API::PushFrameDecoder::decode_varint()
 {
-	const uint32_t mask = (1U << 32) - 1;
+	const uint32_t mask = (1ULL << 32) - 1;
 	uint32_t result = 0;
 	int shift = 0;
 

@@ -1,5 +1,5 @@
-#include "tigerapi/push_socket/push_socket.h"
-#include "tigerapi/version.h"
+#include "../include/tigerapi/push_socket/push_socket.h"
+#include "../include/tigerapi/version.h"
 #include <bitset>
 #include <regex>
 #include "google/protobuf/util/json_util.h"
@@ -61,8 +61,8 @@ void TIGER_API::PushSocket::connect()
 		socket_state_ = SocketState::CONNECTING;
 
 		boost::asio::ip::tcp::resolver resolver(*io_service_);
-		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.socket_url),
-			utility::conversions::to_utf8string(client_config_.socket_port));
+		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.get_socket_url()),
+			utility::conversions::to_utf8string(client_config_.get_socket_port()));
 		boost::asio::ip::tcp::resolver::iterator rit = resolver.resolve(query);
 		
 		std::string str_target_server_ip = rit->endpoint().address().to_string();
@@ -84,6 +84,7 @@ void TIGER_API::PushSocket::disconnect()
 {
 	if (keep_alive_timer_)
 	{
+		LOG(INFO) << "stop keep alive scheduled task";
 		boost::system::error_code ec;
 		keep_alive_timer_->cancel(ec);
 		if (ec)
@@ -173,6 +174,7 @@ void TIGER_API::PushSocket::close_session()
 		bool open = socket_->lowest_layer().is_open();
 		if (open)
 		{
+			LOG(INFO) << "socket shutdown both";
 			boost::system::error_code ec;
 			socket_->lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 			if (ec)
@@ -181,12 +183,17 @@ void TIGER_API::PushSocket::close_session()
 				dispatch_inner_error_callback(ec.message());
 			}
 
+			LOG(INFO) << "socket execute close";
 			socket_->lowest_layer().close(ec);
 			if (ec)
 			{
 				LOG(ERROR) << ec;
 				dispatch_inner_error_callback(ec.message());
 			}
+		}
+		else
+		{
+			LOG(INFO) << "socket already closed";
 		}
 	}
 	catch (const boost::system::system_error& e)
@@ -195,11 +202,23 @@ void TIGER_API::PushSocket::close_session()
 		dispatch_inner_error_callback(e.what());
 	}
 
+	LOG(INFO) << "socket close success";
 	dispatch_disconnected_callback();
 }
 
 void TIGER_API::PushSocket::send_authentication()
 {
+	if (client_config_.tiger_id.empty())
+	{
+		LOG(ERROR) << "tiger_id is empty";
+		return;
+	}
+	if (client_config_.private_key.empty())
+	{
+		LOG(ERROR) << "private_key is empty";
+		return;
+	}
+
 	//tiger_id sign by private_key
 	utility::string_t sign = Utils::get_sign(client_config_.private_key, client_config_.tiger_id);
 	
@@ -214,7 +233,7 @@ void TIGER_API::PushSocket::send_authentication()
 	connect_request->set_acceptversion("3");
 	connect_request->set_sendinterval(client_config_.send_interval);
 	connect_request->set_receiveinterval(client_config_.receive_interval);
-	connect_request->set_usefulltick(client_config_.user_full_tick);
+	connect_request->set_usefulltick(client_config_.use_full_tick);
 	
 	std::string packed_frame = request.SerializeAsString();
 	if (!packed_frame.empty())
@@ -268,6 +287,7 @@ void TIGER_API::PushSocket::auto_reconnect()
 
 void TIGER_API::PushSocket::cancel_reconnect_timer()
 {
+	LOG(INFO) << "stop auto reconnect scheduled task";
 	if (reconnect_timer_)
 	{
 		boost::system::error_code ec;
@@ -316,6 +336,7 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 
 void TIGER_API::PushSocket::handle_handshake(const boost::system::error_code& error)
 {
+	LOG(INFO) << "handshake callback";
 	try
 	{
 		if (!error)
@@ -368,7 +389,7 @@ void TIGER_API::PushSocket::handle_read_head(const boost::system::error_code& er
 	}
 	else
 	{	
-#if	1
+#if	0
 		for (size_t i = 0; i < bytes_transferred; ++i) 
 		{
 			std::bitset<8> binary(head_buff_[i]);
@@ -493,8 +514,7 @@ void TIGER_API::PushSocket::read_body(size_t frame_len)
 			boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, recv_buff, page_num, frame_len));
 }
 
-void TIGER_API::PushSocket::dispatch_connected_callback()
-{
+void TIGER_API::PushSocket::dispatch_connected_callback() {
 	if (connected_callback_)
 	{
 		connected_callback_();
@@ -526,15 +546,16 @@ void TIGER_API::PushSocket::message_filter(const std::shared_ptr<tigeropen::push
 		{
 			LOG(INFO) << str_msg;
 			web::json::value json_value = web::json::value::parse(str_msg);
-			auto utf16_key = utility::conversions::to_utf16string(CONNECTED_HEART_BEAT_CFG_KEY);
+			auto utf16_key = utility::conversions::to_string_t(CONNECTED_HEART_BEAT_CFG_KEY);
 			if (json_value.has_field(utf16_key) && json_value[utf16_key].is_string()) 
 			{
 				auto heart_beart_mag = json_value[utf16_key].as_string();
 
-				std::vector<std::wstring> tokens;
-				std::wregex regex(L",");
-				std::wsregex_token_iterator it(heart_beart_mag.begin(), heart_beart_mag.end(), regex, -1);
-				std::wsregex_token_iterator end;
+				std::vector<utility::string_t> tokens;
+				utility::string_t heart_beat_str = heart_beart_mag;
+				std::basic_regex<utility::char_t> regex(U(","));
+				std::regex_token_iterator<utility::string_t::iterator> it(heart_beat_str.begin(), heart_beat_str.end(), regex, -1);
+				std::regex_token_iterator<utility::string_t::iterator> end;
 
 				while (it != end)
 				{

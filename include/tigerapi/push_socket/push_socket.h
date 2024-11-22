@@ -1,16 +1,19 @@
 #ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
+#include <memory>
+#include <string>
+
 #include "boost/asio.hpp"
 #include "boost/asio/ssl.hpp"
 #include "boost/bind.hpp"
 #include "boost/pool/pool.hpp"
 #include "boost/optional.hpp"
 
-#include "tigerapi/client_config.h"
-#include "push_frame_serialize.h"
-#include "openapi_pb/pb_source/Request.pb.h"
-#include "openapi_pb/pb_source/Response.pb.h"
+#include "../include/tigerapi/client_config.h"
+#include "../include/tigerapi/push_socket/push_frame_serialize.h"
+#include "../include/openapi_pb/pb_source/Request.pb.h"
+#include "../include/openapi_pb/pb_source/Response.pb.h"
 
 namespace TIGER_API
 {
@@ -101,9 +104,9 @@ namespace TIGER_API
 	private:
 		std::time_t last_send_heart_beat_time_ = 0;
 		std::time_t last_io_time_ = 0;
-		int reconnect_interval_ = 10 * 1000;	//ms
-		int send_interval_ = 10 * 1000;			//ms
-		int recv_interval_ = 10 * 1000;			//ms
+		int reconnect_interval_ = 10 * 1000;	// unit: ms
+		int send_interval_ = 10 * 1000;			// unit: ms
+		int recv_interval_ = 10 * 1000;			// unit: ms
 	};
 }
 #endif // PUSH_SOCKET_H
