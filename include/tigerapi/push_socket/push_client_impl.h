@@ -4,22 +4,6 @@
 #include "../model.h"
 #include "boost/asio/io_service.hpp"
 #include "../include/tigerapi/push_client.h"
-#include "../include/tigerapi/client_config.h"
-#include "../include/openapi_pb/pb_source/Request.pb.h"
-#include "../include/openapi_pb/pb_source/Response.pb.h"
-#include "../include/openapi_pb/pb_source/SocketCommon.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteBasicData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteBBOData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteDepthData.pb.h"
-#include "../include/openapi_pb/pb_source/AssetData.pb.h"
-#include "../include/openapi_pb/pb_source/PositionData.pb.h"
-#include "../include/openapi_pb/pb_source/OrderStatusData.pb.h"
-#include "../include/openapi_pb/pb_source/StockTopData.pb.h"
-#include "../include/openapi_pb/pb_source/OptionTopData.pb.h"
-#include "../include/openapi_pb/pb_source/KlineData.pb.h"
-#include "../include/openapi_pb/pb_source/TradeTickData.pb.h"
-#include "../include/tigerapi/enums.h"
 
 namespace TIGER_API
 {
