@@ -575,9 +575,9 @@ public:
         push_client->unsubscribe_kline(symbols);
         push_client->unsubscribe_quote_depth(symbols);
         push_client->unsubscribe_tick(symbols);
-        push_client->unsubscribe_asset(config.account);
-        push_client->unsubscribe_position(config.account);
-        push_client->unsubscribe_order(config.account);
+        push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
         push_client->disconnect();
     }
 
