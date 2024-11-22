@@ -1,7 +1,7 @@
 # 编译步骤
 ## 环境要求
 - Linux/Mac: GCC/Clang, CMake 3.0+
-- Windows: Visual Studio 2019+, vcpkg
+- Windows: Visual Studio 2015+, vcpkg
 
 
 
