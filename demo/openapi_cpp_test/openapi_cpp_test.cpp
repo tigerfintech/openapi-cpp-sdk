@@ -467,9 +467,9 @@ public:
 
     void connected_callback() {
         ucout << "Connected to push server" << std::endl;
-        push_client->subscribe_position(push_client->get_client_config().account);
-        push_client->subscribe_order(push_client->get_client_config().account);
-        push_client->subscribe_asset(push_client->get_client_config().account);
+        push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
         // push_client->query_subscribed_symbols();
         push_client->subscribe_quote(symbols);
         // push_client->subscribe_kline(symbols);
@@ -479,7 +479,7 @@ public:
 
     void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
         ucout << "Position changed:" << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- positionqty: " << data.positionqty() << std::endl;
     }
 
@@ -489,7 +489,7 @@ public:
         // "status":"PendingSubmit","replaceStatus":"NONE","cancelStatus":"NONE","outsideRth":true,"canModify":true,"canCancel":true,"name":"PDD Holdings","source":"openapi","openTime":"1732177851000","timestamp":"1732177851874"}}
         ucout << "Order changed:" << std::endl;
         ucout << "- id: " << data.id() << std::endl;
-        ucout << "- status: " << data.status() << std::endl;
+        ucout << "- status: " << utility::conversions::to_string_t(data.status()) << std::endl;
         ucout << "- avgfillprice: " << data.avgfillprice() << std::endl;
     }
 
@@ -504,44 +504,44 @@ public:
 
     void tick_changed_callback(const TradeTick& data) {
         ucout << "TradeTick changed: " << std::endl;
-        ucout << "- data: " << data.to_string() << std::endl;
+        ucout << "- data: " << utility::conversions::to_string_t(data.to_string()) << std::endl;
     }
 
     void full_tick_changed_callback(const tigeropen::push::pb::TickData& data) {
         ucout << "Full TickData changed: " << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- tick size: " << data.ticks_size() << std::endl;
     }
 
     void query_subscribed_symbols_changed_callback(const tigeropen::push::pb::Response& data) {
         ucout << "QuerySubscribedSymbols changed: " << std::endl;
-        ucout << "- data: " << data.msg() << std::endl;
+        ucout << "- data: " << utility::conversions::to_string_t(data.msg()) << std::endl;
     }
 
     void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
         ucout << "BasicQuote changed: " << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- latestPrice: " << data.latestprice() << std::endl;
         ucout << "- volume: " << data.volume() << std::endl;
     }
 
     void quote_bbo_changed_callback(const tigeropen::push::pb::QuoteBBOData& data) {
         ucout << "BBOQuote changed: " << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- bidPrice: " << data.bidprice() << std::endl;
         ucout << "- askPrice: " << data.askprice() << std::endl;
     }
 
     void quote_depth_changed_callback(const tigeropen::push::pb::QuoteDepthData& data) {
         ucout << "QuoteDepth changed: " << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- ask price size: " << data.ask().price_size() << std::endl;
         ucout << "- bid price size: " << data.bid().price_size() << std::endl;
     }
 
     void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
         ucout << "Kline changed: " << std::endl;
-        ucout << "- symbol: " << data.symbol() << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- open: " << data.open() << std::endl;
         ucout << "- high: " << data.high() << std::endl;
         ucout << "- low: " << data.low() << std::endl;
@@ -575,9 +575,9 @@ public:
         push_client->unsubscribe_kline(symbols);
         push_client->unsubscribe_quote_depth(symbols);
         push_client->unsubscribe_tick(symbols);
-        push_client->unsubscribe_asset(config.account);
-        push_client->unsubscribe_position(config.account);
-        push_client->unsubscribe_order(config.account);
+        push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
         push_client->disconnect();
     }
 
