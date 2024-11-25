@@ -7,6 +7,7 @@
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
 #include "cpprest/details/basic_types.h"
+#include "tigerapi/price_util.h"
 
 using namespace std;
 using namespace web;
@@ -167,10 +168,17 @@ public:
         ucout << U("place forex order: ") << res << endl;
     }
 
+    static void test_price_util(const std::shared_ptr<TradeClient>& trade_client) {
+        value contract = trade_client->get_contract(U("AAPL"));
+        value tick_sizes = contract.at( U("tickSizes") );
+        double res = PriceUtil::fix_price_by_tick_size(1.111, tick_sizes);
+        ucout << U("fix price by tick size: ") << res << endl;
+    }
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_place_option_order(trade_client);
+        TestTradeClient::test_price_util(trade_client);
     }
+
 };
 
 
@@ -192,7 +200,7 @@ public:
 
     static void test_get_symbols_names(const std::shared_ptr<QuoteClient> quote_client) {
         //        value result = quote_client->get_all_symbol_names(U("HK"));
-        value result = quote_client->get_all_symbol_names(Market::HK);
+        value result = quote_client->get_all_symbol_names(Market::HK, false);
         ucout << U("result: ") << result << endl;
     }
 
@@ -228,7 +236,8 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        auto result = quote_client->get_quote_real_time(symbols);
+        auto result = quote_client->get_quote_real_time_value(symbols);
+        vector<RealtimeQuote> result1 = quote_client->get_quote_real_time(symbols);
         ucout << U("result: ") << result.at(0).to_string() << endl;
     }
 
@@ -433,6 +442,7 @@ int main()
     config.private_key = U("");
     config.tiger_id = U("");
     config.account = U("");
+
 
 
 

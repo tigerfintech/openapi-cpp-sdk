@@ -365,6 +365,23 @@ namespace TIGER_API {
                 return U("");
         }
     }
+
+    enum class TickSizeType {
+        OPEN,
+        OPEN_CLOSED,
+        CLOSED_OPEN,
+        CLOSED
+    };
+
+    inline  utility::string_t enum_to_str(TickSizeType type) {
+        switch (type) {
+            case TickSizeType::OPEN: return U("OPEN"); break;
+            case TickSizeType::OPEN_CLOSED: return U("OPEN_CLOSED"); break;
+            case TickSizeType::CLOSED_OPEN: return U("CLOSED_OPEN"); break;
+            case TickSizeType::CLOSED: return U("CLOSED"); break;
+            default: return U(""); break;
+        }
+    };
 }
 
 
