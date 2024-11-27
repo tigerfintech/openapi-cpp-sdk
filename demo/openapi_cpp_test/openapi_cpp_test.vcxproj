@@ -151,7 +151,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\AssetData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\KlineData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OptionTopData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderStatusData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderTransactionData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\PositionData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\PushData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBasicData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBBOData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\Request.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\Response.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\SocketCommon.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\StockTopData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\TickData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="openapi_cpp_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\AssetData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\KlineData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OptionTopData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OrderStatusData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OrderTransactionData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\PositionData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\PushData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteBasicData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteBBOData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\Request.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\Response.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\SocketCommon.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\StockTopData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\TickData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
