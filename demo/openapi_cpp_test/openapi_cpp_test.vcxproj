@@ -86,15 +86,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\include;..\..\..\vcpkg\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\debug\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\debug\lib;..\..\lib\x86\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,8 +108,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\..\..\vcpkg\installed\x64-windows\debug\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\..\..\vcpkg\installed\x64-windows\debug\lib;..\..\lib\x64\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,8 +127,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\..\..\vcpkg\installed\x86-windows\lib;..\..\lib\x86\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,12 +146,48 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\..\..\vcpkg\installed\x64-windows\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\..\..\vcpkg\installed\x64-windows\lib;..\..\lib\x64\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\AssetData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\KlineData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OptionTopData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderStatusData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderTransactionData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\PositionData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\PushData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBasicData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBBOData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\Request.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\Response.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\SocketCommon.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\StockTopData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\TickData.pb.cc" />
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="openapi_cpp_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\AssetData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\KlineData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OptionTopData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OrderStatusData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\OrderTransactionData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\PositionData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\PushData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteBasicData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteBBOData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\Request.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\Response.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\SocketCommon.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\StockTopData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\TickData.pb.h" />
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

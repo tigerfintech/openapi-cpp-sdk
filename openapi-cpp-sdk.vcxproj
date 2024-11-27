@@ -98,8 +98,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\debug\lib;lib\x86\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,8 +118,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\debug\lib;lib\x64\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,8 +142,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Configuration)\;..\vcpkg\installed\x86-windows\lib;lib\x86\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -166,8 +166,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\$(Platform)\$(Configuration)\;..\vcpkg\installed\x64-windows\lib;lib\x64\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -203,6 +203,23 @@
     <ClInclude Include="include\cpprest\version.h" />
     <ClInclude Include="include\cpprest\ws_client.h" />
     <ClInclude Include="include\cpprest\ws_msg.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\AssetData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\KlineData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\OptionTopData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\OrderStatusData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\OrderTransactionData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\PositionData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\PushData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteBasicData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteBBOData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\QuoteDepthData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\Request.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\Response.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\SocketCommon.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\StockTopData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\TickData.pb.h" />
+    <ClInclude Include="include\openapi_pb\pb_source\TradeTickData.pb.h" />
     <ClInclude Include="include\openssl\aes.h" />
     <ClInclude Include="include\openssl\asn1.h" />
     <ClInclude Include="include\openssl\asn1err.h" />
@@ -354,6 +371,10 @@
     <ClInclude Include="include\tigerapi\enums.h" />
     <ClInclude Include="include\tigerapi\model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
+    <ClInclude Include="include\tigerapi\push_client.h" />
+    <ClInclude Include="include\tigerapi\push_socket\push_client_impl.h" />
+    <ClInclude Include="include\tigerapi\push_socket\push_frame_serialize.h" />
+    <ClInclude Include="include\tigerapi\push_socket\push_socket.h" />
     <ClInclude Include="include\tigerapi\quote_client.h" />
     <ClInclude Include="include\tigerapi\service_types.h" />
     <ClInclude Include="include\tigerapi\sign_util.h" />
@@ -366,11 +387,32 @@
     <ClInclude Include="include\zlib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\openapi_pb\pb_source\AssetData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\KlineData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\OptionTopData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\OrderStatusData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\OrderTransactionData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\PositionData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\PushData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteBasicData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteBBOData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\QuoteDepthData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\Request.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\Response.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\SocketCommon.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\StockTopData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\TickData.pb.cc" />
+    <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="include\openssl\applink.c" />
     <ClCompile Include="src\contract_util.cpp" />
-    <ClCompile Include="src\easylogging++.cc" />
+    <ClCompile Include="src\easylogging++.cpp" />
     <ClCompile Include="src\order_util.cpp" />
+    <ClCompile Include="src\push_socket\push_client_impl.cpp" />
+    <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />
+    <ClCompile Include="src\push_socket\push_socket.cpp" />
     <ClCompile Include="src\quote_client.cpp" />
+    <ClCompile Include="src\tick_util.cpp" />
     <ClCompile Include="src\tiger_client.cpp" />
     <ClCompile Include="src\trade_client.cpp" />
     <ClCompile Include="src\utils.cpp" />
