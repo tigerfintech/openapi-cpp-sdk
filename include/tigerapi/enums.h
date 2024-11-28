@@ -57,6 +57,7 @@ namespace TIGER_API {
             case TradingSession::AfterHours:
                 return U("AfterHours");
         }
+        return U("");
     }
 
     enum class SecType {
@@ -287,6 +288,7 @@ namespace TIGER_API {
             case BarPeriod::SIX_HOURS:
                 return U("6hour");
         }
+        return U("");
     }
 
 
@@ -317,6 +319,7 @@ namespace TIGER_API {
             case CapitalPeriod::HALFAYEAR:
                 return U("6month");
         }
+        return U("");
     }
 
     enum class OrderSortBy {
