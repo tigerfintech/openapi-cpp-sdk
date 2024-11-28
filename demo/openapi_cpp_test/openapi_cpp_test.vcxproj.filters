@@ -53,9 +53,6 @@
     <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.cc">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.cc">
-      <Filter>include\openapi_pb\pb_source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\include\openapi_pb\pb_source\Request.pb.cc">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClCompile>
@@ -72,6 +69,9 @@
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.cc">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.cc">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -106,9 +106,6 @@
     <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.h">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.h">
-      <Filter>include\openapi_pb\pb_source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\openapi_pb\pb_source\Request.pb.h">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClInclude>
@@ -125,6 +122,9 @@
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.h">
+      <Filter>include\openapi_pb\pb_source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.h">
       <Filter>include\openapi_pb\pb_source</Filter>
     </ClInclude>
   </ItemGroup>
