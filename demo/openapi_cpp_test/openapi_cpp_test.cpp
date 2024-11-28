@@ -14,7 +14,6 @@
 #include <chrono>
 #include <thread>
 
-
 using namespace std;
 using namespace web;
 using namespace web::json;
@@ -116,18 +115,17 @@ public:
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721C00185000"));
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721P00185000"));
         Order order = OrderUtil::limit_order(contract, U("BUY"), 3, U("0.18"));
-       // order.adjust_limit = 0.01;
+        //order.adjust_limit = 0.01;
         value res = trade_client->place_order(order);                          
         //unsigned long long id = res[U("id")].as_number().to_uint64();
         ucout << U("order id: ") << order.id << endl;
         ucout << U("place order result: ") << res << endl;
     }
-
-
+    
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
-        //        Contract contract = stock_contract(U("AAPL"), U("USD"));
-        //        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
-        //        trade_client->place_order(order);
+        //Contract contract = stock_contract(U("AAPL"), U("USD"));
+        //Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
+        //trade_client->place_order(order);
         Order my_order = trade_client->get_order(31318009878020096);
         ucout << U("order id ") << my_order.id << endl;
         ucout << U("order : ") << my_order.to_string() << endl;
@@ -187,11 +185,9 @@ public:
 
 };
 
-
 /**
  * Test Quote Client
  */
-
 class TestQuoteClient {
 public:
     static void test_grab_quote_permission(std::shared_ptr<QuoteClient> quote_client) {
@@ -236,8 +232,7 @@ public:
         value result = quote_client->get_history_timeline(symbols, U("2023-01-10"));
         ucout << U("result: ") << result << endl;
     }
-
-
+    
     static void test_get_quote_real_time(const std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
@@ -276,7 +271,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
-//        value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
+        //value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
         vector<Kline> result = quote_client->get_kline(symbols, U("day"), -1, -1, 5);
         ucout << result.at(0).to_string() << endl;
     }
@@ -355,7 +350,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
         ucout << U("symbols ") << symbols << endl;
-//        value result = quote_client->get_future_real_time_quote(symbols);
+        //value result = quote_client->get_future_real_time_quote(symbols);
         auto result = quote_client->get_future_real_time_quote(symbols);
         ucout << U("result: ") << result.at(0).to_string() << endl;
     }
@@ -382,7 +377,7 @@ public:
     static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
         identifiers[0] = value::string(U("AAPL 230224C000150000"));
-//        value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
+        //value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
         vector<Kline> result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
         ucout << U("result: ") << result.at(0).to_string() << endl;
     }
@@ -441,9 +436,7 @@ public:
     }
 };
 
-
 std::atomic<bool> keep_running(true);
-
 void signal_handler(int signal)
 {
     if (signal == SIGINT || signal == SIGTERM)
@@ -451,7 +444,6 @@ void signal_handler(int signal)
         keep_running = false;
     }
 }
-
 
 class TestPushClient {
 private:
@@ -587,27 +579,22 @@ public:
     }
 };
 
-
 int main()
 {
-    /************************** set config **********************/
-    ClientConfig config = ClientConfig();
-#if 1
-	// config.private_key = U("");
-	// config.tiger_id = U("");
-	// config.account = U("");
-    config.use_full_tick = true;
-
-#else
+    //Set Tiger OpenAPI SDK configuration
+    bool sand_box = false;
+    ClientConfig config = ClientConfig(sand_box);
 	config.private_key = U("");
 	config.tiger_id = U("");
 	config.account = U("");
-#endif
-
+	config.use_full_tick = true;
     //config.lang = U("en_US");
 
+    //Create a push client instance
     auto push_client = IPushClient::create_push_client(config);
+    //Run some push test cases
     TestPushClient::test_push_client(push_client, config);
+
     /**
      *  QuoteClient
      */
@@ -617,16 +604,14 @@ int main()
     /**
      * TradeClient
      */
-     //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     //TestTradeClient::test_trade(trade_client);
+    //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    //TestTradeClient::test_trade(trade_client);
 
-     /**
-      *  TigerApi
-      */
-      //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-      //    TestTigerApi::test_grab_quote_permission(tigerapi);
-	
-
+    /**
+    *  TigerApi
+    */
+    //std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+    //TestTigerApi::test_grab_quote_permission(tigerapi);
 
     return 0;
 }
