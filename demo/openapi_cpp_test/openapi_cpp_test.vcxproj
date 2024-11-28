@@ -125,35 +125,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|x64'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'">
-    <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
