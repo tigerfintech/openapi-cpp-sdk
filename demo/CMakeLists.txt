@@ -21,13 +21,11 @@ if(UNIX) # Darwing or Linux
     message(TIGERAPI_INCLUDE_DIR " ${TIGERAPI_INCLUDE_DIR}")
     find_library(TIGERAPI_LIBRARY NAMES libtigerapi.a)
 
+    # 可使用系统库或sdk output中的库
     set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
     set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
-    set(Protobuf_PROTOC_LIBRARY "/usr/local/opt/protobuf/lib/libprotoc.dylib")
-    set(Protobuf_PROTOC_EXECUTABLE "/usr/local/opt/protobuf/bin/protoc")
-
-    # 查找 Protobuf 包
-    find_package(Protobuf REQUIRED)
+    # find_path(Protobuf_INCLUDE_DIR NAMES google/protobuf/service.h)
+    # find_library(Protobuf_LIBRARY NAMES protobuf)
     message(STATUS "Protobuf version: ${Protobuf_VERSION}")
     message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
     message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
@@ -78,10 +76,10 @@ set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_IN
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
 #    set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} ${Protobuf_PROTOC_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} ${Protobuf_PROTOC_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
 endif()
 
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
