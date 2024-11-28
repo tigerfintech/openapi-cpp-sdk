@@ -1,0 +1,38 @@
+syntax = "proto3";
+import public "SocketCommon.proto";
+import public "QuoteData.proto";
+
+package tigeropen.push.pb;
+
+message QuoteBasicData {
+
+  string symbol = 1;
+  SocketCommon.QuoteType type = 2; // BASIC/BBO
+  uint64 timestamp = 3;
+  uint64 serverTimestamp = 4;
+  double avgPrice = 5; // Options data not support
+  double latestPrice = 6; //
+  uint64 latestPriceTimestamp = 7; // Pre/Post-Mkt data not support
+  string latestTime = 8; //
+  double preClose = 9; //
+  sint64 volume = 10; //
+  double amount = 11; // Futures and Options data not support
+
+  double open = 12; // Pre/Post-Mkt data not support
+  double high = 13; // Pre/Post-Mkt data not support
+  double low = 14; // Pre/Post-Mkt data not support
+
+  string hourTradingTag = 15; // Pre/Post-Mkt
+  string marketStatus = 16;
+
+  string identifier = 23; // only Options support
+  sint64 openInt = 24; // open interest, only Options support
+
+  uint64 tradeTime = 25; // latest trad time, only Futures support
+  double preSettlement = 26; // previous settlement price, only Futures support
+  float minTick = 27; // min tick, only Futures support
+
+  // minute data: price, average price, time, volume
+  QuoteData.Minute mi = 28;
+
+}
