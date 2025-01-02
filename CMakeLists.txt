@@ -32,7 +32,7 @@ if(UNIX) # Darwing or Linux
     set(Protobuf_PROTOC_LIBRARY "/usr/local/opt/protobuf/lib/libprotoc.dylib")
     set(Protobuf_PROTOC_EXECUTABLE "/usr/local/opt/protobuf/bin/protoc")
 
-    # 查找 Protobuf 包
+    # find Protobuf package
     find_package(Protobuf REQUIRED)
     message(STATUS "Protobuf version: ${Protobuf_VERSION}")
     message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
@@ -85,7 +85,7 @@ file(GLOB MY_SOURCE_FILES "include/cpprest/*.h" "include/cpprest/details/*.h" "i
 "include/tigerapi/push_socket/*.h" "include/tigerapi/*.h" "src/*.cpp" "src/push_socket/*.cpp")
 add_library(${PROJECT_NAME} cpprest/ ${MY_SOURCE_FILES})
 message(MY_SOURCE_FILES " ${MY_SOURCE_FILES}")
-# 确保生成动态库
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
     SOVERSION ${PROJECT_VERSION}
     VERSION ${PROJECT_VERSION}

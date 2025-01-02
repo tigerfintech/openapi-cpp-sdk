@@ -17,10 +17,10 @@ brew install boost
 
 安装方式二：源码安装
 1. 下载源码到任意路径： https://www.boost.org/users/history/version_1_81_0.html,  
-   以 /usr/local/ 为例
+   以 /usr/local/ 为例 (如果没有权限，请命令前加 sudo)
     ```shell
     cd /usr/local/
-    wget https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.bz2
+    wget https://archives.boost.io/release/1.81.0/source/boost_1_81_0.tar.bz2
     ```
 2. 解压：
     ```

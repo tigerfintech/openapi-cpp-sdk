@@ -8,7 +8,7 @@ message Response {
 
   SocketCommon.Command command = 1;
   uint32 id = 2; // from request's id
-  int32 code = 3;// command为MESSAGE时，code为111,112,113分别表示返回数据为获取所有订阅标的、订阅结果状态，取消订阅结果状态
+  int32 code = 3;// when command is MESSAGE, code 111,112,113 represent return data of get all subscribed symbols, subscribe result, unsubscribe result
   string msg = 4;
   PushData body = 5;
 
