@@ -1,4 +1,4 @@
-#ifndef GOOGLE_PROTOBUF_STUBS_CALLBACK_H_
+﻿#ifndef GOOGLE_PROTOBUF_STUBS_CALLBACK_H_
 #define GOOGLE_PROTOBUF_STUBS_CALLBACK_H_
 
 #include <google/protobuf/stubs/macros.h>
