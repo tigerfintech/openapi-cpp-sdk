@@ -1,4 +1,4 @@
-
+﻿
 #ifndef TIGERAPI_TIGER_CLIENT_H
 #define TIGERAPI_TIGER_CLIENT_H
 #include <iostream>
