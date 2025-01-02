@@ -5,14 +5,23 @@
 #ifndef TIGERAPI_ENUMS_H
 #define TIGERAPI_ENUMS_H
 
+#include <string>
+#include <map>
+#include "cpprest/details/basic_types.h"
+
+// Quote level prefixes
+const std::string HK_QUOTE_LEVEL_PREFIX = "hk";
+const std::string US_QUOTE_LEVEL_PREFIX = "us";
+
+
 namespace TIGER_API {
 
     enum class Market {
         ALL,
-        US,  // 美股
-        HK,  // 港股
-        CN,  // A股
-        SG   // 新加坡
+        US,  // United States
+        HK,  // Hong Kong
+        CN,  // China
+        SG   // Singapore
     };
 
     inline utility::string_t enum_to_str(Market market) {
@@ -34,9 +43,9 @@ namespace TIGER_API {
 
 
     enum class TradingSession {
-        PreMarket,  // 盘前
-        Regular,    // 盘中
-        AfterHours  // 盘后
+        PreMarket,  // PreMarket
+        Regular,    // Regular
+        AfterHours  // AfterHours
     };
 
     inline utility::string_t enum_to_str(TradingSession session) {
@@ -48,17 +57,18 @@ namespace TIGER_API {
             case TradingSession::AfterHours:
                 return U("AfterHours");
         }
+        return U("");
     }
 
     enum class SecType {
         ALL,
-        STK,  // 股票
-        OPT,  // 期权
-        WAR,  // 窝轮
-        IOPT, // 权证(牛熊证)
-        FUT,  // 期货
-        FOP,  // 期货期权
-        CASH  // 外汇
+        STK,  // Stock
+        OPT,  // Option
+        WAR,  // Warrant
+        IOPT, // IOPT (Bull/Bear)
+        FUT,  // Future
+        FOP,  // Future Option
+        CASH  // Cash
     };
 
     inline utility::string_t enum_to_str(SecType secType) {
@@ -209,20 +219,20 @@ namespace TIGER_API {
         FIVE_DAYS = 2,
     };
 
-// 定义字符串数组
+// Define string array
     static const utility::string_t timeline_period_names[] = {
-            U(""),  // 由于数组的下标从0开始，因此第一个元素需要留空
+            U(""),  // Since the array index starts from 0, the first element needs to be left blank
             U("day"),
             U("5day"),
     };
 
-// 获取 TimelinePeriod 名称的函数
+// Get TimelinePeriod name function
     inline utility::string_t get_timeline_period_value(TimelinePeriod period) {
         return timeline_period_names[static_cast<int>(period)];
     }
 
 
-// BarPeriod 枚举类
+    // BarPeriod enum class
     enum class BarPeriod {
         DAY,
         WEEK,
@@ -242,7 +252,7 @@ namespace TIGER_API {
         SIX_HOURS,
     };
 
-// 获取 BarPeriod 名称的函数
+// Get BarPeriod name function
     inline utility::string_t enum_to_str(BarPeriod period) {
         switch (period) {
             case BarPeriod::DAY:
@@ -278,6 +288,7 @@ namespace TIGER_API {
             case BarPeriod::SIX_HOURS:
                 return U("6hour");
         }
+        return U("");
     }
 
 
@@ -308,6 +319,7 @@ namespace TIGER_API {
             case CapitalPeriod::HALFAYEAR:
                 return U("6month");
         }
+        return U("");
     }
 
     enum class OrderSortBy {
@@ -381,6 +393,132 @@ namespace TIGER_API {
             case TickSizeType::CLOSED: return U("CLOSED"); break;
             default: return U(""); break;
         }
+    };
+
+    enum class ResponseType {
+        // 交易相关
+        GET_ORDER_NO_END = 1,
+        PREVIEW_ORDER_END = 2,
+        PLACE_ORDER_END = 3,
+        CANCEL_ORDER_END = 4,
+        MODIFY_ORDER_END = 5,
+        GET_ASSET_END = 6,
+        GET_POSITION_END = 7,
+        GET_ACCOUNT_END = 8,
+        SUBSCRIBE_ORDER_STATUS = 9,
+        SUBSCRIBE_POSITION = 10,
+        SUBSCRIBE_ASSET = 11,
+        SUBSCRIBE_TRADE_EXECUTION = 12,
+
+        // 行情相关
+        GET_MARKET_STATE_END = 101,
+        GET_ALL_SYMBOLS_END = 102,
+        GET_ALL_SYMBOL_NAMES_END = 103,
+        GET_BRIEF_INFO_END = 104,
+        GET_STOCK_DETAIL_END = 105,
+        GET_TIME_LINE_END = 106,
+        GET_HOUR_TRADING_TIME_LINE_END = 107,
+        GET_KLINE_END = 108,
+        GET_TRADING_TICK_END = 109,
+        GET_QUOTE_CHANGE_END = 110,
+
+        GET_SUB_SYMBOLS_END = 111,
+        GET_SUBSCRIBE_END = 112,
+        GET_CANCEL_SUBSCRIBE_END = 113,
+
+        ERROR_END = 200
+    };
+
+
+    // Part code name mapping
+    const std::map<std::string, std::string> PART_CODE_NAME_MAP = {
+        {"a", "NYSE American, LLC (NYSE American)"},
+        {"b", "NASDAQ OMX BX, Inc. (NASDAQ OMX BX)"},
+        {"c", "NYSE National, Inc. (NYSE National)"},
+        {"d", "FINRA Alternative Display Facility (ADF)"},
+        {"h", "MIAX Pearl Exchange, LLC (MIAX)"},
+        {"i", "International Securities Exchange, LLC (ISE)"},
+        {"j", "Cboe EDGA Exchange, Inc. (Cboe EDGA)"},
+        {"k", "Cboe EDGX Exchange, Inc. (Cboe EDGX)"},
+        {"l", "Long-Term Stock Exchange, Inc. (LTSE)"},
+        {"m", "NYSE Chicago, Inc. (NYSE Chicago)"},
+        {"n", "New York Stock Exchange, LLC (NYSE)"},
+        {"p", "NYSE Arca, Inc. (NYSE Arca)"},
+        {"s", "Consolidated Tape System (CTS)"},
+        {"t", "NASDAQ Stock Market, LLC (NASDAQ)"},
+        {"u", "Members Exchange, LLC (MEMX)"},
+        {"v", "Investors' Exchange, LLC. (IEX)"},
+        {"w", "CBOE Stock Exchange, Inc. (CBSX)"},
+        {"x", "NASDAQ OMX PSX, Inc. (NASDAQ OMX PSX)"},
+        {"y", "Cboe BYX Exchange, Inc. (Cboe BYX)"},
+        {"z", "Cboe BZX Exchange, Inc. (Cboe BZX)"}
+    };
+
+    // Part code mapping
+    const std::map<std::string, std::string> PART_CODE_MAP = {
+        {"a", "AMEX"},
+        {"b", "BX"},
+        {"c", "NSX"},
+        {"d", "ADF"},
+        {"h", "MIAX"},
+        {"i", "ISE"},
+        {"j", "EDGA"},
+        {"k", "EDGX"},
+        {"l", "LTSE"},
+        {"m", "CHO"},
+        {"n", "NYSE"},
+        {"p", "ARCA"},
+        {"s", "CTS"},
+        {"t", "NSDQ"},
+        {"u", "MEMX"},
+        {"v", "IEX"},
+        {"w", "CBSX"},
+        {"x", "PSX"},
+        {"y", "BYX"},
+        {"z", "BZX"}
+    };
+
+    // US trade condition mapping
+    const std::map<std::string, std::string> US_TRADE_COND_MAP = {
+        {" ", "US_REGULAR_SALE"},         // Regular sale
+        {"B", "US_BUNCHED_TRADE"},        // Bunched trade
+        {"C", "US_CASH_TRADE"},          // Cash trade
+        {"F", "US_INTERMARKET_SWEEP"},    // Intermarket sweep
+        {"G", "US_BUNCHED_SOLD_TRADE"},   // Bunched sold trade
+        {"H", "US_PRICE_VARIATION_TRADE"},// Price variation trade
+        {"I", "US_ODD_LOT_TRADE"},       // Odd lot trade
+        {"K", "US_RULE_127_OR_155_TRADE"},// US Rule 127 or 155 trade
+        {"L", "US_SOLD_LAST"},           // Delayed trade
+        {"M", "US_MARKET_CENTER_CLOSE_PRICE"},// Market center close price
+        {"N", "US_NEXT_DAY_TRADE"},      // Next day trade
+        {"O", "US_MARKET_CENTER_OPENING_TRADE"},// Market center opening trade
+        {"P", "US_PRIOR_REFERENCE_PRICE"},// Prior reference price
+        {"Q", "US_MARKET_CENTER_OPEN_PRICE"},// Market center opening price
+        {"R", "US_SELLER"},              // Seller
+        {"T", "US_FORM_T"},              // Form T
+        {"U", "US_EXTENDED_TRADING_HOURS"},// Extended trading hours
+        {"V", "US_CONTINGENT_TRADE"},    // Contingent trade
+        {"W", "US_AVERAGE_PRICE_TRADE"}, // Average price trade
+        {"X", "US_CROSS_TRADE"},         // Cross trade
+        {"Z", "US_SOLD_OUT_OF_SEQUENCE"},// Sold out of sequence
+        {"0", "US_ODD_LOST_CROSS_TRADE"},// Odd lot cross trade
+        {"4", "US_DERIVATIVELY_PRICED"}, // Derivatively priced
+        {"5", "US_MARKET_CENTER_RE_OPENING_TRADE"},// Market center re-opening trade
+        {"6", "US_MARKET_CENTER_CLOSING_TRADE"},   // Market center closing trade
+        {"7", "US_QUALIFIED_CONTINGENT_TRADE"},    // Qualified contingent trade
+        {"9", "US_CONSOLIDATED_LAST_PRICE_PER_LISTING_PACKET"}// Consolidated last price per listing packet
+    };
+
+    // HK trade condition mapping
+    const std::map<std::string, std::string> HK_TRADE_COND_MAP = {
+        {" ", "HK_AUTOMATCH_NORMAL"},         // Normal auto-match
+        {"D", "HK_ODD_LOT_TRADE"},           // Odd lot trade
+        {"U", "HK_AUCTION_TRADE"},           // Auction trade
+        {"*", "HK_OVERSEAS_TRADE"},          // Overseas trade
+        {"P", "HK_LATE_TRADE_OFF_EXCHG"},    // Late trade off exchange
+        {"M", "HK_NON_DIRECT_OFF_EXCHG_TRADE"}, // Non-auto-match
+        {"X", "HK_DIRECT_OFF_EXCHG_TRADE"},     // Auto-match within the same broker
+        {"Y", "HK_AUTOMATIC_INTERNALIZED"}      // Automatic internalization
     };
 }
 

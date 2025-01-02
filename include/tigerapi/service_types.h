@@ -12,7 +12,7 @@ static utility::string_t  CANCEL_ORDER = U("cancel_order");
 static utility::string_t  MODIFY_ORDER = U("modify_order");
 
 
-// 账户/资产
+// Account/Asset
 static utility::string_t  ACCOUNTS = U("accounts");
 static utility::string_t  ASSETS = U("assets");
 static utility::string_t  PRIME_ASSETS = U("prime_assets");
@@ -30,13 +30,13 @@ static utility::string_t  SEGMENT_FUND_AVAILABLE = U("segment_fund_available");
 static utility::string_t  TRANSFER_SEGMENT_FUND = U("transfer_segment_fund");
 static utility::string_t  PLACE_FOREX_ORDER = U("place_forex_order");
 
-//合约
+// Contract
 static utility::string_t CONTRACT = U("contract");
 static utility::string_t CONTRACTS = U("contracts");
 static utility::string_t QUOTE_CONTRACT = U("quote_contract");
 
         
-//行情
+// Market
 static utility::string_t MARKET_STATE = U("market_state");
 static utility::string_t ALL_SYMBOLS = U("all_symbols");
 static utility::string_t ALL_SYMBOL_NAMES = U("all_symbol_names");
@@ -60,7 +60,7 @@ static utility::string_t CAPITAL_DISTRIBUTION = U("capital_distribution");  // �
 static utility::string_t CAPITAL_FLOW = U("capital_flow");  // 股票资金流向
 static utility::string_t KLINE_QUOTA = U("kline_quota"); // 历史k线额度
 
-// 期权行情
+// Option
 static utility::string_t OPTION_EXPIRATION = U("option_expiration");
 static utility::string_t OPTION_CHAIN = U("option_chain");
 static utility::string_t OPTION_BRIEF = U("option_brief");
@@ -69,7 +69,7 @@ static utility::string_t OPTION_TRADE_TICK = U("option_trade_tick");
 static utility::string_t WARRANT_FILTER = U("warrant_filter");
 static utility::string_t WARRANT_REAL_TIME_QUOTE = U("warrant_real_time_quote");
 
-// 期货行情
+// Future
 static utility::string_t FUTURE_EXCHANGE = U("future_exchange");
 static utility::string_t FUTURE_CONTRACT_BY_CONTRACT_CODE = U("future_contract_by_contract_code");
 static utility::string_t FUTURE_CONTRACT_BY_EXCHANGE_CODE = U("future_contract_by_exchange_code");
@@ -81,12 +81,12 @@ static utility::string_t FUTURE_REAL_TIME_QUOTE = U("future_real_time_quote");
 static utility::string_t FUTURE_TICK = U("future_tick");
 static utility::string_t FUTURE_TRADING_DATE = U("future_trading_date");
 
-// 公司行动, 财务数据
+// Financial
 static utility::string_t FINANCIAL_DAILY = U("financial_daily");
 static utility::string_t FINANCIAL_REPORT = U("financial_report");
 static utility::string_t CORPORATE_ACTION = U("corporate_action");
 
-// 行业数据
+// Industry
 static utility::string_t INDUSTRY_LIST = U("industry_list");
 static utility::string_t INDUSTRY_STOCKS = U("industry_stocks");
 static utility::string_t STOCK_INDUSTRY = U("stock_industry");
