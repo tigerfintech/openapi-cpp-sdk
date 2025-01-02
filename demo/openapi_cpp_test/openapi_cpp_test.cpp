@@ -1,4 +1,6 @@
 ﻿// openapi_cpp_test.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+#include <functional>
+#include "tigerapi/push_client.h"
 #include "tigerapi/tiger_client.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/trade_client.h"
@@ -8,6 +10,9 @@
 #include "tigerapi/utils.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
+#include "tigerapi/easylogging++.h"
+#include <chrono>
+#include <thread>
 
 using namespace std;
 using namespace web;
@@ -15,7 +20,7 @@ using namespace web::json;
 using namespace TIGER_API;
 
 /**
- * ���ý��׽ӿ�
+ * Test Trade Client
  */
 class TestTradeClient {
 public:
@@ -110,18 +115,17 @@ public:
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721C00185000"));
         //Contract contract = ContractUtil::option_contract(U("AAPL 230721P00185000"));
         Order order = OrderUtil::limit_order(contract, U("BUY"), 3, U("0.18"));
-       // order.adjust_limit = 0.01;
+        //order.adjust_limit = 0.01;
         value res = trade_client->place_order(order);                          
         //unsigned long long id = res[U("id")].as_number().to_uint64();
         ucout << U("order id: ") << order.id << endl;
         ucout << U("place order result: ") << res << endl;
     }
-
-
+    
     static void test_get_order(const std::shared_ptr<TradeClient>& trade_client) {
-        //        Contract contract = stock_contract(U("AAPL"), U("USD"));
-        //        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
-        //        trade_client->place_order(order);
+        //Contract contract = stock_contract(U("AAPL"), U("USD"));
+        //Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
+        //trade_client->place_order(order);
         Order my_order = trade_client->get_order(31318009878020096);
         ucout << U("order id ") << my_order.id << endl;
         ucout << U("order : ") << my_order.to_string() << endl;
@@ -181,11 +185,9 @@ public:
 
 };
 
-
 /**
- * ��������ӿ�
+ * Test Quote Client
  */
-
 class TestQuoteClient {
 public:
     static void test_grab_quote_permission(std::shared_ptr<QuoteClient> quote_client) {
@@ -230,15 +232,14 @@ public:
         value result = quote_client->get_history_timeline(symbols, U("2023-01-10"));
         ucout << U("result: ") << result << endl;
     }
-
-
+    
     static void test_get_quote_real_time(const std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         auto result = quote_client->get_quote_real_time_value(symbols);
         vector<RealtimeQuote> result1 = quote_client->get_quote_real_time(symbols);
-        ucout << U("result: ") << result.at(0).to_string() << endl;
+        ucout << U("result: ") << result.at(0).serialize() << endl;
     }
 
     static void test_get_quote_delay(const std::shared_ptr<QuoteClient> quote_client) {
@@ -270,7 +271,7 @@ public:
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
-//        value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
+        //value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
         vector<Kline> result = quote_client->get_kline(symbols, U("day"), -1, -1, 5);
         ucout << result.at(0).to_string() << endl;
     }
@@ -349,7 +350,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("CL2303"));
         ucout << U("symbols ") << symbols << endl;
-//        value result = quote_client->get_future_real_time_quote(symbols);
+        //value result = quote_client->get_future_real_time_quote(symbols);
         auto result = quote_client->get_future_real_time_quote(symbols);
         ucout << U("result: ") << result.at(0).to_string() << endl;
     }
@@ -376,7 +377,7 @@ public:
     static void test_get_option_kline(std::shared_ptr<QuoteClient> quote_client) {
         value identifiers = value::array();
         identifiers[0] = value::string(U("AAPL 230224C000150000"));
-//        value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
+        //value result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
         vector<Kline> result = quote_client->get_option_kline(identifiers, 1639026000000, 1649026000000);
         ucout << U("result: ") << result.at(0).to_string() << endl;
     }
@@ -411,7 +412,7 @@ public:
 
 
 /**
- * ֱ��ʹ�� TigerApi
+ * Directly use TigerApi
  */
 class TestTigerApi {
 public:
@@ -435,40 +436,182 @@ public:
     }
 };
 
+std::atomic<bool> keep_running(true);
+void signal_handler(int signal)
+{
+    if (signal == SIGINT || signal == SIGTERM)
+    {
+        keep_running = false;
+    }
+}
+
+class TestPushClient {
+private:
+    std::shared_ptr<IPushClient> push_client;
+    std::vector<std::string> symbols;
+
+public:
+    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {
+        std::vector<std::string> hk_option_symbols = {"TCH.HK 20241230 410.00 CALL"};
+        std::vector<std::string> future_symbols = {"CL2412"};
+        symbols = future_symbols;
+    }
+
+    void connected_callback() {
+        ucout << "Connected to push server" << std::endl;
+        push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        // push_client->query_subscribed_symbols();
+        push_client->subscribe_quote(symbols);
+        // push_client->subscribe_kline(symbols);
+        // push_client->subscribe_quote_depth(symbols);
+        push_client->subscribe_tick(symbols);
+    }
+
+    void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
+        ucout << "Position changed:" << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- positionqty: " << data.positionqty() << std::endl;
+    }
+
+    void order_changed_callback(const tigeropen::push::pb::OrderStatusData& data) {
+        // example: {"dataType":"OrderStatus","orderStatusData":{"id":"37129891133115200","account":"123123123","symbol":"PDD","identifier":"PDD","multiplier":1,
+        // "action":"BUY","market":"US","currency":"USD","segType":"S","secType":"STK","orderType":"LMT","isLong":true,"totalQuantity":"1","limitPrice":50,
+        // "status":"PendingSubmit","replaceStatus":"NONE","cancelStatus":"NONE","outsideRth":true,"canModify":true,"canCancel":true,"name":"PDD Holdings","source":"openapi","openTime":"1732177851000","timestamp":"1732177851874"}}
+        ucout << "Order changed:" << std::endl;
+        ucout << "- id: " << data.id() << std::endl;
+        ucout << "- status: " << utility::conversions::to_string_t(data.status()) << std::endl;
+        ucout << "- avgfillprice: " << data.avgfillprice() << std::endl;
+    }
+
+    void asset_changed_callback(const tigeropen::push::pb::AssetData& data) {
+        // example: {"dataType":"Asset","assetData":{"account":"111111111111","segType":"S","availableFunds":797832.55572773679,
+        // "excessLiquidity":826227.79308567208,"netLiquidation":944515.55984458746,"equityWithLoan":944494.85984458751,"buyingPower":3191330.2229109472,
+        // "cashBalance":656046.6059349241,"grossPositionValue":288448.25390966347,"initMarginReq":146662.30411685078,"maintMarginReq":118287.76675891539,"timestamp":"1732177851891"}}
+        ucout << "Asset changed:" << std::endl;
+        ucout << "- cashbalance: " << data.cashbalance() << std::endl;
+        ucout << "- netliquidation: " << data.netliquidation() << std::endl;
+    }
+
+    void tick_changed_callback(const TradeTick& data) {
+        ucout << "TradeTick changed: " << std::endl;
+        ucout << "- data: " << utility::conversions::to_string_t(data.to_string()) << std::endl;
+    }
+
+    void full_tick_changed_callback(const tigeropen::push::pb::TickData& data) {
+        ucout << "Full TickData changed: " << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- tick size: " << data.ticks_size() << std::endl;
+    }
+
+    void query_subscribed_symbols_changed_callback(const tigeropen::push::pb::Response& data) {
+        ucout << "QuerySubscribedSymbols changed: " << std::endl;
+        ucout << "- data: " << utility::conversions::to_string_t(data.msg()) << std::endl;
+    }
+
+    void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
+        ucout << "BasicQuote changed: " << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- latestPrice: " << data.latestprice() << std::endl;
+        ucout << "- volume: " << data.volume() << std::endl;
+    }
+
+    void quote_bbo_changed_callback(const tigeropen::push::pb::QuoteBBOData& data) {
+        ucout << "BBOQuote changed: " << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- bidPrice: " << data.bidprice() << std::endl;
+        ucout << "- askPrice: " << data.askprice() << std::endl;
+    }
+
+    void quote_depth_changed_callback(const tigeropen::push::pb::QuoteDepthData& data) {
+        ucout << "QuoteDepth changed: " << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- ask price size: " << data.ask().price_size() << std::endl;
+        ucout << "- bid price size: " << data.bid().price_size() << std::endl;
+    }
+
+    void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
+        ucout << "Kline changed: " << std::endl;
+        ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
+        ucout << "- open: " << data.open() << std::endl;
+        ucout << "- high: " << data.high() << std::endl;
+        ucout << "- low: " << data.low() << std::endl;
+        ucout << "- close: " << data.close() << std::endl;
+    }
+
+    void start_test(ClientConfig config) {
+        push_client->set_connected_callback(std::bind(&TestPushClient::connected_callback, this));
+        push_client->set_position_changed_callback(std::bind(&TestPushClient::position_changed_callback, this, std::placeholders::_1));
+        push_client->set_order_changed_callback(std::bind(&TestPushClient::order_changed_callback, this, std::placeholders::_1));
+        push_client->set_asset_changed_callback(std::bind(&TestPushClient::asset_changed_callback, this, std::placeholders::_1));
+        push_client->set_tick_changed_callback(std::bind(&TestPushClient::tick_changed_callback, this, std::placeholders::_1));
+        push_client->set_full_tick_changed_callback(std::bind(&TestPushClient::full_tick_changed_callback, this, std::placeholders::_1));
+        push_client->set_query_subscribed_symbols_changed_callback(std::bind(&TestPushClient::query_subscribed_symbols_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_changed_callback(std::bind(&TestPushClient::quote_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_bbo_changed_callback(std::bind(&TestPushClient::quote_bbo_changed_callback, this, std::placeholders::_1));
+        push_client->set_quote_depth_changed_callback(std::bind(&TestPushClient::quote_depth_changed_callback, this, std::placeholders::_1));
+        push_client->set_kline_changed_callback(std::bind(&TestPushClient::kline_changed_callback, this, std::placeholders::_1));
+
+
+        push_client->connect();
+
+        std::signal(SIGINT, signal_handler);  //Ctrl+C
+        std::signal(SIGTERM, signal_handler); //kill
+        while (keep_running)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        push_client->unsubscribe_quote(symbols);
+        push_client->unsubscribe_kline(symbols);
+        push_client->unsubscribe_quote_depth(symbols);
+        push_client->unsubscribe_tick(symbols);
+        push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
+        push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
+        push_client->disconnect();
+    }
+
+    static void test_push_client(std::shared_ptr<IPushClient> push_client, ClientConfig config) {
+        TestPushClient test(push_client);
+        test.start_test(config);
+    }
+};
+
 int main()
 {
-    /************************** set config **********************/
-    ClientConfig config = ClientConfig();
-    config.private_key = U("");
-    config.tiger_id = U("");
-    config.account = U("");
-
-
-
-
-
+    //Set Tiger OpenAPI SDK configuration
+    bool sand_box = false;
+    ClientConfig config = ClientConfig(sand_box);
+	config.private_key = U("");
+	config.tiger_id = U("");
+	config.account = U("");
+	config.use_full_tick = true;
     //config.lang = U("en_US");
 
+    //Create a push client instance
+    auto push_client = IPushClient::create_push_client(config);
+    //Run some push test cases
+    TestPushClient::test_push_client(push_client, config);
 
     /**
-     * ʹ�÷�װ�������ӿ� QuoteClient
+     *  QuoteClient
      */
     //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
     //TestQuoteClient::test_quote(quote_client);
 
     /**
-     * ʹ�÷�װ��Ľ��׽ӿ� TradeClient
+     * TradeClient
      */
-     std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-     TestTradeClient::test_trade(trade_client);
+    //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    //TestTradeClient::test_trade(trade_client);
 
-     /**
-      * ֱ��ʹ��δ��װ�� TigerApi
-      */
-      //    std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-      //    TestTigerApi::test_grab_quote_permission(tigerapi);
-
-
+    /**
+    *  TigerApi
+    */
+    //std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
+    //TestTigerApi::test_grab_quote_permission(tigerapi);
 
     return 0;
 }

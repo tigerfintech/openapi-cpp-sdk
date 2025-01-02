@@ -5,7 +5,6 @@
 #ifndef TIGERAPI_VERSION_H
 #define TIGERAPI_VERSION_H
 
-#define PROJECT_VERSION "0.1.6"
-#include "easylogging++.h"
-INITIALIZE_EASYLOGGINGPP
+#define PROJECT_VERSION "1.0.0"
+
 #endif //TIGERAPI_VERSION_H
