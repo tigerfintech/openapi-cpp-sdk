@@ -1,4 +1,4 @@
-
+﻿
 #ifndef TIGERAPI_SERVICE_TYPES_H
 #define TIGERAPI_SERVICE_TYPES_H
 

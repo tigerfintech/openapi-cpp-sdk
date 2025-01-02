@@ -1,4 +1,4 @@
-#ifndef TIGERAPI_TICK_UTIL_H
+﻿#ifndef TIGERAPI_TICK_UTIL_H
 #define TIGERAPI_TICK_UTIL_H
 
 #pragma once
