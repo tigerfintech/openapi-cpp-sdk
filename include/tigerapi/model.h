@@ -77,53 +77,53 @@ namespace TIGER_API {
         utility::string_t account;
         unsigned long long id = 0;
         long order_id = 0;
-        /**  订单类型, 'MKT' 市价单 / 'LMT' 限价单 / 'STP' 止损单 / 'STP_LMT' 止损限价单 / 'TRAIL' 跟踪止损单 **/
-        utility::string_t order_type;
-        /** 交易方向, 'BUY' / 'SELL' **/
+        /** order type, 'MKT' market order / 'LMT' limit order / 'STP' stop order / 'STP_LMT' stop limit order / 'TRAIL' trailing stop order **/
+        utility::string_t order_type;   
+        /** trade direction, 'BUY' / 'SELL' **/
         utility::string_t action;
-        /** 下单数量 **/
+        /** order quantity **/
         long long total_quantity = 0;
-        /** 下单数量偏移位数，如 total_quantity 为 5, total_quantity_scale 为 1， 则实际下单数量为 5 * 10^-1 = 0.5 **/
+        /** order quantity scale, if total_quantity is 5, total_quantity_scale is 1, then the actual order quantity is 5 * 10^-1 = 0.5 **/
         long total_quantity_scale = 0;
-        /** 限价单价格 **/
+        /** limit price **/
         double limit_price = 0;
         utility::string_t s_limit_price;
-        /** 在止损单中, 表示触发止损单的价格, 在移动止损单中, 表示跟踪的价差 **/
+        /** in stop order, it represents the price to trigger the stop order, in trailing stop order, it represents the price to track **/
         double aux_price = 0;
         double trail_stop_price = 0;
         double trailing_percent = 0;
         double percent_offset = 0;
-        /** 有效期,'DAY' 日内有效 / 'GTC' good till cancel  / 'GTD' good till date **/
+        /** expiration time, 'DAY' day order / 'GTC' good till cancel  / 'GTD' good till date **/
         utility::string_t time_in_force;
-        /** 是否允许盘前盘后交易(outside of regular trading hours 美股专属). True 允许, False 不允许 **/
+        /** allow pre-market and post-market trading (US market exclusive). True allow, False not allow **/
         bool outside_rth;
         /**
-         * 价格微调幅度（默认为0表示不调整，正数为向上调整，负数向下调整），对传入价格自动调整到合法价位上.
-              例如：0.001 代表向上调整且幅度不超过 0.1%；-0.001 代表向下调整且幅度不超过 0.1%。默认 0 表示不调整
+            * price adjustment range (default 0 means no adjustment, positive means upward adjustment, negative means downward adjustment), automatically adjust the input price to a legal price.
+            * For example: 0.001 means upward adjustment and the adjustment range is not more than 0.1%; -0.001 means downward adjustment and the adjustment range is not more than 0.1%. Default 0 means no adjustment
          */
         double adjust_limit;
         utility::string_t user_mark;
         time_t expire_time = 0;
 
-        // 订单状态
+        // order status
         utility::string_t status;
-        // 主订单id, 目前只用于 TigerTrade App端的附加订单中
+        // parent order id, currently only used for TigerTrade App's additional order
         unsigned long long parent_id;
-        // 下单时间
+        // order time
         time_t open_time;
-        // 下单失败时, 会返回失败原因的描述
+        // order failed, return the description of the failure reason
         utility::string_t reason;
-        // 最新成交时间
+        // latest transaction time
         time_t latest_time;
         // order updated time
         time_t update_time;
-        // 成交数量
+        // filled quantity
         long long filled_quantity;
-        // 成交金额偏移位数
+        // filled quantity scale
         long filled_quantity_scale;
-        // 包含佣金的平均成交价
+        // average fill price including commission
         double avg_fill_price;
-        // 实现盈亏
+        // realized profit and loss
         double realized_pnl;
         utility::string_t secret_key;
         web::json::value sub_ids;

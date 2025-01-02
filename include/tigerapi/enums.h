@@ -124,7 +124,7 @@ namespace TIGER_API {
         return name;
     }
 
-// Currency 枚举类
+// Currency 
     enum class Currency {
         ALL,
         USD,
@@ -155,7 +155,7 @@ namespace TIGER_API {
         return name;
     }
 
-// Language 枚举类
+// Language 
     enum class Language {
         zh_CN,
         zh_TW,
@@ -178,7 +178,7 @@ namespace TIGER_API {
         return name;
     }
 
-// QuoteRight 枚举类
+// QuoteRight 
     enum class QuoteRight {
         br,
         nr,
@@ -396,7 +396,7 @@ namespace TIGER_API {
     };
 
     enum class ResponseType {
-        // 交易相关
+        // Trade 
         GET_ORDER_NO_END = 1,
         PREVIEW_ORDER_END = 2,
         PLACE_ORDER_END = 3,
@@ -409,8 +409,8 @@ namespace TIGER_API {
         SUBSCRIBE_POSITION = 10,
         SUBSCRIBE_ASSET = 11,
         SUBSCRIBE_TRADE_EXECUTION = 12,
-
-        // 行情相关
+    
+        // Quote 
         GET_MARKET_STATE_END = 101,
         GET_ALL_SYMBOLS_END = 102,
         GET_ALL_SYMBOL_NAMES_END = 103,
