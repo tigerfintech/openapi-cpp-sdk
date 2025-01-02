@@ -1,4 +1,4 @@
-#ifndef PUSH_SOCKET_H
+﻿#ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
 #include <memory>
