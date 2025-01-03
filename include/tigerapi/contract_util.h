@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by sukai on 2022/12/27.
 //
 
@@ -35,9 +35,9 @@ namespace TIGER_API {
                                                 const utility::string_t local_symbol = U(""));
 
 /**
- * 期权要素信息提取
- * @param identifier 期权标识符，如 U("AAPL 220414C0017500")， U("JD 211015P00045000")
- * @return 正股代码，到期日，行权方向，行权价格 组成的tuple， (underlying_symbol, expiry, right, strike)
+ * Extract option elements
+ * @param identifier Option identifier, e.g. U("AAPL 220414C0017500")， U("JD 211015P00045000")
+ * @return Tuple of underlying symbol, expiry, right, strike (underlying_symbol, expiry, right, strike)
  */
         static std::tuple<utility::string_t, utility::string_t, utility::string_t, utility::string_t>
         extract_option_info(const utility::string_t identifier);

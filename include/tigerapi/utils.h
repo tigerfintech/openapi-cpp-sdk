@@ -1,4 +1,4 @@
-
+﻿
 
 #ifndef CPPSDK_UTILS_H
 #define CPPSDK_UTILS_H

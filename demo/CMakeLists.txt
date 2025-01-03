@@ -17,20 +17,30 @@ if(UNIX) # Darwing or Linux
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
 
     # tigerapi
-    find_path(TIGERAPI_INCLUDE_DIR NAMES common/easylogging++.h tigerapi/client_config.h )
+    find_path(TIGERAPI_INCLUDE_DIR NAMES tigerapi/easylogging++.h tigerapi/client_config.h )
+    message(TIGERAPI_INCLUDE_DIR " ${TIGERAPI_INCLUDE_DIR}")
     find_library(TIGERAPI_LIBRARY NAMES libtigerapi.a)
 
+    # Use system library or sdk output library
+    set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
+    set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
+    # find_path(Protobuf_INCLUDE_DIR NAMES google/protobuf/service.h)
+    # find_library(Protobuf_LIBRARY NAMES protobuf)
+    message(STATUS "Protobuf version: ${Protobuf_VERSION}")
+    message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
+    message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
+
+
     if(APPLE)
-        # Prefer a homebrew version of OpenSSL over the one in /usr/lib
+#        set(CMAKE_OSX_DEPLOYMENT_TARGET "13.7")
         # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
         file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
         # Prefer the latest (make the latest one first)
         list(REVERSE OPENSSL_ROOT_DIR)
 
         find_package(OpenSSL REQUIRED)
-#        set(OPENSSL_VERSION "1.1.1q")
-
-
+        message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
+        message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -48,7 +58,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message("-- configuring clang options")
 #    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
     set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
@@ -61,16 +70,16 @@ endif()
 add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 
 # headers search paths ...
-set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
+set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR} ${Protobuf_INCLUDE_DIR})
 
 # library search paths ...
 if(APPLE)
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
 #    set(ZIP_LIBRARY "/usr/local/Cellar/zlib/1.2.12/lib/libz.dylib")
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY})
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
 endif()
 
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")

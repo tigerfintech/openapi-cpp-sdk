@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by sukai on 2022/12/21.
 //
 
@@ -20,7 +20,7 @@ namespace TIGER_API {
         value grab_quote_permission();
         value get_quote_permission();
 
-        /** 股票行情 Stock quote related api **/
+        /** Stock quote related api **/
 
         value get_symbols(Market market = Market::ALL, bool include_otc=false);
         value get_all_symbol_names(Market market = Market::ALL, bool include_otc=false);
@@ -53,7 +53,7 @@ namespace TIGER_API {
         value get_capital_flow(utility::string_t symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY);
         value get_capital_flow(utility::string_t symbol, utility::string_t market, utility::string_t period = U("day"));
 
-        /** 期权行情 Option quote related api **/
+        /** Option quote related api **/
         value get_option_expiration(const value &symbols);
         value get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter= value::null());
         value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null());
@@ -68,7 +68,7 @@ namespace TIGER_API {
                                  utility::string_t sort_field_name = U(""), utility::string_t sort_dir = U("SortDir_Ascend"));
 
 
-        /** 期货行情 Future quote related api **/
+        /** Future quote related api **/
         value get_future_exchange(SecType sec_type=SecType::FUT);
         value get_future_contract_by_contract_code(utility::string_t contract_code);
         value get_future_contract_by_exchange_code(utility::string_t exchange_code);
@@ -84,7 +84,7 @@ namespace TIGER_API {
         value get_future_tick(utility::string_t contract_code, long begin_index=0, long end_index=100, int limit=1000);
         value get_future_trading_date(utility::string_t contract_code, utility::string_t trading_date);
 
-        /** 财务 **/
+        /** Financial related api **/
         value get_financial_daily();
         value get_financial_report();
         value get_corporate_action();
@@ -93,10 +93,10 @@ namespace TIGER_API {
         value get_industry_stocks();
         value get_stock_industry();
 
-        // 选股
+        // Market scanner
         value get_market_scanner();
 
-        // 通用
+        // general
         value get_kline_quota(bool with_details = false);
 
     };

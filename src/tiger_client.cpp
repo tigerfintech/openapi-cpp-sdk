@@ -1,7 +1,9 @@
-#include "../include/tigerapi/tiger_client.h"
+﻿#include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
 #include "../include/tigerapi/contract_util.h"
 #include "../include/tigerapi/easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 namespace TIGER_API {
 
