@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package tigeropen.push.pb;
+
+
+message TradeTickData {
+  string symbol = 1;
+  string type = 2;                // tick type (buy/sell direction. Active buy(+); Active sell(-); Neutral transaction(*))
+  string cond = 3;                // transaction condition (Optional)
+  int64 sn = 4;                   // sequence number of the first tick
+  int64 priceBase = 5;
+  int32 priceOffset = 6;
+  repeated int64 time = 7;        // compressed transaction time, restore to original time information time[i] = time[i] + time[i-1]
+  repeated int64 price = 8;       // compressed transaction price, restore to original price information price[i] = (priceBase + price[i]) / 10^priceOffset
+  repeated int64 volume = 9;      // original transaction volume
+  repeated string partCode = 10;  // exchange code, usually a ~ z character (Futures are not supported)
+  string quoteLevel = 11;         // (Futures are not supported)
+  uint64 timestamp = 12;
+
+  string secType = 13; // STK Stocks, FUT Futures
+  repeated MergedVol mergedVols = 14; // original merged times (Only futures are supported)
+  message MergedVol {
+    int32 mergeTimes = 1; // original merged times
+    repeated int64 vol = 2; // original merged volume
+  }
+}

@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by sukai on 2022/12/23.
 //
 
@@ -19,13 +19,13 @@ namespace TIGER_API {
         TradeClient();
         TradeClient(const ClientConfig &cf);
 
-        /** 获取账户列表 **/
+        /** Get account list **/
         value get_accounts();
 
         /**
-         * 获取资产(适用综合/模拟账户) get asset
+         * Get asset (applicable to prime/paper accounts)
          * @param account
-         * @param base_currency 币种
+         * @param base_currency Currency
          * @return
          */
         value get_prime_asset(const utility::string_t & account = U(""), const utility::string_t & base_currency = U("USD"));
@@ -35,15 +35,15 @@ namespace TIGER_API {
         PortfolioAccount get_prime_portfolio(const utility::string_t &account = U(""), const utility::string_t &base_currency = U("USD"));
 
         /**
-         * 获取资产(适用于环球/综合/模拟账户)
+         * Get asset (applicable to global/prime/paper accounts)
          */
         value get_asset(utility::string_t account = U(""), const value &sub_accounts = value::array(), bool segment = false,
                         bool market_value = false);
 
         /**
-         * 获取持仓
-         * @param account 资金账户，不传则默认适用配置文件里的account
-         * @param sec_type 证券类型 STK/FUT/OPT
+         * Get position
+         * @param account Account, default is account in config file
+         * @param sec_type Security type STK/FUT/OPT
          * @param currency
          * @param market
          * @param symbol
@@ -68,7 +68,7 @@ namespace TIGER_API {
                             utility::string_t symbol = U(""), const value &sub_accounts = value::array(), time_t expiry = -1,
                                            utility::string_t strike = U(""), utility::string_t right = U(""));
         /**
-         * 获取订单列表
+         * Get order list
          * @param account
          * @param sec_type
          * @param market
@@ -95,7 +95,7 @@ namespace TIGER_API {
                          OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                          SegmentType seg_type = SegmentType::SEC);
 
-        /** 获取未成交订单 **/
+        /** Get active orders **/
         value get_active_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                 utility::string_t market = U("ALL"),
                                 utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, unsigned long long parent_id = 0,
@@ -108,7 +108,7 @@ namespace TIGER_API {
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
-        /** 获取已成交订单 **/
+        /** Get filled orders **/
         value get_filled_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                 utility::string_t market = U("ALL"),
                                 utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, unsigned long long parent_id = 0,
@@ -121,7 +121,7 @@ namespace TIGER_API {
                                 OrderSortBy sort_by = OrderSortBy::LATEST_STATUS_UPDATED,
                                 SegmentType seg_type = SegmentType::SEC);
 
-        /** 获取已取消订单 **/
+        /** Get inactive orders **/
         value get_inactive_orders(utility::string_t account = U(""), utility::string_t sec_type = U(""),
                                   utility::string_t market = U("ALL"),
                                   utility::string_t symbol = U(""), time_t start_date = -1, time_t end_date = -1, unsigned long long parent_id = 0,
