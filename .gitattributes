@@ -1,0 +1,4 @@
+output/Windows/Win32/Debug-MT/openapi-cpp-sdk.pdb filter=lfs diff=lfs merge=lfs -text
+output/Windows/x64/Debug-MT/openapi-cpp-sdk.pdb filter=lfs diff=lfs merge=lfs -text
+output/Windows/x64/Debug-MD/libprotobufd.lib filter=lfs diff=lfs merge=lfs -text
+output/Windows/x64/Debug-MT/libprotobufd.lib filter=lfs diff=lfs merge=lfs -text
