@@ -1,4 +1,4 @@
-#include "../include/tigerapi/push_socket/push_socket.h"
+﻿#include "../include/tigerapi/push_socket/push_socket.h"
 #include "../include/tigerapi/version.h"
 #include <bitset>
 #include <regex>
@@ -71,7 +71,7 @@ void TIGER_API::PushSocket::connect()
 		init_socket();
 
 		socket_->lowest_layer().async_connect(*rit,
-			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error, ++rit));
+			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error));
 	}
 	catch (const boost::system::system_error& e)
 	{
@@ -299,7 +299,7 @@ void TIGER_API::PushSocket::cancel_reconnect_timer()
 	}
 }
 
-void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
+void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& error)
 {
 	try
 	{
@@ -310,14 +310,6 @@ void TIGER_API::PushSocket::handle_connect(const boost::system::error_code& erro
 			socket_->async_handshake(boost::asio::ssl::stream_base::client,
 				boost::bind(&PushSocket::handle_handshake, this,
 					boost::asio::placeholders::error));
-		}
-		else if (endpoint_iterator != boost::asio::ip::tcp::resolver::iterator()) 
-		{
-			socket_->lowest_layer().close();
-			boost::asio::ip::tcp::endpoint endpoint = *endpoint_iterator;
-			socket_->lowest_layer().async_connect(endpoint,
-				boost::bind(&PushSocket::handle_connect, this,
-					boost::asio::placeholders::error, ++endpoint_iterator));
 		}
 		else
 		{
