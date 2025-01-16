@@ -1,4 +1,4 @@
-#ifndef PUSH_SOCKET_H
+﻿#ifndef PUSH_SOCKET_H
 #define PUSH_SOCKET_H
 
 #include <memory>
@@ -59,8 +59,7 @@ namespace TIGER_API
 		void auto_reconnect();
 		void cancel_reconnect_timer();
 
-		void handle_connect(const boost::system::error_code& error, 
-			boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+		void handle_connect(const boost::system::error_code& error);
 		void handle_handshake(const boost::system::error_code& error);
 		void handle_write(const boost::system::error_code& error,
 			size_t bytes_transferred,
