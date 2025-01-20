@@ -11,6 +11,8 @@
 #include "easylogging++.h"
 #include "utils.h"
 #include "win32.h"
+#include <fstream>
+#include "properties.h"
 
 using namespace std;
 
@@ -19,8 +21,9 @@ namespace TIGER_API {
     public:
         ClientConfig(bool sandbox_debug = false) : sandbox_debug(sandbox_debug) {
             if (sandbox_debug) {
-                server_url = SANDBOX_TIGER_SERVER_URL;
-                server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
+                LOG(WARNING) << U("SANDBOX IS NOT SUPPORTED") << endl;
+                // server_url = SANDBOX_TIGER_SERVER_URL;
+                // server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
             }
         };
 
@@ -41,6 +44,10 @@ namespace TIGER_API {
             }
         };
 
+        ClientConfig(utility::string_t props_path) : props_path(props_path) {
+            load_props();
+        };
+
         utility::string_t tiger_id;
         utility::string_t private_key;
         utility::string_t account;
@@ -53,6 +60,8 @@ namespace TIGER_API {
 		utility::string_t socket_ca_certs;
         unsigned int send_interval = 10 * 1000;
         unsigned int receive_interval = 10 * 1000;
+        utility::string_t token;
+        utility::string_t props_path;
 
         void check() {
             if (this->tiger_id.empty()) {
@@ -106,6 +115,49 @@ namespace TIGER_API {
         utility::string_t server_public_key = TIGER_PUBLIC_KEY;
         utility::string_t socket_url = TIGER_SOCKET_HOST;
         utility::string_t socket_port = TIGER_SOCKET_PORT;
+
+        void load_props() {
+            if (props_path.empty()) {
+                return;
+            }
+
+            try {
+                std::ifstream file(props_path);
+                if (!file.is_open()) {
+                    LOG(ERROR) << U("Failed to open properties file: ") << props_path << endl;
+                    return;
+                }
+
+                Properties props;
+                props.load(file);
+
+                // 只在值为空时从配置文件加载
+                if (tiger_id.empty()) {
+                    tiger_id = props.get_property(U("tiger_id"));
+                }
+                if (private_key.empty()) {
+                    private_key = props.get_property(U("private_key_pk1"));
+                }
+                if (account.empty()) {
+                    account = props.get_property(U("account"));
+                }
+
+                // 检查是否为沙箱环境
+                if (!sandbox_debug) {
+                    utility::string_t env = props.get_property(U("env"));
+                    std::transform(env.begin(), env.end(), env.begin(), ::toupper);
+                    if (env == U("SANDBOX")) {
+                        sandbox_debug = true;
+                        server_url = SANDBOX_TIGER_SERVER_URL;
+                        server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
+                        socket_url = SANDBOX_TIGER_SOCKET_HOST;
+                        socket_port = SANDBOX_TIGER_SOCKET_PORT;
+                    }
+                }
+            } catch (const std::exception& e) {
+                LOG(ERROR) << U("Failed to load properties file: ") << e.what() << endl;
+            }
+        }
     };
 }
 

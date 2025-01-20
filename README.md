@@ -26,7 +26,7 @@ brew install boost
     ```
     tar --bzip2 -xf boost_1_81_0.tar.bz2
     ```
-3. 编译
+3. 编译 (注意权限, 如有报错可前面加sudo重试)
     ```shell
     cd /usr/local/boost_1_81_0
     ./bootstrap.sh
@@ -43,9 +43,23 @@ cd cpprestsdk
 git submodule update --init
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug-DBOOST_ROOT=/usr/local/ boost_1_81_0  ..
 make -j 8
 make install
+```
+如果找不到openssl或boost 或其他错误，可尝试指定路径，关闭某些模块：
+```
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DBUILD_SHARED_LIBS=ON \
+  -DBUILD_SAMPLES=OFF \
+  -DBUILD_TESTS=OFF \
+  -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 \
+  -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
+  -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
+  -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
+  -DBOOST_ROOT=/usr/local/boost_1_81_0 \
+  -DCMAKE_CXX_FLAGS="-Wno-error=null-pointer-subtraction" 
 ```
 
 **说明**
@@ -82,7 +96,8 @@ make install
    ```
 3. 编译
 ```
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
+    -DBOOST_ROOT=/usr/local/boost_1_81_0 ..
 make -j 6
 make install
 ```
@@ -166,5 +181,24 @@ ln -s libicuuc.dylib libicuuc.70.dylib
 export LDFLAGS="-L/usr/local/opt/icu4c/lib"
 export CPPFLAGS="-I/usr/local/opt/icu4c/include"
 ```
-
+2. mac 系统编译 cpprestsdk 时，报错：
+   ```
+   CMake Error at Release/cmake/cpprest_find_openssl.cmake:40 (list):
+  list GET given empty list
+Call Stack (most recent call first):
+  Release/cmake/cpprest_find_websocketpp.cmake:18 (cpprest_find_openssl)
+  Release/src/CMakeLists.txt:68 (cpprest_find_websocketpp)
+```
+Fix 指定openssl路径：
+```
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_SHARED_LIBS=ON \
+  -DCMAKE_INSTALL_PREFIX=/usr/local \
+  -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 \
+  -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
+  -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
+  -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
+  -DBOOST_ROOT=/usr/local/boost_1_81_0
+```
 
