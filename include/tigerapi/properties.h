@@ -41,6 +41,10 @@ namespace TIGER_API {
             }
         }
 
+        void set_property(const utility::string_t& key, const utility::string_t& value) {
+            properties[key] = value;
+        }
+
         utility::string_t get_property(const utility::string_t& key) const {
             auto it = properties.find(key);
             if (it != properties.end()) {

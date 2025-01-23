@@ -1,6 +1,4 @@
-﻿
-
-#ifndef CPPSDK_UTILS_H
+﻿#ifndef CPPSDK_UTILS_H
 #define CPPSDK_UTILS_H
 
 #include <time.h>
@@ -45,6 +43,10 @@ namespace TIGER_API {
         static utility::string_t fill_public_key_marker(utility::string_t &public_key);
 
         static utility::string_t double_to_string(double num, int precision = 1);
+
+        static bool is_directory(const utility::string_t& path);
+        static utility::string_t path_dirname(const utility::string_t& path);
+        static utility::string_t path_join(const utility::string_t& path1, const utility::string_t& path2);
     };
 }
 #endif //CPPSDK_UTILS_H
