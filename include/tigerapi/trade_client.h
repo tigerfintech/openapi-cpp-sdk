@@ -135,11 +135,11 @@ namespace TIGER_API {
                                   SegmentType seg_type = SegmentType::SEC);
 
         Order get_order(unsigned long long id, bool is_brief=false);
-        value get_transactions(utility::string_t account, long order_id);
+        value get_transactions(utility::string_t account, long long order_id);
         value get_transactions(utility::string_t account, utility::string_t symbol, utility::string_t sec_type = U(""),
                                long start_time = -1, time_t end_time = -1,
                                int limit = 100, utility::string_t expiry = U(""), utility::string_t strike = U(""), utility::string_t right = U(""),
-                               long order_id = 0);
+                               long long order_id = 0);
 
         value cancel_order(unsigned long long id);
         value place_order(value &order);
