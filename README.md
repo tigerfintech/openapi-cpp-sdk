@@ -43,14 +43,15 @@ cd cpprestsdk
 git submodule update --init
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug-DBOOST_ROOT=/usr/local/ boost_1_81_0  ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug-DBOOST_ROOT=/usr/local/boost_1_81_0 -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest ..
 make -j 8
 make install
 ```
-如果找不到openssl或boost 或其他错误，可尝试指定路径，关闭某些模块：
+如果找不到openssl或boost 或其他错误，可尝试指定路径，关闭某些模块 (如果有报错最好删除build目录重新创建)：
 ```
 cmake .. \
   -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest \
   -DBUILD_SHARED_LIBS=ON \
   -DBUILD_SAMPLES=OFF \
   -DBUILD_TESTS=OFF \
@@ -75,7 +76,7 @@ cd protobuf
 git checkout v3.1.0
 mkdir cmake_build
 cd cmake_build
-cmake ../cmake \
+cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf \
     -Dprotobuf_BUILD_TESTS=OFF \
@@ -97,7 +98,7 @@ make install
 3. 编译
 ```
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
-    -DBOOST_ROOT=/usr/local/boost_1_81_0 ..
+    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
 make -j 6
 make install
 ```
@@ -109,6 +110,15 @@ make install
 
 ### 验证测试
 编译运行demo项目
+```
+cd demo
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
+    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
+make -j 8
+./openapi_cpp_test
+```
 
 
 

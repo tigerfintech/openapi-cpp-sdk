@@ -19,7 +19,8 @@ using namespace std;
 namespace TIGER_API {
     class OPENAPI_EXPORT ClientConfig {
     public:
-        ClientConfig(bool sandbox_debug = false) : sandbox_debug(sandbox_debug) {
+        explicit ClientConfig(bool sandbox_debug = false) : 
+            sandbox_debug(sandbox_debug) {
             if (sandbox_debug) {
                 LOG(WARNING) << U("SANDBOX IS NOT SUPPORTED") << endl;
                 // server_url = SANDBOX_TIGER_SERVER_URL;
@@ -27,24 +28,32 @@ namespace TIGER_API {
             }
         };
 
-        ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account) : tiger_id(std::move(tiger_id)),
-                                                                                                 private_key(std::move(
-                                                                                                         private_key)),
-                                                                                                 account(std::move(account)) {};
+        // ClientConfig() : sandbox_debug(false) {};
+
+        ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account) :
+            tiger_id(std::move(tiger_id)),
+            private_key(std::move(private_key)),
+            account(std::move(account)) {};
 
         ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account,
-                     bool sandbox_debug = false, utility::string_t lang = U("en_US")) :
-                tiger_id(std::move(tiger_id)), private_key(std::move(private_key)),
-                account(std::move(account)), sandbox_debug(sandbox_debug), lang(lang) {
+            bool sandbox_debug = false, utility::string_t lang = U("en_US")) :
+            tiger_id(std::move(tiger_id)),
+            private_key(std::move(private_key)),
+            account(std::move(account)),
+            sandbox_debug(sandbox_debug),
+            lang(lang) {
             if (sandbox_debug) {
-                server_url = SANDBOX_TIGER_SERVER_URL;
-                server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
-                socket_url = SANDBOX_TIGER_SOCKET_HOST;
-                socket_port = SANDBOX_TIGER_SOCKET_PORT;
+                LOG(WARNING) << U("SANDBOX IS NOT SUPPORTED") << endl;
+                // server_url = SANDBOX_TIGER_SERVER_URL;
+                // server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
+                // socket_url = SANDBOX_TIGER_SOCKET_HOST;
+                // socket_port = SANDBOX_TIGER_SOCKET_PORT;
             }
         };
 
-        ClientConfig(utility::string_t props_path) : props_path(props_path) {
+        explicit ClientConfig(bool sandbox_debug, const utility::string_t props_path) : 
+            sandbox_debug(sandbox_debug),
+            props_path(props_path) {
             load_props();
         };
 
@@ -124,6 +133,7 @@ namespace TIGER_API {
             if (full_path.empty()) {
                 return;
             }
+            LOG(INFO) << U("Loading properties file from: ") << full_path << endl;
 
             try {
                 std::ifstream file(Utils::str16to8(full_path));
@@ -135,13 +145,12 @@ namespace TIGER_API {
                 Properties props;
                 props.load(file);
 
-                // 只在值为空时从配置文件加载
                 if (tiger_id.empty()) {
                     tiger_id = props.get_property(U("tiger_id"));
                 }
                 if (private_key.empty()) {
                     private_key = props.get_property(U("private_key_pk1"));
-                }
+                } 
                 if (account.empty()) {
                     account = props.get_property(U("account"));
                 }
@@ -162,6 +171,7 @@ namespace TIGER_API {
             } catch (const std::exception& e) {
                 LOG(ERROR) << U("Failed to load properties file: ") << Utils::str8to16(e.what()) << endl;
             }
+            LOG(INFO) << U("Loaded properties file successfully, tiger_id: ") << tiger_id << " account: " << account << endl;
         }
 
         utility::string_t get_props_path(const utility::string_t& filename) const {
@@ -173,7 +183,6 @@ namespace TIGER_API {
                     return Utils::path_join(dirname, filename);
                 }
             }
-            return utility::string_t();
         }
 
         utility::string_t get_token_path() const {
@@ -193,7 +202,7 @@ namespace TIGER_API {
                     Properties props;
                     props.load(file);
                     
-                    // 获取token值
+                    // get token value
                     token = props.get_property(U("token"));
                     
                 } catch (const std::exception& e) {

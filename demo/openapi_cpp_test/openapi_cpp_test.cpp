@@ -583,23 +583,23 @@ int main()
 {
     //Set Tiger OpenAPI SDK configuration
     bool sand_box = false;
-    ClientConfig config = ClientConfig(sand_box);
-	config.private_key = U("");
-	config.tiger_id = U("");
-	config.account = U("");
+    ClientConfig config = ClientConfig(false, U("../openapi_cpp_test/"));
+	// config.private_key = U("");
+	// config.tiger_id = U("");
+	// config.account = U("");
 	config.use_full_tick = true;
     //config.lang = U("en_US");
 
     //Create a push client instance
     auto push_client = IPushClient::create_push_client(config);
     //Run some push test cases
-    TestPushClient::test_push_client(push_client, config);
+    // TestPushClient::test_push_client(push_client, config);
 
     /**
      *  QuoteClient
      */
-    //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    //TestQuoteClient::test_quote(quote_client);
+    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient

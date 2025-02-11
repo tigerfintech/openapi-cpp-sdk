@@ -11,14 +11,22 @@ namespace TIGER_API {
     class Properties {
     public:
         void load(std::ifstream& input) {
+            // skip BOM
+            char bom[3];
+            input.read(bom, 3);
+            if (!(bom[0] == (char)0xEF && bom[1] == (char)0xBB && bom[2] == (char)0xBF)) {
+                // if not BOM, reset file pointer to start
+                input.seekg(0);
+            }
+
             std::string line;
             while (std::getline(input, line)) {
-                // 跳过空行和注释行
+                // skip empty line and comment line
                 if (line.empty() || line[0] == '#' || line[0] == '!') {
                     continue;
                 }
 
-                // 查找第一个非转义的等号或冒号
+                // find the first non-escaped equal or colon
                 size_t pos = 0;
                 while ((pos = line.find_first_of("=:", pos)) != std::string::npos) {
                     if (pos == 0 || line[pos - 1] != '\\') {
@@ -31,10 +39,10 @@ namespace TIGER_API {
                     std::string key = trim(line.substr(0, pos));
                     std::string value = trim(line.substr(pos + 1));
                     
-                    // 处理转义字符
+                    // handle escape character
                     value = unescape(value);
                     
-                    // 存储为 utility::string_t
+                    // store as utility::string_t
                     properties[utility::conversions::to_string_t(key)] = 
                         utility::conversions::to_string_t(value);
                 }
@@ -54,17 +62,17 @@ namespace TIGER_API {
         }
 
         void store(std::ofstream& output) const {
-            // 写入文件头注释
+            // write file header comment
             output << "# Properties" << std::endl;
             output << "# " << get_current_datetime() << std::endl;
             output << std::endl;
 
-            // 写入所有属性
+            // write all properties
             for (const auto& pair : properties) {
                 std::string key = utility::conversions::to_utf8string(pair.first);
                 std::string value = utility::conversions::to_utf8string(pair.second);
                 
-                // 转义特殊字符
+                // escape special characters
                 key = escape(key);
                 value = escape(value);
                 

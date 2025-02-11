@@ -6,13 +6,15 @@ project(openapi_cpp_test)
 
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
-
+    
     find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
     find_package(Threads REQUIRED)
 
     # cpprest
-    find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
-    find_library(CPPREST_LIBRARY NAMES cpprest)
+    # find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
+    # find_library(CPPREST_LIBRARY NAMES cpprest)
+    set(CPPREST_INCLUDE_DIR "/usr/local/opt/cpprest/include")
+    set(CPPREST_LIBRARY "/usr/local/opt/cpprest/lib/libcpprest.dylib")
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
 
