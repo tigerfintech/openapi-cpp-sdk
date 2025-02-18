@@ -406,7 +406,7 @@ public:
 
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_kline_quota(quote_client);
+        TestQuoteClient::test_get_quote_delay(quote_client);
     }
 };
 
@@ -595,28 +595,26 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-//    // 初始化日志
-//    START_EASYLOGGINGPP(argc, argv);
-//
-    // 配置日志
+
+    // log settings
     el::Configurations defaultConf;
     defaultConf.setToDefault();
-    
-    // 只显示WARNING和ERROR级别的日志
+
     defaultConf.set(el::Level::Global, el::ConfigurationType::Enabled, "true");
-    defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+    defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
     defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
     defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
     defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
-    
-    // 应用配置
+
     el::Loggers::reconfigureLogger("default", defaultConf);
     
     //Set Tiger OpenAPI SDK configuration
     bool sand_box = false;
-    ClientConfig config = ClientConfig(false, U("../openapi_cpp_test/"));
+//    ClientConfig config = ClientConfig(false, U("../openapi_cpp_test/"));
 //    config.set_server_url(U("http://127.0.0.1:8085/gateway"));
 //    config.set_server_public_key(SANDBOX_TIGER_PUBLIC_KEY);
+    ClientConfig config = ClientConfig(false);
+
 	// config.private_key = U("");
 	// config.tiger_id = U("");
 	// config.account = U("");
@@ -624,15 +622,15 @@ int main(int argc, char* argv[]) {
     //config.lang = U("en_US");
 
     //Create a push client instance
-    auto push_client = IPushClient::create_push_client(config);
+//    auto push_client = IPushClient::create_push_client(config);
     //Run some push test cases
-    TestPushClient::test_push_client(push_client, config);
+//    TestPushClient::test_push_client(push_client, config);
 
     /**
      *  QuoteClient
      */
-    // std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    // TestQuoteClient::test_quote(quote_client);
+     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+     TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient

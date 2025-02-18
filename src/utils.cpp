@@ -224,6 +224,19 @@ namespace TIGER_API {
         }
     }
 
+    bool Utils::is_file(const utility::string_t& path) {
+        try {
+            #ifdef _WIN32
+                fs::path fs_path(path);
+            #else
+                fs::path fs_path(utility::conversions::to_utf8string(path));
+            #endif
+            return fs::is_regular_file(fs_path);
+        } catch (const std::exception&) {
+            return false;
+        }
+    }
+
     utility::string_t Utils::path_dirname(const utility::string_t& path) {
         try {
             #ifdef _WIN32
