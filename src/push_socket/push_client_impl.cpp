@@ -73,6 +73,11 @@ void TIGER_API::PushClientImpl::set_inner_error_callback(const std::function<voi
 	}
 }
 
+void TIGER_API::PushClientImpl::set_kickout_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
+{
+    kickout_callback_ = cb;
+}
+
 void TIGER_API::PushClientImpl::set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
 {
 	subscribe_callback_ = cb;
@@ -377,6 +382,16 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
         }
         else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_HEARTBEAT) {
             LOG(DEBUG) << "heartbeat";
+        }
+        else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_ERRORINFO) {
+            if (frame->code() == 4001 && kickout_callback_) {
+                kickout_callback_(*frame);
+            }
+            else if (error_callback_) {
+                error_callback_(*frame);
+            } else {
+                LOG(ERROR) << frame->DebugString();
+            }
         }
         else if (frame->code() == static_cast<int>(ResponseType::GET_SUB_SYMBOLS_END)) {
             if (query_subscribed_symbols_changed_) {

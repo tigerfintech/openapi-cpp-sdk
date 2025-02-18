@@ -103,6 +103,10 @@ namespace TIGER_API {
             this->socket_port = port;
         }
 
+        void set_server_public_key(const utility::string_t &key) {
+            this->server_public_key = key;
+        }
+
         const utility::string_t& get_server_url() {
             return this->server_url;
         }
