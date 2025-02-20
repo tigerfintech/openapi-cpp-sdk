@@ -184,14 +184,13 @@ namespace TIGER_API {
         }
 
         utility::string_t get_props_path(const utility::string_t &filename) const {
-            if (!props_path.empty()) {
+            if (!props_path.empty()) 
+            {
                 if (Utils::is_directory(props_path)) {
-                    return Utils::path_join(props_path, filename);
-                } else {
-                    utility::string_t dirname = Utils::path_dirname(props_path);
-                    return Utils::path_join(dirname, filename);
-                }
+                    return props_path + filename;
+                }  
             }
+            return U("");
         }
 
         utility::string_t get_token_path() const {
@@ -201,11 +200,6 @@ namespace TIGER_API {
         void load_token() {
             utility::string_t full_path = get_token_path();
             if (full_path.empty()) {
-                return;
-            }
-            // if not exist, return
-            if (!Utils::is_file(full_path)) {
-                LOG(DEBUG) << U("Token file not found: ") << full_path << endl;
                 return;
             }
             try {
