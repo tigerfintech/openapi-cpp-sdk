@@ -533,6 +533,7 @@
     <ClInclude Include="include\tigerapi\contract_util.h" />
     <ClInclude Include="include\tigerapi\easylogging++.h" />
     <ClInclude Include="include\tigerapi\enums.h" />
+    <ClInclude Include="include\tigerapi\logger.h" />
     <ClInclude Include="include\tigerapi\model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
     <ClInclude Include="include\tigerapi\push_client.h" />
@@ -569,8 +570,10 @@
     <ClCompile Include="include\openapi_pb\pb_source\TickData.pb.cc" />
     <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="include\openssl\applink.c" />
+    <ClCompile Include="src\client_config.cpp" />
     <ClCompile Include="src\contract_util.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />
+    <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\order_util.cpp" />
     <ClCompile Include="src\push_socket\push_client_impl.cpp" />
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />

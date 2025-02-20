@@ -5,6 +5,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <ctime>
 #include "utils.h"
 
 namespace TIGER_API {
@@ -43,8 +44,9 @@ namespace TIGER_API {
                     value = unescape(value);
                     
                     // store as utility::string_t
-                    properties[utility::conversions::to_string_t(key)] = 
-                        utility::conversions::to_string_t(value);
+                    utility::string_t key_t = utility::conversions::to_string_t(key);
+                    utility::string_t value_t = utility::conversions::to_string_t(value);
+                    properties[key_t] = value_t;
                 }
             }
         }
