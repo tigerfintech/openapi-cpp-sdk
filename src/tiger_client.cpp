@@ -125,7 +125,7 @@ namespace TIGER_API {
             bool is_sign_ok = Utils::verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
             if (!is_sign_ok) {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
-                throw std::runtime_error("Exception: response sign verify failed");
+                throw std::runtime_error(Utils::str16to8("Exception: response sign verify failed").c_str());
             }
             result_data = result[P_DATA];
         }

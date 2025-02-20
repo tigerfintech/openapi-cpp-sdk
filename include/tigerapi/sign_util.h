@@ -70,14 +70,14 @@ namespace TIGER_API {
 
         RSA *rsa = create_rsa((utility::char_t *) key.c_str(), true);
         if (rsa == nullptr) {
-            throw std::runtime_error(U("RSA creation failed, please check your private key"));
+            throw std::runtime_error(Utils::str16to8("RSA creation failed, please check your private key"));
         }
 
         int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
                         encrypted, &encrypted_length, rsa);
         
         if (ret != 1) {
-            throw std::runtime_error(U("RSA_sign failed"));
+            throw std::runtime_error(Utils::str16to8("RSA_sign failed"));
         }
 
         utility::string_t s(encrypted, encrypted + encrypted_length);
@@ -99,7 +99,7 @@ namespace TIGER_API {
 
         RSA *rsa = create_rsa((utility::char_t *) key.c_str(), false);
         if (rsa == nullptr) {
-            throw std::runtime_error("RSA creation failed, please check your private key");
+            throw std::runtime_error(Utils::str16to8("RSA creation failed, please check your private key"));
         }
         int ret = -1;
         if (vec_base64_decode.size() > 0) {
