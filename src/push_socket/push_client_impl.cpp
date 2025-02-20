@@ -540,9 +540,9 @@ std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::
         return nullptr;
     }
 
-    tigeropen::push::pb::SocketCommon_QuoteType quoteType = quote_data.type();
-    if (quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
-        quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
+    tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
+    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
+        quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
         return nullptr;
     }
 
@@ -551,7 +551,7 @@ std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::
     auto builder = std::make_shared<tigeropen::push::pb::QuoteBasicData>();
     // Set required fields
     builder->set_symbol(quote_data.symbol());
-    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC);
+    builder->set_type(quote_type);
     builder->set_timestamp(quote_data.timestamp());
     builder->set_latestprice(quote_data.latestprice());
     builder->set_latesttime(quote_data.latesttime());
@@ -627,14 +627,15 @@ std::shared_ptr<tigeropen::push::pb::QuoteBBOData> TIGER_API::PushClientImpl::co
     }
 
     tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
-    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO) {
+    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
+        quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO) {
         return nullptr;
     }
 
     // Create and initialize builder
     auto builder = std::make_shared<tigeropen::push::pb::QuoteBBOData>();
     builder->set_symbol(quote_data.symbol());
-    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO);
+    builder->set_type(quote_type);
     builder->set_timestamp(quote_data.timestamp());
     builder->set_bidprice(quote_data.bidprice());
     builder->set_bidsize(quote_data.bidsize());
