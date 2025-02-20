@@ -43,6 +43,7 @@ namespace TIGER_API
 		virtual void set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) = 0;
 		virtual void set_unsubscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) = 0;
 		virtual void set_error_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) = 0;
+		virtual void set_kickout_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) = 0;
 		
 		virtual void set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb) = 0;
 		virtual bool subscribe_asset(const std::string& account) = 0;

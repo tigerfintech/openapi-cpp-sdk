@@ -29,8 +29,9 @@ namespace TIGER_API
 
 		virtual void set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
 		virtual void set_unsubscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
-		virtual void set_error_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
-		
+		virtual void set_error_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb ) override;
+		virtual void set_kickout_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb) override;
+
 		virtual void set_asset_changed_callback(const std::function<void(const tigeropen::push::pb::AssetData&)>& cb) override;
 		virtual bool subscribe_asset(const std::string& account) override;
 		virtual bool unsubscribe_asset(const std::string& account) override;
@@ -97,6 +98,7 @@ namespace TIGER_API
 		std::function<void(const tigeropen::push::pb::Response& subscribe_response)> subscribe_callback_;
 		std::function<void(const tigeropen::push::pb::Response& unsubscribe_response)> unsubscribe_callback_;
 		std::function<void(const tigeropen::push::pb::Response& error_response)> error_callback_;
+		std::function<void(const tigeropen::push::pb::Response& kickout_response)> kickout_callback_;
 		std::function<void(const tigeropen::push::pb::AssetData& asset_data)> asset_changed_;
 		std::function<void(const tigeropen::push::pb::PositionData& position_data)> position_changed_;
 		std::function<void(const tigeropen::push::pb::OrderStatusData& order_status_data)> order_changed_;

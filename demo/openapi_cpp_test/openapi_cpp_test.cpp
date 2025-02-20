@@ -10,9 +10,9 @@
 #include "tigerapi/utils.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
-#include "tigerapi/easylogging++.h"
 #include <chrono>
 #include <thread>
+#include "tigerapi/logger.h"
 
 using namespace std;
 using namespace web;
@@ -406,7 +406,7 @@ public:
 
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_kline_quota(quote_client);
+        TestQuoteClient::test_get_quote_delay(quote_client);
     }
 };
 
@@ -467,6 +467,19 @@ public:
         // push_client->subscribe_kline(symbols);
         // push_client->subscribe_quote_depth(symbols);
         push_client->subscribe_tick(symbols);
+    }
+
+    void error_callback(const tigeropen::push::pb::Response& data) {
+        ucout << "Error callback: " << std::endl;
+        ucout << "- code: " << data.code() << std::endl;
+        ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
+    }
+
+    void kickout_callback(const tigeropen::push::pb::Response& data) {
+        ucout << "Kickout callback: " << std::endl;
+        ucout << "- code: " << data.code() << std::endl;
+        ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
+
     }
 
     void position_changed_callback(const tigeropen::push::pb::PositionData& data) {
@@ -542,6 +555,8 @@ public:
 
     void start_test(ClientConfig config) {
         push_client->set_connected_callback(std::bind(&TestPushClient::connected_callback, this));
+        push_client->set_error_callback(std::bind(&TestPushClient::error_callback, this, std::placeholders::_1));
+        push_client->set_kickout_callback(std::bind(&TestPushClient::kickout_callback, this, std::placeholders::_1));
         push_client->set_position_changed_callback(std::bind(&TestPushClient::position_changed_callback, this, std::placeholders::_1));
         push_client->set_order_changed_callback(std::bind(&TestPushClient::order_changed_callback, this, std::placeholders::_1));
         push_client->set_asset_changed_callback(std::bind(&TestPushClient::asset_changed_callback, this, std::placeholders::_1));
@@ -579,27 +594,31 @@ public:
     }
 };
 
-int main()
-{
+int main(int argc, char* argv[]) {
+    LoggerConfig::set_log_level(el::Level::Debug);
     //Set Tiger OpenAPI SDK configuration
     bool sand_box = false;
-    ClientConfig config = ClientConfig(sand_box);
-	config.private_key = U("");
-	config.tiger_id = U("");
-	config.account = U("");
+    ClientConfig config = ClientConfig(false, U("../openapi_cpp_test/"));
+    //config.set_server_url(U("http://127.0.0.1:8085/gateway"));
+    //config.set_server_public_key(SANDBOX_TIGER_PUBLIC_KEY);
+    //ClientConfig config = ClientConfig(false);
+
+	// config.private_key = U("");
+	// config.tiger_id = U("");
+	// config.account = U("");
 	config.use_full_tick = true;
     //config.lang = U("en_US");
 
     //Create a push client instance
-    auto push_client = IPushClient::create_push_client(config);
+//    auto push_client = IPushClient::create_push_client(config);
     //Run some push test cases
-    TestPushClient::test_push_client(push_client, config);
+//    TestPushClient::test_push_client(push_client, config);
 
     /**
      *  QuoteClient
      */
-    //std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    //TestQuoteClient::test_quote(quote_client);
+     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+     TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient

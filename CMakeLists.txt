@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+﻿cmake_minimum_required(VERSION 3.0)
 
 
 # Find the source file that contains the version information
@@ -17,13 +17,15 @@ project(tigerapi VERSION ${PROJECT_VERSION})
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
 
-    find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
+    find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
     find_package(Threads REQUIRED)
     find_package(absl REQUIRED)
 
     # cpprest
-    find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
-    find_library(CPPREST_LIBRARY NAMES cpprest)
+    # find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
+    set(CPPREST_INCLUDE_DIR "/usr/local/opt/cpprest/include")
+    set(CPPREST_LIBRARY "/usr/local/opt/cpprest/lib/libcpprest.dylib")
+    # find_library(CPPREST_LIBRARY NAMES cpprest)
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
     
