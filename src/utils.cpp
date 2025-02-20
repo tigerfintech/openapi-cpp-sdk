@@ -5,26 +5,9 @@
 #include <algorithm>
 #include <regex>
 #include "../include/tigerapi/sign_util.h"
-#include <boost/filesystem.hpp>
-
-#ifdef _WIN32
-    #include <direct.h>
-    #include <io.h>
-    #define ACCESS _access
-    #define STAT _stat
-    struct stat {
-        unsigned short st_mode;
-    };
-    #define S_ISDIR(mode) ((mode) & _S_IFDIR)
-#else
-    #include <unistd.h>
-    #include <sys/stat.h>
-    #define ACCESS access
-#endif
 
 using namespace std;
 using namespace web;
-namespace fs = boost::filesystem;
 
 namespace TIGER_API {
     utility::string_t Utils::str8to16(std::string s) {
@@ -211,66 +194,15 @@ namespace TIGER_API {
         return Utils::str8to16(result);
     }
 
-    bool Utils::is_directory(const utility::string_t& path) {
-        try {
-            #ifdef _WIN32
-                fs::path fs_path(path);
-            #else
-                fs::path fs_path(utility::conversions::to_utf8string(path));
-            #endif
-            return fs::is_directory(fs_path);
-        } catch (const std::exception&) {
-            return false;
-        }
-    }
+	bool Utils::is_directory(const utility::string_t& path) {
+		if (path.empty()) {
+			return false;
+		}
 
-    bool Utils::is_file(const utility::string_t& path) {
-        try {
-            #ifdef _WIN32
-                fs::path fs_path(path);
-            #else
-                fs::path fs_path(utility::conversions::to_utf8string(path));
-            #endif
-            return fs::is_regular_file(fs_path);
-        } catch (const std::exception&) {
-            return false;
-        }
-    }
-
-    utility::string_t Utils::path_dirname(const utility::string_t& path) {
-        try {
-            #ifdef _WIN32
-                fs::path fs_path(path);
-            #else
-                fs::path fs_path(utility::conversions::to_utf8string(path));
-            #endif
-            
-            auto parent_path = fs_path.parent_path();
-            
-            #ifdef _WIN32
-                return parent_path.wstring();
-            #else
-                return utility::conversions::to_string_t(parent_path.string());
-            #endif
-        } catch (const std::exception&) {
-            return utility::string_t();
-        }
-    }
-
-    utility::string_t Utils::path_join(const utility::string_t& path1, const utility::string_t& path2) {
-        try {
-            #ifdef _WIN32
-                fs::path p1(path1);
-                fs::path p2(path2);
-                auto result = (p1 / p2).wstring();
-            #else
-                fs::path p1(utility::conversions::to_utf8string(path1));
-                fs::path p2(utility::conversions::to_utf8string(path2));
-                auto result = utility::conversions::to_string_t((p1 / p2).string());
-            #endif
-            return result;
-        } catch (const std::exception&) {
-            return utility::string_t();
-        }
-    }
+#ifdef _WIN32
+		return path.back() == U('\\') || path.back() == U('/');
+#else
+		return path.back() == U('/');
+#endif
+	}
 }
