@@ -678,6 +678,9 @@
     <ClInclude Include="include\tigerapi\push_socket\push_client_impl.h">
       <Filter>include\tigerapi\push_socket</Filter>
     </ClInclude>
+    <ClInclude Include="include\tigerapi\logger.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\contract_util.cpp">
@@ -765,6 +768,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\easylogging++.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\logger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client_config.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

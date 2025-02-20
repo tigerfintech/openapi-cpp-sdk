@@ -10,9 +10,9 @@
 #include "tigerapi/utils.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
-#include "tigerapi/easylogging++.h"
 #include <chrono>
 #include <thread>
+#include "tigerapi/logger.h"
 
 using namespace std;
 using namespace web;
@@ -595,25 +595,13 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-
-    // log settings
-    el::Configurations defaultConf;
-    defaultConf.setToDefault();
-
-    defaultConf.set(el::Level::Global, el::ConfigurationType::Enabled, "true");
-    defaultConf.set(el::Level::Debug, el::ConfigurationType::Enabled, "true");
-    defaultConf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
-    defaultConf.set(el::Level::Warning, el::ConfigurationType::Enabled, "true");
-    defaultConf.set(el::Level::Error, el::ConfigurationType::Enabled, "true");
-
-    el::Loggers::reconfigureLogger("default", defaultConf);
-    
+    LoggerConfig::set_log_level(el::Level::Debug);
     //Set Tiger OpenAPI SDK configuration
     bool sand_box = false;
-//    ClientConfig config = ClientConfig(false, U("../openapi_cpp_test/"));
-//    config.set_server_url(U("http://127.0.0.1:8085/gateway"));
-//    config.set_server_public_key(SANDBOX_TIGER_PUBLIC_KEY);
-    ClientConfig config = ClientConfig(false);
+    ClientConfig config = ClientConfig(false, U("D:/test package/"));
+    //config.set_server_url(U("http://127.0.0.1:8085/gateway"));
+    //config.set_server_public_key(SANDBOX_TIGER_PUBLIC_KEY);
+    //ClientConfig config = ClientConfig(false);
 
 	// config.private_key = U("");
 	// config.tiger_id = U("");
