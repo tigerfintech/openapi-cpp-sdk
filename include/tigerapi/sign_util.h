@@ -67,14 +67,22 @@ namespace TIGER_API {
         auto str_transfer_content = Utils::str16to8(context);
         unsigned int context_size = str_transfer_content.size();
         SHA1((const unsigned char *) str_transfer_content.c_str(), context_size, hash);
+
         RSA *rsa = create_rsa((utility::char_t *) key.c_str(), true);
-        int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
-                           encrypted, &encrypted_length, rsa);
-        if (ret == 1) {
-            utility::string_t s(encrypted, encrypted + encrypted_length);
-            return s;
+        if (rsa == nullptr) {
+            throw std::runtime_error("RSA creation failed, please check your private key");
         }
-        return U("");
+
+        int ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH,
+                        encrypted, &encrypted_length, rsa);
+        
+        if (ret != 1) {
+            throw std::runtime_error("RSA_sign failed");
+        }
+
+        utility::string_t s(encrypted, encrypted + encrypted_length);
+        RSA_free(rsa);
+        return s;
     }
 
     int sha1_verify(const utility::string_t &context, const utility::string_t &sign, const utility::string_t &key) {
@@ -90,6 +98,9 @@ namespace TIGER_API {
         SHA1((const unsigned char *) context_s.c_str(), context_s.size(), hash);
 
         RSA *rsa = create_rsa((utility::char_t *) key.c_str(), false);
+        if (rsa == nullptr) {
+            throw std::runtime_error("RSA creation failed, please check your private key");
+        }
         int ret = -1;
         if (vec_base64_decode.size() > 0) {
             ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH,

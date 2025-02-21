@@ -6,13 +6,15 @@ project(openapi_cpp_test)
 
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
-
+    
     find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono)
     find_package(Threads REQUIRED)
 
     # cpprest
-    find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
-    find_library(CPPREST_LIBRARY NAMES cpprest)
+    # find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
+    # find_library(CPPREST_LIBRARY NAMES cpprest)
+    set(CPPREST_INCLUDE_DIR "/usr/local/opt/cpprest/include")
+    set(CPPREST_LIBRARY "/usr/local/opt/cpprest/lib/libcpprest.dylib")
     message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
     message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
 
@@ -26,6 +28,7 @@ if(UNIX) # Darwing or Linux
     set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
     # find_path(Protobuf_INCLUDE_DIR NAMES google/protobuf/service.h)
     # find_library(Protobuf_LIBRARY NAMES protobuf)
+    # find_package(Protobuf REQUIRED)
     message(STATUS "Protobuf version: ${Protobuf_VERSION}")
     message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
     message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
@@ -71,6 +74,15 @@ add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 
 # headers search paths ...
 set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR} ${Protobuf_INCLUDE_DIR})
+
+# 在 HEADER_SEARCH_PATHS 如果有 /opt/homebrew/include, 则将其移到最后(因为其中的protobuf是homebrew的， 会优先于自定义的protobuf)
+if(HEADER_SEARCH_PATHS MATCHES "/opt/homebrew/include")
+    list(REMOVE_ITEM HEADER_SEARCH_PATHS "/opt/homebrew/include")
+    list(APPEND HEADER_SEARCH_PATHS "/opt/homebrew/include")
+endif()
+message(HEADER_SEARCH_PATHS " ${HEADER_SEARCH_PATHS}")
+
+
 
 # library search paths ...
 if(APPLE)

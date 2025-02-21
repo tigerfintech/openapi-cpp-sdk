@@ -80,3 +80,5 @@ output/Mac/Release/*.a
 
 output/Linux/Debug/
 output/Linux/Release/
+
+*.properties

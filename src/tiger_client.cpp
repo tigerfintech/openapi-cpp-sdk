@@ -1,9 +1,7 @@
 ﻿#include "../include/tigerapi/tiger_client.h"
 #include "../include/tigerapi/version.h"
 #include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/easylogging++.h"
-
-INITIALIZE_EASYLOGGINGPP
+#include "../include/tigerapi/logger.h"
 
 namespace TIGER_API {
 
@@ -62,6 +60,9 @@ namespace TIGER_API {
         request.headers().add(U("Accept"), U("application/json"));
         request.headers().set_content_type(U("application/json; charset=UTF-8"));
         request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + U(PROJECT_VERSION));
+        if (!client_config.token.empty()) {
+            request.headers().add(U("Authorization"), client_config.token);
+        }
 
         /************************** set request body ***************************/
 
