@@ -73,6 +73,11 @@ void TIGER_API::PushClientImpl::set_inner_error_callback(const std::function<voi
 	}
 }
 
+void TIGER_API::PushClientImpl::set_kickout_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
+{
+    kickout_callback_ = cb;
+}
+
 void TIGER_API::PushClientImpl::set_subscribe_callback(const std::function<void(const tigeropen::push::pb::Response&)>& cb)
 {
 	subscribe_callback_ = cb;
@@ -378,6 +383,16 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
         else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_HEARTBEAT) {
             LOG(DEBUG) << "heartbeat";
         }
+        else if (frame->command() == tigeropen::push::pb::SocketCommon_Command_ERRORINFO) {
+            if (frame->code() == 4001 && kickout_callback_) {
+                kickout_callback_(*frame);
+            }
+            else if (error_callback_) {
+                error_callback_(*frame);
+            } else {
+                LOG(ERROR) << frame->DebugString();
+            }
+        }
         else if (frame->code() == static_cast<int>(ResponseType::GET_SUB_SYMBOLS_END)) {
             if (query_subscribed_symbols_changed_) {
                 query_subscribed_symbols_changed_(*frame);
@@ -525,9 +540,9 @@ std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::
         return nullptr;
     }
 
-    tigeropen::push::pb::SocketCommon_QuoteType quoteType = quote_data.type();
-    if (quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
-        quoteType != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
+    tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
+    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
+        quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
         return nullptr;
     }
 
@@ -536,7 +551,7 @@ std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::
     auto builder = std::make_shared<tigeropen::push::pb::QuoteBasicData>();
     // Set required fields
     builder->set_symbol(quote_data.symbol());
-    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC);
+    builder->set_type(quote_type);
     builder->set_timestamp(quote_data.timestamp());
     builder->set_latestprice(quote_data.latestprice());
     builder->set_latesttime(quote_data.latesttime());
@@ -612,14 +627,15 @@ std::shared_ptr<tigeropen::push::pb::QuoteBBOData> TIGER_API::PushClientImpl::co
     }
 
     tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
-    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO) {
+    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
+        quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO) {
         return nullptr;
     }
 
     // Create and initialize builder
     auto builder = std::make_shared<tigeropen::push::pb::QuoteBBOData>();
     builder->set_symbol(quote_data.symbol());
-    builder->set_type(tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BBO);
+    builder->set_type(quote_type);
     builder->set_timestamp(quote_data.timestamp());
     builder->set_bidprice(quote_data.bidprice());
     builder->set_bidsize(quote_data.bidsize());

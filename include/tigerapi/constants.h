@@ -1,5 +1,4 @@
-﻿
-#ifndef CPPSDK_CONSTANTS_H
+﻿#ifndef CPPSDK_CONSTANTS_H
 #define CPPSDK_CONSTANTS_H
 #include "cpprest/details/basic_types.h"
 
@@ -83,5 +82,8 @@ static utility::string_t TIGER_SOCKET_HOST = U("openapi.tigerfintech.com");
 static utility::string_t SANDBOX_TIGER_SOCKET_HOST = U("openapi-sandbox.tigerfintech.com");
 static utility::string_t TIGER_SOCKET_PORT = U("9883");
 static utility::string_t SANDBOX_TIGER_SOCKET_PORT = U("9885");
+
+#define DEFAULT_TOKEN_FILE U("tiger_openapi_token.properties")
+#define DEFAULT_PROPS_FILE U("tiger_openapi_config.properties")
 
 #endif //CPPSDK_CONSTANTS_H
