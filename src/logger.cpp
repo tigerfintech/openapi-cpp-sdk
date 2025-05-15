@@ -5,4 +5,5 @@ INITIALIZE_EASYLOGGINGPP
 void TIGER_API::LoggerConfig::set_log_level(el::Level level)
 {
 	el::Loggers::setLoggingLevel(level);
+    el::Loggers::setLoggingLevel(level);el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
 }
