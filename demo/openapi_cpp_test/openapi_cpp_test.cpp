@@ -180,7 +180,7 @@ public:
     }
 
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
-        TestTradeClient::test_price_util(trade_client);
+        TestTradeClient::test_place_order(trade_client);
     }
 
 };
@@ -267,6 +267,7 @@ public:
     }
 
     static void test_get_kline(std::shared_ptr<QuoteClient> quote_client) {
+        LOG(DEBUG) << U("test_get_kline");
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
@@ -406,7 +407,7 @@ public:
 
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
-        TestQuoteClient::test_get_quote_delay(quote_client);
+        TestQuoteClient::test_get_kline(quote_client);
     }
 };
 
@@ -454,7 +455,8 @@ public:
     TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {
         std::vector<std::string> hk_option_symbols = {"TCH.HK 20241230 410.00 CALL"};
         std::vector<std::string> future_symbols = {"CL2412"};
-        symbols = future_symbols;
+        std::vector<std::string> stock_symbols = {"AAPL", "TSLA"};
+        symbols = stock_symbols;
     }
 
     void connected_callback() {
@@ -620,13 +622,13 @@ int main(int argc, char* argv[]) {
      *  QuoteClient
      */
 //     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-//     TestQuoteClient::test_quote(quote_client);
+//    TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient
      */
-    //std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-    //TestTradeClient::test_trade(trade_client);
+//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+//    TestTradeClient::test_trade(trade_client);
 
     /**
     *  TigerApi
