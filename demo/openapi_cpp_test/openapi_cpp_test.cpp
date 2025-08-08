@@ -461,12 +461,15 @@ public:
         ucout << "Connected to push server" << std::endl;
         push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
         push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        unsigned int asset_sub_id = push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
+        ucout << "Subscribe asset result: " << asset_sub_id << std::endl;
         // push_client->query_subscribed_symbols();
-        push_client->subscribe_quote(symbols);
+        unsigned int res = push_client->subscribe_quote(symbols);
+        ucout << "Subscribe quote result: " << res << std::endl;
         // push_client->subscribe_kline(symbols);
         // push_client->subscribe_quote_depth(symbols);
-        push_client->subscribe_tick(symbols);
+        unsigned int res1 = push_client->subscribe_tick(symbols);
+        ucout << "Subscribe tick result: " << res1 << std::endl;
     }
 
     void error_callback(const tigeropen::push::pb::Response& data) {
@@ -610,15 +613,14 @@ int main(int argc, char* argv[]) {
     //config.lang = U("en_US");
 
     //Create a push client instance
-//    auto push_client = IPushClient::create_push_client(config);
-    //Run some push test cases
-//    TestPushClient::test_push_client(push_client, config);
+    auto push_client = IPushClient::create_push_client(config);
+    TestPushClient::test_push_client(push_client, config);
 
     /**
      *  QuoteClient
      */
-     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-     TestQuoteClient::test_quote(quote_client);
+//     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+//     TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient
