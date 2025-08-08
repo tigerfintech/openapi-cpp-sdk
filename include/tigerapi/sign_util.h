@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by sukai on 2023/1/16.
 //
 #ifndef TIGERAPI_SIGN_UTIL_H

@@ -1,4 +1,4 @@
-#ifndef PUSH_FRAME_SERIALIZE_H
+﻿#ifndef PUSH_FRAME_SERIALIZE_H
 #define PUSH_FRAME_SERIALIZE_H
 #include <vector>
 #include <string>

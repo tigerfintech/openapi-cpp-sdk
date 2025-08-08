@@ -1,4 +1,4 @@
-#ifndef PUSH_CLIENT_IMPL_H
+﻿#ifndef PUSH_CLIENT_IMPL_H
 #define PUSH_CLIENT_IMPL_H
 
 #include "../model.h"

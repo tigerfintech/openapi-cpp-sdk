@@ -1,4 +1,4 @@
-#ifndef PUSH_CLIENT_H
+﻿#ifndef PUSH_CLIENT_H
 #define PUSH_CLIENT_H
 #include <memory>
 #include <functional>

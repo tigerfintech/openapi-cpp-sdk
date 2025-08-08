@@ -21,7 +21,7 @@ if(UNIX) # Darwing or Linux
     message(TIGERAPI_INCLUDE_DIR " ${TIGERAPI_INCLUDE_DIR}")
     find_library(TIGERAPI_LIBRARY NAMES libtigerapi.a)
 
-    # 可使用系统库或sdk output中的库
+    # Use system library or sdk output library
     set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
     set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
     # find_path(Protobuf_INCLUDE_DIR NAMES google/protobuf/service.h)
