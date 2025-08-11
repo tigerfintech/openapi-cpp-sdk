@@ -39,6 +39,7 @@ TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_
 void TIGER_API::PushClientImpl::connect()
 {
 	LOG(INFO) << "create a worker thread to perform asynchronous network connections";
+    LOG(INFO) << "conntect to: " << client_config_.get_socket_url() << " port: " << client_config_.get_socket_port();
 	// create a worker thread to perform asynchronous network connections
 	worker_thread_ = std::shared_ptr<std::thread>(new std::thread([this]
 	{

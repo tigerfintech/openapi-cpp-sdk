@@ -193,12 +193,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;..\..\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\vcpkg\installed\x64-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
