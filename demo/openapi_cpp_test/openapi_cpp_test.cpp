@@ -267,7 +267,6 @@ public:
     }
 
     static void test_get_kline(std::shared_ptr<QuoteClient> quote_client) {
-        LOG(DEBUG) << U("test_get_kline");
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
@@ -615,14 +614,14 @@ int main(int argc, char* argv[]) {
     //config.lang = U("en_US");
 
     //Create a push client instance
-    auto push_client = IPushClient::create_push_client(config);
-    TestPushClient::test_push_client(push_client, config);
+    //auto push_client = IPushClient::create_push_client(config);
+    //TestPushClient::test_push_client(push_client, config);
 
     /**
      *  QuoteClient
      */
-//     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-//    TestQuoteClient::test_quote(quote_client);
+     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+     TestQuoteClient::test_quote(quote_client);
 
     /**
      * TradeClient

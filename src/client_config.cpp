@@ -2,6 +2,7 @@
 #include "../include/tigerapi/properties.h"
 #include "../include/tigerapi/enums.h"
 
+
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
 	: sandbox_debug(sandbox_debug) {
 	if (sandbox_debug) {
@@ -197,9 +198,6 @@ void TIGER_API::ClientConfig::load_token()
 	if (full_path.empty()) {
 		return;
 	}
-    if (!std::filesystem::exists(Utils::str16to8(full_path))) {
-        return;
-    }
 	try {
 		std::ifstream file(Utils::str16to8(full_path));
 		if (!file.is_open()) {
