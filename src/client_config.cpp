@@ -1,5 +1,7 @@
 #include "../include/tigerapi/client_config.h"
 #include "../include/tigerapi/properties.h"
+#include "../include/tigerapi/enums.h"
+
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
 	: sandbox_debug(sandbox_debug) {
@@ -8,13 +10,22 @@ TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
 		// server_url = SANDBOX_TIGER_SERVER_URL;
 		// server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
 	}
+    if (is_us()) {
+        server_url = US_TIGER_SERVER_URL;
+        socket_url = US_TIGER_SOCKET_HOST;
+        socket_port = US_TIGER_SOCKET_PORT;
+    }
 };
 
 TIGER_API::ClientConfig::ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account)
 	: tiger_id(std::move(tiger_id)),
 	private_key(std::move(private_key)),
 	account(std::move(account)) {
-
+    if (is_us()) {
+        server_url = US_TIGER_SERVER_URL;
+        socket_url = US_TIGER_SOCKET_HOST;
+        socket_port = US_TIGER_SOCKET_PORT;
+    }
 };
 
 TIGER_API::ClientConfig::ClientConfig(utility::string_t tiger_id, utility::string_t private_key, utility::string_t account, bool sandbox_debug /*= false*/, utility::string_t lang /*= U("en_US")*/)
@@ -30,13 +41,24 @@ TIGER_API::ClientConfig::ClientConfig(utility::string_t tiger_id, utility::strin
 		// socket_url = SANDBOX_TIGER_SOCKET_HOST;
 		// socket_port = SANDBOX_TIGER_SOCKET_PORT;
 	}
+    if (is_us()) {
+        server_url = US_TIGER_SERVER_URL;
+        socket_url = US_TIGER_SOCKET_HOST;
+        socket_port = US_TIGER_SOCKET_PORT;
+    }
 };
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_t props_path)
 	: sandbox_debug(sandbox_debug),
 	props_path(props_path) {
-	load_props();
+    load_props();
 	load_token();
+    if (is_us()) {
+        server_url = US_TIGER_SERVER_URL;
+        socket_url = US_TIGER_SOCKET_HOST;
+        socket_port = US_TIGER_SOCKET_PORT;
+    }
+    LOG(INFO) << U("ClientConfig initialized with props_path: ") << props_path << endl;
 };
 
 void TIGER_API::ClientConfig::check()
@@ -218,4 +240,9 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
 	}
+}
+
+bool TIGER_API::ClientConfig::is_us()
+{
+    return !license.empty() && license == enum_to_str(License::TBUS);
 }

@@ -73,15 +73,22 @@ static utility::string_t SANDBOX_TIGER_PUBLIC_KEY = U("MIGfMA0GCSqGSIb3DQEBAQUAA
                            "MidihTvHHf+tJ0PYD0o3PruI0hl3qhEjHTAxb75T5YD3SGK4IBhHn/Rk6mhqlGgI+bBrBVYaXixm"
                            "HfRo75RpUUuWACyeqQkZckgR0McxuW9xRMIa2cXZOoL1E4SL4lXKGhKoWbwIDAQAB");
 
+static utility::string_t TIGER_HOST = U("openapi.tigerfintech.com");
+static utility::string_t SANDBOX_TIGER_HOST = U("openapi-sandbox.tigerfintech.com");
+static utility::string_t US_TIGER_HOST = U("openapi.tradeup.com");
+
 /** HTTP interface service address **/
-static utility::string_t TIGER_SERVER_URL = U("https://openapi.tigerfintech.com/gateway");
-static utility::string_t SANDBOX_TIGER_SERVER_URL = U("https://openapi-sandbox.tigerfintech.com/gateway");
+static utility::string_t TIGER_SERVER_URL = U("https://") + TIGER_HOST + U("/gateway");
+static utility::string_t SANDBOX_TIGER_SERVER_URL = U("https://") + SANDBOX_TIGER_HOST + U("/gateway");
+static utility::string_t US_TIGER_SERVER_URL = U("https://") + US_TIGER_HOST + U("/gateway");
 
 /** Push service address **/ 
-static utility::string_t TIGER_SOCKET_HOST = U("openapi.tigerfintech.com");
-static utility::string_t SANDBOX_TIGER_SOCKET_HOST = U("openapi-sandbox.tigerfintech.com");
+static utility::string_t TIGER_SOCKET_HOST = TIGER_HOST;
+static utility::string_t SANDBOX_TIGER_SOCKET_HOST = SANDBOX_TIGER_HOST;
+static utility::string_t US_TIGER_SOCKET_HOST = US_TIGER_HOST;
 static utility::string_t TIGER_SOCKET_PORT = U("9883");
 static utility::string_t SANDBOX_TIGER_SOCKET_PORT = U("9885");
+static utility::string_t US_TIGER_SOCKET_PORT = U("9983");
 
 #define DEFAULT_TOKEN_FILE U("tiger_openapi_token.properties")
 #define DEFAULT_PROPS_FILE U("tiger_openapi_config.properties")
