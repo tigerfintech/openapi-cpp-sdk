@@ -60,6 +60,8 @@ namespace TIGER_API {
 
         const utility::string_t& get_socket_port();
 
+        bool is_us();
+
     private:
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;
