@@ -292,18 +292,18 @@ namespace TIGER_API {
                                    parent_id, enum_to_str(sort_by), enum_to_str(seg_type));
     }
 
-    value TradeClient::get_transactions(utility::string_t account, long order_id) {
+    value TradeClient::get_transactions(utility::string_t account, long long order_id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
-        obj[U("order_id")] = (long long) order_id;
+        obj[U("order_id")] = order_id;
         return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
     }
 
     value TradeClient::get_transactions(utility::string_t account, utility::string_t symbol, utility::string_t sec_type,
                                         long start_time, time_t end_time,
                                         int limit, utility::string_t expiry, utility::string_t strike, utility::string_t right,
-                                        long order_id) {
+                                        long long order_id) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);

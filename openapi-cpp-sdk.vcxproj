@@ -160,11 +160,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -180,11 +180,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -200,11 +200,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -220,11 +220,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -242,11 +242,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -266,11 +266,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -291,11 +291,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -315,11 +315,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;OPEN_API_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;INSIDE_OPENAPI;NDEBUG;OPENAPICPPSDK_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -533,6 +533,7 @@
     <ClInclude Include="include\tigerapi\contract_util.h" />
     <ClInclude Include="include\tigerapi\easylogging++.h" />
     <ClInclude Include="include\tigerapi\enums.h" />
+    <ClInclude Include="include\tigerapi\logger.h" />
     <ClInclude Include="include\tigerapi\model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
     <ClInclude Include="include\tigerapi\push_client.h" />
@@ -569,8 +570,10 @@
     <ClCompile Include="include\openapi_pb\pb_source\TickData.pb.cc" />
     <ClCompile Include="include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="include\openssl\applink.c" />
+    <ClCompile Include="src\client_config.cpp" />
     <ClCompile Include="src\contract_util.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />
+    <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\order_util.cpp" />
     <ClCompile Include="src\push_socket\push_client_impl.cpp" />
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />
