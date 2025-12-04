@@ -2,7 +2,7 @@
 // Created by sukai on 2022/12/23.
 //
 
-#include "../include/tigerapi/trade_client.h"
+#include "tigerapi/trade_client.h"
 
 namespace TIGER_API {
     TradeClient::TradeClient() {}

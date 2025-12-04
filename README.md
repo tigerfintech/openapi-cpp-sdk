@@ -6,9 +6,10 @@
 
 
 ## Linux/Mac
+Linux(建议Ubuntu) 请确保系统工具及依赖已安装: git wget bzip2 unzip gcc g++ libtool automake autoconf build-essential cmake  libssl-dev libabsl-dev zlib1g-dev pkg-config
 
 ### 安装 Boost
-[参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/unix-variants.html)
+[参考文档](https://www.boost.org/doc/libs/1_86_0/more/getting_started/unix-variants.html)
 
 安装方式一：使用 homebrew
 ```shell
@@ -16,19 +17,19 @@ brew install boost
 ```
 
 安装方式二：源码安装
-1. 下载源码到任意路径： https://www.boost.org/users/history/version_1_81_0.html,  
+1. 下载源码到任意路径： https://www.boost.org/users/history/version_1_86_0.html,  
    以 /usr/local/ 为例 (如果没有权限，请命令前加 sudo)
     ```shell
     cd /usr/local/
-    wget https://archives.boost.io/release/1.81.0/source/boost_1_81_0.tar.bz2
+    wget https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
     ```
 2. 解压：
     ```
-    tar --bzip2 -xf boost_1_81_0.tar.bz2
+    tar --bzip2 -xf boost_1_86_0.tar.bz2
     ```
 3. 编译 (注意权限, 如有报错可前面加sudo重试)
     ```shell
-    cd /usr/local/boost_1_81_0
+    cd /usr/local/boost_1_86_0
     ./bootstrap.sh
     ./b2 headers
     ./b2
@@ -43,11 +44,13 @@ cd cpprestsdk
 git submodule update --init
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug-DBOOST_ROOT=/usr/local/boost_1_81_0 -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=/usr/local/boost_1_86_0 -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest -DCMAKE_CXX_FLAGS="-w" ..
 make -j 8
 make install
 ```
 如果找不到openssl或boost 或其他错误，可尝试指定路径，关闭某些模块 (如果有报错最好删除build目录重新创建)：
+
+
 ```
 cmake .. \
   -DCMAKE_BUILD_TYPE=Debug \
@@ -59,31 +62,32 @@ cmake .. \
   -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
   -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
   -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
-  -DBOOST_ROOT=/usr/local/boost_1_81_0 \
+  -DBOOST_ROOT=/usr/local/boost_1_86_0 \
   -DCMAKE_CXX_FLAGS="-Wno-error=null-pointer-subtraction" 
 ```
+
+常见错误：
+- make 时报错 `cc1plus: all warnings being treated as errors`，则可以加 `-DCMAKE_CXX_FLAGS="-w"`关闭
+
 
 **说明**
 [参考文档](https://github.com/Microsoft/cpprestsdk/wiki/Getting-Started-Tutorial)
 直接通过包管理软件安装的 cpprestsdk 可能不是最新版本， 可能会有未知问题
 
 ### 编译安装 protobuf
-使用 v3.1.0 版本
+使用 v3.21.12 版本
 ```
 cd /tmp  # 选择暂存源码的目录，此处用 /tmp，也可根据本机环境指定其他系统路径
 git clone https://github.com/protocolbuffers/protobuf
 cd protobuf
-git checkout v3.1.0
+git checkout v3.21.12
 mkdir cmake_build
 cd cmake_build
-cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf \
-    -Dprotobuf_BUILD_TESTS=OFF \
-    -Dprotobuf_BUILD_SHARED_LIBS=ON
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_SHARED_LIBS=ON
 make -j 8
 make install
 ```
+
 
 ### 编译 tigerapi sdk
 若使用编译好的sdk，此步骤可跳过  
@@ -98,8 +102,8 @@ make install
 3. 编译
 ```
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
-    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
-make -j 6
+    -DBOOST_ROOT=/usr/local/boost_1_86_0  ..
+make -j 8
 make install
 ```
 
@@ -115,7 +119,7 @@ cd demo
 mkdir build
 cd build
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
-    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
+    -DBOOST_ROOT=/usr/local/boost_1_86_0  ..
 make -j 8
 ./openapi_cpp_test
 ```
@@ -131,7 +135,7 @@ make -j 8
 
 ### 安装 boost
 如使用sdk自带的库文件，此步骤可跳过
-[参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/windows.html)
+[参考文档](https://www.boost.org/doc/libs/1_86_0/more/getting_started/windows.html)
 ``` 
 vcpkg install boost
 ```
@@ -209,6 +213,6 @@ cmake .. \
   -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
   -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
   -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
-  -DBOOST_ROOT=/usr/local/boost_1_81_0
+  -DBOOST_ROOT=/usr/local/boost_1_86_0
 ```
 

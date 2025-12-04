@@ -1,7 +1,7 @@
-﻿#include "../include/tigerapi/tiger_client.h"
-#include "../include/tigerapi/version.h"
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/logger.h"
+﻿#include "tigerapi/tiger_client.h"
+#include "tigerapi/version.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/logger.h"
 
 namespace TIGER_API {
 

@@ -1,10 +1,10 @@
-﻿#include "../include/tigerapi/utils.h"
+﻿#include "tigerapi/utils.h"
 #include <ctime>
 #include <iomanip>
 #include <random>
 #include <algorithm>
 #include <regex>
-#include "../include/tigerapi/sign_util.h"
+#include "tigerapi/sign_util.h"
 
 using namespace std;
 using namespace web;

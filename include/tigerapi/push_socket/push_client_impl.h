@@ -1,9 +1,9 @@
 ﻿#ifndef PUSH_CLIENT_IMPL_H
 #define PUSH_CLIENT_IMPL_H
 
-#include "../model.h"
+#include "tigerapi/model.h"
 #include "boost/asio/io_service.hpp"
-#include "../include/tigerapi/push_client.h"
+#include "tigerapi/push_client.h"
 
 namespace TIGER_API
 {
