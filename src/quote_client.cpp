@@ -173,6 +173,7 @@ namespace TIGER_API {
     value QuoteClient::get_quote_depth(const value &symbols, Market market) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
+        obj[P_MARKET] = value::string(enum_to_str(market));
         return post(QUOTE_DEPTH, obj);
     }
 

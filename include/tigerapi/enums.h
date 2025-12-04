@@ -41,6 +41,30 @@ namespace TIGER_API {
         }
     }
 
+    enum class License {
+        TBNZ,
+        TBSG,
+        TBHK,
+        TBAU,
+        TBUS
+    };
+
+    inline utility::string_t enum_to_str(License license) {
+        switch (license) {
+            case License::TBNZ:
+                return U("TBNZ");
+            case License::TBSG:
+                return U("TBSG");
+            case License::TBHK:
+                return U("TBHK");
+            case License::TBAU:
+                return U("TBAU");
+            case License::TBUS:
+                return U("TBUS");
+            default:
+                return U("");
+        }
+    }
 
     enum class TradingSession {
         PreMarket,  // PreMarket

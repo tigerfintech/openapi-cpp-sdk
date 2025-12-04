@@ -193,4 +193,16 @@ namespace TIGER_API {
         std::string result = stream.str();
         return Utils::str8to16(result);
     }
+
+	bool Utils::is_directory(const utility::string_t& path) {
+		if (path.empty()) {
+			return false;
+		}
+
+#ifdef _WIN32
+		return path.back() == U('\\') || path.back() == U('/');
+#else
+		return path.back() == U('/');
+#endif
+	}
 }
