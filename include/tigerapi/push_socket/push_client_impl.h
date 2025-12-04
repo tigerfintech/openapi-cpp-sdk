@@ -4,6 +4,7 @@
 #include "tigerapi/model.h"
 #include "boost/asio/io_service.hpp"
 #include "tigerapi/push_client.h"
+#include <thread>
 
 namespace TIGER_API
 {

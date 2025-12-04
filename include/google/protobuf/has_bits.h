@@ -1,4 +1,4 @@
-﻿// Protocol Buffers - Google's data interchange format
+// Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
 // https://developers.google.com/protocol-buffers/
 //
@@ -32,25 +32,33 @@
 #define GOOGLE_PROTOBUF_HAS_BITS_H__
 
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/port.h>
+
+// Must be included last.
+#include <google/protobuf/port_def.inc>
+
+#ifdef SWIG
+#error "You cannot SWIG proto headers"
+#endif
 
 namespace google {
 namespace protobuf {
 namespace internal {
 
-template<size_t doublewords>
+template <size_t doublewords>
 class HasBits {
  public:
-  HasBits() GOOGLE_ATTRIBUTE_ALWAYS_INLINE { Clear(); }
+  PROTOBUF_NDEBUG_INLINE constexpr HasBits() : has_bits_{} {}
 
-  void Clear() GOOGLE_ATTRIBUTE_ALWAYS_INLINE {
+  PROTOBUF_NDEBUG_INLINE void Clear() {
     memset(has_bits_, 0, sizeof(has_bits_));
   }
 
-  ::google::protobuf::uint32& operator[](int index) GOOGLE_ATTRIBUTE_ALWAYS_INLINE {
+  PROTOBUF_NDEBUG_INLINE uint32_t& operator[](int index) {
     return has_bits_[index];
   }
 
-  const ::google::protobuf::uint32& operator[](int index) const GOOGLE_ATTRIBUTE_ALWAYS_INLINE {
+  PROTOBUF_NDEBUG_INLINE const uint32_t& operator[](int index) const {
     return has_bits_[index];
   }
 
@@ -61,12 +69,49 @@ class HasBits {
   bool operator!=(const HasBits<doublewords>& rhs) const {
     return !(*this == rhs);
   }
+
+  void Or(const HasBits<doublewords>& rhs) {
+    for (size_t i = 0; i < doublewords; i++) has_bits_[i] |= rhs[i];
+  }
+
+  bool empty() const;
+
  private:
-  ::google::protobuf::uint32 has_bits_[doublewords];
+  uint32_t has_bits_[doublewords];
 };
+
+template <>
+inline bool HasBits<1>::empty() const {
+  return !has_bits_[0];
+}
+
+template <>
+inline bool HasBits<2>::empty() const {
+  return !(has_bits_[0] | has_bits_[1]);
+}
+
+template <>
+inline bool HasBits<3>::empty() const {
+  return !(has_bits_[0] | has_bits_[1] | has_bits_[2]);
+}
+
+template <>
+inline bool HasBits<4>::empty() const {
+  return !(has_bits_[0] | has_bits_[1] | has_bits_[2] | has_bits_[3]);
+}
+
+template <size_t doublewords>
+inline bool HasBits<doublewords>::empty() const {
+  for (size_t i = 0; i < doublewords; ++i) {
+    if (has_bits_[i]) return false;
+  }
+  return true;
+}
 
 }  // namespace internal
 }  // namespace protobuf
-
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>
+
 #endif  // GOOGLE_PROTOBUF_HAS_BITS_H__

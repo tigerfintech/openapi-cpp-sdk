@@ -1,4 +1,4 @@
-﻿// Protocol Buffers - Google's data interchange format
+// Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
 // https://developers.google.com/protocol-buffers/
 //
@@ -96,6 +96,6 @@ class TestUtilLite {
 };
 
 }  // namespace protobuf
-
 }  // namespace google
+
 #endif  // GOOGLE_PROTOBUF_TEST_UTIL_LITE_H__

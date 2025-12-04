@@ -107,6 +107,11 @@ make -j 8
 make install
 ```
 
+备注：
+如果protobuf版本不同，可 `openapi-cpp-sdk/include`, 然后重新生成代码.
+`/usr/local/opt/protobuf/bin/protoc   --cpp_out=openapi_pb/pb_source   -Iopenapi_pb/pb_file  openapi_pb/pb_file/*.proto`
+
+
 ### 安装 tigerapi sdk
 将头文件放入头文件路径， 如 /usr/local/include
 将库文件放入库文件路径， 如 /usr/local/lib/

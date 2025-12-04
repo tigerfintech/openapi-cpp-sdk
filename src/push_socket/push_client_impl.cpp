@@ -24,7 +24,10 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 
 	if (worker_thread_)
 	{
-		worker_thread_->join();
+        if (worker_thread_->joinable())
+        {
+            worker_thread_->join();
+        }
 	}
 }
 
@@ -32,7 +35,7 @@ TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_
 {
 	socket_ = PushSocket::create_push_socket(&io_service_, client_config);
     socket_->set_on_message_callback(
-        [this](auto && message) { on_message(std::forward<decltype(message)>(message)); });
+        [this](const std::shared_ptr<tigeropen::push::pb::Response>& message) { on_message(message); });
     client_config_ = client_config;
 }
 
