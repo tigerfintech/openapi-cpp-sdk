@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 ########################################
@@ -218,6 +218,48 @@ build_protobuf() {
   popd >/dev/null
 }
 
+regenerate_protos() {
+  if [[ "${SKIP_PROTO_REGEN:-0}" == "1" ]]; then
+    warn "Skipping protobuf regeneration (SKIP_PROTO_REGEN=1)."
+    return
+  fi
+
+  local proto_src="${PROJECT_ROOT}/include/openapi_pb/pb_file"
+  local proto_out="${PROJECT_ROOT}/include/openapi_pb/pb_source"
+  local protoc_bin="${PROTOC_BIN:-${PROTOBUF_PREFIX}/bin/protoc}"
+  if [[ ! -x "$protoc_bin" ]]; then
+    protoc_bin="$(command -v protoc || true)"
+  fi
+  [[ -x "$protoc_bin" ]] || fail "Unable to locate protoc (looked for ${PROTOBUF_PREFIX}/bin/protoc)."
+
+  if [[ ! -d "$proto_src" ]]; then
+    warn "Protobuf source directory ${proto_src} not found; skipping regeneration."
+    return
+  fi
+
+  log "Regenerating protobuf sources via ${protoc_bin}."
+  rm -rf "$proto_out"
+  mkdir -p "$proto_out"
+  pushd "$proto_src" >/dev/null
+  local proto_files=()
+  while IFS= read -r proto; do
+    proto_files+=("$proto")
+  done < <(find . -type f -name '*.proto' ! -path './google/*' -print | sort)
+  if [[ ${#proto_files[@]} -eq 0 ]]; then
+    popd >/dev/null
+    fail "No .proto files discovered in ${proto_src}."
+  fi
+  local proto_args=(--proto_path=.)
+  if [[ -d "${PROTOBUF_PREFIX}/include" ]]; then
+    proto_args+=("--proto_path=${PROTOBUF_PREFIX}/include")
+  fi
+  "$protoc_bin" \
+    "${proto_args[@]}" \
+    --cpp_out="$proto_out" \
+    "${proto_files[@]}"
+  popd >/dev/null
+}
+
 build_sdk() {
   local build_dir="${PROJECT_ROOT}/build"
   cmake -S "$PROJECT_ROOT" -B "$build_dir" \
@@ -238,9 +280,30 @@ build_demo() {
     -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
     -DBOOST_ROOT="$BOOST_ROOT" \
     -DCMAKE_PREFIX_PATH="${SDK_INSTALL_PREFIX};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
+    -DTIGERAPI_INCLUDE_DIR="${SDK_INCLUDE_PREFIX%/}/include" \
+    -DTIGERAPI_LIBRARY="${SDK_INSTALL_PREFIX}/lib/libtigerapi.a" \
     ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
   cmake --build "$build_dir" -- -j "$NUM_JOBS"
-  "${build_dir}/openapi_cpp_test" || warn "Demo run failed; check configuration."
+  local runtime_var="LD_LIBRARY_PATH"
+  local runtime_value="${LD_LIBRARY_PATH:-}"
+  if [[ "$OS_NAME" == "Darwin" ]]; then
+    runtime_var="DYLD_LIBRARY_PATH"
+    runtime_value="${DYLD_LIBRARY_PATH:-}"
+  fi
+  local runtime_paths=()
+  for candidate in "${SDK_INSTALL_PREFIX}/lib" "${CPPREST_PREFIX}/lib" "${PROTOBUF_PREFIX}/lib"; do
+    [[ -d "$candidate" ]] && runtime_paths+=("$candidate")
+  done
+  if [[ ${#runtime_paths[@]} -gt 0 ]]; then
+    local joined
+    joined="$(IFS=:; echo "${runtime_paths[*]}")"
+    if [[ -n "$runtime_value" ]]; then
+      runtime_value="${joined}:${runtime_value}"
+    else
+      runtime_value="$joined"
+    fi
+  fi
+  env "${runtime_var}=${runtime_value}" "${build_dir}/openapi_cpp_test" || warn "Demo run failed; check configuration."
 }
 
 relocate_headers() {
@@ -276,6 +339,7 @@ main() {
   else
     warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX are set."
   fi
+  regenerate_protos
   build_sdk
   relocate_headers
   if [[ "${SKIP_DEMO:-0}" != "1" ]]; then
@@ -294,9 +358,9 @@ Tiger OpenAPI SDK build finished.
   Protobuf        : $PROTOBUF_PREFIX
 
 To use the SDK, add the following to your environment:
-  export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:$CPATH"
-  export LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:$LIBRARY_PATH"
-  export LD_LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:$LD_LIBRARY_PATH"
+  export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:\$CPATH"
+  export LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LIBRARY_PATH"
+  export LD_LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LD_LIBRARY_PATH"
 (For macOS, replace LD_LIBRARY_PATH with DYLD_LIBRARY_PATH.)
 ============================================
 EOF
