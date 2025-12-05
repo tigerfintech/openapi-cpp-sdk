@@ -85,3 +85,5 @@ output/Linux/Release/
 temp/
 .cache/
 .deps/
+.local_opt/
+.local_sdk/

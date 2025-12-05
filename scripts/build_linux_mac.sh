@@ -278,13 +278,43 @@ build_sdk() {
 build_demo() {
   local demo_dir="${PROJECT_ROOT}/demo"
   local build_dir="${demo_dir}/build"
-  cmake -S "$demo_dir" -B "$build_dir" \
-    -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-    -DBOOST_ROOT="$BOOST_ROOT" \
-    -DCMAKE_PREFIX_PATH="${SDK_INSTALL_PREFIX};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
-    -DTIGERAPI_INCLUDE_DIR="${SDK_INCLUDE_PREFIX%/}/include" \
-    -DTIGERAPI_LIBRARY="${SDK_INSTALL_PREFIX}/lib/libtigerapi.a" \
-    ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
+  local cpprest_include="${CPPREST_PREFIX}/include"
+  local cpprest_library=""
+  for candidate in \
+    "${CPPREST_PREFIX}/lib/libcpprest.so" \
+    "${CPPREST_PREFIX}/lib/libcpprest.dylib"; do
+    if [[ -f "$candidate" ]]; then
+      cpprest_library="$candidate"
+      break
+    fi
+  done
+  local protobuf_include="${PROTOBUF_PREFIX}/include"
+  local protobuf_library=""
+  for candidate in \
+    "${PROTOBUF_PREFIX}/lib/libprotobuf.so" \
+    "${PROTOBUF_PREFIX}/lib/libprotobuf.dylib"; do
+    if [[ -f "$candidate" ]]; then
+      protobuf_library="$candidate"
+      break
+    fi
+  done
+
+  local cmake_args=(
+    -S "$demo_dir"
+    -B "$build_dir"
+    -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+    -DBOOST_ROOT="$BOOST_ROOT"
+    -DCMAKE_PREFIX_PATH="${SDK_INSTALL_PREFIX};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}"
+    -DTIGERAPI_INCLUDE_DIR="${SDK_INCLUDE_PREFIX%/}/include"
+    -DTIGERAPI_LIBRARY="${SDK_INSTALL_PREFIX}/lib/libtigerapi.a"
+  )
+  [[ -d "$cpprest_include" ]] && cmake_args+=(-DCPPREST_INCLUDE_DIR="$cpprest_include")
+  [[ -n "$cpprest_library" ]] && cmake_args+=(-DCPPREST_LIBRARY="$cpprest_library")
+  [[ -d "$protobuf_include" ]] && cmake_args+=(-DProtobuf_INCLUDE_DIR="$protobuf_include")
+  [[ -n "$protobuf_library" ]] && cmake_args+=(-DProtobuf_LIBRARY="$protobuf_library")
+  [[ -n "${OPENSSL_ROOT_DIR:-}" ]] && cmake_args+=(-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR")
+
+  cmake "${cmake_args[@]}"
   cmake --build "$build_dir" -- -j "$NUM_JOBS"
   local runtime_var="LD_LIBRARY_PATH"
   local runtime_value="${LD_LIBRARY_PATH:-}"
