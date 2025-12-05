@@ -177,6 +177,8 @@ build_cpprestsdk() {
   fi
   pushd "$repo" >/dev/null
   git submodule update --init
+  local cmake_cxx_flags="-w"
+  [[ "$OS_NAME" == "Darwin" ]] && cmake_cxx_flags="-Wno-error=null-pointer-subtraction -w"
   cmake -S . -B build \
     -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
@@ -185,7 +187,7 @@ build_cpprestsdk() {
     -DBUILD_SAMPLES=OFF \
     -DBUILD_TESTS=OFF \
     -DBOOST_ROOT="$BOOST_ROOT" \
-    -DCMAKE_CXX_FLAGS="-Wno-error=null-pointer-subtraction -w" \
+    -DCMAKE_CXX_FLAGS="$cmake_cxx_flags" \
     ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"} \
     ${OPENSSL_INCLUDE_DIR:+-DOPENSSL_INCLUDE_DIR="$OPENSSL_INCLUDE_DIR"} \
     ${OPENSSL_SSL_LIBRARY:+-DOPENSSL_SSL_LIBRARY="$OPENSSL_SSL_LIBRARY"} \
