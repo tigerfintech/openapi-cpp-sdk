@@ -34,10 +34,13 @@ usage() {
 Usage: scripts/build_linux_mac.sh [options]
 
 Environment variables / options:
-  BUILD_TYPE=Debug|Release          (default: Debug)
+  BUILD_TYPE=Debug|Release          (default: Debug; demo/test build)
+  BUILD_TYPES="Debug Release"       Space-separated SDK configs to build (default: "Debug Release")
+  SDK_LIBRARY_TYPE=static|shared    (default: static)
+  SKIP_INCLUDE_COPY=1               Skip copying headers into SDK_INCLUDE_PREFIX (default: 1)
   INSTALL_PREFIX=<path>             (default: <repo>/output/<OS>)
   LOCAL_OPT_PREFIX=<path>           (default: /usr/local/opt)
-  SDK_INCLUDE_PREFIX=<path>         (default: /usr/local/opt/tigerapi-sdk)
+  SDK_INCLUDE_PREFIX=<path>         (default: /usr/local/opt/tigerapi)
   CACHE_DIR=<path>                  (default: <repo>/.cache)
   DEPS_DIR=<path>                   (default: <repo>/.deps)
   BOOST_VERSION=1_86_0              Boost version to build if needed
@@ -58,6 +61,9 @@ fi
 [[ "$OS_NAME" == "Linux" || "$OS_NAME" == "Darwin" ]] || fail "Only macOS or Linux are supported."
 
 BUILD_TYPE="${BUILD_TYPE:-Debug}"
+BUILD_TYPES="${BUILD_TYPES:-Debug Release}"
+SDK_LIBRARY_TYPE="${SDK_LIBRARY_TYPE:-static}"
+SKIP_INCLUDE_COPY="${SKIP_INCLUDE_COPY:-1}"
 OUTPUT_OS_DIR="Mac"
 [[ "$OS_NAME" == "Linux" ]] && OUTPUT_OS_DIR="Linux"
 DEFAULT_INSTALL_PREFIX="${PROJECT_ROOT}/output/${OUTPUT_OS_DIR}"
@@ -75,9 +81,47 @@ BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
 PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
-SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}/tigerapi-sdk}"
-SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-/usr/local/opt/tigerapi-sdk}"
+SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-/usr/local/opt/tigerapi}"
+SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}/tigerapi-sdk"
+SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
+mkdir -p "$SDK_INSTALL_PREFIX"
+
+normalize_library_type() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+SDK_LIBRARY_TYPE="$(normalize_library_type "$SDK_LIBRARY_TYPE")"
+case "$SDK_LIBRARY_TYPE" in
+  static)
+    SDK_BUILD_SHARED="OFF"
+    ;;
+  shared)
+    SDK_BUILD_SHARED="ON"
+    ;;
+  *)
+    fail "SDK_LIBRARY_TYPE must be 'static' or 'shared' (got '$SDK_LIBRARY_TYPE')."
+    ;;
+esac
+
 export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
+
+find_tiger_library() {
+  local sdk_root="$1"
+  local lib_dir="${sdk_root%/}/lib"
+  [[ -d "$lib_dir" ]] || return 1
+  local candidates=(
+    "$lib_dir/libtigerapi.a"
+    "$lib_dir/libtigerapi.so"
+    "$lib_dir/libtigerapi.dylib"
+  )
+  for candidate in "${candidates[@]}"; do
+    if [[ -f "$candidate" ]]; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
 
 ensure_prereqs() {
   local base=(git cmake tar)
@@ -263,21 +307,56 @@ regenerate_protos() {
 }
 
 build_sdk() {
-  local build_dir="${PROJECT_ROOT}/build"
-  cmake -S "$PROJECT_ROOT" -B "$build_dir" \
-    -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-    -DCMAKE_INSTALL_PREFIX="$SDK_INSTALL_PREFIX" \
-    -DBOOST_ROOT="$BOOST_ROOT" \
-    -DProtobuf_DIR="${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
-    -DCMAKE_PREFIX_PATH="${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
-    ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
-  cmake --build "$build_dir" -- -j "$NUM_JOBS"
-  cmake --install "$build_dir"
+  local configs=()
+  for cfg in $BUILD_TYPES; do
+    configs+=("$cfg")
+  done
+  if [[ ${#configs[@]} -eq 0 ]]; then
+    configs=("$BUILD_TYPE")
+  fi
+
+  for cfg in "${configs[@]}"; do
+    local build_dir="${PROJECT_ROOT}/build/${cfg}"
+    local install_dir="${SDK_INSTALL_PREFIX}/${cfg}"
+    local output_dir="${SDK_OUTPUT_PREFIX}/${cfg}"
+    cmake -S "$PROJECT_ROOT" -B "$build_dir" \
+      -DCMAKE_BUILD_TYPE="$cfg" \
+      -DCMAKE_INSTALL_PREFIX="$install_dir" \
+      -DBOOST_ROOT="$BOOST_ROOT" \
+      -DProtobuf_DIR="${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
+      -DCMAKE_PREFIX_PATH="${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
+      -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
+      ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
+    cmake --build "$build_dir" -- -j "$NUM_JOBS"
+    cmake --install "$build_dir"
+    log "SDK (${cfg}) installed to ${install_dir}"
+    if [[ -d "${install_dir}/lib" ]]; then
+      rm -rf "${output_dir}"
+      mkdir -p "${output_dir}/lib"
+      cp -R "${install_dir}/lib/." "${output_dir}/lib/"
+      log "SDK (${cfg}) libraries copied to ${output_dir}/lib"
+    else
+      warn "SDK (${cfg}) install missing lib/ directory; nothing copied to output."
+    fi
+  done
 }
 
 build_demo() {
   local demo_dir="${PROJECT_ROOT}/demo"
   local build_dir="${demo_dir}/build"
+  local active_cfg="$BUILD_TYPE"
+  local demo_sdk_root="${SDK_INSTALL_PREFIX}/${active_cfg}"
+  if [[ ! -d "$demo_sdk_root" ]]; then
+    warn "Demo requested configuration '$active_cfg' not built (missing ${demo_sdk_root})."
+    warn "Ensure BUILD_TYPES includes $active_cfg or rerun with BUILD_TYPES=\"$active_cfg\"."
+    return
+  fi
+  local tigerapi_library
+  tigerapi_library="$(find_tiger_library "$demo_sdk_root" || true)"
+  if [[ -z "$tigerapi_library" ]]; then
+    warn "Unable to locate tigerapi library under ${demo_sdk_root}. Skipping demo build."
+    return
+  fi
   local cpprest_include="${CPPREST_PREFIX}/include"
   local cpprest_library=""
   for candidate in \
@@ -302,11 +381,11 @@ build_demo() {
   local cmake_args=(
     -S "$demo_dir"
     -B "$build_dir"
-    -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+    -DCMAKE_BUILD_TYPE="$active_cfg"
     -DBOOST_ROOT="$BOOST_ROOT"
-    -DCMAKE_PREFIX_PATH="${SDK_INSTALL_PREFIX};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}"
-    -DTIGERAPI_INCLUDE_DIR="${SDK_INCLUDE_PREFIX%/}/include"
-    -DTIGERAPI_LIBRARY="${SDK_INSTALL_PREFIX}/lib/libtigerapi.a"
+    -DCMAKE_PREFIX_PATH="${demo_sdk_root};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}"
+    -DTIGERAPI_INCLUDE_DIR="${demo_sdk_root}/include"
+    -DTIGERAPI_LIBRARY="$tigerapi_library"
   )
   [[ -d "$cpprest_include" ]] && cmake_args+=(-DCPPREST_INCLUDE_DIR="$cpprest_include")
   [[ -n "$cpprest_library" ]] && cmake_args+=(-DCPPREST_LIBRARY="$cpprest_library")
@@ -323,7 +402,7 @@ build_demo() {
     runtime_value="${DYLD_LIBRARY_PATH:-}"
   fi
   local runtime_paths=()
-  for candidate in "${SDK_INSTALL_PREFIX}/lib" "${CPPREST_PREFIX}/lib" "${PROTOBUF_PREFIX}/lib"; do
+  for candidate in "${demo_sdk_root}/lib" "${CPPREST_PREFIX}/lib" "${PROTOBUF_PREFIX}/lib"; do
     [[ -d "$candidate" ]] && runtime_paths+=("$candidate")
   done
   if [[ ${#runtime_paths[@]} -gt 0 ]]; then
@@ -339,25 +418,39 @@ build_demo() {
 }
 
 relocate_headers() {
-  local src_dir="${SDK_INSTALL_PREFIX}/include"
-  [[ -d "$src_dir" ]] || return
+  if [[ "${SKIP_INCLUDE_COPY}" == "1" ]]; then
+    warn "Header relocation skipped (SKIP_INCLUDE_COPY=1)."
+    return
+  fi
+  local configs=()
+  for cfg in $BUILD_TYPES; do
+    configs+=("$cfg")
+  done
+  local src_dir=""
+  for cfg in "${configs[@]}"; do
+    local candidate="${SDK_INSTALL_PREFIX}/${cfg}/include"
+    if [[ -d "$candidate" ]]; then
+      src_dir="$candidate"
+      break
+    fi
+  done
+  [[ -n "$src_dir" ]] || return
 
   local dest_root="${SDK_INCLUDE_PREFIX%/}"
   local dest_dir="${dest_root}/include"
 
-  if mkdir -p "$dest_dir" 2>/dev/null; then
-    if [[ -z "$dest_dir" || "$dest_dir" == "/" ]]; then
-      warn "Refusing to remove invalid destination path ($dest_dir); leaving headers in ${src_dir}."
-      return
-    fi
-    rm -rf "$dest_dir"
-    mkdir -p "$dest_dir"
-    cp -R "$src_dir/." "$dest_dir/"
-    rm -rf "$src_dir"
-    log "Headers installed to ${dest_dir}"
-  else
+  if ! mkdir -p "$dest_dir" 2>/dev/null; then
     warn "Cannot write headers to ${dest_dir}; leaving copies in ${src_dir}. Try re-running with sudo or set SDK_INCLUDE_PREFIX."
+    return
   fi
+  if [[ -z "$dest_dir" || "$dest_dir" == "/" ]]; then
+    warn "Refusing to remove invalid destination path ($dest_dir); leaving headers in ${src_dir}."
+    return
+  fi
+  rm -rf "$dest_dir"
+  mkdir -p "$dest_dir"
+  cp -R "$src_dir/." "$dest_dir/"
+  log "Headers installed to ${dest_dir}"
 }
 
 main() {
@@ -380,19 +473,39 @@ main() {
     warn "Demo build disabled (SKIP_DEMO=1)."
   fi
   local header_dir="${SDK_INCLUDE_PREFIX%/}/include"
+  local preferred_cfg="$BUILD_TYPE"
+  local sample_lib_dir="${SDK_OUTPUT_PREFIX}/${preferred_cfg}/lib"
+  if [[ ! -d "$sample_lib_dir" ]]; then
+    local cfgs=()
+    for candidate_cfg in $BUILD_TYPES; do
+      cfgs+=("$candidate_cfg")
+    done
+    for candidate in "${cfgs[@]}"; do
+      if [[ -d "${SDK_OUTPUT_PREFIX}/${candidate}/lib" ]]; then
+        preferred_cfg="$candidate"
+        sample_lib_dir="${SDK_OUTPUT_PREFIX}/${candidate}/lib"
+        break
+      fi
+    done
+  fi
+  [[ -d "$sample_lib_dir" ]] || sample_lib_dir="${SDK_OUTPUT_PREFIX}"
   cat <<EOF
 ============================================
 Tiger OpenAPI SDK build finished.
-  SDK installed to: $SDK_INSTALL_PREFIX
-  Headers copied to: $header_dir
+  SDK configs built: $BUILD_TYPES
+  Install root      : $SDK_INSTALL_PREFIX (per-config subfolders)
+  Output libs       : $SDK_OUTPUT_PREFIX (per-config subfolders)
+  Library type      : $SDK_LIBRARY_TYPE
+  Sample libs       : $sample_lib_dir
+  Headers copied to: $header_dir (skip copy: $SKIP_INCLUDE_COPY)
   Boost root      : $BOOST_ROOT
   cpprestsdk      : $CPPREST_PREFIX
   Protobuf        : $PROTOBUF_PREFIX
 
 To use the SDK, add the following to your environment:
   export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:\$CPATH"
-  export LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LIBRARY_PATH"
-  export LD_LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LD_LIBRARY_PATH"
+  export LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LIBRARY_PATH"
+  export LD_LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LD_LIBRARY_PATH"
 (For macOS, replace LD_LIBRARY_PATH with DYLD_LIBRARY_PATH.)
 ============================================
 EOF
