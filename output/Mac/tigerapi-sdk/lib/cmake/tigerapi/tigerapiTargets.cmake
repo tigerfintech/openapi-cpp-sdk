@@ -60,7 +60,7 @@ add_library(tigerapi::tigerapi STATIC IMPORTED)
 
 set_target_properties(tigerapi::tigerapi PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "-framework CoreFoundation;-framework Security;/opt/homebrew/Cellar/openssl@3/3.4.1/lib/libssl.dylib;/opt/homebrew/Cellar/openssl@3/3.4.1/lib/libcrypto.dylib;\$<LINK_ONLY:Boost::system>;\$<LINK_ONLY:Boost::thread>;\$<LINK_ONLY:Boost::log>;\$<LINK_ONLY:Boost::program_options>;\$<LINK_ONLY:Boost::chrono>;\$<LINK_ONLY:Boost::filesystem>;/usr/local/opt/cpprest/lib/libcpprest.dylib;/usr/local/opt/protobuf/lib/libprotobuf.dylib;/usr/local/opt/protobuf/lib/libprotoc.dylib;\$<LINK_ONLY:absl::base>;\$<LINK_ONLY:absl::utility>"
+  INTERFACE_LINK_LIBRARIES "-framework CoreFoundation;-framework Security;/opt/homebrew/Cellar/openssl@3/3.4.1/lib/libssl.dylib;/opt/homebrew/Cellar/openssl@3/3.4.1/lib/libcrypto.dylib;\$<LINK_ONLY:Boost::random>;\$<LINK_ONLY:Boost::system>;\$<LINK_ONLY:Boost::thread>;\$<LINK_ONLY:Boost::filesystem>;\$<LINK_ONLY:Boost::chrono>;\$<LINK_ONLY:Boost::atomic>;\$<LINK_ONLY:Boost::date_time>;\$<LINK_ONLY:Boost::regex>;/usr/local/opt/protobuf-v3.21.12/lib/libprotobuf.dylib;\$<LINK_ONLY:OpenSSL::SSL>;\$<LINK_ONLY:OpenSSL::Crypto>;\$<LINK_ONLY:cpprestsdk::cpprest>;\$<LINK_ONLY:Threads::Threads>"
 )
 
 # Load information for each installed configuration.

@@ -15,56 +15,70 @@ project(tigerapi VERSION ${PROJECT_VERSION})
 
 
 # Configure required libraries ...
-if(UNIX) # Darwing or Linux
-
-    find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
-    find_package(Threads REQUIRED)
-    find_package(absl REQUIRED)
-
-    # cpprest
-    # find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h cpprest/http_msg.h)
-    set(CPPREST_INCLUDE_DIR "/usr/local/opt/cpprest/include")
-    set(CPPREST_LIBRARY "/usr/local/opt/cpprest/lib/libcpprest.dylib")
-    # find_library(CPPREST_LIBRARY NAMES cpprest)
-    message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
-    message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
-    
-    set(Protobuf_INCLUDE_DIR "/usr/local/opt/protobuf/include")
-    set(Protobuf_LIBRARY "/usr/local/opt/protobuf/lib/libprotobuf.dylib")
-    set(Protobuf_PROTOC_LIBRARY "/usr/local/opt/protobuf/lib/libprotoc.dylib")
-    set(Protobuf_PROTOC_EXECUTABLE "/usr/local/opt/protobuf/bin/protoc")
-
-    # find Protobuf package
-    find_package(Protobuf REQUIRED)
-    message(STATUS "Protobuf version: ${Protobuf_VERSION}")
-    message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
-    message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
-
-    if(APPLE)
-        # file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl*/*)
-        file(GLOB OPENSSL_ROOT_DIR /usr/local/opt/openssl/* /opt/homebrew/Cellar/openssl@3/*)
-        # Prefer the latest (make the latest one first)
-        list(REVERSE OPENSSL_ROOT_DIR)
-
-        find_package(OpenSSL REQUIRED)
-        message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
-        message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
-    
-#        set(OPENSSL_VERSION "1.1.1q")
-
-        set(ZLIB_LIBRARY  /opt/homebrew/Cellar/zlib/1.2.13/lib/libz.dylib )
-        message(ZLIB_LIBRARY " ${ZLIB_LIBRARY}")
-
-    else()
-        find_package(OpenSSL 1.0.1 REQUIRED)
-        set(OPENSSL_VERSION "1.0.1")
-    endif()
-
-elseif(WIN32)
-    message(FATAL_ERROR "-- please compile via Visual Studio ")
-else()
+if(NOT (UNIX OR WIN32))
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
+
+find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
+find_package(Threads REQUIRED)
+find_package(Protobuf REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(cpprestsdk CONFIG QUIET)
+
+set(HAVE_CPPREST_TARGET OFF)
+if(TARGET cpprestsdk::cpprest)
+    set(HAVE_CPPREST_TARGET ON)
+endif()
+
+set(VCPKG_TRIPLET_HINT $ENV{VCPKG_DEFAULT_TRIPLET})
+if(NOT VCPKG_TRIPLET_HINT AND WIN32)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(VCPKG_TRIPLET_HINT "x64-windows")
+    else()
+        set(VCPKG_TRIPLET_HINT "x86-windows")
+    endif()
+endif()
+
+set(_vcpkg_include_hint "")
+set(_vcpkg_lib_hint "")
+if(DEFINED ENV{VCPKG_ROOT} AND VCPKG_TRIPLET_HINT)
+    set(_vcpkg_include_hint "$ENV{VCPKG_ROOT}/installed/${VCPKG_TRIPLET_HINT}/include")
+    set(_vcpkg_lib_hint "$ENV{VCPKG_ROOT}/installed/${VCPKG_TRIPLET_HINT}/lib")
+endif()
+
+if(NOT HAVE_CPPREST_TARGET)
+    if(NOT CPPREST_INCLUDE_DIR)
+        find_path(CPPREST_INCLUDE_DIR
+            NAMES cpprest/http_client.h cpprest/http_msg.h
+            HINTS
+                ${CPPREST_PREFIX}/include
+                /usr/local/opt/cpprest/include
+                /opt/homebrew/opt/cpprest/include
+                /usr/local/include
+                ${_vcpkg_include_hint}
+        )
+    endif()
+    if(NOT CPPREST_LIBRARY)
+        find_library(CPPREST_LIBRARY
+            NAMES cpprestsdk cpprest
+            HINTS
+                ${CPPREST_PREFIX}/lib
+                /usr/local/opt/cpprest/lib
+                /opt/homebrew/opt/cpprest/lib
+                /usr/local/lib
+                ${_vcpkg_lib_hint}
+        )
+    endif()
+    if(NOT CPPREST_INCLUDE_DIR OR NOT CPPREST_LIBRARY)
+        message(FATAL_ERROR "cpprestsdk headers or library not found. Provide CPPREST_PREFIX or CPPREST_INCLUDE_DIR/CPPREST_LIBRARY.")
+    endif()
+endif()
+
+message(CPPREST_INCLUDE_DIR " ${CPPREST_INCLUDE_DIR}")
+message(CPPREST_LIBRARY " ${CPPREST_LIBRARY}")
+message(STATUS "Protobuf version: ${Protobuf_VERSION}")
+message(STATUS "Protobuf include dirs: ${Protobuf_INCLUDE_DIRS}")
+message(STATUS "Protobuf libraries: ${Protobuf_LIBRARIES}")
 
 # Configure compiler options ...
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -94,18 +108,34 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # headers search paths ...
-#set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR})
-set(HEADER_SEARCH_PATHS ${CMAKE_SOURCE_DIR}/include ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${PROTOBUF_INCLUDE_DIR})
-
+set(HEADER_SEARCH_PATHS
+    ${CMAKE_SOURCE_DIR}/include
+    ${CPPREST_INCLUDE_DIR}
+    ${Boost_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIR}
+    ${OPENSSL_INCLUDE_DIR}
+    ${OPENSSL_INCLUDE_DIRS}
+    ${Protobuf_INCLUDE_DIRS}
+)
+list(FILTER HEADER_SEARCH_PATHS EXCLUDE REGEX "^$")
+list(REMOVE_DUPLICATES HEADER_SEARCH_PATHS)
 
 set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${CPPREST_LIBRARY} ${ZIP_LIBRARY} ${Protobuf_LIBRARY} ${Protobuf_PROTOC_LIBRARY})
-
+set(LIBRARIES_SEARCH_PATHS
+    ${OPENSSL_LIBS}
+    ${Boost_LIBRARIES}
+    ${Protobuf_LIBRARIES}
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
+if(HAVE_CPPREST_TARGET)
+    list(APPEND LIBRARIES_SEARCH_PATHS cpprestsdk::cpprest)
+elseif(CPPREST_LIBRARY)
+    list(APPEND LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY})
+endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
-#message(CPPRESTSDK_LIBRARY " ${CPPRESTSDK_LIBRARY}")
-message(ZLIB_LIBRARY " ${ZLIB_LIBRARY}")
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
 include_directories(${HEADER_SEARCH_PATHS})
@@ -114,17 +144,15 @@ if (APPLE)
         "-framework CoreFoundation"
         "-framework Security"
         ${LIBRARIES_SEARCH_PATHS}
-        absl::base
-        absl::utility
+        Threads::Threads
     )
     set_target_properties(${PROJECT_NAME} PROPERTIES 
-        LINK_FLAGS "-W1, -F/Library/Frameworks"
+        LINK_FLAGS "-Wl,-F/Library/Frameworks"
     )
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE
         ${LIBRARIES_SEARCH_PATHS}
-        OpenSSL::SSL 
-        OpenSSL::Crypto
+        Threads::Threads
     )
 endif()
 
