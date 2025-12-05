@@ -97,9 +97,45 @@ CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
 PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-/usr/local/opt/tigerapi}"
-SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}/tigerapi"
+SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
-mkdir -p "$SDK_INSTALL_PREFIX"
+
+# SUDO_INSTALL will be set to 'sudo' when SDK_INSTALL_PREFIX is not writable
+SUDO_INSTALL=""
+
+ensure_prefix_writable() {
+  local prefix="$1"
+  if [[ -d "$prefix" ]]; then
+    if [[ -w "$prefix" ]]; then
+      return 0
+    fi
+    if command -v sudo >/dev/null 2>&1; then
+      if sudo mkdir -p "$prefix" 2>/dev/null; then
+        SUDO_INSTALL="sudo"
+        return 0
+      fi
+    fi
+    warn "No write permission for $prefix and sudo unavailable/failed."
+    return 1
+  else
+    local parent
+    parent="$(dirname "$prefix")"
+    if [[ -w "$parent" ]]; then
+      mkdir -p "$prefix"
+      return 0
+    fi
+    if command -v sudo >/dev/null 2>&1; then
+      if sudo mkdir -p "$prefix" 2>/dev/null; then
+        SUDO_INSTALL="sudo"
+        return 0
+      fi
+    fi
+    warn "Cannot create $prefix (no permission). Try running script with sudo or set SDK_INSTALL_PREFIX to a writable location."
+    return 1
+  fi
+}
+
+ensure_prefix_writable "$SDK_INSTALL_PREFIX" || fail "Unable to prepare SDK install prefix: $SDK_INSTALL_PREFIX"
 
 normalize_library_type() {
   printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
@@ -343,7 +379,7 @@ build_sdk() {
       -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
       ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
     cmake --build "$build_dir" -- -j "$NUM_JOBS"
-    cmake --install "$build_dir"
+    ${SUDO_INSTALL:+$SUDO_INSTALL} cmake --install "$build_dir"
     log "SDK (${cfg}) installed to ${install_dir}"
     if [[ -d "${install_dir}/lib" ]]; then
       rm -rf "${output_dir}"
@@ -455,16 +491,26 @@ relocate_headers() {
   local dest_dir="${dest_root}/include"
 
   if ! mkdir -p "$dest_dir" 2>/dev/null; then
-    warn "Cannot write headers to ${dest_dir}; leaving copies in ${src_dir}. Try re-running with sudo or set SDK_INCLUDE_PREFIX."
-    return
+    if [[ -n "$SUDO_INSTALL" ]]; then
+      $SUDO_INSTALL mkdir -p "$dest_dir"
+    else
+      warn "Cannot write headers to ${dest_dir}; leaving copies in ${src_dir}. Try re-running with sudo or set SDK_INCLUDE_PREFIX."
+      return
+    fi
   fi
   if [[ -z "$dest_dir" || "$dest_dir" == "/" ]]; then
     warn "Refusing to remove invalid destination path ($dest_dir); leaving headers in ${src_dir}."
     return
   fi
-  rm -rf "$dest_dir"
-  mkdir -p "$dest_dir"
-  cp -R "$src_dir/." "$dest_dir/"
+  if [[ -n "$SUDO_INSTALL" ]]; then
+    $SUDO_INSTALL rm -rf "$dest_dir"
+    $SUDO_INSTALL mkdir -p "$dest_dir"
+    $SUDO_INSTALL cp -R "$src_dir/." "$dest_dir/"
+  else
+    rm -rf "$dest_dir"
+    mkdir -p "$dest_dir"
+    cp -R "$src_dir/." "$dest_dir/"
+  fi
   log "Headers installed to ${dest_dir}"
 }
 
