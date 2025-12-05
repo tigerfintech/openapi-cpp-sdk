@@ -8,6 +8,26 @@
 ## Linux/Mac
 Linux(建议Ubuntu) 请确保系统工具及依赖已安装: git wget bzip2 unzip gcc g++ libtool automake autoconf build-essential cmake  libssl-dev libabsl-dev zlib1g-dev pkg-config
 
+### 一键构建脚本（macOS/Linux）
+仓库提供 `scripts/build_linux_mac.sh` 脚本，可自动完成依赖安装、SDK 构建与 demo 验证。
+
+1. 仅首次运行需要赋予执行权限：
+  ```shell
+  chmod +x scripts/build_linux_mac.sh
+  ```
+2. 默认执行（Debug 模式、自动安装依赖并运行 demo）：
+  ```shell
+  ./scripts/build_linux_mac.sh
+  ```
+3. 常用可选参数（也可在命令前加环境变量）：
+  - `BUILD_TYPE=Release`：切换编译类型。
+  - `INSTALL_PREFIX=/opt/tigerapi`：自定义安装目录（默认 `~/.tigerapi`）。
+  - `SKIP_DEPS=1`：跳过依赖构建，前提是 `BOOST_ROOT`、`CPPREST_PREFIX`、`PROTOBUF_PREFIX` 等变量已设置。
+  - `SKIP_DEMO=1`：仅构建 SDK，不运行 demo。
+  - `NUM_JOBS=<n>`：并行编译核数，默认自动检测。
+
+脚本会根据系统自动将 Boost / cpprestsdk / protobuf / SDK 安装到 `output/Linux` 或 `output/Mac`（可用 `INSTALL_PREFIX` 覆盖），结束后还会提示安装位置，并打印推荐的 `CPATH`、`LIBRARY_PATH` 与 `LD_LIBRARY_PATH`/`DYLD_LIBRARY_PATH` 设置，方便在其他项目中引用。
+
 ### 安装 Boost
 [参考文档](https://www.boost.org/doc/libs/1_86_0/more/getting_started/unix-variants.html)
 
@@ -159,7 +179,7 @@ PS> vcpkg install cpprestsdk cpprestsdk:x64-windows
 ### 编译protobuf
 git clone https://github.com/protocolbuffers/protobuf
 ```
-git checkout v3.1.0
+git checkout v3.21.12
 
 使用cmake-gui生成windows解决方案
 ```
