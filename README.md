@@ -21,12 +21,14 @@ Linux(建议Ubuntu) 请确保系统工具及依赖已安装: git wget bzip2 unzi
   ```
 3. 常用可选参数（也可在命令前加环境变量）：
   - `BUILD_TYPE=Release`：切换编译类型。
-  - `INSTALL_PREFIX=/opt/tigerapi`：自定义安装目录（默认 `~/.tigerapi`）。
+  - `INSTALL_PREFIX=/opt/tigerapi`：自定义 SDK 库输出目录（默认 `output/<OS>/tigerapi-sdk`）。
+  - `LOCAL_OPT_PREFIX=/opt`：依赖库（Boost / cpprestsdk / protobuf）安装根目录，默认 `/usr/local/opt`。
   - `SKIP_DEPS=1`：跳过依赖构建，前提是 `BOOST_ROOT`、`CPPREST_PREFIX`、`PROTOBUF_PREFIX` 等变量已设置。
   - `SKIP_DEMO=1`：仅构建 SDK，不运行 demo。
   - `NUM_JOBS=<n>`：并行编译核数，默认自动检测。
+  - `SDK_INCLUDE_PREFIX=/path/to/install`：头文件目标目录，默认 `/usr/local/opt/tigerapi-sdk`（脚本会将 `include/` 同步到该目录）。
 
-脚本会根据系统自动将 Boost / cpprestsdk / protobuf / SDK 安装到 `output/Linux` 或 `output/Mac`（可用 `INSTALL_PREFIX` 覆盖），结束后还会提示安装位置，并打印推荐的 `CPATH`、`LIBRARY_PATH` 与 `LD_LIBRARY_PATH`/`DYLD_LIBRARY_PATH` 设置，方便在其他项目中引用。
+脚本会根据系统自动将 Boost / cpprestsdk / protobuf 安装到 `/usr/local/opt/...`（或 `LOCAL_OPT_PREFIX` 指定的位置），只将 tigerapi SDK 库产物写入 `output/Linux` 或 `output/Mac`（可用 `INSTALL_PREFIX` 覆盖），同时把 SDK 头文件同步到 `/usr/local/opt/tigerapi-sdk/include`（或 `SDK_INCLUDE_PREFIX/include`）。执行完成后会提示库与头文件的最终位置，并打印推荐的 `CPATH`、`LIBRARY_PATH` 与 `LD_LIBRARY_PATH`/`DYLD_LIBRARY_PATH` 设置，方便在其他项目中引用。
 
 ### 安装 Boost
 [参考文档](https://www.boost.org/doc/libs/1_86_0/more/getting_started/unix-variants.html)

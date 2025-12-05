@@ -36,6 +36,8 @@ Usage: scripts/build_linux_mac.sh [options]
 Environment variables / options:
   BUILD_TYPE=Debug|Release          (default: Debug)
   INSTALL_PREFIX=<path>             (default: <repo>/output/<OS>)
+  LOCAL_OPT_PREFIX=<path>           (default: /usr/local/opt)
+  SDK_INCLUDE_PREFIX=<path>         (default: /usr/local/opt/tigerapi-sdk)
   CACHE_DIR=<path>                  (default: <repo>/.cache)
   DEPS_DIR=<path>                   (default: <repo>/.deps)
   BOOST_VERSION=1_86_0              Boost version to build if needed
@@ -68,12 +70,14 @@ BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
 BOOST_TARBALL="boost_${BOOST_VERSION}.tar.bz2"
 BOOST_URL="https://archives.boost.io/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
-BOOST_ROOT="${BOOST_ROOT:-${INSTALL_PREFIX}/boost_${BOOST_VERSION}}"
-CPPREST_PREFIX="${CPPREST_PREFIX:-${INSTALL_PREFIX}/cpprestsdk}"
+LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
+BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
+CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
-PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${INSTALL_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
+PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}/tigerapi-sdk}"
-export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX
+SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-/usr/local/opt/tigerapi-sdk}"
+export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
 
 ensure_prereqs() {
   local base=(git cmake tar)
@@ -97,7 +101,14 @@ ensure_prereqs() {
     fi
     require_cmd xcode-select
     log "Ensuring core tools via Homebrew."
-    brew install cmake wget automake libtool pkg-config openssl@3 || true
+    export HOMEBREW_NO_AUTO_UPDATE=1
+    export HOMEBREW_NO_INSTALL_CLEANUP=1
+    export HOMEBREW_NO_ENV_HINTS=1
+    export HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK=1
+    if ! HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK=1 \
+      brew install --formula --force-bottle cmake wget automake libtool pkg-config openssl@3; then
+      warn "Homebrew bottle install failed; please install cmake/wget/automake/libtool/pkg-config/openssl@3 manually to avoid source tests."
+    fi
   fi
 }
 
@@ -146,9 +157,12 @@ build_boost() {
     tar -C "$CACHE_DIR" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
   fi
   pushd "$src_dir" >/dev/null
-  ./bootstrap.sh --prefix "$BOOST_ROOT"
+  if ! ./bootstrap.sh --prefix "$BOOST_ROOT"; then
+    warn "Boost bootstrap.sh does not accept --prefix, falling back to default staging."
+    ./bootstrap.sh
+  fi
   ./b2 headers
-  ./b2 -j "$NUM_JOBS" install
+  ./b2 -j "$NUM_JOBS" --prefix="$BOOST_ROOT" install
   popd >/dev/null
 }
 
@@ -229,6 +243,28 @@ build_demo() {
   "${build_dir}/openapi_cpp_test" || warn "Demo run failed; check configuration."
 }
 
+relocate_headers() {
+  local src_dir="${SDK_INSTALL_PREFIX}/include"
+  [[ -d "$src_dir" ]] || return
+
+  local dest_root="${SDK_INCLUDE_PREFIX%/}"
+  local dest_dir="${dest_root}/include"
+
+  if mkdir -p "$dest_dir" 2>/dev/null; then
+    if [[ -z "$dest_dir" || "$dest_dir" == "/" ]]; then
+      warn "Refusing to remove invalid destination path ($dest_dir); leaving headers in ${src_dir}."
+      return
+    fi
+    rm -rf "$dest_dir"
+    mkdir -p "$dest_dir"
+    cp -R "$src_dir/." "$dest_dir/"
+    rm -rf "$src_dir"
+    log "Headers installed to ${dest_dir}"
+  else
+    warn "Cannot write headers to ${dest_dir}; leaving copies in ${src_dir}. Try re-running with sudo or set SDK_INCLUDE_PREFIX."
+  fi
+}
+
 main() {
   log "Tiger OpenAPI SDK builder started (OS=$OS_NAME, type=$BUILD_TYPE, jobs=$NUM_JOBS)"
   if [[ "${SKIP_DEPS:-0}" != "1" ]]; then
@@ -241,21 +277,24 @@ main() {
     warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX are set."
   fi
   build_sdk
+  relocate_headers
   if [[ "${SKIP_DEMO:-0}" != "1" ]]; then
     build_demo
   else
     warn "Demo build disabled (SKIP_DEMO=1)."
   fi
+  local header_dir="${SDK_INCLUDE_PREFIX%/}/include"
   cat <<EOF
 ============================================
 Tiger OpenAPI SDK build finished.
   SDK installed to: $SDK_INSTALL_PREFIX
+  Headers copied to: $header_dir
   Boost root      : $BOOST_ROOT
   cpprestsdk      : $CPPREST_PREFIX
   Protobuf        : $PROTOBUF_PREFIX
 
 To use the SDK, add the following to your environment:
-  export CPATH="$SDK_INSTALL_PREFIX/include:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:$CPATH"
+  export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:$CPATH"
   export LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:$LIBRARY_PATH"
   export LD_LIBRARY_PATH="$SDK_INSTALL_PREFIX/lib:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:$LD_LIBRARY_PATH"
 (For macOS, replace LD_LIBRARY_PATH with DYLD_LIBRARY_PATH.)

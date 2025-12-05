@@ -83,3 +83,4 @@ output/Linux/Release/
 
 *.properties
 temp/
+.cache/
