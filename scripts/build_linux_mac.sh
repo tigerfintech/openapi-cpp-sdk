@@ -48,15 +48,30 @@ Environment variables / options:
   NUM_JOBS=<n>                      Parallel jobs (default: detected cores)
   SKIP_DEPS=1                       Skip dependency builds (assumes env vars set)
   SKIP_DEMO=1                       Skip demo build + run
+  DEMO_ONLY=1                       Skip SDK build and only build/run demo (also via --demo-only)
 
 You may also override BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX, SDK_INSTALL_PREFIX, OPENSSL_ROOT_DIR.
 EOF
 }
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  usage
-  exit 0
+DEMO_ONLY="${DEMO_ONLY:-0}"
+if [[ $# -gt 0 ]]; then
+  for arg in "$@"; do
+    case "$arg" in
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      demo|--demo-only)
+        DEMO_ONLY="1"
+        ;;
+      *)
+        fail "Unknown argument: $arg"
+        ;;
+    esac
+  done
 fi
+[[ "$DEMO_ONLY" == "1" ]] && SKIP_DEMO="0"
 
 [[ "$OS_NAME" == "Linux" || "$OS_NAME" == "Darwin" ]] || fail "Only macOS or Linux are supported."
 
@@ -455,19 +470,23 @@ relocate_headers() {
 
 main() {
   log "Tiger OpenAPI SDK builder started (OS=$OS_NAME, type=$BUILD_TYPE, jobs=$NUM_JOBS)"
-  if [[ "${SKIP_DEPS:-0}" != "1" ]]; then
-    ensure_prereqs
-    detect_openssl
-    build_boost
-    build_cpprestsdk
-    build_protobuf
+  if [[ "$DEMO_ONLY" == "1" ]]; then
+    warn "Demo-only mode enabled: skipping dependency and SDK build steps."
   else
-    warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX are set."
+    if [[ "${SKIP_DEPS:-0}" != "1" ]]; then
+      ensure_prereqs
+      detect_openssl
+      build_boost
+      build_cpprestsdk
+      build_protobuf
+    else
+      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX are set."
+    fi
+    regenerate_protos
+    build_sdk
+    relocate_headers
   fi
-  regenerate_protos
-  build_sdk
-  relocate_headers
-  if [[ "${SKIP_DEMO:-0}" != "1" ]]; then
+  if [[ "$DEMO_ONLY" == "1" || "${SKIP_DEMO:-0}" != "1" ]]; then
     build_demo
   else
     warn "Demo build disabled (SKIP_DEMO=1)."
@@ -489,6 +508,8 @@ main() {
     done
   fi
   [[ -d "$sample_lib_dir" ]] || sample_lib_dir="${SDK_OUTPUT_PREFIX}"
+  local demo_mode_status="disabled"
+  [[ "$DEMO_ONLY" == "1" ]] && demo_mode_status="enabled"
   cat <<EOF
 ============================================
 Tiger OpenAPI SDK build finished.
@@ -496,6 +517,7 @@ Tiger OpenAPI SDK build finished.
   Install root      : $SDK_INSTALL_PREFIX (per-config subfolders)
   Output libs       : $SDK_OUTPUT_PREFIX (per-config subfolders)
   Library type      : $SDK_LIBRARY_TYPE
+  Demo-only mode    : $demo_mode_status
   Sample libs       : $sample_lib_dir
   Headers copied to: $header_dir (skip copy: $SKIP_INCLUDE_COPY)
   Boost root      : $BOOST_ROOT
