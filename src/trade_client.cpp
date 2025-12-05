@@ -470,7 +470,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = value::number(order.total_quantity);
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (order.limit_price != 0) {
            obj[U("limit_price")] = order.limit_price;
@@ -555,7 +555,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = value::number(order.total_quantity);
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (order.limit_price != 0) {
             obj[U("limit_price")] = order.limit_price;
