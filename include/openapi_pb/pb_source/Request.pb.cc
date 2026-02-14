@@ -4,288 +4,309 @@
 #include "Request.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR Request_Connect::Request_Connect(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.tigerid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sign_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sdkversion_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.acceptversion_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sendinterval_)*/0u
-  , /*decltype(_impl_.receiveinterval_)*/0u
-  , /*decltype(_impl_.usefulltick_)*/false
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct Request_ConnectDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR Request_ConnectDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~Request_ConnectDefaultTypeInternal() {}
-  union {
-    Request_Connect _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Request_ConnectDefaultTypeInternal _Request_Connect_default_instance_;
-PROTOBUF_CONSTEXPR Request_Subscribe::Request_Subscribe(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.symbols_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.account_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.market_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.datatype_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr Request_Subscribe::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : symbols_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        account_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        market_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        datatype_{static_cast< ::tigeropen::push::pb::SocketCommon_DataType >(0)},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR Request_Subscribe::Request_Subscribe(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct Request_SubscribeDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR Request_SubscribeDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR Request_SubscribeDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~Request_SubscribeDefaultTypeInternal() {}
   union {
     Request_Subscribe _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Request_SubscribeDefaultTypeInternal _Request_Subscribe_default_instance_;
-PROTOBUF_CONSTEXPR Request::Request(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.subscribe_)*/nullptr
-  , /*decltype(_impl_.connect_)*/nullptr
-  , /*decltype(_impl_.command_)*/0
-  , /*decltype(_impl_.id_)*/0u
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Request_SubscribeDefaultTypeInternal _Request_Subscribe_default_instance_;
+
+inline constexpr Request_Connect::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : tigerid_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sign_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sdkversion_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        acceptversion_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sendinterval_{0u},
+        receiveinterval_{0u},
+        usefulltick_{false},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR Request_Connect::Request_Connect(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct Request_ConnectDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR Request_ConnectDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~Request_ConnectDefaultTypeInternal() {}
+  union {
+    Request_Connect _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Request_ConnectDefaultTypeInternal _Request_Connect_default_instance_;
+
+inline constexpr Request::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        subscribe_{nullptr},
+        connect_{nullptr},
+        command_{static_cast< ::tigeropen::push::pb::SocketCommon_Command >(0)},
+        id_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR Request::Request(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct RequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR RequestDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR RequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~RequestDefaultTypeInternal() {}
   union {
     Request _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RequestDefaultTypeInternal _Request_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RequestDefaultTypeInternal _Request_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_Request_2eproto[3];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_Request_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Request_2eproto = nullptr;
-
-const uint32_t TableStruct_Request_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.tigerid_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sign_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sdkversion_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.acceptversion_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sendinterval_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.receiveinterval_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.usefulltick_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.datatype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.symbols_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.account_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.market_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.command_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.subscribe_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.connect_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_Request_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_Request_2eproto = nullptr;
+const ::uint32_t TableStruct_Request_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.tigerid_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sign_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sdkversion_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.acceptversion_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.sendinterval_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.receiveinterval_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Connect, _impl_.usefulltick_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.datatype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.symbols_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.account_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.market_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_._has_bits_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.command_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.id_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.subscribe_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_.connect_),
+    ~0u,
+    ~0u,
+    0,
+    1,
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::Request_Connect)},
-  { 13, -1, -1, sizeof(::tigeropen::push::pb::Request_Subscribe)},
-  { 23, -1, -1, sizeof(::tigeropen::push::pb::Request)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::Request_Connect)},
+        {15, -1, -1, sizeof(::tigeropen::push::pb::Request_Subscribe)},
+        {27, 39, -1, sizeof(::tigeropen::push::pb::Request)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_Request_Connect_default_instance_._instance,
-  &::tigeropen::push::pb::_Request_Subscribe_default_instance_._instance,
-  &::tigeropen::push::pb::_Request_default_instance_._instance,
+    &::tigeropen::push::pb::_Request_Connect_default_instance_._instance,
+    &::tigeropen::push::pb::_Request_Subscribe_default_instance_._instance,
+    &::tigeropen::push::pb::_Request_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_Request_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rRequest.proto\022\021tigeropen.push.pb\032\022Sock"
-  "etCommon.proto\"\322\003\n\007Request\0228\n\007command\030\001 "
-  "\001(\0162\'.tigeropen.push.pb.SocketCommon.Com"
-  "mand\022\n\n\002id\030\002 \001(\r\0227\n\tsubscribe\030\003 \001(\0132$.ti"
-  "geropen.push.pb.Request.Subscribe\0223\n\007con"
-  "nect\030\004 \001(\0132\".tigeropen.push.pb.Request.C"
-  "onnect\032\227\001\n\007Connect\022\017\n\007tigerId\030\001 \001(\t\022\014\n\004s"
-  "ign\030\002 \001(\t\022\022\n\nsdkVersion\030\003 \001(\t\022\025\n\racceptV"
-  "ersion\030\004 \001(\t\022\024\n\014sendInterval\030\005 \001(\r\022\027\n\017re"
-  "ceiveInterval\030\006 \001(\r\022\023\n\013useFullTick\030\007 \001(\010"
-  "\032y\n\tSubscribe\022:\n\010dataType\030\001 \001(\0162(.tigero"
-  "pen.push.pb.SocketCommon.DataType\022\017\n\007sym"
-  "bols\030\002 \001(\t\022\017\n\007account\030\003 \001(\t\022\016\n\006market\030\004 "
-  "\001(\tP\000b\006proto3"
-  ;
-static const ::_pbi::DescriptorTable* const descriptor_table_Request_2eproto_deps[1] = {
-  &::descriptor_table_SocketCommon_2eproto,
+const char descriptor_table_protodef_Request_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\rRequest.proto\022\021tigeropen.push.pb\032\022Sock"
+    "etCommon.proto\"\322\003\n\007Request\0228\n\007command\030\001 "
+    "\001(\0162\'.tigeropen.push.pb.SocketCommon.Com"
+    "mand\022\n\n\002id\030\002 \001(\r\0227\n\tsubscribe\030\003 \001(\0132$.ti"
+    "geropen.push.pb.Request.Subscribe\0223\n\007con"
+    "nect\030\004 \001(\0132\".tigeropen.push.pb.Request.C"
+    "onnect\032\227\001\n\007Connect\022\017\n\007tigerId\030\001 \001(\t\022\014\n\004s"
+    "ign\030\002 \001(\t\022\022\n\nsdkVersion\030\003 \001(\t\022\025\n\racceptV"
+    "ersion\030\004 \001(\t\022\024\n\014sendInterval\030\005 \001(\r\022\027\n\017re"
+    "ceiveInterval\030\006 \001(\r\022\023\n\013useFullTick\030\007 \001(\010"
+    "\032y\n\tSubscribe\022:\n\010dataType\030\001 \001(\0162(.tigero"
+    "pen.push.pb.SocketCommon.DataType\022\017\n\007sym"
+    "bols\030\002 \001(\t\022\017\n\007account\030\003 \001(\t\022\016\n\006market\030\004 "
+    "\001(\tP\000b\006proto3"
 };
-static ::_pbi::once_flag descriptor_table_Request_2eproto_once;
+static const ::_pbi::DescriptorTable* const descriptor_table_Request_2eproto_deps[1] =
+    {
+        &::descriptor_table_SocketCommon_2eproto,
+};
+static ::absl::once_flag descriptor_table_Request_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Request_2eproto = {
-    false, false, 533, descriptor_table_protodef_Request_2eproto,
+    false,
+    false,
+    533,
+    descriptor_table_protodef_Request_2eproto,
     "Request.proto",
-    &descriptor_table_Request_2eproto_once, descriptor_table_Request_2eproto_deps, 1, 3,
-    schemas, file_default_instances, TableStruct_Request_2eproto::offsets,
-    file_level_metadata_Request_2eproto, file_level_enum_descriptors_Request_2eproto,
+    &descriptor_table_Request_2eproto_once,
+    descriptor_table_Request_2eproto_deps,
+    1,
+    3,
+    schemas,
+    file_default_instances,
+    TableStruct_Request_2eproto::offsets,
+    file_level_metadata_Request_2eproto,
+    file_level_enum_descriptors_Request_2eproto,
     file_level_service_descriptors_Request_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_Request_2eproto_getter() {
   return &descriptor_table_Request_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_Request_2eproto(&descriptor_table_Request_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_Request_2eproto(&descriptor_table_Request_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class Request_Connect::_Internal {
  public:
 };
 
-Request_Connect::Request_Connect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+Request_Connect::Request_Connect(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.Request.Connect)
 }
-Request_Connect::Request_Connect(const Request_Connect& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  Request_Connect* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.tigerid_){}
-    , decltype(_impl_.sign_){}
-    , decltype(_impl_.sdkversion_){}
-    , decltype(_impl_.acceptversion_){}
-    , decltype(_impl_.sendinterval_){}
-    , decltype(_impl_.receiveinterval_){}
-    , decltype(_impl_.usefulltick_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE Request_Connect::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : tigerid_(arena, from.tigerid_),
+        sign_(arena, from.sign_),
+        sdkversion_(arena, from.sdkversion_),
+        acceptversion_(arena, from.acceptversion_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.tigerid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.tigerid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_tigerid().empty()) {
-    _this->_impl_.tigerid_.Set(from._internal_tigerid(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.sign_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sign_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_sign().empty()) {
-    _this->_impl_.sign_.Set(from._internal_sign(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.sdkversion_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sdkversion_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_sdkversion().empty()) {
-    _this->_impl_.sdkversion_.Set(from._internal_sdkversion(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.acceptversion_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.acceptversion_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_acceptversion().empty()) {
-    _this->_impl_.acceptversion_.Set(from._internal_acceptversion(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.sendinterval_, &from._impl_.sendinterval_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.usefulltick_) -
-    reinterpret_cast<char*>(&_impl_.sendinterval_)) + sizeof(_impl_.usefulltick_));
+Request_Connect::Request_Connect(
+    ::google::protobuf::Arena* arena,
+    const Request_Connect& from)
+    : ::google::protobuf::Message(arena) {
+  Request_Connect* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sendinterval_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, sendinterval_),
+           offsetof(Impl_, usefulltick_) -
+               offsetof(Impl_, sendinterval_) +
+               sizeof(Impl_::usefulltick_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.Request.Connect)
 }
+inline PROTOBUF_NDEBUG_INLINE Request_Connect::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : tigerid_(arena),
+        sign_(arena),
+        sdkversion_(arena),
+        acceptversion_(arena),
+        _cached_size_{0} {}
 
-inline void Request_Connect::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.tigerid_){}
-    , decltype(_impl_.sign_){}
-    , decltype(_impl_.sdkversion_){}
-    , decltype(_impl_.acceptversion_){}
-    , decltype(_impl_.sendinterval_){0u}
-    , decltype(_impl_.receiveinterval_){0u}
-    , decltype(_impl_.usefulltick_){false}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.tigerid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.tigerid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.sign_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sign_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.sdkversion_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sdkversion_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.acceptversion_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.acceptversion_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void Request_Connect::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sendinterval_),
+           0,
+           offsetof(Impl_, usefulltick_) -
+               offsetof(Impl_, sendinterval_) +
+               sizeof(Impl_::usefulltick_));
 }
-
 Request_Connect::~Request_Connect() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.Request.Connect)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void Request_Connect::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.tigerid_.Destroy();
   _impl_.sign_.Destroy();
   _impl_.sdkversion_.Destroy();
   _impl_.acceptversion_.Destroy();
+  _impl_.~Impl_();
 }
 
-void Request_Connect::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void Request_Connect::Clear() {
+PROTOBUF_NOINLINE void Request_Connect::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.Request.Connect)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -293,244 +314,227 @@ void Request_Connect::Clear() {
   _impl_.sign_.ClearToEmpty();
   _impl_.sdkversion_.ClearToEmpty();
   _impl_.acceptversion_.ClearToEmpty();
-  ::memset(&_impl_.sendinterval_, 0, static_cast<size_t>(
+  ::memset(&_impl_.sendinterval_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.usefulltick_) -
       reinterpret_cast<char*>(&_impl_.sendinterval_)) + sizeof(_impl_.usefulltick_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* Request_Connect::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string tigerId = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_tigerid();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Connect.tigerId"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string sign = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_sign();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Connect.sign"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string sdkVersion = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_sdkversion();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Connect.sdkVersion"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string acceptVersion = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_acceptversion();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Connect.acceptVersion"));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 sendInterval = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _impl_.sendinterval_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 receiveInterval = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
-          _impl_.receiveinterval_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // bool useFullTick = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
-          _impl_.usefulltick_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* Request_Connect::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* Request_Connect::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 7, 0, 76, 2> Request_Connect::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    7, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967168,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    7,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_Request_Connect_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string tigerId = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.tigerid_)}},
+    // string sign = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sign_)}},
+    // string sdkVersion = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sdkversion_)}},
+    // string acceptVersion = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.acceptversion_)}},
+    // uint32 sendInterval = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request_Connect, _impl_.sendinterval_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sendinterval_)}},
+    // uint32 receiveInterval = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request_Connect, _impl_.receiveinterval_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.receiveinterval_)}},
+    // bool useFullTick = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(Request_Connect, _impl_.usefulltick_), 63>(),
+     {56, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.usefulltick_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string tigerId = 1;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.tigerid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string sign = 2;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sign_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string sdkVersion = 3;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sdkversion_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string acceptVersion = 4;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.acceptversion_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint32 sendInterval = 5;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sendinterval_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 receiveInterval = 6;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.receiveinterval_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // bool useFullTick = 7;
+    {PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.usefulltick_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+  }},
+  // no aux_entries
+  {{
+    "\41\7\4\12\15\0\0\0"
+    "tigeropen.push.pb.Request.Connect"
+    "tigerId"
+    "sign"
+    "sdkVersion"
+    "acceptVersion"
+  }},
+};
+
+::uint8_t* Request_Connect::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.Request.Connect)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string tigerId = 1;
   if (!this->_internal_tigerid().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_tigerid().data(), static_cast<int>(this->_internal_tigerid().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Connect.tigerId");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_tigerid(), target);
+    const std::string& _s = this->_internal_tigerid();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Connect.tigerId");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // string sign = 2;
   if (!this->_internal_sign().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_sign().data(), static_cast<int>(this->_internal_sign().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Connect.sign");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_sign(), target);
+    const std::string& _s = this->_internal_sign();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Connect.sign");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string sdkVersion = 3;
   if (!this->_internal_sdkversion().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_sdkversion().data(), static_cast<int>(this->_internal_sdkversion().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Connect.sdkVersion");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_sdkversion(), target);
+    const std::string& _s = this->_internal_sdkversion();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Connect.sdkVersion");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // string acceptVersion = 4;
   if (!this->_internal_acceptversion().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_acceptversion().data(), static_cast<int>(this->_internal_acceptversion().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Connect.acceptVersion");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_acceptversion(), target);
+    const std::string& _s = this->_internal_acceptversion();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Connect.acceptVersion");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
   // uint32 sendInterval = 5;
   if (this->_internal_sendinterval() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(5, this->_internal_sendinterval(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        5, this->_internal_sendinterval(), target);
   }
 
   // uint32 receiveInterval = 6;
   if (this->_internal_receiveinterval() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(6, this->_internal_receiveinterval(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        6, this->_internal_receiveinterval(), target);
   }
 
   // bool useFullTick = 7;
   if (this->_internal_usefulltick() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(7, this->_internal_usefulltick(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        7, this->_internal_usefulltick(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.Request.Connect)
   return target;
 }
 
-size_t Request_Connect::ByteSizeLong() const {
+::size_t Request_Connect::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.Request.Connect)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string tigerId = 1;
   if (!this->_internal_tigerid().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_tigerid());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_tigerid());
   }
 
   // string sign = 2;
   if (!this->_internal_sign().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_sign());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_sign());
   }
 
   // string sdkVersion = 3;
   if (!this->_internal_sdkversion().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_sdkversion());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_sdkversion());
   }
 
   // string acceptVersion = 4;
   if (!this->_internal_acceptversion().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_acceptversion());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_acceptversion());
   }
 
   // uint32 sendInterval = 5;
   if (this->_internal_sendinterval() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_sendinterval());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+        this->_internal_sendinterval());
   }
 
   // uint32 receiveInterval = 6;
   if (this->_internal_receiveinterval() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_receiveinterval());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+        this->_internal_receiveinterval());
   }
 
   // bool useFullTick = 7;
   if (this->_internal_usefulltick() != 0) {
-    total_size += 1 + 1;
+    total_size += 2;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData Request_Connect::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    Request_Connect::MergeImpl
+const ::google::protobuf::Message::ClassData Request_Connect::_class_data_ = {
+    Request_Connect::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Request_Connect::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* Request_Connect::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void Request_Connect::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void Request_Connect::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<Request_Connect*>(&to_msg);
   auto& from = static_cast<const Request_Connect&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.Request.Connect)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_tigerid().empty()) {
@@ -554,7 +558,7 @@ void Request_Connect::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const 
   if (from._internal_usefulltick() != 0) {
     _this->_internal_set_usefulltick(from._internal_usefulltick());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void Request_Connect::CopyFrom(const Request_Connect& from) {
@@ -564,32 +568,23 @@ void Request_Connect::CopyFrom(const Request_Connect& from) {
   MergeFrom(from);
 }
 
-bool Request_Connect::IsInitialized() const {
+PROTOBUF_NOINLINE bool Request_Connect::IsInitialized() const {
   return true;
 }
 
-void Request_Connect::InternalSwap(Request_Connect* other) {
+::_pbi::CachedSize* Request_Connect::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void Request_Connect::InternalSwap(Request_Connect* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.tigerid_, lhs_arena,
-      &other->_impl_.tigerid_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.sign_, lhs_arena,
-      &other->_impl_.sign_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.sdkversion_, lhs_arena,
-      &other->_impl_.sdkversion_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.acceptversion_, lhs_arena,
-      &other->_impl_.acceptversion_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.tigerid_, &other->_impl_.tigerid_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.sign_, &other->_impl_.sign_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.sdkversion_, &other->_impl_.sdkversion_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.acceptversion_, &other->_impl_.acceptversion_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.usefulltick_)
       + sizeof(Request_Connect::_impl_.usefulltick_)
       - PROTOBUF_FIELD_OFFSET(Request_Connect, _impl_.sendinterval_)>(
@@ -597,111 +592,72 @@ void Request_Connect::InternalSwap(Request_Connect* other) {
           reinterpret_cast<char*>(&other->_impl_.sendinterval_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata Request_Connect::GetMetadata() const {
+::google::protobuf::Metadata Request_Connect::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Request_2eproto_getter, &descriptor_table_Request_2eproto_once,
       file_level_metadata_Request_2eproto[0]);
 }
-
 // ===================================================================
 
 class Request_Subscribe::_Internal {
  public:
 };
 
-Request_Subscribe::Request_Subscribe(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+Request_Subscribe::Request_Subscribe(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.Request.Subscribe)
 }
-Request_Subscribe::Request_Subscribe(const Request_Subscribe& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  Request_Subscribe* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbols_){}
-    , decltype(_impl_.account_){}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.datatype_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE Request_Subscribe::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : symbols_(arena, from.symbols_),
+        account_(arena, from.account_),
+        market_(arena, from.market_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbols_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbols_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbols().empty()) {
-    _this->_impl_.symbols_.Set(from._internal_symbols(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_account().empty()) {
-    _this->_impl_.account_.Set(from._internal_account(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_market().empty()) {
-    _this->_impl_.market_.Set(from._internal_market(), 
-      _this->GetArenaForAllocation());
-  }
-  _this->_impl_.datatype_ = from._impl_.datatype_;
+Request_Subscribe::Request_Subscribe(
+    ::google::protobuf::Arena* arena,
+    const Request_Subscribe& from)
+    : ::google::protobuf::Message(arena) {
+  Request_Subscribe* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  _impl_.datatype_ = from._impl_.datatype_;
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.Request.Subscribe)
 }
+inline PROTOBUF_NDEBUG_INLINE Request_Subscribe::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : symbols_(arena),
+        account_(arena),
+        market_(arena),
+        _cached_size_{0} {}
 
-inline void Request_Subscribe::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbols_){}
-    , decltype(_impl_.account_){}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.datatype_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbols_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbols_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void Request_Subscribe::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.datatype_ = {};
 }
-
 Request_Subscribe::~Request_Subscribe() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.Request.Subscribe)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void Request_Subscribe::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbols_.Destroy();
   _impl_.account_.Destroy();
   _impl_.market_.Destroy();
+  _impl_.~Impl_();
 }
 
-void Request_Subscribe::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void Request_Subscribe::Clear() {
+PROTOBUF_NOINLINE void Request_Subscribe::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.Request.Subscribe)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -709,179 +665,165 @@ void Request_Subscribe::Clear() {
   _impl_.account_.ClearToEmpty();
   _impl_.market_.ClearToEmpty();
   _impl_.datatype_ = 0;
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* Request_Subscribe::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-          _internal_set_datatype(static_cast<::tigeropen::push::pb::SocketCommon_DataType>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // string symbols = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_symbols();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Subscribe.symbols"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string account = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_account();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Subscribe.account"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string market = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_market();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.Request.Subscribe.market"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* Request_Subscribe::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* Request_Subscribe::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 0, 64, 2> Request_Subscribe::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_Request_Subscribe_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // string market = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.market_)}},
+    // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request_Subscribe, _impl_.datatype_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.datatype_)}},
+    // string symbols = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.symbols_)}},
+    // string account = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.account_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
+    {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.datatype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // string symbols = 2;
+    {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.symbols_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string account = 3;
+    {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.account_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string market = 4;
+    {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.market_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\43\0\7\7\6\0\0\0"
+    "tigeropen.push.pb.Request.Subscribe"
+    "symbols"
+    "account"
+    "market"
+  }},
+};
+
+::uint8_t* Request_Subscribe::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.Request.Subscribe)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
   if (this->_internal_datatype() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      1, this->_internal_datatype(), target);
+        1, this->_internal_datatype(), target);
   }
 
   // string symbols = 2;
   if (!this->_internal_symbols().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbols().data(), static_cast<int>(this->_internal_symbols().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Subscribe.symbols");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_symbols(), target);
+    const std::string& _s = this->_internal_symbols();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Subscribe.symbols");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string account = 3;
   if (!this->_internal_account().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_account().data(), static_cast<int>(this->_internal_account().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Subscribe.account");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_account(), target);
+    const std::string& _s = this->_internal_account();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Subscribe.account");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // string market = 4;
   if (!this->_internal_market().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_market().data(), static_cast<int>(this->_internal_market().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.Request.Subscribe.market");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_market(), target);
+    const std::string& _s = this->_internal_market();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Subscribe.market");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.Request.Subscribe)
   return target;
 }
 
-size_t Request_Subscribe::ByteSizeLong() const {
+::size_t Request_Subscribe::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.Request.Subscribe)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string symbols = 2;
   if (!this->_internal_symbols().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbols());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbols());
   }
 
   // string account = 3;
   if (!this->_internal_account().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_account());
   }
 
   // string market = 4;
   if (!this->_internal_market().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_market());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_market());
   }
 
   // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
   if (this->_internal_datatype() != 0) {
     total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_datatype());
+                  ::_pbi::WireFormatLite::EnumSize(this->_internal_datatype());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData Request_Subscribe::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    Request_Subscribe::MergeImpl
+const ::google::protobuf::Message::ClassData Request_Subscribe::_class_data_ = {
+    Request_Subscribe::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Request_Subscribe::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* Request_Subscribe::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void Request_Subscribe::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void Request_Subscribe::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<Request_Subscribe*>(&to_msg);
   auto& from = static_cast<const Request_Subscribe&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.Request.Subscribe)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_symbols().empty()) {
@@ -896,7 +838,7 @@ void Request_Subscribe::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, cons
   if (from._internal_datatype() != 0) {
     _this->_internal_set_datatype(from._internal_datatype());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void Request_Subscribe::CopyFrom(const Request_Subscribe& from) {
@@ -906,294 +848,305 @@ void Request_Subscribe::CopyFrom(const Request_Subscribe& from) {
   MergeFrom(from);
 }
 
-bool Request_Subscribe::IsInitialized() const {
+PROTOBUF_NOINLINE bool Request_Subscribe::IsInitialized() const {
   return true;
 }
 
-void Request_Subscribe::InternalSwap(Request_Subscribe* other) {
+::_pbi::CachedSize* Request_Subscribe::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void Request_Subscribe::InternalSwap(Request_Subscribe* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbols_, lhs_arena,
-      &other->_impl_.symbols_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.account_, lhs_arena,
-      &other->_impl_.account_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.market_, lhs_arena,
-      &other->_impl_.market_, rhs_arena
-  );
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbols_, &other->_impl_.symbols_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.account_, &other->_impl_.account_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.market_, &other->_impl_.market_, arena);
   swap(_impl_.datatype_, other->_impl_.datatype_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata Request_Subscribe::GetMetadata() const {
+::google::protobuf::Metadata Request_Subscribe::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Request_2eproto_getter, &descriptor_table_Request_2eproto_once,
       file_level_metadata_Request_2eproto[1]);
 }
-
 // ===================================================================
 
 class Request::_Internal {
  public:
+  using HasBits = decltype(std::declval<Request>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+    8 * PROTOBUF_FIELD_OFFSET(Request, _impl_._has_bits_);
   static const ::tigeropen::push::pb::Request_Subscribe& subscribe(const Request* msg);
+  static void set_has_subscribe(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
   static const ::tigeropen::push::pb::Request_Connect& connect(const Request* msg);
+  static void set_has_connect(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
 };
 
-const ::tigeropen::push::pb::Request_Subscribe&
-Request::_Internal::subscribe(const Request* msg) {
+const ::tigeropen::push::pb::Request_Subscribe& Request::_Internal::subscribe(const Request* msg) {
   return *msg->_impl_.subscribe_;
 }
-const ::tigeropen::push::pb::Request_Connect&
-Request::_Internal::connect(const Request* msg) {
+const ::tigeropen::push::pb::Request_Connect& Request::_Internal::connect(const Request* msg) {
   return *msg->_impl_.connect_;
 }
-Request::Request(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+Request::Request(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.Request)
 }
-Request::Request(const Request& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  Request* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.subscribe_){nullptr}
-    , decltype(_impl_.connect_){nullptr}
-    , decltype(_impl_.command_){}
-    , decltype(_impl_.id_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE Request::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  if (from._internal_has_subscribe()) {
-    _this->_impl_.subscribe_ = new ::tigeropen::push::pb::Request_Subscribe(*from._impl_.subscribe_);
-  }
-  if (from._internal_has_connect()) {
-    _this->_impl_.connect_ = new ::tigeropen::push::pb::Request_Connect(*from._impl_.connect_);
-  }
-  ::memcpy(&_impl_.command_, &from._impl_.command_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.id_) -
-    reinterpret_cast<char*>(&_impl_.command_)) + sizeof(_impl_.id_));
+Request::Request(
+    ::google::protobuf::Arena* arena,
+    const Request& from)
+    : ::google::protobuf::Message(arena) {
+  Request* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.subscribe_ = (cached_has_bits & 0x00000001u)
+                ? CreateMaybeMessage<::tigeropen::push::pb::Request_Subscribe>(arena, *from._impl_.subscribe_)
+                : nullptr;
+  _impl_.connect_ = (cached_has_bits & 0x00000002u)
+                ? CreateMaybeMessage<::tigeropen::push::pb::Request_Connect>(arena, *from._impl_.connect_)
+                : nullptr;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, command_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, command_),
+           offsetof(Impl_, id_) -
+               offsetof(Impl_, command_) +
+               sizeof(Impl_::id_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.Request)
 }
+inline PROTOBUF_NDEBUG_INLINE Request::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
 
-inline void Request::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.subscribe_){nullptr}
-    , decltype(_impl_.connect_){nullptr}
-    , decltype(_impl_.command_){0}
-    , decltype(_impl_.id_){0u}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
+inline void Request::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, subscribe_),
+           0,
+           offsetof(Impl_, id_) -
+               offsetof(Impl_, subscribe_) +
+               sizeof(Impl_::id_));
 }
-
 Request::~Request() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.Request)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void Request::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (this != internal_default_instance()) delete _impl_.subscribe_;
-  if (this != internal_default_instance()) delete _impl_.connect_;
+  ABSL_DCHECK(GetArena() == nullptr);
+  delete _impl_.subscribe_;
+  delete _impl_.connect_;
+  _impl_.~Impl_();
 }
 
-void Request::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void Request::Clear() {
+PROTOBUF_NOINLINE void Request::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.Request)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (GetArenaForAllocation() == nullptr && _impl_.subscribe_ != nullptr) {
-    delete _impl_.subscribe_;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      ABSL_DCHECK(_impl_.subscribe_ != nullptr);
+      _impl_.subscribe_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      ABSL_DCHECK(_impl_.connect_ != nullptr);
+      _impl_.connect_->Clear();
+    }
   }
-  _impl_.subscribe_ = nullptr;
-  if (GetArenaForAllocation() == nullptr && _impl_.connect_ != nullptr) {
-    delete _impl_.connect_;
-  }
-  _impl_.connect_ = nullptr;
-  ::memset(&_impl_.command_, 0, static_cast<size_t>(
+  ::memset(&_impl_.command_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.id_) -
       reinterpret_cast<char*>(&_impl_.command_)) + sizeof(_impl_.id_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* Request::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // .tigeropen.push.pb.SocketCommon.Command command = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-          _internal_set_command(static_cast<::tigeropen::push::pb::SocketCommon_Command>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 id = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          ptr = ctx->ParseMessage(_internal_mutable_subscribe(), ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.Request.Connect connect = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          ptr = ctx->ParseMessage(_internal_mutable_connect(), ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* Request::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* Request::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 2, 0, 2> Request::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(Request, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    2,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_Request_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // .tigeropen.push.pb.Request.Connect connect = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 1, 1, PROTOBUF_FIELD_OFFSET(Request, _impl_.connect_)}},
+    // .tigeropen.push.pb.SocketCommon.Command command = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request, _impl_.command_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(Request, _impl_.command_)}},
+    // uint32 id = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request, _impl_.id_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(Request, _impl_.id_)}},
+    // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
+    {::_pbi::TcParser::FastMtS1,
+     {26, 0, 0, PROTOBUF_FIELD_OFFSET(Request, _impl_.subscribe_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // .tigeropen.push.pb.SocketCommon.Command command = 1;
+    {PROTOBUF_FIELD_OFFSET(Request, _impl_.command_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // uint32 id = 2;
+    {PROTOBUF_FIELD_OFFSET(Request, _impl_.id_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
+    {PROTOBUF_FIELD_OFFSET(Request, _impl_.subscribe_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .tigeropen.push.pb.Request.Connect connect = 4;
+    {PROTOBUF_FIELD_OFFSET(Request, _impl_.connect_), _Internal::kHasBitsOffset + 1, 1,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::Request_Subscribe>()},
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::Request_Connect>()},
+  }}, {{
+  }},
+};
+
+::uint8_t* Request::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.Request)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // .tigeropen.push.pb.SocketCommon.Command command = 1;
   if (this->_internal_command() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      1, this->_internal_command(), target);
+        1, this->_internal_command(), target);
   }
 
   // uint32 id = 2;
   if (this->_internal_id() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_id(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        2, this->_internal_id(), target);
   }
 
+  cached_has_bits = _impl_._has_bits_[0];
   // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
-  if (this->_internal_has_subscribe()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(3, _Internal::subscribe(this),
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        3, _Internal::subscribe(this),
         _Internal::subscribe(this).GetCachedSize(), target, stream);
   }
 
   // .tigeropen.push.pb.Request.Connect connect = 4;
-  if (this->_internal_has_connect()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(4, _Internal::connect(this),
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, _Internal::connect(this),
         _Internal::connect(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.Request)
   return target;
 }
 
-size_t Request::ByteSizeLong() const {
+::size_t Request::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.Request)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
-  if (this->_internal_has_subscribe()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.subscribe_);
-  }
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // .tigeropen.push.pb.Request.Subscribe subscribe = 3;
+    if (cached_has_bits & 0x00000001u) {
+      total_size +=
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.subscribe_);
+    }
 
-  // .tigeropen.push.pb.Request.Connect connect = 4;
-  if (this->_internal_has_connect()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.connect_);
-  }
+    // .tigeropen.push.pb.Request.Connect connect = 4;
+    if (cached_has_bits & 0x00000002u) {
+      total_size +=
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.connect_);
+    }
 
+  }
   // .tigeropen.push.pb.SocketCommon.Command command = 1;
   if (this->_internal_command() != 0) {
     total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_command());
+                  ::_pbi::WireFormatLite::EnumSize(this->_internal_command());
   }
 
   // uint32 id = 2;
   if (this->_internal_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_id());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+        this->_internal_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData Request::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    Request::MergeImpl
+const ::google::protobuf::Message::ClassData Request::_class_data_ = {
+    Request::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Request::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* Request::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void Request::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void Request::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<Request*>(&to_msg);
   auto& from = static_cast<const Request&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.Request)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_has_subscribe()) {
-    _this->_internal_mutable_subscribe()->::tigeropen::push::pb::Request_Subscribe::MergeFrom(
-        from._internal_subscribe());
-  }
-  if (from._internal_has_connect()) {
-    _this->_internal_mutable_connect()->::tigeropen::push::pb::Request_Connect::MergeFrom(
-        from._internal_connect());
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_subscribe()->::tigeropen::push::pb::Request_Subscribe::MergeFrom(
+          from._internal_subscribe());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_connect()->::tigeropen::push::pb::Request_Connect::MergeFrom(
+          from._internal_connect());
+    }
   }
   if (from._internal_command() != 0) {
     _this->_internal_set_command(from._internal_command());
@@ -1201,7 +1154,7 @@ void Request::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
   if (from._internal_id() != 0) {
     _this->_internal_set_id(from._internal_id());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void Request::CopyFrom(const Request& from) {
@@ -1211,14 +1164,18 @@ void Request::CopyFrom(const Request& from) {
   MergeFrom(from);
 }
 
-bool Request::IsInitialized() const {
+PROTOBUF_NOINLINE bool Request::IsInitialized() const {
   return true;
 }
 
-void Request::InternalSwap(Request* other) {
+::_pbi::CachedSize* Request::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void Request::InternalSwap(Request* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(Request, _impl_.id_)
       + sizeof(Request::_impl_.id_)
       - PROTOBUF_FIELD_OFFSET(Request, _impl_.subscribe_)>(
@@ -1226,30 +1183,18 @@ void Request::InternalSwap(Request* other) {
           reinterpret_cast<char*>(&other->_impl_.subscribe_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata Request::GetMetadata() const {
+::google::protobuf::Metadata Request::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Request_2eproto_getter, &descriptor_table_Request_2eproto_once,
       file_level_metadata_Request_2eproto[2]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::Request_Connect*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::Request_Connect >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::Request_Connect >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::Request_Subscribe*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::Request_Subscribe >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::Request_Subscribe >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::Request*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::Request >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::Request >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

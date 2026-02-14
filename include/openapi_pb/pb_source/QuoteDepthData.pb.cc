@@ -4,202 +4,241 @@
 #include "QuoteDepthData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.price_)*/{}
-  , /*decltype(_impl_.volume_)*/{}
-  , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.ordercount_)*/{}
-  , /*decltype(_impl_._ordercount_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.exchange_)*/{}
-  , /*decltype(_impl_.time_)*/{}
-  , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr QuoteDepthData_OrderBook::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : price_{},
+        volume_{},
+        _volume_cached_byte_size_{0},
+        ordercount_{},
+        _ordercount_cached_byte_size_{0},
+        exchange_{},
+        time_{},
+        _time_cached_byte_size_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct QuoteDepthData_OrderBookDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR QuoteDepthData_OrderBookDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR QuoteDepthData_OrderBookDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~QuoteDepthData_OrderBookDefaultTypeInternal() {}
   union {
     QuoteDepthData_OrderBook _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteDepthData_OrderBookDefaultTypeInternal _QuoteDepthData_OrderBook_default_instance_;
-PROTOBUF_CONSTEXPR QuoteDepthData::QuoteDepthData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.ask_)*/nullptr
-  , /*decltype(_impl_.bid_)*/nullptr
-  , /*decltype(_impl_.timestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteDepthData_OrderBookDefaultTypeInternal _QuoteDepthData_OrderBook_default_instance_;
+
+inline constexpr QuoteDepthData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        ask_{nullptr},
+        bid_{nullptr},
+        timestamp_{::uint64_t{0u}} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR QuoteDepthData::QuoteDepthData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct QuoteDepthDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR QuoteDepthDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR QuoteDepthDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~QuoteDepthDataDefaultTypeInternal() {}
   union {
     QuoteDepthData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteDepthDataDefaultTypeInternal _QuoteDepthData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteDepthDataDefaultTypeInternal _QuoteDepthData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_QuoteDepthData_2eproto[2];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_QuoteDepthData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_QuoteDepthData_2eproto = nullptr;
-
-const uint32_t TableStruct_QuoteDepthData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.price_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.volume_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.ordercount_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.exchange_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.time_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.ask_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.bid_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_QuoteDepthData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_QuoteDepthData_2eproto = nullptr;
+const ::uint32_t TableStruct_QuoteDepthData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.price_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.volume_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.ordercount_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.exchange_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData_OrderBook, _impl_.time_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_._has_bits_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.ask_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteDepthData, _impl_.bid_),
+    ~0u,
+    ~0u,
+    0,
+    1,
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::QuoteDepthData_OrderBook)},
-  { 11, -1, -1, sizeof(::tigeropen::push::pb::QuoteDepthData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::QuoteDepthData_OrderBook)},
+        {13, 25, -1, sizeof(::tigeropen::push::pb::QuoteDepthData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_QuoteDepthData_OrderBook_default_instance_._instance,
-  &::tigeropen::push::pb::_QuoteDepthData_default_instance_._instance,
+    &::tigeropen::push::pb::_QuoteDepthData_OrderBook_default_instance_._instance,
+    &::tigeropen::push::pb::_QuoteDepthData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_QuoteDepthData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\024QuoteDepthData.proto\022\021tigeropen.push.p"
-  "b\"\207\002\n\016QuoteDepthData\022\016\n\006symbol\030\001 \001(\t\022\021\n\t"
-  "timestamp\030\002 \001(\004\0228\n\003ask\030\003 \001(\0132+.tigeropen"
-  ".push.pb.QuoteDepthData.OrderBook\0228\n\003bid"
-  "\030\004 \001(\0132+.tigeropen.push.pb.QuoteDepthDat"
-  "a.OrderBook\032^\n\tOrderBook\022\r\n\005price\030\001 \003(\001\022"
-  "\016\n\006volume\030\002 \003(\022\022\022\n\norderCount\030\003 \003(\r\022\020\n\010e"
-  "xchange\030\004 \003(\t\022\014\n\004time\030\005 \003(\022b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_QuoteDepthData_2eproto_once;
+const char descriptor_table_protodef_QuoteDepthData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\024QuoteDepthData.proto\022\021tigeropen.push.p"
+    "b\"\207\002\n\016QuoteDepthData\022\016\n\006symbol\030\001 \001(\t\022\021\n\t"
+    "timestamp\030\002 \001(\004\0228\n\003ask\030\003 \001(\0132+.tigeropen"
+    ".push.pb.QuoteDepthData.OrderBook\0228\n\003bid"
+    "\030\004 \001(\0132+.tigeropen.push.pb.QuoteDepthDat"
+    "a.OrderBook\032^\n\tOrderBook\022\r\n\005price\030\001 \003(\001\022"
+    "\016\n\006volume\030\002 \003(\022\022\022\n\norderCount\030\003 \003(\r\022\020\n\010e"
+    "xchange\030\004 \003(\t\022\014\n\004time\030\005 \003(\022b\006proto3"
+};
+static ::absl::once_flag descriptor_table_QuoteDepthData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_QuoteDepthData_2eproto = {
-    false, false, 315, descriptor_table_protodef_QuoteDepthData_2eproto,
+    false,
+    false,
+    315,
+    descriptor_table_protodef_QuoteDepthData_2eproto,
     "QuoteDepthData.proto",
-    &descriptor_table_QuoteDepthData_2eproto_once, nullptr, 0, 2,
-    schemas, file_default_instances, TableStruct_QuoteDepthData_2eproto::offsets,
-    file_level_metadata_QuoteDepthData_2eproto, file_level_enum_descriptors_QuoteDepthData_2eproto,
+    &descriptor_table_QuoteDepthData_2eproto_once,
+    nullptr,
+    0,
+    2,
+    schemas,
+    file_default_instances,
+    TableStruct_QuoteDepthData_2eproto::offsets,
+    file_level_metadata_QuoteDepthData_2eproto,
+    file_level_enum_descriptors_QuoteDepthData_2eproto,
     file_level_service_descriptors_QuoteDepthData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_QuoteDepthData_2eproto_getter() {
   return &descriptor_table_QuoteDepthData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_QuoteDepthData_2eproto(&descriptor_table_QuoteDepthData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_QuoteDepthData_2eproto(&descriptor_table_QuoteDepthData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class QuoteDepthData_OrderBook::_Internal {
  public:
 };
 
-QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.QuoteDepthData.OrderBook)
 }
-QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(const QuoteDepthData_OrderBook& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  QuoteDepthData_OrderBook* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.price_){from._impl_.price_}
-    , decltype(_impl_.volume_){from._impl_.volume_}
-    , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-    , decltype(_impl_.ordercount_){from._impl_.ordercount_}
-    , /*decltype(_impl_._ordercount_cached_byte_size_)*/{0}
-    , decltype(_impl_.exchange_){from._impl_.exchange_}
-    , decltype(_impl_.time_){from._impl_.time_}
-    , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE QuoteDepthData_OrderBook::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : price_{visibility, arena, from.price_},
+        volume_{visibility, arena, from.volume_},
+        _volume_cached_byte_size_{0},
+        ordercount_{visibility, arena, from.ordercount_},
+        _ordercount_cached_byte_size_{0},
+        exchange_{visibility, arena, from.exchange_},
+        time_{visibility, arena, from.time_},
+        _time_cached_byte_size_{0},
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+QuoteDepthData_OrderBook::QuoteDepthData_OrderBook(
+    ::google::protobuf::Arena* arena,
+    const QuoteDepthData_OrderBook& from)
+    : ::google::protobuf::Message(arena) {
+  QuoteDepthData_OrderBook* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.QuoteDepthData.OrderBook)
 }
+inline PROTOBUF_NDEBUG_INLINE QuoteDepthData_OrderBook::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : price_{visibility, arena},
+        volume_{visibility, arena},
+        _volume_cached_byte_size_{0},
+        ordercount_{visibility, arena},
+        _ordercount_cached_byte_size_{0},
+        exchange_{visibility, arena},
+        time_{visibility, arena},
+        _time_cached_byte_size_{0},
+        _cached_size_{0} {}
 
-inline void QuoteDepthData_OrderBook::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.price_){arena}
-    , decltype(_impl_.volume_){arena}
-    , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-    , decltype(_impl_.ordercount_){arena}
-    , /*decltype(_impl_._ordercount_cached_byte_size_)*/{0}
-    , decltype(_impl_.exchange_){arena}
-    , decltype(_impl_.time_){arena}
-    , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
+inline void QuoteDepthData_OrderBook::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
 }
-
 QuoteDepthData_OrderBook::~QuoteDepthData_OrderBook() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.QuoteDepthData.OrderBook)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void QuoteDepthData_OrderBook::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.price_.~RepeatedField();
-  _impl_.volume_.~RepeatedField();
-  _impl_.ordercount_.~RepeatedField();
-  _impl_.exchange_.~RepeatedPtrField();
-  _impl_.time_.~RepeatedField();
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.~Impl_();
 }
 
-void QuoteDepthData_OrderBook::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void QuoteDepthData_OrderBook::Clear() {
+PROTOBUF_NOINLINE void QuoteDepthData_OrderBook::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.QuoteDepthData.OrderBook)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -208,102 +247,82 @@ void QuoteDepthData_OrderBook::Clear() {
   _impl_.ordercount_.Clear();
   _impl_.exchange_.Clear();
   _impl_.time_.Clear();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* QuoteDepthData_OrderBook::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // repeated double price = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedDoubleParser(_internal_mutable_price(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 9) {
-          _internal_add_price(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr));
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated sint64 volume = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedSInt64Parser(_internal_mutable_volume(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 16) {
-          _internal_add_volume(::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated uint32 orderCount = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedUInt32Parser(_internal_mutable_ordercount(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 24) {
-          _internal_add_ordercount(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated string exchange = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            auto str = _internal_add_exchange();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-            CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteDepthData.OrderBook.exchange"));
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated sint64 time = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedSInt64Parser(_internal_mutable_time(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 40) {
-          _internal_add_time(::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* QuoteDepthData_OrderBook::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 5, 0, 59, 2> QuoteDepthData_OrderBook::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    5, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967264,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    5,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_QuoteDepthData_OrderBook_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // repeated double price = 1;
+    {::_pbi::TcParser::FastF64P1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.price_)}},
+    // repeated sint64 volume = 2;
+    {::_pbi::TcParser::FastZ64P1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.volume_)}},
+    // repeated uint32 orderCount = 3;
+    {::_pbi::TcParser::FastV32P1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.ordercount_)}},
+    // repeated string exchange = 4;
+    {::_pbi::TcParser::FastUR1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.exchange_)}},
+    // repeated sint64 time = 5;
+    {::_pbi::TcParser::FastZ64P1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.time_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // repeated double price = 1;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.price_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedDouble)},
+    // repeated sint64 volume = 2;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.volume_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedSInt64)},
+    // repeated uint32 orderCount = 3;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.ordercount_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedUInt32)},
+    // repeated string exchange = 4;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.exchange_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    // repeated sint64 time = 5;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData_OrderBook, _impl_.time_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedSInt64)},
+  }},
+  // no aux_entries
+  {{
+    "\52\0\0\0\10\0\0\0"
+    "tigeropen.push.pb.QuoteDepthData.OrderBook"
+    "exchange"
+  }},
+};
+
+::uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.QuoteDepthData.OrderBook)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // repeated double price = 1;
   if (this->_internal_price_size() > 0) {
@@ -312,7 +331,7 @@ uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
 
   // repeated sint64 volume = 2;
   {
-    int byte_size = _impl_._volume_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._volume_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteSInt64Packed(
           2, _internal_volume(), byte_size, target);
@@ -321,7 +340,7 @@ uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
 
   // repeated uint32 orderCount = 3;
   {
-    int byte_size = _impl_._ordercount_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._ordercount_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteUInt32Packed(
           3, _internal_ordercount(), byte_size, target);
@@ -329,18 +348,16 @@ uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
   }
 
   // repeated string exchange = 4;
-  for (int i = 0, n = this->_internal_exchange_size(); i < n; i++) {
-    const auto& s = this->_internal_exchange(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteDepthData.OrderBook.exchange");
+  for (int i = 0, n = this->_internal_exchange_size(); i < n; ++i) {
+    const auto& s = this->_internal_exchange().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteDepthData.OrderBook.exchange");
     target = stream->WriteString(4, s, target);
   }
 
   // repeated sint64 time = 5;
   {
-    int byte_size = _impl_._time_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._time_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteSInt64Packed(
           5, _internal_time(), byte_size, target);
@@ -348,106 +365,104 @@ uint8_t* QuoteDepthData_OrderBook::_InternalSerialize(
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.QuoteDepthData.OrderBook)
   return target;
 }
 
-size_t QuoteDepthData_OrderBook::ByteSizeLong() const {
+::size_t QuoteDepthData_OrderBook::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.QuoteDepthData.OrderBook)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated double price = 1;
   {
-    unsigned int count = static_cast<unsigned int>(this->_internal_price_size());
-    size_t data_size = 8UL * count;
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    total_size += data_size;
+    std::size_t data_size = std::size_t{8} *
+        ::_pbi::FromIntSize(this->_internal_price_size())
+    ;
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated sint64 volume = 2;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      SInt64Size(this->_impl_.volume_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._volume_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::SInt64Size(
+        this->_internal_volume())
+    ;
+    _impl_._volume_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated uint32 orderCount = 3;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      UInt32Size(this->_impl_.ordercount_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._ordercount_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::UInt32Size(
+        this->_internal_ordercount())
+    ;
+    _impl_._ordercount_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated string exchange = 4;
-  total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.exchange_.size());
-  for (int i = 0, n = _impl_.exchange_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.exchange_.Get(i));
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_exchange().size());
+  for (int i = 0, n = _internal_exchange().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_exchange().Get(i));
   }
-
   // repeated sint64 time = 5;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      SInt64Size(this->_impl_.time_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._time_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::SInt64Size(
+        this->_internal_time())
+    ;
+    _impl_._time_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData QuoteDepthData_OrderBook::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    QuoteDepthData_OrderBook::MergeImpl
+const ::google::protobuf::Message::ClassData QuoteDepthData_OrderBook::_class_data_ = {
+    QuoteDepthData_OrderBook::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*QuoteDepthData_OrderBook::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* QuoteDepthData_OrderBook::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void QuoteDepthData_OrderBook::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void QuoteDepthData_OrderBook::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<QuoteDepthData_OrderBook*>(&to_msg);
   auto& from = static_cast<const QuoteDepthData_OrderBook&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.QuoteDepthData.OrderBook)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.price_.MergeFrom(from._impl_.price_);
-  _this->_impl_.volume_.MergeFrom(from._impl_.volume_);
-  _this->_impl_.ordercount_.MergeFrom(from._impl_.ordercount_);
-  _this->_impl_.exchange_.MergeFrom(from._impl_.exchange_);
-  _this->_impl_.time_.MergeFrom(from._impl_.time_);
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_mutable_price()->MergeFrom(from._internal_price());
+  _this->_internal_mutable_volume()->MergeFrom(from._internal_volume());
+  _this->_internal_mutable_ordercount()->MergeFrom(from._internal_ordercount());
+  _this->_internal_mutable_exchange()->MergeFrom(from._internal_exchange());
+  _this->_internal_mutable_time()->MergeFrom(from._internal_time());
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void QuoteDepthData_OrderBook::CopyFrom(const QuoteDepthData_OrderBook& from) {
@@ -457,11 +472,14 @@ void QuoteDepthData_OrderBook::CopyFrom(const QuoteDepthData_OrderBook& from) {
   MergeFrom(from);
 }
 
-bool QuoteDepthData_OrderBook::IsInitialized() const {
+PROTOBUF_NOINLINE bool QuoteDepthData_OrderBook::IsInitialized() const {
   return true;
 }
 
-void QuoteDepthData_OrderBook::InternalSwap(QuoteDepthData_OrderBook* other) {
+::_pbi::CachedSize* QuoteDepthData_OrderBook::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void QuoteDepthData_OrderBook::InternalSwap(QuoteDepthData_OrderBook* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.price_.InternalSwap(&other->_impl_.price_);
@@ -471,293 +489,295 @@ void QuoteDepthData_OrderBook::InternalSwap(QuoteDepthData_OrderBook* other) {
   _impl_.time_.InternalSwap(&other->_impl_.time_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata QuoteDepthData_OrderBook::GetMetadata() const {
+::google::protobuf::Metadata QuoteDepthData_OrderBook::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_QuoteDepthData_2eproto_getter, &descriptor_table_QuoteDepthData_2eproto_once,
       file_level_metadata_QuoteDepthData_2eproto[0]);
 }
-
 // ===================================================================
 
 class QuoteDepthData::_Internal {
  public:
+  using HasBits = decltype(std::declval<QuoteDepthData>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+    8 * PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_._has_bits_);
   static const ::tigeropen::push::pb::QuoteDepthData_OrderBook& ask(const QuoteDepthData* msg);
+  static void set_has_ask(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
   static const ::tigeropen::push::pb::QuoteDepthData_OrderBook& bid(const QuoteDepthData* msg);
+  static void set_has_bid(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
 };
 
-const ::tigeropen::push::pb::QuoteDepthData_OrderBook&
-QuoteDepthData::_Internal::ask(const QuoteDepthData* msg) {
+const ::tigeropen::push::pb::QuoteDepthData_OrderBook& QuoteDepthData::_Internal::ask(const QuoteDepthData* msg) {
   return *msg->_impl_.ask_;
 }
-const ::tigeropen::push::pb::QuoteDepthData_OrderBook&
-QuoteDepthData::_Internal::bid(const QuoteDepthData* msg) {
+const ::tigeropen::push::pb::QuoteDepthData_OrderBook& QuoteDepthData::_Internal::bid(const QuoteDepthData* msg) {
   return *msg->_impl_.bid_;
 }
-QuoteDepthData::QuoteDepthData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+QuoteDepthData::QuoteDepthData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.QuoteDepthData)
 }
-QuoteDepthData::QuoteDepthData(const QuoteDepthData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  QuoteDepthData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.ask_){nullptr}
-    , decltype(_impl_.bid_){nullptr}
-    , decltype(_impl_.timestamp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE QuoteDepthData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        symbol_(arena, from.symbol_) {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  if (from._internal_has_ask()) {
-    _this->_impl_.ask_ = new ::tigeropen::push::pb::QuoteDepthData_OrderBook(*from._impl_.ask_);
-  }
-  if (from._internal_has_bid()) {
-    _this->_impl_.bid_ = new ::tigeropen::push::pb::QuoteDepthData_OrderBook(*from._impl_.bid_);
-  }
-  _this->_impl_.timestamp_ = from._impl_.timestamp_;
+QuoteDepthData::QuoteDepthData(
+    ::google::protobuf::Arena* arena,
+    const QuoteDepthData& from)
+    : ::google::protobuf::Message(arena) {
+  QuoteDepthData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.ask_ = (cached_has_bits & 0x00000001u)
+                ? CreateMaybeMessage<::tigeropen::push::pb::QuoteDepthData_OrderBook>(arena, *from._impl_.ask_)
+                : nullptr;
+  _impl_.bid_ = (cached_has_bits & 0x00000002u)
+                ? CreateMaybeMessage<::tigeropen::push::pb::QuoteDepthData_OrderBook>(arena, *from._impl_.bid_)
+                : nullptr;
+  _impl_.timestamp_ = from._impl_.timestamp_;
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.QuoteDepthData)
 }
+inline PROTOBUF_NDEBUG_INLINE QuoteDepthData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0},
+        symbol_(arena) {}
 
-inline void QuoteDepthData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.ask_){nullptr}
-    , decltype(_impl_.bid_){nullptr}
-    , decltype(_impl_.timestamp_){uint64_t{0u}}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void QuoteDepthData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, ask_),
+           0,
+           offsetof(Impl_, timestamp_) -
+               offsetof(Impl_, ask_) +
+               sizeof(Impl_::timestamp_));
 }
-
 QuoteDepthData::~QuoteDepthData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.QuoteDepthData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void QuoteDepthData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
-  if (this != internal_default_instance()) delete _impl_.ask_;
-  if (this != internal_default_instance()) delete _impl_.bid_;
+  delete _impl_.ask_;
+  delete _impl_.bid_;
+  _impl_.~Impl_();
 }
 
-void QuoteDepthData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void QuoteDepthData::Clear() {
+PROTOBUF_NOINLINE void QuoteDepthData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.QuoteDepthData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.symbol_.ClearToEmpty();
-  if (GetArenaForAllocation() == nullptr && _impl_.ask_ != nullptr) {
-    delete _impl_.ask_;
-  }
-  _impl_.ask_ = nullptr;
-  if (GetArenaForAllocation() == nullptr && _impl_.bid_ != nullptr) {
-    delete _impl_.bid_;
-  }
-  _impl_.bid_ = nullptr;
-  _impl_.timestamp_ = uint64_t{0u};
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-}
-
-const char* QuoteDepthData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string symbol = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteDepthData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 timestamp = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          ptr = ctx->ParseMessage(_internal_mutable_ask(), ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          ptr = ctx->ParseMessage(_internal_mutable_bid(), ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      ABSL_DCHECK(_impl_.ask_ != nullptr);
+      _impl_.ask_->Clear();
     }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
-  return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
+    if (cached_has_bits & 0x00000002u) {
+      ABSL_DCHECK(_impl_.bid_ != nullptr);
+      _impl_.bid_->Clear();
+    }
+  }
+  _impl_.timestamp_ = ::uint64_t{0u};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-uint8_t* QuoteDepthData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+const char* QuoteDepthData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
+  return ptr;
+}
+
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 2, 47, 2> QuoteDepthData::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    2,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_QuoteDepthData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 1, 1, PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.bid_)}},
+    // string symbol = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.symbol_)}},
+    // uint64 timestamp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteDepthData, _impl_.timestamp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.timestamp_)}},
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
+    {::_pbi::TcParser::FastMtS1,
+     {26, 0, 0, PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.ask_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string symbol = 1;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.symbol_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint64 timestamp = 2;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.timestamp_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.ask_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
+    {PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.bid_), _Internal::kHasBitsOffset + 1, 1,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::QuoteDepthData_OrderBook>()},
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::QuoteDepthData_OrderBook>()},
+  }}, {{
+    "\40\6\0\0\0\0\0\0"
+    "tigeropen.push.pb.QuoteDepthData"
+    "symbol"
+  }},
+};
+
+::uint8_t* QuoteDepthData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.QuoteDepthData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteDepthData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteDepthData.symbol");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // uint64 timestamp = 2;
   if (this->_internal_timestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_timestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        2, this->_internal_timestamp(), target);
   }
 
+  cached_has_bits = _impl_._has_bits_[0];
   // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
-  if (this->_internal_has_ask()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(3, _Internal::ask(this),
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        3, _Internal::ask(this),
         _Internal::ask(this).GetCachedSize(), target, stream);
   }
 
   // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
-  if (this->_internal_has_bid()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(4, _Internal::bid(this),
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, _Internal::bid(this),
         _Internal::bid(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.QuoteDepthData)
   return target;
 }
 
-size_t QuoteDepthData::ByteSizeLong() const {
+::size_t QuoteDepthData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.QuoteDepthData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
-  // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
-  if (this->_internal_has_ask()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.ask_);
-  }
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook ask = 3;
+    if (cached_has_bits & 0x00000001u) {
+      total_size +=
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.ask_);
+    }
 
-  // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
-  if (this->_internal_has_bid()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.bid_);
-  }
+    // .tigeropen.push.pb.QuoteDepthData.OrderBook bid = 4;
+    if (cached_has_bits & 0x00000002u) {
+      total_size +=
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.bid_);
+    }
 
+  }
   // uint64 timestamp = 2;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData QuoteDepthData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    QuoteDepthData::MergeImpl
+const ::google::protobuf::Message::ClassData QuoteDepthData::_class_data_ = {
+    QuoteDepthData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*QuoteDepthData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* QuoteDepthData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void QuoteDepthData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void QuoteDepthData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<QuoteDepthData*>(&to_msg);
   auto& from = static_cast<const QuoteDepthData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.QuoteDepthData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_symbol().empty()) {
     _this->_internal_set_symbol(from._internal_symbol());
   }
-  if (from._internal_has_ask()) {
-    _this->_internal_mutable_ask()->::tigeropen::push::pb::QuoteDepthData_OrderBook::MergeFrom(
-        from._internal_ask());
-  }
-  if (from._internal_has_bid()) {
-    _this->_internal_mutable_bid()->::tigeropen::push::pb::QuoteDepthData_OrderBook::MergeFrom(
-        from._internal_bid());
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_ask()->::tigeropen::push::pb::QuoteDepthData_OrderBook::MergeFrom(
+          from._internal_ask());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_bid()->::tigeropen::push::pb::QuoteDepthData_OrderBook::MergeFrom(
+          from._internal_bid());
+    }
   }
   if (from._internal_timestamp() != 0) {
     _this->_internal_set_timestamp(from._internal_timestamp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void QuoteDepthData::CopyFrom(const QuoteDepthData& from) {
@@ -767,20 +787,21 @@ void QuoteDepthData::CopyFrom(const QuoteDepthData& from) {
   MergeFrom(from);
 }
 
-bool QuoteDepthData::IsInitialized() const {
+PROTOBUF_NOINLINE bool QuoteDepthData::IsInitialized() const {
   return true;
 }
 
-void QuoteDepthData::InternalSwap(QuoteDepthData* other) {
+::_pbi::CachedSize* QuoteDepthData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void QuoteDepthData::InternalSwap(QuoteDepthData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.timestamp_)
       + sizeof(QuoteDepthData::_impl_.timestamp_)
       - PROTOBUF_FIELD_OFFSET(QuoteDepthData, _impl_.ask_)>(
@@ -788,26 +809,18 @@ void QuoteDepthData::InternalSwap(QuoteDepthData* other) {
           reinterpret_cast<char*>(&other->_impl_.ask_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata QuoteDepthData::GetMetadata() const {
+::google::protobuf::Metadata QuoteDepthData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_QuoteDepthData_2eproto_getter, &descriptor_table_QuoteDepthData_2eproto_once,
       file_level_metadata_QuoteDepthData_2eproto[1]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::QuoteDepthData_OrderBook*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::QuoteDepthData_OrderBook >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::QuoteDepthData_OrderBook >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::QuoteDepthData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::QuoteDepthData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::QuoteDepthData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

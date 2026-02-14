@@ -20,6 +20,12 @@ if(NOT (UNIX OR WIN32))
 endif()
 
 find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
+if(WIN32)
+    # Prevent FindThreads from insisting on pthreads when building with MSVC
+    set(CMAKE_USE_WIN32_THREADS_INIT ON)
+    set(CMAKE_THREAD_PREFER_PTHREAD OFF)
+    set(THREADS_PREFER_PTHREAD_FLAG OFF)
+endif()
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)

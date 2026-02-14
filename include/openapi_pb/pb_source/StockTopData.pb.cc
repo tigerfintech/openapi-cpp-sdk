@@ -4,351 +4,384 @@
 #include "StockTopData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR StockTopData_TopData::StockTopData_TopData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.item_)*/{}
-  , /*decltype(_impl_.targetname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct StockTopData_TopDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR StockTopData_TopDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~StockTopData_TopDataDefaultTypeInternal() {}
-  union {
-    StockTopData_TopData _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopData_TopDataDefaultTypeInternal _StockTopData_TopData_default_instance_;
-PROTOBUF_CONSTEXPR StockTopData_StockItem::StockTopData_StockItem(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.latestprice_)*/0
-  , /*decltype(_impl_.targetvalue_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr StockTopData_StockItem::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        latestprice_{0},
+        targetvalue_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR StockTopData_StockItem::StockTopData_StockItem(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct StockTopData_StockItemDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR StockTopData_StockItemDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR StockTopData_StockItemDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~StockTopData_StockItemDefaultTypeInternal() {}
   union {
     StockTopData_StockItem _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopData_StockItemDefaultTypeInternal _StockTopData_StockItem_default_instance_;
-PROTOBUF_CONSTEXPR StockTopData::StockTopData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.topdata_)*/{}
-  , /*decltype(_impl_.market_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.timestamp_)*/int64_t{0}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopData_StockItemDefaultTypeInternal _StockTopData_StockItem_default_instance_;
+
+inline constexpr StockTopData_TopData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : item_{},
+        targetname_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR StockTopData_TopData::StockTopData_TopData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct StockTopData_TopDataDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StockTopData_TopDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StockTopData_TopDataDefaultTypeInternal() {}
+  union {
+    StockTopData_TopData _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopData_TopDataDefaultTypeInternal _StockTopData_TopData_default_instance_;
+
+inline constexpr StockTopData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : topdata_{},
+        market_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        timestamp_{::int64_t{0}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR StockTopData::StockTopData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct StockTopDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR StockTopDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR StockTopDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~StockTopDataDefaultTypeInternal() {}
   union {
     StockTopData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopDataDefaultTypeInternal _StockTopData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StockTopDataDefaultTypeInternal _StockTopData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_StockTopData_2eproto[3];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_StockTopData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_StockTopData_2eproto = nullptr;
-
-const uint32_t TableStruct_StockTopData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _impl_.targetname_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _impl_.item_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.latestprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.targetvalue_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.market_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.topdata_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_StockTopData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_StockTopData_2eproto = nullptr;
+const ::uint32_t TableStruct_StockTopData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _impl_.targetname_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_TopData, _impl_.item_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.latestprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData_StockItem, _impl_.targetvalue_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.market_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::StockTopData, _impl_.topdata_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::StockTopData_TopData)},
-  { 8, -1, -1, sizeof(::tigeropen::push::pb::StockTopData_StockItem)},
-  { 17, -1, -1, sizeof(::tigeropen::push::pb::StockTopData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::StockTopData_TopData)},
+        {10, -1, -1, sizeof(::tigeropen::push::pb::StockTopData_StockItem)},
+        {21, -1, -1, sizeof(::tigeropen::push::pb::StockTopData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_StockTopData_TopData_default_instance_._instance,
-  &::tigeropen::push::pb::_StockTopData_StockItem_default_instance_._instance,
-  &::tigeropen::push::pb::_StockTopData_default_instance_._instance,
+    &::tigeropen::push::pb::_StockTopData_TopData_default_instance_._instance,
+    &::tigeropen::push::pb::_StockTopData_StockItem_default_instance_._instance,
+    &::tigeropen::push::pb::_StockTopData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_StockTopData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\022StockTopData.proto\022\021tigeropen.push.pb\""
-  "\212\002\n\014StockTopData\022\016\n\006market\030\001 \001(\t\022\021\n\ttime"
-  "stamp\030\002 \001(\003\0228\n\007topData\030\003 \003(\0132\'.tigeropen"
-  ".push.pb.StockTopData.TopData\032V\n\007TopData"
-  "\022\022\n\ntargetName\030\001 \001(\t\0227\n\004item\030\002 \003(\0132).tig"
-  "eropen.push.pb.StockTopData.StockItem\032E\n"
-  "\tStockItem\022\016\n\006symbol\030\001 \001(\t\022\023\n\013latestPric"
-  "e\030\002 \001(\001\022\023\n\013targetValue\030\003 \001(\001b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_StockTopData_2eproto_once;
+const char descriptor_table_protodef_StockTopData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\022StockTopData.proto\022\021tigeropen.push.pb\""
+    "\212\002\n\014StockTopData\022\016\n\006market\030\001 \001(\t\022\021\n\ttime"
+    "stamp\030\002 \001(\003\0228\n\007topData\030\003 \003(\0132\'.tigeropen"
+    ".push.pb.StockTopData.TopData\032V\n\007TopData"
+    "\022\022\n\ntargetName\030\001 \001(\t\0227\n\004item\030\002 \003(\0132).tig"
+    "eropen.push.pb.StockTopData.StockItem\032E\n"
+    "\tStockItem\022\016\n\006symbol\030\001 \001(\t\022\023\n\013latestPric"
+    "e\030\002 \001(\001\022\023\n\013targetValue\030\003 \001(\001b\006proto3"
+};
+static ::absl::once_flag descriptor_table_StockTopData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_StockTopData_2eproto = {
-    false, false, 316, descriptor_table_protodef_StockTopData_2eproto,
+    false,
+    false,
+    316,
+    descriptor_table_protodef_StockTopData_2eproto,
     "StockTopData.proto",
-    &descriptor_table_StockTopData_2eproto_once, nullptr, 0, 3,
-    schemas, file_default_instances, TableStruct_StockTopData_2eproto::offsets,
-    file_level_metadata_StockTopData_2eproto, file_level_enum_descriptors_StockTopData_2eproto,
+    &descriptor_table_StockTopData_2eproto_once,
+    nullptr,
+    0,
+    3,
+    schemas,
+    file_default_instances,
+    TableStruct_StockTopData_2eproto::offsets,
+    file_level_metadata_StockTopData_2eproto,
+    file_level_enum_descriptors_StockTopData_2eproto,
     file_level_service_descriptors_StockTopData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_StockTopData_2eproto_getter() {
   return &descriptor_table_StockTopData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_StockTopData_2eproto(&descriptor_table_StockTopData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_StockTopData_2eproto(&descriptor_table_StockTopData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class StockTopData_TopData::_Internal {
  public:
 };
 
-StockTopData_TopData::StockTopData_TopData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+StockTopData_TopData::StockTopData_TopData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.StockTopData.TopData)
 }
-StockTopData_TopData::StockTopData_TopData(const StockTopData_TopData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  StockTopData_TopData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.item_){from._impl_.item_}
-    , decltype(_impl_.targetname_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE StockTopData_TopData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : item_{visibility, arena, from.item_},
+        targetname_(arena, from.targetname_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.targetname_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.targetname_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_targetname().empty()) {
-    _this->_impl_.targetname_.Set(from._internal_targetname(), 
-      _this->GetArenaForAllocation());
-  }
+StockTopData_TopData::StockTopData_TopData(
+    ::google::protobuf::Arena* arena,
+    const StockTopData_TopData& from)
+    : ::google::protobuf::Message(arena) {
+  StockTopData_TopData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.StockTopData.TopData)
 }
+inline PROTOBUF_NDEBUG_INLINE StockTopData_TopData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : item_{visibility, arena},
+        targetname_(arena),
+        _cached_size_{0} {}
 
-inline void StockTopData_TopData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.item_){arena}
-    , decltype(_impl_.targetname_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.targetname_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.targetname_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void StockTopData_TopData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
 }
-
 StockTopData_TopData::~StockTopData_TopData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.StockTopData.TopData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void StockTopData_TopData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.item_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.targetname_.Destroy();
+  _impl_.~Impl_();
 }
 
-void StockTopData_TopData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void StockTopData_TopData::Clear() {
+PROTOBUF_NOINLINE void StockTopData_TopData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.StockTopData.TopData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.item_.Clear();
   _impl_.targetname_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* StockTopData_TopData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string targetName = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_targetname();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.StockTopData.TopData.targetName"));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated .tigeropen.push.pb.StockTopData.StockItem item = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_item(), ptr);
-            CHK_(ptr);
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* StockTopData_TopData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* StockTopData_TopData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 1, 57, 2> StockTopData_TopData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_StockTopData_TopData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // repeated .tigeropen.push.pb.StockTopData.StockItem item = 2;
+    {::_pbi::TcParser::FastMtR1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData_TopData, _impl_.item_)}},
+    // string targetName = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData_TopData, _impl_.targetname_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string targetName = 1;
+    {PROTOBUF_FIELD_OFFSET(StockTopData_TopData, _impl_.targetname_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated .tigeropen.push.pb.StockTopData.StockItem item = 2;
+    {PROTOBUF_FIELD_OFFSET(StockTopData_TopData, _impl_.item_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::StockTopData_StockItem>()},
+  }}, {{
+    "\46\12\0\0\0\0\0\0"
+    "tigeropen.push.pb.StockTopData.TopData"
+    "targetName"
+  }},
+};
+
+::uint8_t* StockTopData_TopData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.StockTopData.TopData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string targetName = 1;
   if (!this->_internal_targetname().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_targetname().data(), static_cast<int>(this->_internal_targetname().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.StockTopData.TopData.targetName");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_targetname(), target);
+    const std::string& _s = this->_internal_targetname();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.StockTopData.TopData.targetName");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // repeated .tigeropen.push.pb.StockTopData.StockItem item = 2;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_item_size()); i < n; i++) {
-    const auto& repfield = this->_internal_item(i);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+    const auto& repfield = this->_internal_item().Get(i);
+    target = ::google::protobuf::internal::WireFormatLite::
         InternalWriteMessage(2, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.StockTopData.TopData)
   return target;
 }
 
-size_t StockTopData_TopData::ByteSizeLong() const {
+::size_t StockTopData_TopData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.StockTopData.TopData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated .tigeropen.push.pb.StockTopData.StockItem item = 2;
   total_size += 1UL * this->_internal_item_size();
-  for (const auto& msg : this->_impl_.item_) {
+  for (const auto& msg : this->_internal_item()) {
     total_size +=
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+      ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
   }
-
   // string targetName = 1;
   if (!this->_internal_targetname().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_targetname());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_targetname());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StockTopData_TopData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    StockTopData_TopData::MergeImpl
+const ::google::protobuf::Message::ClassData StockTopData_TopData::_class_data_ = {
+    StockTopData_TopData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StockTopData_TopData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* StockTopData_TopData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void StockTopData_TopData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void StockTopData_TopData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<StockTopData_TopData*>(&to_msg);
   auto& from = static_cast<const StockTopData_TopData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.StockTopData.TopData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.item_.MergeFrom(from._impl_.item_);
+  _this->_internal_mutable_item()->MergeFrom(
+      from._internal_item());
   if (!from._internal_targetname().empty()) {
     _this->_internal_set_targetname(from._internal_targetname());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StockTopData_TopData::CopyFrom(const StockTopData_TopData& from) {
@@ -358,279 +391,277 @@ void StockTopData_TopData::CopyFrom(const StockTopData_TopData& from) {
   MergeFrom(from);
 }
 
-bool StockTopData_TopData::IsInitialized() const {
+PROTOBUF_NOINLINE bool StockTopData_TopData::IsInitialized() const {
   return true;
 }
 
-void StockTopData_TopData::InternalSwap(StockTopData_TopData* other) {
+::_pbi::CachedSize* StockTopData_TopData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void StockTopData_TopData::InternalSwap(StockTopData_TopData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.item_.InternalSwap(&other->_impl_.item_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.targetname_, lhs_arena,
-      &other->_impl_.targetname_, rhs_arena
-  );
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.targetname_, &other->_impl_.targetname_, arena);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata StockTopData_TopData::GetMetadata() const {
+::google::protobuf::Metadata StockTopData_TopData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_StockTopData_2eproto_getter, &descriptor_table_StockTopData_2eproto_once,
       file_level_metadata_StockTopData_2eproto[0]);
 }
-
 // ===================================================================
 
 class StockTopData_StockItem::_Internal {
  public:
 };
 
-StockTopData_StockItem::StockTopData_StockItem(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+StockTopData_StockItem::StockTopData_StockItem(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.StockTopData.StockItem)
 }
-StockTopData_StockItem::StockTopData_StockItem(const StockTopData_StockItem& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  StockTopData_StockItem* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.latestprice_){}
-    , decltype(_impl_.targetvalue_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE StockTopData_StockItem::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : symbol_(arena, from.symbol_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.latestprice_, &from._impl_.latestprice_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.targetvalue_) -
-    reinterpret_cast<char*>(&_impl_.latestprice_)) + sizeof(_impl_.targetvalue_));
+StockTopData_StockItem::StockTopData_StockItem(
+    ::google::protobuf::Arena* arena,
+    const StockTopData_StockItem& from)
+    : ::google::protobuf::Message(arena) {
+  StockTopData_StockItem* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, latestprice_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, latestprice_),
+           offsetof(Impl_, targetvalue_) -
+               offsetof(Impl_, latestprice_) +
+               sizeof(Impl_::targetvalue_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.StockTopData.StockItem)
 }
+inline PROTOBUF_NDEBUG_INLINE StockTopData_StockItem::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : symbol_(arena),
+        _cached_size_{0} {}
 
-inline void StockTopData_StockItem::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.latestprice_){0}
-    , decltype(_impl_.targetvalue_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void StockTopData_StockItem::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, latestprice_),
+           0,
+           offsetof(Impl_, targetvalue_) -
+               offsetof(Impl_, latestprice_) +
+               sizeof(Impl_::targetvalue_));
 }
-
 StockTopData_StockItem::~StockTopData_StockItem() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.StockTopData.StockItem)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void StockTopData_StockItem::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
+  _impl_.~Impl_();
 }
 
-void StockTopData_StockItem::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void StockTopData_StockItem::Clear() {
+PROTOBUF_NOINLINE void StockTopData_StockItem::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.StockTopData.StockItem)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.symbol_.ClearToEmpty();
-  ::memset(&_impl_.latestprice_, 0, static_cast<size_t>(
+  ::memset(&_impl_.latestprice_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.targetvalue_) -
       reinterpret_cast<char*>(&_impl_.latestprice_)) + sizeof(_impl_.targetvalue_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* StockTopData_StockItem::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string symbol = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.StockTopData.StockItem.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // double latestPrice = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 17)) {
-          _impl_.latestprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double targetValue = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 25)) {
-          _impl_.targetvalue_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* StockTopData_StockItem::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* StockTopData_StockItem::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 0, 55, 2> StockTopData_StockItem::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_StockTopData_StockItem_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string symbol = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.symbol_)}},
+    // double latestPrice = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.latestprice_)}},
+    // double targetValue = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.targetvalue_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string symbol = 1;
+    {PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.symbol_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // double latestPrice = 2;
+    {PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.latestprice_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double targetValue = 3;
+    {PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.targetvalue_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+  }},
+  // no aux_entries
+  {{
+    "\50\6\0\0\0\0\0\0"
+    "tigeropen.push.pb.StockTopData.StockItem"
+    "symbol"
+  }},
+};
+
+::uint8_t* StockTopData_StockItem::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.StockTopData.StockItem)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.StockTopData.StockItem.symbol");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.StockTopData.StockItem.symbol");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // double latestPrice = 2;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = this->_internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(2, this->_internal_latestprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        2, this->_internal_latestprice(), target);
   }
 
   // double targetValue = 3;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_targetvalue = this->_internal_targetvalue();
-  uint64_t raw_targetvalue;
+  ::uint64_t raw_targetvalue;
   memcpy(&raw_targetvalue, &tmp_targetvalue, sizeof(tmp_targetvalue));
   if (raw_targetvalue != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(3, this->_internal_targetvalue(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        3, this->_internal_targetvalue(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.StockTopData.StockItem)
   return target;
 }
 
-size_t StockTopData_StockItem::ByteSizeLong() const {
+::size_t StockTopData_StockItem::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.StockTopData.StockItem)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // double latestPrice = 2;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = this->_internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double targetValue = 3;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_targetvalue = this->_internal_targetvalue();
-  uint64_t raw_targetvalue;
+  ::uint64_t raw_targetvalue;
   memcpy(&raw_targetvalue, &tmp_targetvalue, sizeof(tmp_targetvalue));
   if (raw_targetvalue != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StockTopData_StockItem::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    StockTopData_StockItem::MergeImpl
+const ::google::protobuf::Message::ClassData StockTopData_StockItem::_class_data_ = {
+    StockTopData_StockItem::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StockTopData_StockItem::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* StockTopData_StockItem::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void StockTopData_StockItem::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void StockTopData_StockItem::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<StockTopData_StockItem*>(&to_msg);
   auto& from = static_cast<const StockTopData_StockItem&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.StockTopData.StockItem)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_symbol().empty()) {
     _this->_internal_set_symbol(from._internal_symbol());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = from._internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
     _this->_internal_set_latestprice(from._internal_latestprice());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_targetvalue = from._internal_targetvalue();
-  uint64_t raw_targetvalue;
+  ::uint64_t raw_targetvalue;
   memcpy(&raw_targetvalue, &tmp_targetvalue, sizeof(tmp_targetvalue));
   if (raw_targetvalue != 0) {
     _this->_internal_set_targetvalue(from._internal_targetvalue());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StockTopData_StockItem::CopyFrom(const StockTopData_StockItem& from) {
@@ -640,20 +671,20 @@ void StockTopData_StockItem::CopyFrom(const StockTopData_StockItem& from) {
   MergeFrom(from);
 }
 
-bool StockTopData_StockItem::IsInitialized() const {
+PROTOBUF_NOINLINE bool StockTopData_StockItem::IsInitialized() const {
   return true;
 }
 
-void StockTopData_StockItem::InternalSwap(StockTopData_StockItem* other) {
+::_pbi::CachedSize* StockTopData_StockItem::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void StockTopData_StockItem::InternalSwap(StockTopData_StockItem* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.targetvalue_)
       + sizeof(StockTopData_StockItem::_impl_.targetvalue_)
       - PROTOBUF_FIELD_OFFSET(StockTopData_StockItem, _impl_.latestprice_)>(
@@ -661,244 +692,223 @@ void StockTopData_StockItem::InternalSwap(StockTopData_StockItem* other) {
           reinterpret_cast<char*>(&other->_impl_.latestprice_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata StockTopData_StockItem::GetMetadata() const {
+::google::protobuf::Metadata StockTopData_StockItem::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_StockTopData_2eproto_getter, &descriptor_table_StockTopData_2eproto_once,
       file_level_metadata_StockTopData_2eproto[1]);
 }
-
 // ===================================================================
 
 class StockTopData::_Internal {
  public:
 };
 
-StockTopData::StockTopData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+StockTopData::StockTopData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.StockTopData)
 }
-StockTopData::StockTopData(const StockTopData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  StockTopData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.topdata_){from._impl_.topdata_}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.timestamp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE StockTopData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : topdata_{visibility, arena, from.topdata_},
+        market_(arena, from.market_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_market().empty()) {
-    _this->_impl_.market_.Set(from._internal_market(), 
-      _this->GetArenaForAllocation());
-  }
-  _this->_impl_.timestamp_ = from._impl_.timestamp_;
+StockTopData::StockTopData(
+    ::google::protobuf::Arena* arena,
+    const StockTopData& from)
+    : ::google::protobuf::Message(arena) {
+  StockTopData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  _impl_.timestamp_ = from._impl_.timestamp_;
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.StockTopData)
 }
+inline PROTOBUF_NDEBUG_INLINE StockTopData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : topdata_{visibility, arena},
+        market_(arena),
+        _cached_size_{0} {}
 
-inline void StockTopData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.topdata_){arena}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.timestamp_){int64_t{0}}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void StockTopData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.timestamp_ = {};
 }
-
 StockTopData::~StockTopData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.StockTopData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void StockTopData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.topdata_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.market_.Destroy();
+  _impl_.~Impl_();
 }
 
-void StockTopData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void StockTopData::Clear() {
+PROTOBUF_NOINLINE void StockTopData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.StockTopData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.topdata_.Clear();
   _impl_.market_.ClearToEmpty();
-  _impl_.timestamp_ = int64_t{0};
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _impl_.timestamp_ = ::int64_t{0};
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* StockTopData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string market = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_market();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.StockTopData.market"));
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 timestamp = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated .tigeropen.push.pb.StockTopData.TopData topData = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_topdata(), ptr);
-            CHK_(ptr);
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* StockTopData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* StockTopData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 1, 45, 2> StockTopData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_StockTopData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string market = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.market_)}},
+    // int64 timestamp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(StockTopData, _impl_.timestamp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.timestamp_)}},
+    // repeated .tigeropen.push.pb.StockTopData.TopData topData = 3;
+    {::_pbi::TcParser::FastMtR1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.topdata_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string market = 1;
+    {PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.market_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 timestamp = 2;
+    {PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // repeated .tigeropen.push.pb.StockTopData.TopData topData = 3;
+    {PROTOBUF_FIELD_OFFSET(StockTopData, _impl_.topdata_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::StockTopData_TopData>()},
+  }}, {{
+    "\36\6\0\0\0\0\0\0"
+    "tigeropen.push.pb.StockTopData"
+    "market"
+  }},
+};
+
+::uint8_t* StockTopData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.StockTopData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string market = 1;
   if (!this->_internal_market().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_market().data(), static_cast<int>(this->_internal_market().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.StockTopData.market");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_market(), target);
+    const std::string& _s = this->_internal_market();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.StockTopData.market");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // int64 timestamp = 2;
   if (this->_internal_timestamp() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(2, this->_internal_timestamp(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<2>(
+            stream, this->_internal_timestamp(), target);
   }
 
   // repeated .tigeropen.push.pb.StockTopData.TopData topData = 3;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_topdata_size()); i < n; i++) {
-    const auto& repfield = this->_internal_topdata(i);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+    const auto& repfield = this->_internal_topdata().Get(i);
+    target = ::google::protobuf::internal::WireFormatLite::
         InternalWriteMessage(3, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.StockTopData)
   return target;
 }
 
-size_t StockTopData::ByteSizeLong() const {
+::size_t StockTopData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.StockTopData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated .tigeropen.push.pb.StockTopData.TopData topData = 3;
   total_size += 1UL * this->_internal_topdata_size();
-  for (const auto& msg : this->_impl_.topdata_) {
+  for (const auto& msg : this->_internal_topdata()) {
     total_size +=
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+      ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
   }
-
   // string market = 1;
   if (!this->_internal_market().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_market());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_market());
   }
 
   // int64 timestamp = 2;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StockTopData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    StockTopData::MergeImpl
+const ::google::protobuf::Message::ClassData StockTopData::_class_data_ = {
+    StockTopData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StockTopData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* StockTopData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void StockTopData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void StockTopData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<StockTopData*>(&to_msg);
   auto& from = static_cast<const StockTopData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.StockTopData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.topdata_.MergeFrom(from._impl_.topdata_);
+  _this->_internal_mutable_topdata()->MergeFrom(
+      from._internal_topdata());
   if (!from._internal_market().empty()) {
     _this->_internal_set_market(from._internal_market());
   }
   if (from._internal_timestamp() != 0) {
     _this->_internal_set_timestamp(from._internal_timestamp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StockTopData::CopyFrom(const StockTopData& from) {
@@ -908,47 +918,35 @@ void StockTopData::CopyFrom(const StockTopData& from) {
   MergeFrom(from);
 }
 
-bool StockTopData::IsInitialized() const {
+PROTOBUF_NOINLINE bool StockTopData::IsInitialized() const {
   return true;
 }
 
-void StockTopData::InternalSwap(StockTopData* other) {
+::_pbi::CachedSize* StockTopData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void StockTopData::InternalSwap(StockTopData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.topdata_.InternalSwap(&other->_impl_.topdata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.market_, lhs_arena,
-      &other->_impl_.market_, rhs_arena
-  );
-  swap(_impl_.timestamp_, other->_impl_.timestamp_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.market_, &other->_impl_.market_, arena);
+        swap(_impl_.timestamp_, other->_impl_.timestamp_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata StockTopData::GetMetadata() const {
+::google::protobuf::Metadata StockTopData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_StockTopData_2eproto_getter, &descriptor_table_StockTopData_2eproto_once,
       file_level_metadata_StockTopData_2eproto[2]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::StockTopData_TopData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::StockTopData_TopData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::StockTopData_TopData >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::StockTopData_StockItem*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::StockTopData_StockItem >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::StockTopData_StockItem >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::StockTopData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::StockTopData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::StockTopData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

@@ -4,557 +4,356 @@
 #include "OrderStatusData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR OrderStatusData::OrderStatusData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.attrlist_)*/{}
-  , /*decltype(_impl_.account_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.expiry_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.strike_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.right_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.identifier_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.action_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.market_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.currency_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.segtype_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sectype_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.ordertype_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.status_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.replacestatus_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.cancelstatus_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.source_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.errormsg_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.attrdesc_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.usermark_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.id_)*/int64_t{0}
-  , /*decltype(_impl_.multiplier_)*/0u
-  , /*decltype(_impl_.totalquantityscale_)*/0
-  , /*decltype(_impl_.totalquantity_)*/int64_t{0}
-  , /*decltype(_impl_.filledquantity_)*/int64_t{0}
-  , /*decltype(_impl_.avgfillprice_)*/0
-  , /*decltype(_impl_.limitprice_)*/0
-  , /*decltype(_impl_.stopprice_)*/0
-  , /*decltype(_impl_.realizedpnl_)*/0
-  , /*decltype(_impl_.filledquantityscale_)*/0
-  , /*decltype(_impl_.islong_)*/false
-  , /*decltype(_impl_.outsiderth_)*/false
-  , /*decltype(_impl_.canmodify_)*/false
-  , /*decltype(_impl_.cancancel_)*/false
-  , /*decltype(_impl_.liquidation_)*/false
-  , /*decltype(_impl_.commissionandfee_)*/0
-  , /*decltype(_impl_.opentime_)*/uint64_t{0u}
-  , /*decltype(_impl_.timestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_.totalcashamount_)*/0
-  , /*decltype(_impl_.filledcashamount_)*/0
-  , /*decltype(_impl_.gst_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr OrderStatusData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : attrlist_{},
+        account_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        expiry_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        strike_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        right_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        identifier_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        action_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        market_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        currency_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        segtype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sectype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        ordertype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        status_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        replacestatus_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        cancelstatus_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        name_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        errormsg_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        attrdesc_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        usermark_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        id_{::int64_t{0}},
+        multiplier_{0u},
+        totalquantityscale_{0},
+        totalquantity_{::int64_t{0}},
+        filledquantity_{::int64_t{0}},
+        avgfillprice_{0},
+        limitprice_{0},
+        stopprice_{0},
+        realizedpnl_{0},
+        filledquantityscale_{0},
+        islong_{false},
+        outsiderth_{false},
+        canmodify_{false},
+        cancancel_{false},
+        liquidation_{false},
+        commissionandfee_{0},
+        opentime_{::uint64_t{0u}},
+        timestamp_{::uint64_t{0u}},
+        totalcashamount_{0},
+        filledcashamount_{0},
+        gst_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR OrderStatusData::OrderStatusData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct OrderStatusDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR OrderStatusDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR OrderStatusDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~OrderStatusDataDefaultTypeInternal() {}
   union {
     OrderStatusData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OrderStatusDataDefaultTypeInternal _OrderStatusData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OrderStatusDataDefaultTypeInternal _OrderStatusData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_OrderStatusData_2eproto[1];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_OrderStatusData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_OrderStatusData_2eproto = nullptr;
-
-const uint32_t TableStruct_OrderStatusData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.account_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.expiry_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.strike_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.right_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.identifier_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.multiplier_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.action_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.market_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.currency_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.segtype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.sectype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.ordertype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.islong_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalquantity_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalquantityscale_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledquantity_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledquantityscale_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.avgfillprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.limitprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.stopprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.realizedpnl_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.status_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.replacestatus_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.cancelstatus_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.outsiderth_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.canmodify_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.cancancel_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.liquidation_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.name_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.source_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.errormsg_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.attrdesc_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.commissionandfee_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.opentime_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.usermark_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalcashamount_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledcashamount_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.gst_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.attrlist_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_OrderStatusData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_OrderStatusData_2eproto = nullptr;
+const ::uint32_t TableStruct_OrderStatusData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.id_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.account_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.expiry_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.strike_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.right_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.identifier_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.multiplier_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.action_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.market_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.currency_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.segtype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.sectype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.ordertype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.islong_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalquantity_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalquantityscale_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledquantity_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledquantityscale_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.avgfillprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.limitprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.stopprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.realizedpnl_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.status_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.replacestatus_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.cancelstatus_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.outsiderth_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.canmodify_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.cancancel_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.liquidation_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.name_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.source_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.errormsg_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.attrdesc_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.commissionandfee_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.opentime_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.usermark_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.totalcashamount_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.filledcashamount_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.gst_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::OrderStatusData, _impl_.attrlist_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::OrderStatusData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::OrderStatusData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_OrderStatusData_default_instance_._instance,
+    &::tigeropen::push::pb::_OrderStatusData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_OrderStatusData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\025OrderStatusData.proto\022\021tigeropen.push."
-  "pb\"\267\006\n\017OrderStatusData\022\n\n\002id\030\001 \001(\022\022\017\n\007ac"
-  "count\030\002 \001(\t\022\016\n\006symbol\030\003 \001(\t\022\016\n\006expiry\030\004 "
-  "\001(\t\022\016\n\006strike\030\005 \001(\t\022\r\n\005right\030\006 \001(\t\022\022\n\nid"
-  "entifier\030\007 \001(\t\022\022\n\nmultiplier\030\010 \001(\r\022\016\n\006ac"
-  "tion\030\t \001(\t\022\016\n\006market\030\n \001(\t\022\020\n\010currency\030\013"
-  " \001(\t\022\017\n\007segType\030\014 \001(\t\022\017\n\007secType\030\r \001(\t\022\021"
-  "\n\torderType\030\016 \001(\t\022\016\n\006isLong\030\017 \001(\010\022\025\n\rtot"
-  "alQuantity\030\020 \001(\022\022\032\n\022totalQuantityScale\030\021"
-  " \001(\021\022\026\n\016filledQuantity\030\022 \001(\022\022\033\n\023filledQu"
-  "antityScale\030\023 \001(\021\022\024\n\014avgFillPrice\030\024 \001(\001\022"
-  "\022\n\nlimitPrice\030\025 \001(\001\022\021\n\tstopPrice\030\026 \001(\001\022\023"
-  "\n\013realizedPnl\030\027 \001(\001\022\016\n\006status\030\030 \001(\t\022\025\n\rr"
-  "eplaceStatus\030\031 \001(\t\022\024\n\014cancelStatus\030\032 \001(\t"
-  "\022\022\n\noutsideRth\030\033 \001(\010\022\021\n\tcanModify\030\034 \001(\010\022"
-  "\021\n\tcanCancel\030\035 \001(\010\022\023\n\013liquidation\030\036 \001(\010\022"
-  "\014\n\004name\030\037 \001(\t\022\016\n\006source\030  \001(\t\022\020\n\010errorMs"
-  "g\030! \001(\t\022\020\n\010attrDesc\030\" \001(\t\022\030\n\020commissionA"
-  "ndFee\030# \001(\002\022\020\n\010openTime\030$ \001(\004\022\021\n\ttimesta"
-  "mp\030% \001(\004\022\020\n\010userMark\030& \001(\t\022\027\n\017totalCashA"
-  "mount\030\' \001(\001\022\030\n\020filledCashAmount\030( \001(\001\022\013\n"
-  "\003gst\030) \001(\001\022\020\n\010attrList\030* \003(\tb\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_OrderStatusData_2eproto_once;
+const char descriptor_table_protodef_OrderStatusData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\025OrderStatusData.proto\022\021tigeropen.push."
+    "pb\"\267\006\n\017OrderStatusData\022\n\n\002id\030\001 \001(\022\022\017\n\007ac"
+    "count\030\002 \001(\t\022\016\n\006symbol\030\003 \001(\t\022\016\n\006expiry\030\004 "
+    "\001(\t\022\016\n\006strike\030\005 \001(\t\022\r\n\005right\030\006 \001(\t\022\022\n\nid"
+    "entifier\030\007 \001(\t\022\022\n\nmultiplier\030\010 \001(\r\022\016\n\006ac"
+    "tion\030\t \001(\t\022\016\n\006market\030\n \001(\t\022\020\n\010currency\030\013"
+    " \001(\t\022\017\n\007segType\030\014 \001(\t\022\017\n\007secType\030\r \001(\t\022\021"
+    "\n\torderType\030\016 \001(\t\022\016\n\006isLong\030\017 \001(\010\022\025\n\rtot"
+    "alQuantity\030\020 \001(\022\022\032\n\022totalQuantityScale\030\021"
+    " \001(\021\022\026\n\016filledQuantity\030\022 \001(\022\022\033\n\023filledQu"
+    "antityScale\030\023 \001(\021\022\024\n\014avgFillPrice\030\024 \001(\001\022"
+    "\022\n\nlimitPrice\030\025 \001(\001\022\021\n\tstopPrice\030\026 \001(\001\022\023"
+    "\n\013realizedPnl\030\027 \001(\001\022\016\n\006status\030\030 \001(\t\022\025\n\rr"
+    "eplaceStatus\030\031 \001(\t\022\024\n\014cancelStatus\030\032 \001(\t"
+    "\022\022\n\noutsideRth\030\033 \001(\010\022\021\n\tcanModify\030\034 \001(\010\022"
+    "\021\n\tcanCancel\030\035 \001(\010\022\023\n\013liquidation\030\036 \001(\010\022"
+    "\014\n\004name\030\037 \001(\t\022\016\n\006source\030  \001(\t\022\020\n\010errorMs"
+    "g\030! \001(\t\022\020\n\010attrDesc\030\" \001(\t\022\030\n\020commissionA"
+    "ndFee\030# \001(\002\022\020\n\010openTime\030$ \001(\004\022\021\n\ttimesta"
+    "mp\030% \001(\004\022\020\n\010userMark\030& \001(\t\022\027\n\017totalCashA"
+    "mount\030\' \001(\001\022\030\n\020filledCashAmount\030( \001(\001\022\013\n"
+    "\003gst\030) \001(\001\022\020\n\010attrList\030* \003(\tb\006proto3"
+};
+static ::absl::once_flag descriptor_table_OrderStatusData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_OrderStatusData_2eproto = {
-    false, false, 876, descriptor_table_protodef_OrderStatusData_2eproto,
+    false,
+    false,
+    876,
+    descriptor_table_protodef_OrderStatusData_2eproto,
     "OrderStatusData.proto",
-    &descriptor_table_OrderStatusData_2eproto_once, nullptr, 0, 1,
-    schemas, file_default_instances, TableStruct_OrderStatusData_2eproto::offsets,
-    file_level_metadata_OrderStatusData_2eproto, file_level_enum_descriptors_OrderStatusData_2eproto,
+    &descriptor_table_OrderStatusData_2eproto_once,
+    nullptr,
+    0,
+    1,
+    schemas,
+    file_default_instances,
+    TableStruct_OrderStatusData_2eproto::offsets,
+    file_level_metadata_OrderStatusData_2eproto,
+    file_level_enum_descriptors_OrderStatusData_2eproto,
     file_level_service_descriptors_OrderStatusData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_OrderStatusData_2eproto_getter() {
   return &descriptor_table_OrderStatusData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_OrderStatusData_2eproto(&descriptor_table_OrderStatusData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_OrderStatusData_2eproto(&descriptor_table_OrderStatusData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class OrderStatusData::_Internal {
  public:
 };
 
-OrderStatusData::OrderStatusData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+OrderStatusData::OrderStatusData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.OrderStatusData)
 }
-OrderStatusData::OrderStatusData(const OrderStatusData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  OrderStatusData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.attrlist_){from._impl_.attrlist_}
-    , decltype(_impl_.account_){}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.expiry_){}
-    , decltype(_impl_.strike_){}
-    , decltype(_impl_.right_){}
-    , decltype(_impl_.identifier_){}
-    , decltype(_impl_.action_){}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.currency_){}
-    , decltype(_impl_.segtype_){}
-    , decltype(_impl_.sectype_){}
-    , decltype(_impl_.ordertype_){}
-    , decltype(_impl_.status_){}
-    , decltype(_impl_.replacestatus_){}
-    , decltype(_impl_.cancelstatus_){}
-    , decltype(_impl_.name_){}
-    , decltype(_impl_.source_){}
-    , decltype(_impl_.errormsg_){}
-    , decltype(_impl_.attrdesc_){}
-    , decltype(_impl_.usermark_){}
-    , decltype(_impl_.id_){}
-    , decltype(_impl_.multiplier_){}
-    , decltype(_impl_.totalquantityscale_){}
-    , decltype(_impl_.totalquantity_){}
-    , decltype(_impl_.filledquantity_){}
-    , decltype(_impl_.avgfillprice_){}
-    , decltype(_impl_.limitprice_){}
-    , decltype(_impl_.stopprice_){}
-    , decltype(_impl_.realizedpnl_){}
-    , decltype(_impl_.filledquantityscale_){}
-    , decltype(_impl_.islong_){}
-    , decltype(_impl_.outsiderth_){}
-    , decltype(_impl_.canmodify_){}
-    , decltype(_impl_.cancancel_){}
-    , decltype(_impl_.liquidation_){}
-    , decltype(_impl_.commissionandfee_){}
-    , decltype(_impl_.opentime_){}
-    , decltype(_impl_.timestamp_){}
-    , decltype(_impl_.totalcashamount_){}
-    , decltype(_impl_.filledcashamount_){}
-    , decltype(_impl_.gst_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE OrderStatusData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : attrlist_{visibility, arena, from.attrlist_},
+        account_(arena, from.account_),
+        symbol_(arena, from.symbol_),
+        expiry_(arena, from.expiry_),
+        strike_(arena, from.strike_),
+        right_(arena, from.right_),
+        identifier_(arena, from.identifier_),
+        action_(arena, from.action_),
+        market_(arena, from.market_),
+        currency_(arena, from.currency_),
+        segtype_(arena, from.segtype_),
+        sectype_(arena, from.sectype_),
+        ordertype_(arena, from.ordertype_),
+        status_(arena, from.status_),
+        replacestatus_(arena, from.replacestatus_),
+        cancelstatus_(arena, from.cancelstatus_),
+        name_(arena, from.name_),
+        source_(arena, from.source_),
+        errormsg_(arena, from.errormsg_),
+        attrdesc_(arena, from.attrdesc_),
+        usermark_(arena, from.usermark_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_account().empty()) {
-    _this->_impl_.account_.Set(from._internal_account(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.expiry_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.expiry_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_expiry().empty()) {
-    _this->_impl_.expiry_.Set(from._internal_expiry(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.strike_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.strike_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_strike().empty()) {
-    _this->_impl_.strike_.Set(from._internal_strike(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.right_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.right_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_right().empty()) {
-    _this->_impl_.right_.Set(from._internal_right(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_identifier().empty()) {
-    _this->_impl_.identifier_.Set(from._internal_identifier(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.action_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.action_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_action().empty()) {
-    _this->_impl_.action_.Set(from._internal_action(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_market().empty()) {
-    _this->_impl_.market_.Set(from._internal_market(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.currency_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.currency_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_currency().empty()) {
-    _this->_impl_.currency_.Set(from._internal_currency(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.segtype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.segtype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_segtype().empty()) {
-    _this->_impl_.segtype_.Set(from._internal_segtype(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.sectype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sectype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_sectype().empty()) {
-    _this->_impl_.sectype_.Set(from._internal_sectype(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.ordertype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.ordertype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_ordertype().empty()) {
-    _this->_impl_.ordertype_.Set(from._internal_ordertype(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.status_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.status_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_status().empty()) {
-    _this->_impl_.status_.Set(from._internal_status(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.replacestatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.replacestatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_replacestatus().empty()) {
-    _this->_impl_.replacestatus_.Set(from._internal_replacestatus(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.cancelstatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cancelstatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_cancelstatus().empty()) {
-    _this->_impl_.cancelstatus_.Set(from._internal_cancelstatus(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_name().empty()) {
-    _this->_impl_.name_.Set(from._internal_name(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.source_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.source_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_source().empty()) {
-    _this->_impl_.source_.Set(from._internal_source(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.errormsg_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.errormsg_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_errormsg().empty()) {
-    _this->_impl_.errormsg_.Set(from._internal_errormsg(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.attrdesc_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.attrdesc_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_attrdesc().empty()) {
-    _this->_impl_.attrdesc_.Set(from._internal_attrdesc(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.usermark_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.usermark_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_usermark().empty()) {
-    _this->_impl_.usermark_.Set(from._internal_usermark(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.id_, &from._impl_.id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.gst_) -
-    reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.gst_));
+OrderStatusData::OrderStatusData(
+    ::google::protobuf::Arena* arena,
+    const OrderStatusData& from)
+    : ::google::protobuf::Message(arena) {
+  OrderStatusData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, id_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, id_),
+           offsetof(Impl_, gst_) -
+               offsetof(Impl_, id_) +
+               sizeof(Impl_::gst_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.OrderStatusData)
 }
+inline PROTOBUF_NDEBUG_INLINE OrderStatusData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : attrlist_{visibility, arena},
+        account_(arena),
+        symbol_(arena),
+        expiry_(arena),
+        strike_(arena),
+        right_(arena),
+        identifier_(arena),
+        action_(arena),
+        market_(arena),
+        currency_(arena),
+        segtype_(arena),
+        sectype_(arena),
+        ordertype_(arena),
+        status_(arena),
+        replacestatus_(arena),
+        cancelstatus_(arena),
+        name_(arena),
+        source_(arena),
+        errormsg_(arena),
+        attrdesc_(arena),
+        usermark_(arena),
+        _cached_size_{0} {}
 
-inline void OrderStatusData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.attrlist_){arena}
-    , decltype(_impl_.account_){}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.expiry_){}
-    , decltype(_impl_.strike_){}
-    , decltype(_impl_.right_){}
-    , decltype(_impl_.identifier_){}
-    , decltype(_impl_.action_){}
-    , decltype(_impl_.market_){}
-    , decltype(_impl_.currency_){}
-    , decltype(_impl_.segtype_){}
-    , decltype(_impl_.sectype_){}
-    , decltype(_impl_.ordertype_){}
-    , decltype(_impl_.status_){}
-    , decltype(_impl_.replacestatus_){}
-    , decltype(_impl_.cancelstatus_){}
-    , decltype(_impl_.name_){}
-    , decltype(_impl_.source_){}
-    , decltype(_impl_.errormsg_){}
-    , decltype(_impl_.attrdesc_){}
-    , decltype(_impl_.usermark_){}
-    , decltype(_impl_.id_){int64_t{0}}
-    , decltype(_impl_.multiplier_){0u}
-    , decltype(_impl_.totalquantityscale_){0}
-    , decltype(_impl_.totalquantity_){int64_t{0}}
-    , decltype(_impl_.filledquantity_){int64_t{0}}
-    , decltype(_impl_.avgfillprice_){0}
-    , decltype(_impl_.limitprice_){0}
-    , decltype(_impl_.stopprice_){0}
-    , decltype(_impl_.realizedpnl_){0}
-    , decltype(_impl_.filledquantityscale_){0}
-    , decltype(_impl_.islong_){false}
-    , decltype(_impl_.outsiderth_){false}
-    , decltype(_impl_.canmodify_){false}
-    , decltype(_impl_.cancancel_){false}
-    , decltype(_impl_.liquidation_){false}
-    , decltype(_impl_.commissionandfee_){0}
-    , decltype(_impl_.opentime_){uint64_t{0u}}
-    , decltype(_impl_.timestamp_){uint64_t{0u}}
-    , decltype(_impl_.totalcashamount_){0}
-    , decltype(_impl_.filledcashamount_){0}
-    , decltype(_impl_.gst_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.expiry_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.expiry_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.strike_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.strike_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.right_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.right_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.action_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.action_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.market_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.market_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.currency_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.currency_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.segtype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.segtype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.sectype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sectype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.ordertype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.ordertype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.status_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.status_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.replacestatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.replacestatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.cancelstatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cancelstatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.source_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.source_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.errormsg_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.errormsg_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.attrdesc_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.attrdesc_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.usermark_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.usermark_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void OrderStatusData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, id_),
+           0,
+           offsetof(Impl_, gst_) -
+               offsetof(Impl_, id_) +
+               sizeof(Impl_::gst_));
 }
-
 OrderStatusData::~OrderStatusData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.OrderStatusData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void OrderStatusData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.attrlist_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.account_.Destroy();
   _impl_.symbol_.Destroy();
   _impl_.expiry_.Destroy();
@@ -575,15 +374,13 @@ inline void OrderStatusData::SharedDtor() {
   _impl_.errormsg_.Destroy();
   _impl_.attrdesc_.Destroy();
   _impl_.usermark_.Destroy();
+  _impl_.~Impl_();
 }
 
-void OrderStatusData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void OrderStatusData::Clear() {
+PROTOBUF_NOINLINE void OrderStatusData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.OrderStatusData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -608,1130 +405,966 @@ void OrderStatusData::Clear() {
   _impl_.errormsg_.ClearToEmpty();
   _impl_.attrdesc_.ClearToEmpty();
   _impl_.usermark_.ClearToEmpty();
-  ::memset(&_impl_.id_, 0, static_cast<size_t>(
+  ::memset(&_impl_.id_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.gst_) -
       reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.gst_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* OrderStatusData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // sint64 id = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string account = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_account();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.account"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string symbol = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string expiry = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_expiry();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.expiry"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string strike = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          auto str = _internal_mutable_strike();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.strike"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string right = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          auto str = _internal_mutable_right();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.right"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string identifier = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
-          auto str = _internal_mutable_identifier();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.identifier"));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 multiplier = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 64)) {
-          _impl_.multiplier_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string action = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
-          auto str = _internal_mutable_action();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.action"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string market = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
-          auto str = _internal_mutable_market();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.market"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string currency = 11;
-      case 11:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
-          auto str = _internal_mutable_currency();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.currency"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string segType = 12;
-      case 12:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 98)) {
-          auto str = _internal_mutable_segtype();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.segType"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string secType = 13;
-      case 13:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
-          auto str = _internal_mutable_sectype();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.secType"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string orderType = 14;
-      case 14:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 114)) {
-          auto str = _internal_mutable_ordertype();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.orderType"));
-        } else
-          goto handle_unusual;
-        continue;
-      // bool isLong = 15;
-      case 15:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 120)) {
-          _impl_.islong_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // sint64 totalQuantity = 16;
-      case 16:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 128)) {
-          _impl_.totalquantity_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // sint32 totalQuantityScale = 17;
-      case 17:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 136)) {
-          _impl_.totalquantityscale_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // sint64 filledQuantity = 18;
-      case 18:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 144)) {
-          _impl_.filledquantity_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // sint32 filledQuantityScale = 19;
-      case 19:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 152)) {
-          _impl_.filledquantityscale_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // double avgFillPrice = 20;
-      case 20:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 161)) {
-          _impl_.avgfillprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double limitPrice = 21;
-      case 21:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 169)) {
-          _impl_.limitprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double stopPrice = 22;
-      case 22:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 177)) {
-          _impl_.stopprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double realizedPnl = 23;
-      case 23:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 185)) {
-          _impl_.realizedpnl_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // string status = 24;
-      case 24:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 194)) {
-          auto str = _internal_mutable_status();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.status"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string replaceStatus = 25;
-      case 25:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 202)) {
-          auto str = _internal_mutable_replacestatus();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.replaceStatus"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string cancelStatus = 26;
-      case 26:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 210)) {
-          auto str = _internal_mutable_cancelstatus();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.cancelStatus"));
-        } else
-          goto handle_unusual;
-        continue;
-      // bool outsideRth = 27;
-      case 27:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 216)) {
-          _impl_.outsiderth_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // bool canModify = 28;
-      case 28:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 224)) {
-          _impl_.canmodify_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // bool canCancel = 29;
-      case 29:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 232)) {
-          _impl_.cancancel_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // bool liquidation = 30;
-      case 30:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 240)) {
-          _impl_.liquidation_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string name = 31;
-      case 31:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 250)) {
-          auto str = _internal_mutable_name();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.name"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string source = 32;
-      case 32:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 2)) {
-          auto str = _internal_mutable_source();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.source"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string errorMsg = 33;
-      case 33:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_errormsg();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.errorMsg"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string attrDesc = 34;
-      case 34:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_attrdesc();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.attrDesc"));
-        } else
-          goto handle_unusual;
-        continue;
-      // float commissionAndFee = 35;
-      case 35:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
-          _impl_.commissionandfee_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 openTime = 36;
-      case 36:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
-          _impl_.opentime_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 timestamp = 37;
-      case 37:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string userMark = 38;
-      case 38:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          auto str = _internal_mutable_usermark();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.userMark"));
-        } else
-          goto handle_unusual;
-        continue;
-      // double totalCashAmount = 39;
-      case 39:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 57)) {
-          _impl_.totalcashamount_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double filledCashAmount = 40;
-      case 40:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 65)) {
-          _impl_.filledcashamount_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double gst = 41;
-      case 41:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 73)) {
-          _impl_.gst_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated string attrList = 42;
-      case 42:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
-          ptr -= 2;
-          do {
-            ptr += 2;
-            auto str = _internal_add_attrlist();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-            CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.OrderStatusData.attrList"));
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<338>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* OrderStatusData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* OrderStatusData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<5, 42, 0, 238, 7> OrderStatusData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    42, 248,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    0,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    42,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_OrderStatusData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // sint64 id = 1;
+    {::_pbi::TcParser::FastZ64S1,
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.id_)}},
+    // string account = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.account_)}},
+    // string symbol = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.symbol_)}},
+    // string expiry = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.expiry_)}},
+    // string strike = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.strike_)}},
+    // string right = 6;
+    {::_pbi::TcParser::FastUS1,
+     {50, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.right_)}},
+    // string identifier = 7;
+    {::_pbi::TcParser::FastUS1,
+     {58, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.identifier_)}},
+    // uint32 multiplier = 8;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OrderStatusData, _impl_.multiplier_), 63>(),
+     {64, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.multiplier_)}},
+    // string action = 9;
+    {::_pbi::TcParser::FastUS1,
+     {74, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.action_)}},
+    // string market = 10;
+    {::_pbi::TcParser::FastUS1,
+     {82, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.market_)}},
+    // string currency = 11;
+    {::_pbi::TcParser::FastUS1,
+     {90, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.currency_)}},
+    // string segType = 12;
+    {::_pbi::TcParser::FastUS1,
+     {98, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.segtype_)}},
+    // string secType = 13;
+    {::_pbi::TcParser::FastUS1,
+     {106, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.sectype_)}},
+    // string orderType = 14;
+    {::_pbi::TcParser::FastUS1,
+     {114, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.ordertype_)}},
+    // bool isLong = 15;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(OrderStatusData, _impl_.islong_), 63>(),
+     {120, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.islong_)}},
+    // sint64 totalQuantity = 16;
+    {::_pbi::TcParser::FastZ64S2,
+     {384, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.totalquantity_)}},
+    // sint32 totalQuantityScale = 17;
+    {::_pbi::TcParser::FastZ32S2,
+     {392, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.totalquantityscale_)}},
+    // sint64 filledQuantity = 18;
+    {::_pbi::TcParser::FastZ64S2,
+     {400, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.filledquantity_)}},
+    // sint32 filledQuantityScale = 19;
+    {::_pbi::TcParser::FastZ32S2,
+     {408, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.filledquantityscale_)}},
+    // double avgFillPrice = 20;
+    {::_pbi::TcParser::FastF64S2,
+     {417, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.avgfillprice_)}},
+    // double limitPrice = 21;
+    {::_pbi::TcParser::FastF64S2,
+     {425, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.limitprice_)}},
+    // double stopPrice = 22;
+    {::_pbi::TcParser::FastF64S2,
+     {433, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.stopprice_)}},
+    // double realizedPnl = 23;
+    {::_pbi::TcParser::FastF64S2,
+     {441, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.realizedpnl_)}},
+    // string status = 24;
+    {::_pbi::TcParser::FastUS2,
+     {450, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.status_)}},
+    // string replaceStatus = 25;
+    {::_pbi::TcParser::FastUS2,
+     {458, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.replacestatus_)}},
+    // string cancelStatus = 26;
+    {::_pbi::TcParser::FastUS2,
+     {466, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.cancelstatus_)}},
+    // bool outsideRth = 27;
+    {::_pbi::TcParser::FastV8S2,
+     {472, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.outsiderth_)}},
+    // bool canModify = 28;
+    {::_pbi::TcParser::FastV8S2,
+     {480, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.canmodify_)}},
+    // bool canCancel = 29;
+    {::_pbi::TcParser::FastV8S2,
+     {488, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.cancancel_)}},
+    // bool liquidation = 30;
+    {::_pbi::TcParser::FastV8S2,
+     {496, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.liquidation_)}},
+    // string name = 31;
+    {::_pbi::TcParser::FastUS2,
+     {506, 63, 0, PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.name_)}},
+  }}, {{
+    33, 0, 1,
+    64512, 32,
+    65535, 65535
+  }}, {{
+    // sint64 id = 1;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.id_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
+    // string account = 2;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.account_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string symbol = 3;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.symbol_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string expiry = 4;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.expiry_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string strike = 5;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.strike_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string right = 6;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.right_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string identifier = 7;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.identifier_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint32 multiplier = 8;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.multiplier_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // string action = 9;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.action_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string market = 10;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.market_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string currency = 11;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.currency_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string segType = 12;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.segtype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string secType = 13;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.sectype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string orderType = 14;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.ordertype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool isLong = 15;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.islong_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // sint64 totalQuantity = 16;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.totalquantity_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
+    // sint32 totalQuantityScale = 17;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.totalquantityscale_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt32)},
+    // sint64 filledQuantity = 18;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.filledquantity_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
+    // sint32 filledQuantityScale = 19;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.filledquantityscale_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt32)},
+    // double avgFillPrice = 20;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.avgfillprice_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double limitPrice = 21;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.limitprice_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double stopPrice = 22;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.stopprice_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double realizedPnl = 23;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.realizedpnl_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // string status = 24;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.status_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string replaceStatus = 25;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.replacestatus_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string cancelStatus = 26;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.cancelstatus_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool outsideRth = 27;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.outsiderth_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // bool canModify = 28;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.canmodify_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // bool canCancel = 29;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.cancancel_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // bool liquidation = 30;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.liquidation_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // string name = 31;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.name_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string source = 32;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.source_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string errorMsg = 33;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.errormsg_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string attrDesc = 34;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.attrdesc_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // float commissionAndFee = 35;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.commissionandfee_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // uint64 openTime = 36;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.opentime_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 timestamp = 37;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // string userMark = 38;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.usermark_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // double totalCashAmount = 39;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.totalcashamount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double filledCashAmount = 40;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.filledcashamount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double gst = 41;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.gst_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // repeated string attrList = 42;
+    {PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.attrlist_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+  }},
+  // no aux_entries
+  {{
+    "\41\0\7\6\6\6\5\12\0\6\6\10\7\7\11\0\0\0\0\0\0\0\0\0\6\15\14\0\0\0\0\4\6\10\10\0\0\0\10\0\0\0\10\0\0\0\0\0"
+    "tigeropen.push.pb.OrderStatusData"
+    "account"
+    "symbol"
+    "expiry"
+    "strike"
+    "right"
+    "identifier"
+    "action"
+    "market"
+    "currency"
+    "segType"
+    "secType"
+    "orderType"
+    "status"
+    "replaceStatus"
+    "cancelStatus"
+    "name"
+    "source"
+    "errorMsg"
+    "attrDesc"
+    "userMark"
+    "attrList"
+  }},
+};
+
+::uint8_t* OrderStatusData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.OrderStatusData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // sint64 id = 1;
   if (this->_internal_id() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(1, this->_internal_id(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+        1, this->_internal_id(), target);
   }
 
   // string account = 2;
   if (!this->_internal_account().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_account().data(), static_cast<int>(this->_internal_account().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.account");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_account(), target);
+    const std::string& _s = this->_internal_account();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.account");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string symbol = 3;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.symbol");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // string expiry = 4;
   if (!this->_internal_expiry().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_expiry().data(), static_cast<int>(this->_internal_expiry().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.expiry");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_expiry(), target);
+    const std::string& _s = this->_internal_expiry();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.expiry");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
   // string strike = 5;
   if (!this->_internal_strike().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_strike().data(), static_cast<int>(this->_internal_strike().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.strike");
-    target = stream->WriteStringMaybeAliased(
-        5, this->_internal_strike(), target);
+    const std::string& _s = this->_internal_strike();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.strike");
+    target = stream->WriteStringMaybeAliased(5, _s, target);
   }
 
   // string right = 6;
   if (!this->_internal_right().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_right().data(), static_cast<int>(this->_internal_right().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.right");
-    target = stream->WriteStringMaybeAliased(
-        6, this->_internal_right(), target);
+    const std::string& _s = this->_internal_right();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.right");
+    target = stream->WriteStringMaybeAliased(6, _s, target);
   }
 
   // string identifier = 7;
   if (!this->_internal_identifier().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_identifier().data(), static_cast<int>(this->_internal_identifier().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.identifier");
-    target = stream->WriteStringMaybeAliased(
-        7, this->_internal_identifier(), target);
+    const std::string& _s = this->_internal_identifier();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.identifier");
+    target = stream->WriteStringMaybeAliased(7, _s, target);
   }
 
   // uint32 multiplier = 8;
   if (this->_internal_multiplier() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(8, this->_internal_multiplier(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        8, this->_internal_multiplier(), target);
   }
 
   // string action = 9;
   if (!this->_internal_action().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_action().data(), static_cast<int>(this->_internal_action().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.action");
-    target = stream->WriteStringMaybeAliased(
-        9, this->_internal_action(), target);
+    const std::string& _s = this->_internal_action();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.action");
+    target = stream->WriteStringMaybeAliased(9, _s, target);
   }
 
   // string market = 10;
   if (!this->_internal_market().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_market().data(), static_cast<int>(this->_internal_market().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.market");
-    target = stream->WriteStringMaybeAliased(
-        10, this->_internal_market(), target);
+    const std::string& _s = this->_internal_market();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.market");
+    target = stream->WriteStringMaybeAliased(10, _s, target);
   }
 
   // string currency = 11;
   if (!this->_internal_currency().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_currency().data(), static_cast<int>(this->_internal_currency().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.currency");
-    target = stream->WriteStringMaybeAliased(
-        11, this->_internal_currency(), target);
+    const std::string& _s = this->_internal_currency();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.currency");
+    target = stream->WriteStringMaybeAliased(11, _s, target);
   }
 
   // string segType = 12;
   if (!this->_internal_segtype().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_segtype().data(), static_cast<int>(this->_internal_segtype().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.segType");
-    target = stream->WriteStringMaybeAliased(
-        12, this->_internal_segtype(), target);
+    const std::string& _s = this->_internal_segtype();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.segType");
+    target = stream->WriteStringMaybeAliased(12, _s, target);
   }
 
   // string secType = 13;
   if (!this->_internal_sectype().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_sectype().data(), static_cast<int>(this->_internal_sectype().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.secType");
-    target = stream->WriteStringMaybeAliased(
-        13, this->_internal_sectype(), target);
+    const std::string& _s = this->_internal_sectype();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.secType");
+    target = stream->WriteStringMaybeAliased(13, _s, target);
   }
 
   // string orderType = 14;
   if (!this->_internal_ordertype().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_ordertype().data(), static_cast<int>(this->_internal_ordertype().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.orderType");
-    target = stream->WriteStringMaybeAliased(
-        14, this->_internal_ordertype(), target);
+    const std::string& _s = this->_internal_ordertype();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.orderType");
+    target = stream->WriteStringMaybeAliased(14, _s, target);
   }
 
   // bool isLong = 15;
   if (this->_internal_islong() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(15, this->_internal_islong(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        15, this->_internal_islong(), target);
   }
 
   // sint64 totalQuantity = 16;
   if (this->_internal_totalquantity() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(16, this->_internal_totalquantity(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+        16, this->_internal_totalquantity(), target);
   }
 
   // sint32 totalQuantityScale = 17;
   if (this->_internal_totalquantityscale() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt32ToArray(17, this->_internal_totalquantityscale(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt32ToArray(
+        17, this->_internal_totalquantityscale(), target);
   }
 
   // sint64 filledQuantity = 18;
   if (this->_internal_filledquantity() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(18, this->_internal_filledquantity(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+        18, this->_internal_filledquantity(), target);
   }
 
   // sint32 filledQuantityScale = 19;
   if (this->_internal_filledquantityscale() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt32ToArray(19, this->_internal_filledquantityscale(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt32ToArray(
+        19, this->_internal_filledquantityscale(), target);
   }
 
   // double avgFillPrice = 20;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgfillprice = this->_internal_avgfillprice();
-  uint64_t raw_avgfillprice;
+  ::uint64_t raw_avgfillprice;
   memcpy(&raw_avgfillprice, &tmp_avgfillprice, sizeof(tmp_avgfillprice));
   if (raw_avgfillprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(20, this->_internal_avgfillprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        20, this->_internal_avgfillprice(), target);
   }
 
   // double limitPrice = 21;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_limitprice = this->_internal_limitprice();
-  uint64_t raw_limitprice;
+  ::uint64_t raw_limitprice;
   memcpy(&raw_limitprice, &tmp_limitprice, sizeof(tmp_limitprice));
   if (raw_limitprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(21, this->_internal_limitprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        21, this->_internal_limitprice(), target);
   }
 
   // double stopPrice = 22;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_stopprice = this->_internal_stopprice();
-  uint64_t raw_stopprice;
+  ::uint64_t raw_stopprice;
   memcpy(&raw_stopprice, &tmp_stopprice, sizeof(tmp_stopprice));
   if (raw_stopprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(22, this->_internal_stopprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        22, this->_internal_stopprice(), target);
   }
 
   // double realizedPnl = 23;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_realizedpnl = this->_internal_realizedpnl();
-  uint64_t raw_realizedpnl;
+  ::uint64_t raw_realizedpnl;
   memcpy(&raw_realizedpnl, &tmp_realizedpnl, sizeof(tmp_realizedpnl));
   if (raw_realizedpnl != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(23, this->_internal_realizedpnl(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        23, this->_internal_realizedpnl(), target);
   }
 
   // string status = 24;
   if (!this->_internal_status().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_status().data(), static_cast<int>(this->_internal_status().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.status");
-    target = stream->WriteStringMaybeAliased(
-        24, this->_internal_status(), target);
+    const std::string& _s = this->_internal_status();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.status");
+    target = stream->WriteStringMaybeAliased(24, _s, target);
   }
 
   // string replaceStatus = 25;
   if (!this->_internal_replacestatus().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_replacestatus().data(), static_cast<int>(this->_internal_replacestatus().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.replaceStatus");
-    target = stream->WriteStringMaybeAliased(
-        25, this->_internal_replacestatus(), target);
+    const std::string& _s = this->_internal_replacestatus();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.replaceStatus");
+    target = stream->WriteStringMaybeAliased(25, _s, target);
   }
 
   // string cancelStatus = 26;
   if (!this->_internal_cancelstatus().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_cancelstatus().data(), static_cast<int>(this->_internal_cancelstatus().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.cancelStatus");
-    target = stream->WriteStringMaybeAliased(
-        26, this->_internal_cancelstatus(), target);
+    const std::string& _s = this->_internal_cancelstatus();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.cancelStatus");
+    target = stream->WriteStringMaybeAliased(26, _s, target);
   }
 
   // bool outsideRth = 27;
   if (this->_internal_outsiderth() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(27, this->_internal_outsiderth(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        27, this->_internal_outsiderth(), target);
   }
 
   // bool canModify = 28;
   if (this->_internal_canmodify() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(28, this->_internal_canmodify(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        28, this->_internal_canmodify(), target);
   }
 
   // bool canCancel = 29;
   if (this->_internal_cancancel() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(29, this->_internal_cancancel(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        29, this->_internal_cancancel(), target);
   }
 
   // bool liquidation = 30;
   if (this->_internal_liquidation() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(30, this->_internal_liquidation(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        30, this->_internal_liquidation(), target);
   }
 
   // string name = 31;
   if (!this->_internal_name().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.name");
-    target = stream->WriteStringMaybeAliased(
-        31, this->_internal_name(), target);
+    const std::string& _s = this->_internal_name();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.name");
+    target = stream->WriteStringMaybeAliased(31, _s, target);
   }
 
   // string source = 32;
   if (!this->_internal_source().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_source().data(), static_cast<int>(this->_internal_source().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.source");
-    target = stream->WriteStringMaybeAliased(
-        32, this->_internal_source(), target);
+    const std::string& _s = this->_internal_source();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.source");
+    target = stream->WriteStringMaybeAliased(32, _s, target);
   }
 
   // string errorMsg = 33;
   if (!this->_internal_errormsg().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_errormsg().data(), static_cast<int>(this->_internal_errormsg().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.errorMsg");
-    target = stream->WriteStringMaybeAliased(
-        33, this->_internal_errormsg(), target);
+    const std::string& _s = this->_internal_errormsg();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.errorMsg");
+    target = stream->WriteStringMaybeAliased(33, _s, target);
   }
 
   // string attrDesc = 34;
   if (!this->_internal_attrdesc().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_attrdesc().data(), static_cast<int>(this->_internal_attrdesc().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.attrDesc");
-    target = stream->WriteStringMaybeAliased(
-        34, this->_internal_attrdesc(), target);
+    const std::string& _s = this->_internal_attrdesc();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.attrDesc");
+    target = stream->WriteStringMaybeAliased(34, _s, target);
   }
 
   // float commissionAndFee = 35;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_commissionandfee = this->_internal_commissionandfee();
-  uint32_t raw_commissionandfee;
+  ::uint32_t raw_commissionandfee;
   memcpy(&raw_commissionandfee, &tmp_commissionandfee, sizeof(tmp_commissionandfee));
   if (raw_commissionandfee != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(35, this->_internal_commissionandfee(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        35, this->_internal_commissionandfee(), target);
   }
 
   // uint64 openTime = 36;
   if (this->_internal_opentime() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(36, this->_internal_opentime(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        36, this->_internal_opentime(), target);
   }
 
   // uint64 timestamp = 37;
   if (this->_internal_timestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(37, this->_internal_timestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        37, this->_internal_timestamp(), target);
   }
 
   // string userMark = 38;
   if (!this->_internal_usermark().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_usermark().data(), static_cast<int>(this->_internal_usermark().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.userMark");
-    target = stream->WriteStringMaybeAliased(
-        38, this->_internal_usermark(), target);
+    const std::string& _s = this->_internal_usermark();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.userMark");
+    target = stream->WriteStringMaybeAliased(38, _s, target);
   }
 
   // double totalCashAmount = 39;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_totalcashamount = this->_internal_totalcashamount();
-  uint64_t raw_totalcashamount;
+  ::uint64_t raw_totalcashamount;
   memcpy(&raw_totalcashamount, &tmp_totalcashamount, sizeof(tmp_totalcashamount));
   if (raw_totalcashamount != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(39, this->_internal_totalcashamount(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        39, this->_internal_totalcashamount(), target);
   }
 
   // double filledCashAmount = 40;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_filledcashamount = this->_internal_filledcashamount();
-  uint64_t raw_filledcashamount;
+  ::uint64_t raw_filledcashamount;
   memcpy(&raw_filledcashamount, &tmp_filledcashamount, sizeof(tmp_filledcashamount));
   if (raw_filledcashamount != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(40, this->_internal_filledcashamount(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        40, this->_internal_filledcashamount(), target);
   }
 
   // double gst = 41;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_gst = this->_internal_gst();
-  uint64_t raw_gst;
+  ::uint64_t raw_gst;
   memcpy(&raw_gst, &tmp_gst, sizeof(tmp_gst));
   if (raw_gst != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(41, this->_internal_gst(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        41, this->_internal_gst(), target);
   }
 
   // repeated string attrList = 42;
-  for (int i = 0, n = this->_internal_attrlist_size(); i < n; i++) {
-    const auto& s = this->_internal_attrlist(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.OrderStatusData.attrList");
+  for (int i = 0, n = this->_internal_attrlist_size(); i < n; ++i) {
+    const auto& s = this->_internal_attrlist().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.OrderStatusData.attrList");
     target = stream->WriteString(42, s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.OrderStatusData)
   return target;
 }
 
-size_t OrderStatusData::ByteSizeLong() const {
+::size_t OrderStatusData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.OrderStatusData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated string attrList = 42;
-  total_size += 2 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.attrlist_.size());
-  for (int i = 0, n = _impl_.attrlist_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.attrlist_.Get(i));
+  total_size += 2 * ::google::protobuf::internal::FromIntSize(_internal_attrlist().size());
+  for (int i = 0, n = _internal_attrlist().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_attrlist().Get(i));
   }
-
   // string account = 2;
   if (!this->_internal_account().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_account());
   }
 
   // string symbol = 3;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // string expiry = 4;
   if (!this->_internal_expiry().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_expiry());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_expiry());
   }
 
   // string strike = 5;
   if (!this->_internal_strike().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_strike());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_strike());
   }
 
   // string right = 6;
   if (!this->_internal_right().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_right());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_right());
   }
 
   // string identifier = 7;
   if (!this->_internal_identifier().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_identifier());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_identifier());
   }
 
   // string action = 9;
   if (!this->_internal_action().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_action());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_action());
   }
 
   // string market = 10;
   if (!this->_internal_market().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_market());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_market());
   }
 
   // string currency = 11;
   if (!this->_internal_currency().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_currency());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_currency());
   }
 
   // string segType = 12;
   if (!this->_internal_segtype().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_segtype());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_segtype());
   }
 
   // string secType = 13;
   if (!this->_internal_sectype().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_sectype());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_sectype());
   }
 
   // string orderType = 14;
   if (!this->_internal_ordertype().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_ordertype());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_ordertype());
   }
 
   // string status = 24;
   if (!this->_internal_status().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_status());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_status());
   }
 
   // string replaceStatus = 25;
   if (!this->_internal_replacestatus().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_replacestatus());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_replacestatus());
   }
 
   // string cancelStatus = 26;
   if (!this->_internal_cancelstatus().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_cancelstatus());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_cancelstatus());
   }
 
   // string name = 31;
   if (!this->_internal_name().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_name());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_name());
   }
 
   // string source = 32;
   if (!this->_internal_source().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_source());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_source());
   }
 
   // string errorMsg = 33;
   if (!this->_internal_errormsg().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_errormsg());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_errormsg());
   }
 
   // string attrDesc = 34;
   if (!this->_internal_attrdesc().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_attrdesc());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_attrdesc());
   }
 
   // string userMark = 38;
   if (!this->_internal_usermark().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_usermark());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_usermark());
   }
 
   // sint64 id = 1;
   if (this->_internal_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(this->_internal_id());
+    total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(
+        this->_internal_id());
   }
 
   // uint32 multiplier = 8;
   if (this->_internal_multiplier() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_multiplier());
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+        this->_internal_multiplier());
   }
 
   // sint32 totalQuantityScale = 17;
   if (this->_internal_totalquantityscale() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::SInt32Size(
-        this->_internal_totalquantityscale());
+    total_size += 2 + ::_pbi::WireFormatLite::SInt32Size(
+                                    this->_internal_totalquantityscale());
   }
 
   // sint64 totalQuantity = 16;
   if (this->_internal_totalquantity() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::SInt64Size(
-        this->_internal_totalquantity());
+    total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
+                                    this->_internal_totalquantity());
   }
 
   // sint64 filledQuantity = 18;
   if (this->_internal_filledquantity() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::SInt64Size(
-        this->_internal_filledquantity());
+    total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
+                                    this->_internal_filledquantity());
   }
 
   // double avgFillPrice = 20;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgfillprice = this->_internal_avgfillprice();
-  uint64_t raw_avgfillprice;
+  ::uint64_t raw_avgfillprice;
   memcpy(&raw_avgfillprice, &tmp_avgfillprice, sizeof(tmp_avgfillprice));
   if (raw_avgfillprice != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // double limitPrice = 21;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_limitprice = this->_internal_limitprice();
-  uint64_t raw_limitprice;
+  ::uint64_t raw_limitprice;
   memcpy(&raw_limitprice, &tmp_limitprice, sizeof(tmp_limitprice));
   if (raw_limitprice != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // double stopPrice = 22;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_stopprice = this->_internal_stopprice();
-  uint64_t raw_stopprice;
+  ::uint64_t raw_stopprice;
   memcpy(&raw_stopprice, &tmp_stopprice, sizeof(tmp_stopprice));
   if (raw_stopprice != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // double realizedPnl = 23;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_realizedpnl = this->_internal_realizedpnl();
-  uint64_t raw_realizedpnl;
+  ::uint64_t raw_realizedpnl;
   memcpy(&raw_realizedpnl, &tmp_realizedpnl, sizeof(tmp_realizedpnl));
   if (raw_realizedpnl != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // sint32 filledQuantityScale = 19;
   if (this->_internal_filledquantityscale() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::SInt32Size(
-        this->_internal_filledquantityscale());
+    total_size += 2 + ::_pbi::WireFormatLite::SInt32Size(
+                                    this->_internal_filledquantityscale());
   }
 
   // bool isLong = 15;
   if (this->_internal_islong() != 0) {
-    total_size += 1 + 1;
+    total_size += 2;
   }
 
   // bool outsideRth = 27;
   if (this->_internal_outsiderth() != 0) {
-    total_size += 2 + 1;
+    total_size += 3;
   }
 
   // bool canModify = 28;
   if (this->_internal_canmodify() != 0) {
-    total_size += 2 + 1;
+    total_size += 3;
   }
 
   // bool canCancel = 29;
   if (this->_internal_cancancel() != 0) {
-    total_size += 2 + 1;
+    total_size += 3;
   }
 
   // bool liquidation = 30;
   if (this->_internal_liquidation() != 0) {
-    total_size += 2 + 1;
+    total_size += 3;
   }
 
   // float commissionAndFee = 35;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_commissionandfee = this->_internal_commissionandfee();
-  uint32_t raw_commissionandfee;
+  ::uint32_t raw_commissionandfee;
   memcpy(&raw_commissionandfee, &tmp_commissionandfee, sizeof(tmp_commissionandfee));
   if (raw_commissionandfee != 0) {
-    total_size += 2 + 4;
+    total_size += 6;
   }
 
   // uint64 openTime = 36;
   if (this->_internal_opentime() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::UInt64Size(
-        this->_internal_opentime());
+    total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
+                                    this->_internal_opentime());
   }
 
   // uint64 timestamp = 37;
   if (this->_internal_timestamp() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::UInt64Size(
-        this->_internal_timestamp());
+    total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
+                                    this->_internal_timestamp());
   }
 
   // double totalCashAmount = 39;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_totalcashamount = this->_internal_totalcashamount();
-  uint64_t raw_totalcashamount;
+  ::uint64_t raw_totalcashamount;
   memcpy(&raw_totalcashamount, &tmp_totalcashamount, sizeof(tmp_totalcashamount));
   if (raw_totalcashamount != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // double filledCashAmount = 40;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_filledcashamount = this->_internal_filledcashamount();
-  uint64_t raw_filledcashamount;
+  ::uint64_t raw_filledcashamount;
   memcpy(&raw_filledcashamount, &tmp_filledcashamount, sizeof(tmp_filledcashamount));
   if (raw_filledcashamount != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   // double gst = 41;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_gst = this->_internal_gst();
-  uint64_t raw_gst;
+  ::uint64_t raw_gst;
   memcpy(&raw_gst, &tmp_gst, sizeof(tmp_gst));
   if (raw_gst != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData OrderStatusData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    OrderStatusData::MergeImpl
+const ::google::protobuf::Message::ClassData OrderStatusData::_class_data_ = {
+    OrderStatusData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*OrderStatusData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* OrderStatusData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void OrderStatusData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void OrderStatusData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<OrderStatusData*>(&to_msg);
   auto& from = static_cast<const OrderStatusData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.OrderStatusData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.attrlist_.MergeFrom(from._impl_.attrlist_);
+  _this->_internal_mutable_attrlist()->MergeFrom(from._internal_attrlist());
   if (!from._internal_account().empty()) {
     _this->_internal_set_account(from._internal_account());
   }
@@ -1807,30 +1440,34 @@ void OrderStatusData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const 
   if (from._internal_filledquantity() != 0) {
     _this->_internal_set_filledquantity(from._internal_filledquantity());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgfillprice = from._internal_avgfillprice();
-  uint64_t raw_avgfillprice;
+  ::uint64_t raw_avgfillprice;
   memcpy(&raw_avgfillprice, &tmp_avgfillprice, sizeof(tmp_avgfillprice));
   if (raw_avgfillprice != 0) {
     _this->_internal_set_avgfillprice(from._internal_avgfillprice());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_limitprice = from._internal_limitprice();
-  uint64_t raw_limitprice;
+  ::uint64_t raw_limitprice;
   memcpy(&raw_limitprice, &tmp_limitprice, sizeof(tmp_limitprice));
   if (raw_limitprice != 0) {
     _this->_internal_set_limitprice(from._internal_limitprice());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_stopprice = from._internal_stopprice();
-  uint64_t raw_stopprice;
+  ::uint64_t raw_stopprice;
   memcpy(&raw_stopprice, &tmp_stopprice, sizeof(tmp_stopprice));
   if (raw_stopprice != 0) {
     _this->_internal_set_stopprice(from._internal_stopprice());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_realizedpnl = from._internal_realizedpnl();
-  uint64_t raw_realizedpnl;
+  ::uint64_t raw_realizedpnl;
   memcpy(&raw_realizedpnl, &tmp_realizedpnl, sizeof(tmp_realizedpnl));
   if (raw_realizedpnl != 0) {
     _this->_internal_set_realizedpnl(from._internal_realizedpnl());
@@ -1853,9 +1490,10 @@ void OrderStatusData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const 
   if (from._internal_liquidation() != 0) {
     _this->_internal_set_liquidation(from._internal_liquidation());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_commissionandfee = from._internal_commissionandfee();
-  uint32_t raw_commissionandfee;
+  ::uint32_t raw_commissionandfee;
   memcpy(&raw_commissionandfee, &tmp_commissionandfee, sizeof(tmp_commissionandfee));
   if (raw_commissionandfee != 0) {
     _this->_internal_set_commissionandfee(from._internal_commissionandfee());
@@ -1866,28 +1504,31 @@ void OrderStatusData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const 
   if (from._internal_timestamp() != 0) {
     _this->_internal_set_timestamp(from._internal_timestamp());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_totalcashamount = from._internal_totalcashamount();
-  uint64_t raw_totalcashamount;
+  ::uint64_t raw_totalcashamount;
   memcpy(&raw_totalcashamount, &tmp_totalcashamount, sizeof(tmp_totalcashamount));
   if (raw_totalcashamount != 0) {
     _this->_internal_set_totalcashamount(from._internal_totalcashamount());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_filledcashamount = from._internal_filledcashamount();
-  uint64_t raw_filledcashamount;
+  ::uint64_t raw_filledcashamount;
   memcpy(&raw_filledcashamount, &tmp_filledcashamount, sizeof(tmp_filledcashamount));
   if (raw_filledcashamount != 0) {
     _this->_internal_set_filledcashamount(from._internal_filledcashamount());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_gst = from._internal_gst();
-  uint64_t raw_gst;
+  ::uint64_t raw_gst;
   memcpy(&raw_gst, &tmp_gst, sizeof(tmp_gst));
   if (raw_gst != 0) {
     _this->_internal_set_gst(from._internal_gst());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void OrderStatusData::CopyFrom(const OrderStatusData& from) {
@@ -1897,97 +1538,40 @@ void OrderStatusData::CopyFrom(const OrderStatusData& from) {
   MergeFrom(from);
 }
 
-bool OrderStatusData::IsInitialized() const {
+PROTOBUF_NOINLINE bool OrderStatusData::IsInitialized() const {
   return true;
 }
 
-void OrderStatusData::InternalSwap(OrderStatusData* other) {
+::_pbi::CachedSize* OrderStatusData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void OrderStatusData::InternalSwap(OrderStatusData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.attrlist_.InternalSwap(&other->_impl_.attrlist_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.account_, lhs_arena,
-      &other->_impl_.account_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.expiry_, lhs_arena,
-      &other->_impl_.expiry_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.strike_, lhs_arena,
-      &other->_impl_.strike_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.right_, lhs_arena,
-      &other->_impl_.right_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.identifier_, lhs_arena,
-      &other->_impl_.identifier_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.action_, lhs_arena,
-      &other->_impl_.action_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.market_, lhs_arena,
-      &other->_impl_.market_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.currency_, lhs_arena,
-      &other->_impl_.currency_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.segtype_, lhs_arena,
-      &other->_impl_.segtype_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.sectype_, lhs_arena,
-      &other->_impl_.sectype_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.ordertype_, lhs_arena,
-      &other->_impl_.ordertype_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.status_, lhs_arena,
-      &other->_impl_.status_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.replacestatus_, lhs_arena,
-      &other->_impl_.replacestatus_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.cancelstatus_, lhs_arena,
-      &other->_impl_.cancelstatus_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.name_, lhs_arena,
-      &other->_impl_.name_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.source_, lhs_arena,
-      &other->_impl_.source_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.errormsg_, lhs_arena,
-      &other->_impl_.errormsg_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.attrdesc_, lhs_arena,
-      &other->_impl_.attrdesc_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.usermark_, lhs_arena,
-      &other->_impl_.usermark_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.account_, &other->_impl_.account_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.expiry_, &other->_impl_.expiry_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.strike_, &other->_impl_.strike_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.right_, &other->_impl_.right_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.identifier_, &other->_impl_.identifier_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.action_, &other->_impl_.action_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.market_, &other->_impl_.market_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.currency_, &other->_impl_.currency_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.segtype_, &other->_impl_.segtype_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.sectype_, &other->_impl_.sectype_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ordertype_, &other->_impl_.ordertype_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.status_, &other->_impl_.status_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.replacestatus_, &other->_impl_.replacestatus_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.cancelstatus_, &other->_impl_.cancelstatus_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.source_, &other->_impl_.source_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.errormsg_, &other->_impl_.errormsg_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.attrdesc_, &other->_impl_.attrdesc_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.usermark_, &other->_impl_.usermark_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.gst_)
       + sizeof(OrderStatusData::_impl_.gst_)
       - PROTOBUF_FIELD_OFFSET(OrderStatusData, _impl_.id_)>(
@@ -1995,22 +1579,18 @@ void OrderStatusData::InternalSwap(OrderStatusData* other) {
           reinterpret_cast<char*>(&other->_impl_.id_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata OrderStatusData::GetMetadata() const {
+::google::protobuf::Metadata OrderStatusData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_OrderStatusData_2eproto_getter, &descriptor_table_OrderStatusData_2eproto_once,
       file_level_metadata_OrderStatusData_2eproto[0]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::OrderStatusData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::OrderStatusData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::OrderStatusData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

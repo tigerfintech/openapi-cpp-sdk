@@ -4,114 +4,129 @@
 #include "SocketCommon.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR SocketCommon::SocketCommon(
-    ::_pbi::ConstantInitialized) {}
+      template <typename>
+PROTOBUF_CONSTEXPR SocketCommon::SocketCommon(::_pbi::ConstantInitialized) {}
 struct SocketCommonDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR SocketCommonDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR SocketCommonDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~SocketCommonDefaultTypeInternal() {}
   union {
     SocketCommon _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SocketCommonDefaultTypeInternal _SocketCommon_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SocketCommonDefaultTypeInternal _SocketCommon_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_SocketCommon_2eproto[1];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_SocketCommon_2eproto[3];
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_SocketCommon_2eproto = nullptr;
-
-const uint32_t TableStruct_SocketCommon_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::SocketCommon, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_SocketCommon_2eproto = nullptr;
+const ::uint32_t TableStruct_SocketCommon_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::SocketCommon, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::SocketCommon)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::SocketCommon)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_SocketCommon_default_instance_._instance,
+    &::tigeropen::push::pb::_SocketCommon_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_SocketCommon_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\022SocketCommon.proto\022\021tigeropen.push.pb\""
-  "\240\003\n\014SocketCommon\"\227\001\n\007Command\022\013\n\007UNKNOWN\020"
-  "\000\022\013\n\007CONNECT\020\001\022\r\n\tCONNECTED\020\002\022\010\n\004SEND\020\003\022"
-  "\r\n\tSUBSCRIBE\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\016\n\nDISCO"
-  "NNECT\020\006\022\013\n\007MESSAGE\020\007\022\r\n\tHEARTBEAT\020\010\022\r\n\tE"
-  "RRORINFO\020\t\"\301\001\n\010DataType\022\013\n\007Unknown\020\000\022\t\n\005"
-  "Quote\020\001\022\n\n\006Option\020\002\022\n\n\006Future\020\003\022\016\n\nQuote"
-  "Depth\020\004\022\r\n\tTradeTick\020\005\022\t\n\005Asset\020\006\022\014\n\010Pos"
-  "ition\020\007\022\017\n\013OrderStatus\020\010\022\024\n\020OrderTransac"
-  "tion\020\t\022\014\n\010StockTop\020\n\022\r\n\tOptionTop\020\013\022\t\n\005K"
-  "line\020\014\"2\n\tQuoteType\022\010\n\004None\020\000\022\t\n\005BASIC\020\001"
-  "\022\007\n\003BBO\020\002\022\007\n\003ALL\020\003b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_SocketCommon_2eproto_once;
+const char descriptor_table_protodef_SocketCommon_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\022SocketCommon.proto\022\021tigeropen.push.pb\""
+    "\240\003\n\014SocketCommon\"\227\001\n\007Command\022\013\n\007UNKNOWN\020"
+    "\000\022\013\n\007CONNECT\020\001\022\r\n\tCONNECTED\020\002\022\010\n\004SEND\020\003\022"
+    "\r\n\tSUBSCRIBE\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\016\n\nDISCO"
+    "NNECT\020\006\022\013\n\007MESSAGE\020\007\022\r\n\tHEARTBEAT\020\010\022\r\n\tE"
+    "RRORINFO\020\t\"\301\001\n\010DataType\022\013\n\007Unknown\020\000\022\t\n\005"
+    "Quote\020\001\022\n\n\006Option\020\002\022\n\n\006Future\020\003\022\016\n\nQuote"
+    "Depth\020\004\022\r\n\tTradeTick\020\005\022\t\n\005Asset\020\006\022\014\n\010Pos"
+    "ition\020\007\022\017\n\013OrderStatus\020\010\022\024\n\020OrderTransac"
+    "tion\020\t\022\014\n\010StockTop\020\n\022\r\n\tOptionTop\020\013\022\t\n\005K"
+    "line\020\014\"2\n\tQuoteType\022\010\n\004None\020\000\022\t\n\005BASIC\020\001"
+    "\022\007\n\003BBO\020\002\022\007\n\003ALL\020\003b\006proto3"
+};
+static ::absl::once_flag descriptor_table_SocketCommon_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_SocketCommon_2eproto = {
-    false, false, 466, descriptor_table_protodef_SocketCommon_2eproto,
+    false,
+    false,
+    466,
+    descriptor_table_protodef_SocketCommon_2eproto,
     "SocketCommon.proto",
-    &descriptor_table_SocketCommon_2eproto_once, nullptr, 0, 1,
-    schemas, file_default_instances, TableStruct_SocketCommon_2eproto::offsets,
-    file_level_metadata_SocketCommon_2eproto, file_level_enum_descriptors_SocketCommon_2eproto,
+    &descriptor_table_SocketCommon_2eproto_once,
+    nullptr,
+    0,
+    1,
+    schemas,
+    file_default_instances,
+    TableStruct_SocketCommon_2eproto::offsets,
+    file_level_metadata_SocketCommon_2eproto,
+    file_level_enum_descriptors_SocketCommon_2eproto,
     file_level_service_descriptors_SocketCommon_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_SocketCommon_2eproto_getter() {
   return &descriptor_table_SocketCommon_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_SocketCommon_2eproto(&descriptor_table_SocketCommon_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_SocketCommon_2eproto(&descriptor_table_SocketCommon_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SocketCommon_Command_descriptor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
+const ::google::protobuf::EnumDescriptor* SocketCommon_Command_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
   return file_level_enum_descriptors_SocketCommon_2eproto[0];
 }
+PROTOBUF_CONSTINIT const uint32_t SocketCommon_Command_internal_data_[] = {
+    655360u, 0u, };
 bool SocketCommon_Command_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-      return true;
-    default:
-      return false;
-  }
+  return 0 <= value && value <= 9;
 }
+#if (__cplusplus < 201703) && \
+  (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 constexpr SocketCommon_Command SocketCommon::UNKNOWN;
 constexpr SocketCommon_Command SocketCommon::CONNECT;
 constexpr SocketCommon_Command SocketCommon::CONNECTED;
@@ -125,33 +140,21 @@ constexpr SocketCommon_Command SocketCommon::ERRORINFO;
 constexpr SocketCommon_Command SocketCommon::Command_MIN;
 constexpr SocketCommon_Command SocketCommon::Command_MAX;
 constexpr int SocketCommon::Command_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SocketCommon_DataType_descriptor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
+
+#endif  // (__cplusplus < 201703) &&
+        // (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::google::protobuf::EnumDescriptor* SocketCommon_DataType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
   return file_level_enum_descriptors_SocketCommon_2eproto[1];
 }
+PROTOBUF_CONSTINIT const uint32_t SocketCommon_DataType_internal_data_[] = {
+    851968u, 0u, };
 bool SocketCommon_DataType_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-      return true;
-    default:
-      return false;
-  }
+  return 0 <= value && value <= 12;
 }
+#if (__cplusplus < 201703) && \
+  (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 constexpr SocketCommon_DataType SocketCommon::Unknown;
 constexpr SocketCommon_DataType SocketCommon::Quote;
 constexpr SocketCommon_DataType SocketCommon::Option;
@@ -168,24 +171,21 @@ constexpr SocketCommon_DataType SocketCommon::Kline;
 constexpr SocketCommon_DataType SocketCommon::DataType_MIN;
 constexpr SocketCommon_DataType SocketCommon::DataType_MAX;
 constexpr int SocketCommon::DataType_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SocketCommon_QuoteType_descriptor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
+
+#endif  // (__cplusplus < 201703) &&
+        // (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::google::protobuf::EnumDescriptor* SocketCommon_QuoteType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_SocketCommon_2eproto);
   return file_level_enum_descriptors_SocketCommon_2eproto[2];
 }
+PROTOBUF_CONSTINIT const uint32_t SocketCommon_QuoteType_internal_data_[] = {
+    262144u, 0u, };
 bool SocketCommon_QuoteType_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      return true;
-    default:
-      return false;
-  }
+  return 0 <= value && value <= 3;
 }
+#if (__cplusplus < 201703) && \
+  (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 constexpr SocketCommon_QuoteType SocketCommon::None;
 constexpr SocketCommon_QuoteType SocketCommon::BASIC;
 constexpr SocketCommon_QuoteType SocketCommon::BBO;
@@ -193,23 +193,28 @@ constexpr SocketCommon_QuoteType SocketCommon::ALL;
 constexpr SocketCommon_QuoteType SocketCommon::QuoteType_MIN;
 constexpr SocketCommon_QuoteType SocketCommon::QuoteType_MAX;
 constexpr int SocketCommon::QuoteType_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
+#endif  // (__cplusplus < 201703) &&
+        // (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 // ===================================================================
 
 class SocketCommon::_Internal {
  public:
 };
 
-SocketCommon::SocketCommon(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+SocketCommon::SocketCommon(::google::protobuf::Arena* arena)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.SocketCommon)
 }
-SocketCommon::SocketCommon(const SocketCommon& from)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
-  SocketCommon* const _this = this; (void)_this;
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+SocketCommon::SocketCommon(
+    ::google::protobuf::Arena* arena,
+    const SocketCommon& from)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+  SocketCommon* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.SocketCommon)
 }
 
@@ -217,34 +222,22 @@ SocketCommon::SocketCommon(const SocketCommon& from)
 
 
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData SocketCommon::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
-};
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SocketCommon::GetClassData() const { return &_class_data_; }
 
 
 
 
-
-
-
-::PROTOBUF_NAMESPACE_ID::Metadata SocketCommon::GetMetadata() const {
+::google::protobuf::Metadata SocketCommon::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_SocketCommon_2eproto_getter, &descriptor_table_SocketCommon_2eproto_once,
       file_level_metadata_SocketCommon_2eproto[0]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::SocketCommon*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::SocketCommon >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::SocketCommon >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

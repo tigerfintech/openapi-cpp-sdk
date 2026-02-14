@@ -4,322 +4,307 @@
 #include "QuoteBasicData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR QuoteBasicData::QuoteBasicData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.latesttime_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.hourtradingtag_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.marketstatus_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.identifier_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.mi_)*/nullptr
-  , /*decltype(_impl_.timestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_.servertimestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_.avgprice_)*/0
-  , /*decltype(_impl_.latestprice_)*/0
-  , /*decltype(_impl_.latestpricetimestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_.preclose_)*/0
-  , /*decltype(_impl_.volume_)*/int64_t{0}
-  , /*decltype(_impl_.amount_)*/0
-  , /*decltype(_impl_.open_)*/0
-  , /*decltype(_impl_.high_)*/0
-  , /*decltype(_impl_.low_)*/0
-  , /*decltype(_impl_.type_)*/0
-  , /*decltype(_impl_.mintick_)*/0
-  , /*decltype(_impl_.openint_)*/int64_t{0}
-  , /*decltype(_impl_.tradetime_)*/uint64_t{0u}
-  , /*decltype(_impl_.presettlement_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr QuoteBasicData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        latesttime_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        hourtradingtag_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        marketstatus_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        identifier_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        mi_{nullptr},
+        timestamp_{::uint64_t{0u}},
+        servertimestamp_{::uint64_t{0u}},
+        avgprice_{0},
+        latestprice_{0},
+        latestpricetimestamp_{::uint64_t{0u}},
+        preclose_{0},
+        volume_{::int64_t{0}},
+        amount_{0},
+        open_{0},
+        high_{0},
+        low_{0},
+        type_{static_cast< ::tigeropen::push::pb::SocketCommon_QuoteType >(0)},
+        mintick_{0},
+        openint_{::int64_t{0}},
+        tradetime_{::uint64_t{0u}},
+        presettlement_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR QuoteBasicData::QuoteBasicData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct QuoteBasicDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR QuoteBasicDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR QuoteBasicDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~QuoteBasicDataDefaultTypeInternal() {}
   union {
     QuoteBasicData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteBasicDataDefaultTypeInternal _QuoteBasicData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 QuoteBasicDataDefaultTypeInternal _QuoteBasicData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_QuoteBasicData_2eproto[1];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_QuoteBasicData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_QuoteBasicData_2eproto = nullptr;
-
-const uint32_t TableStruct_QuoteBasicData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.type_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.servertimestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.avgprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latestprice_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latestpricetimestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latesttime_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.preclose_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.volume_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.amount_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.open_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.high_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.low_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.hourtradingtag_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.marketstatus_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.identifier_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.openint_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.tradetime_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.presettlement_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.mintick_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.mi_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_QuoteBasicData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_QuoteBasicData_2eproto = nullptr;
+const ::uint32_t TableStruct_QuoteBasicData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_._has_bits_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.type_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.servertimestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.avgprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latestprice_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latestpricetimestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.latesttime_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.preclose_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.volume_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.amount_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.open_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.high_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.low_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.hourtradingtag_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.marketstatus_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.identifier_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.openint_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.tradetime_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.presettlement_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.mintick_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteBasicData, _impl_.mi_),
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    ~0u,
+    0,
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::QuoteBasicData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, 30, -1, sizeof(::tigeropen::push::pb::QuoteBasicData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_QuoteBasicData_default_instance_._instance,
+    &::tigeropen::push::pb::_QuoteBasicData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_QuoteBasicData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\024QuoteBasicData.proto\022\021tigeropen.push.p"
-  "b\032\022SocketCommon.proto\032\017QuoteData.proto\"\370"
-  "\003\n\016QuoteBasicData\022\016\n\006symbol\030\001 \001(\t\0227\n\004typ"
-  "e\030\002 \001(\0162).tigeropen.push.pb.SocketCommon"
-  ".QuoteType\022\021\n\ttimestamp\030\003 \001(\004\022\027\n\017serverT"
-  "imestamp\030\004 \001(\004\022\020\n\010avgPrice\030\005 \001(\001\022\023\n\013late"
-  "stPrice\030\006 \001(\001\022\034\n\024latestPriceTimestamp\030\007 "
-  "\001(\004\022\022\n\nlatestTime\030\010 \001(\t\022\020\n\010preClose\030\t \001("
-  "\001\022\016\n\006volume\030\n \001(\022\022\016\n\006amount\030\013 \001(\001\022\014\n\004ope"
-  "n\030\014 \001(\001\022\014\n\004high\030\r \001(\001\022\013\n\003low\030\016 \001(\001\022\026\n\016ho"
-  "urTradingTag\030\017 \001(\t\022\024\n\014marketStatus\030\020 \001(\t"
-  "\022\022\n\nidentifier\030\027 \001(\t\022\017\n\007openInt\030\030 \001(\022\022\021\n"
-  "\ttradeTime\030\031 \001(\004\022\025\n\rpreSettlement\030\032 \001(\001\022"
-  "\017\n\007minTick\030\033 \001(\002\022/\n\002mi\030\034 \001(\0132#.tigeropen"
-  ".push.pb.QuoteData.MinuteP\000P\001b\006proto3"
-  ;
-static const ::_pbi::DescriptorTable* const descriptor_table_QuoteBasicData_2eproto_deps[2] = {
-  &::descriptor_table_QuoteData_2eproto,
-  &::descriptor_table_SocketCommon_2eproto,
+const char descriptor_table_protodef_QuoteBasicData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\024QuoteBasicData.proto\022\021tigeropen.push.p"
+    "b\032\022SocketCommon.proto\032\017QuoteData.proto\"\370"
+    "\003\n\016QuoteBasicData\022\016\n\006symbol\030\001 \001(\t\0227\n\004typ"
+    "e\030\002 \001(\0162).tigeropen.push.pb.SocketCommon"
+    ".QuoteType\022\021\n\ttimestamp\030\003 \001(\004\022\027\n\017serverT"
+    "imestamp\030\004 \001(\004\022\020\n\010avgPrice\030\005 \001(\001\022\023\n\013late"
+    "stPrice\030\006 \001(\001\022\034\n\024latestPriceTimestamp\030\007 "
+    "\001(\004\022\022\n\nlatestTime\030\010 \001(\t\022\020\n\010preClose\030\t \001("
+    "\001\022\016\n\006volume\030\n \001(\022\022\016\n\006amount\030\013 \001(\001\022\014\n\004ope"
+    "n\030\014 \001(\001\022\014\n\004high\030\r \001(\001\022\013\n\003low\030\016 \001(\001\022\026\n\016ho"
+    "urTradingTag\030\017 \001(\t\022\024\n\014marketStatus\030\020 \001(\t"
+    "\022\022\n\nidentifier\030\027 \001(\t\022\017\n\007openInt\030\030 \001(\022\022\021\n"
+    "\ttradeTime\030\031 \001(\004\022\025\n\rpreSettlement\030\032 \001(\001\022"
+    "\017\n\007minTick\030\033 \001(\002\022/\n\002mi\030\034 \001(\0132#.tigeropen"
+    ".push.pb.QuoteData.MinuteP\000P\001b\006proto3"
 };
-static ::_pbi::once_flag descriptor_table_QuoteBasicData_2eproto_once;
+static const ::_pbi::DescriptorTable* const descriptor_table_QuoteBasicData_2eproto_deps[2] =
+    {
+        &::descriptor_table_QuoteData_2eproto,
+        &::descriptor_table_SocketCommon_2eproto,
+};
+static ::absl::once_flag descriptor_table_QuoteBasicData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_QuoteBasicData_2eproto = {
-    false, false, 597, descriptor_table_protodef_QuoteBasicData_2eproto,
+    false,
+    false,
+    597,
+    descriptor_table_protodef_QuoteBasicData_2eproto,
     "QuoteBasicData.proto",
-    &descriptor_table_QuoteBasicData_2eproto_once, descriptor_table_QuoteBasicData_2eproto_deps, 2, 1,
-    schemas, file_default_instances, TableStruct_QuoteBasicData_2eproto::offsets,
-    file_level_metadata_QuoteBasicData_2eproto, file_level_enum_descriptors_QuoteBasicData_2eproto,
+    &descriptor_table_QuoteBasicData_2eproto_once,
+    descriptor_table_QuoteBasicData_2eproto_deps,
+    2,
+    1,
+    schemas,
+    file_default_instances,
+    TableStruct_QuoteBasicData_2eproto::offsets,
+    file_level_metadata_QuoteBasicData_2eproto,
+    file_level_enum_descriptors_QuoteBasicData_2eproto,
     file_level_service_descriptors_QuoteBasicData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_QuoteBasicData_2eproto_getter() {
   return &descriptor_table_QuoteBasicData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_QuoteBasicData_2eproto(&descriptor_table_QuoteBasicData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_QuoteBasicData_2eproto(&descriptor_table_QuoteBasicData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class QuoteBasicData::_Internal {
  public:
+  using HasBits = decltype(std::declval<QuoteBasicData>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+    8 * PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_._has_bits_);
   static const ::tigeropen::push::pb::QuoteData_Minute& mi(const QuoteBasicData* msg);
+  static void set_has_mi(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
 };
 
-const ::tigeropen::push::pb::QuoteData_Minute&
-QuoteBasicData::_Internal::mi(const QuoteBasicData* msg) {
+const ::tigeropen::push::pb::QuoteData_Minute& QuoteBasicData::_Internal::mi(const QuoteBasicData* msg) {
   return *msg->_impl_.mi_;
 }
 void QuoteBasicData::clear_mi() {
-  if (GetArenaForAllocation() == nullptr && _impl_.mi_ != nullptr) {
-    delete _impl_.mi_;
-  }
-  _impl_.mi_ = nullptr;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  if (_impl_.mi_ != nullptr) _impl_.mi_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-QuoteBasicData::QuoteBasicData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+QuoteBasicData::QuoteBasicData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.QuoteBasicData)
 }
-QuoteBasicData::QuoteBasicData(const QuoteBasicData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  QuoteBasicData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.latesttime_){}
-    , decltype(_impl_.hourtradingtag_){}
-    , decltype(_impl_.marketstatus_){}
-    , decltype(_impl_.identifier_){}
-    , decltype(_impl_.mi_){nullptr}
-    , decltype(_impl_.timestamp_){}
-    , decltype(_impl_.servertimestamp_){}
-    , decltype(_impl_.avgprice_){}
-    , decltype(_impl_.latestprice_){}
-    , decltype(_impl_.latestpricetimestamp_){}
-    , decltype(_impl_.preclose_){}
-    , decltype(_impl_.volume_){}
-    , decltype(_impl_.amount_){}
-    , decltype(_impl_.open_){}
-    , decltype(_impl_.high_){}
-    , decltype(_impl_.low_){}
-    , decltype(_impl_.type_){}
-    , decltype(_impl_.mintick_){}
-    , decltype(_impl_.openint_){}
-    , decltype(_impl_.tradetime_){}
-    , decltype(_impl_.presettlement_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE QuoteBasicData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        symbol_(arena, from.symbol_),
+        latesttime_(arena, from.latesttime_),
+        hourtradingtag_(arena, from.hourtradingtag_),
+        marketstatus_(arena, from.marketstatus_),
+        identifier_(arena, from.identifier_) {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.latesttime_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.latesttime_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_latesttime().empty()) {
-    _this->_impl_.latesttime_.Set(from._internal_latesttime(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.hourtradingtag_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.hourtradingtag_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_hourtradingtag().empty()) {
-    _this->_impl_.hourtradingtag_.Set(from._internal_hourtradingtag(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.marketstatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.marketstatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_marketstatus().empty()) {
-    _this->_impl_.marketstatus_.Set(from._internal_marketstatus(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_identifier().empty()) {
-    _this->_impl_.identifier_.Set(from._internal_identifier(), 
-      _this->GetArenaForAllocation());
-  }
-  if (from._internal_has_mi()) {
-    _this->_impl_.mi_ = new ::tigeropen::push::pb::QuoteData_Minute(*from._impl_.mi_);
-  }
-  ::memcpy(&_impl_.timestamp_, &from._impl_.timestamp_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.presettlement_) -
-    reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.presettlement_));
+QuoteBasicData::QuoteBasicData(
+    ::google::protobuf::Arena* arena,
+    const QuoteBasicData& from)
+    : ::google::protobuf::Message(arena) {
+  QuoteBasicData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.mi_ = (cached_has_bits & 0x00000001u)
+                ? CreateMaybeMessage<::tigeropen::push::pb::QuoteData_Minute>(arena, *from._impl_.mi_)
+                : nullptr;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, timestamp_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, timestamp_),
+           offsetof(Impl_, presettlement_) -
+               offsetof(Impl_, timestamp_) +
+               sizeof(Impl_::presettlement_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.QuoteBasicData)
 }
+inline PROTOBUF_NDEBUG_INLINE QuoteBasicData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0},
+        symbol_(arena),
+        latesttime_(arena),
+        hourtradingtag_(arena),
+        marketstatus_(arena),
+        identifier_(arena) {}
 
-inline void QuoteBasicData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.latesttime_){}
-    , decltype(_impl_.hourtradingtag_){}
-    , decltype(_impl_.marketstatus_){}
-    , decltype(_impl_.identifier_){}
-    , decltype(_impl_.mi_){nullptr}
-    , decltype(_impl_.timestamp_){uint64_t{0u}}
-    , decltype(_impl_.servertimestamp_){uint64_t{0u}}
-    , decltype(_impl_.avgprice_){0}
-    , decltype(_impl_.latestprice_){0}
-    , decltype(_impl_.latestpricetimestamp_){uint64_t{0u}}
-    , decltype(_impl_.preclose_){0}
-    , decltype(_impl_.volume_){int64_t{0}}
-    , decltype(_impl_.amount_){0}
-    , decltype(_impl_.open_){0}
-    , decltype(_impl_.high_){0}
-    , decltype(_impl_.low_){0}
-    , decltype(_impl_.type_){0}
-    , decltype(_impl_.mintick_){0}
-    , decltype(_impl_.openint_){int64_t{0}}
-    , decltype(_impl_.tradetime_){uint64_t{0u}}
-    , decltype(_impl_.presettlement_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.latesttime_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.latesttime_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.hourtradingtag_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.hourtradingtag_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.marketstatus_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.marketstatus_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void QuoteBasicData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, mi_),
+           0,
+           offsetof(Impl_, presettlement_) -
+               offsetof(Impl_, mi_) +
+               sizeof(Impl_::presettlement_));
 }
-
 QuoteBasicData::~QuoteBasicData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.QuoteBasicData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void QuoteBasicData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
   _impl_.latesttime_.Destroy();
   _impl_.hourtradingtag_.Destroy();
   _impl_.marketstatus_.Destroy();
   _impl_.identifier_.Destroy();
-  if (this != internal_default_instance()) delete _impl_.mi_;
+  delete _impl_.mi_;
+  _impl_.~Impl_();
 }
 
-void QuoteBasicData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void QuoteBasicData::Clear() {
+PROTOBUF_NOINLINE void QuoteBasicData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.QuoteBasicData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -328,623 +313,613 @@ void QuoteBasicData::Clear() {
   _impl_.hourtradingtag_.ClearToEmpty();
   _impl_.marketstatus_.ClearToEmpty();
   _impl_.identifier_.ClearToEmpty();
-  if (GetArenaForAllocation() == nullptr && _impl_.mi_ != nullptr) {
-    delete _impl_.mi_;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(_impl_.mi_ != nullptr);
+    _impl_.mi_->Clear();
   }
-  _impl_.mi_ = nullptr;
-  ::memset(&_impl_.timestamp_, 0, static_cast<size_t>(
+  ::memset(&_impl_.timestamp_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.presettlement_) -
       reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.presettlement_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* QuoteBasicData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string symbol = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteBasicData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-          _internal_set_type(static_cast<::tigeropen::push::pb::SocketCommon_QuoteType>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 timestamp = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 serverTimestamp = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
-          _impl_.servertimestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // double avgPrice = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 41)) {
-          _impl_.avgprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double latestPrice = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 49)) {
-          _impl_.latestprice_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 latestPriceTimestamp = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
-          _impl_.latestpricetimestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string latestTime = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
-          auto str = _internal_mutable_latesttime();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteBasicData.latestTime"));
-        } else
-          goto handle_unusual;
-        continue;
-      // double preClose = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 73)) {
-          _impl_.preclose_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // sint64 volume = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
-          _impl_.volume_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // double amount = 11;
-      case 11:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 89)) {
-          _impl_.amount_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double open = 12;
-      case 12:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 97)) {
-          _impl_.open_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double high = 13;
-      case 13:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 105)) {
-          _impl_.high_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double low = 14;
-      case 14:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 113)) {
-          _impl_.low_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // string hourTradingTag = 15;
-      case 15:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
-          auto str = _internal_mutable_hourtradingtag();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteBasicData.hourTradingTag"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string marketStatus = 16;
-      case 16:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 130)) {
-          auto str = _internal_mutable_marketstatus();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteBasicData.marketStatus"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string identifier = 23;
-      case 23:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 186)) {
-          auto str = _internal_mutable_identifier();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.QuoteBasicData.identifier"));
-        } else
-          goto handle_unusual;
-        continue;
-      // sint64 openInt = 24;
-      case 24:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 192)) {
-          _impl_.openint_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarintZigZag64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 tradeTime = 25;
-      case 25:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 200)) {
-          _impl_.tradetime_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // double preSettlement = 26;
-      case 26:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 209)) {
-          _impl_.presettlement_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // float minTick = 27;
-      case 27:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 221)) {
-          _impl_.mintick_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-      case 28:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 226)) {
-          ptr = ctx->ParseMessage(_internal_mutable_mi(), ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* QuoteBasicData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* QuoteBasicData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<5, 22, 1, 109, 2> QuoteBasicData::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_._has_bits_),
+    0, // no _extensions_
+    28, 248,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4030660608,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    22,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_QuoteBasicData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string symbol = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.symbol_)}},
+    // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(QuoteBasicData, _impl_.type_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.type_)}},
+    // uint64 timestamp = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteBasicData, _impl_.timestamp_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.timestamp_)}},
+    // uint64 serverTimestamp = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteBasicData, _impl_.servertimestamp_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.servertimestamp_)}},
+    // double avgPrice = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.avgprice_)}},
+    // double latestPrice = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latestprice_)}},
+    // uint64 latestPriceTimestamp = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteBasicData, _impl_.latestpricetimestamp_), 63>(),
+     {56, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latestpricetimestamp_)}},
+    // string latestTime = 8;
+    {::_pbi::TcParser::FastUS1,
+     {66, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latesttime_)}},
+    // double preClose = 9;
+    {::_pbi::TcParser::FastF64S1,
+     {73, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.preclose_)}},
+    // sint64 volume = 10;
+    {::_pbi::TcParser::FastZ64S1,
+     {80, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.volume_)}},
+    // double amount = 11;
+    {::_pbi::TcParser::FastF64S1,
+     {89, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.amount_)}},
+    // double open = 12;
+    {::_pbi::TcParser::FastF64S1,
+     {97, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.open_)}},
+    // double high = 13;
+    {::_pbi::TcParser::FastF64S1,
+     {105, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.high_)}},
+    // double low = 14;
+    {::_pbi::TcParser::FastF64S1,
+     {113, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.low_)}},
+    // string hourTradingTag = 15;
+    {::_pbi::TcParser::FastUS1,
+     {122, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.hourtradingtag_)}},
+    // string marketStatus = 16;
+    {::_pbi::TcParser::FastUS2,
+     {386, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.marketstatus_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    // string identifier = 23;
+    {::_pbi::TcParser::FastUS2,
+     {442, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.identifier_)}},
+    // sint64 openInt = 24;
+    {::_pbi::TcParser::FastZ64S2,
+     {448, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.openint_)}},
+    // uint64 tradeTime = 25;
+    {::_pbi::TcParser::FastV64S2,
+     {456, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.tradetime_)}},
+    // double preSettlement = 26;
+    {::_pbi::TcParser::FastF64S2,
+     {465, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.presettlement_)}},
+    // float minTick = 27;
+    {::_pbi::TcParser::FastF32S2,
+     {477, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.mintick_)}},
+    // .tigeropen.push.pb.QuoteData.Minute mi = 28;
+    {::_pbi::TcParser::FastMtS2,
+     {482, 0, 0, PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.mi_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string symbol = 1;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.symbol_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.type_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // uint64 timestamp = 3;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.timestamp_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 serverTimestamp = 4;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.servertimestamp_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // double avgPrice = 5;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.avgprice_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double latestPrice = 6;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latestprice_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // uint64 latestPriceTimestamp = 7;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latestpricetimestamp_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // string latestTime = 8;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.latesttime_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // double preClose = 9;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.preclose_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // sint64 volume = 10;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.volume_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
+    // double amount = 11;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.amount_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double open = 12;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.open_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double high = 13;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.high_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double low = 14;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.low_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // string hourTradingTag = 15;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.hourtradingtag_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string marketStatus = 16;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.marketstatus_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string identifier = 23;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.identifier_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // sint64 openInt = 24;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.openint_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
+    // uint64 tradeTime = 25;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.tradetime_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // double preSettlement = 26;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.presettlement_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // float minTick = 27;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.mintick_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // .tigeropen.push.pb.QuoteData.Minute mi = 28;
+    {PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.mi_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::QuoteData_Minute>()},
+  }}, {{
+    "\40\6\0\0\0\0\0\0\12\0\0\0\0\0\0\16\14\12\0\0\0\0\0\0"
+    "tigeropen.push.pb.QuoteBasicData"
+    "symbol"
+    "latestTime"
+    "hourTradingTag"
+    "marketStatus"
+    "identifier"
+  }},
+};
+
+::uint8_t* QuoteBasicData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.QuoteBasicData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteBasicData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteBasicData.symbol");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
   if (this->_internal_type() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      2, this->_internal_type(), target);
+        2, this->_internal_type(), target);
   }
 
   // uint64 timestamp = 3;
   if (this->_internal_timestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(3, this->_internal_timestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        3, this->_internal_timestamp(), target);
   }
 
   // uint64 serverTimestamp = 4;
   if (this->_internal_servertimestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(4, this->_internal_servertimestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        4, this->_internal_servertimestamp(), target);
   }
 
   // double avgPrice = 5;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgprice = this->_internal_avgprice();
-  uint64_t raw_avgprice;
+  ::uint64_t raw_avgprice;
   memcpy(&raw_avgprice, &tmp_avgprice, sizeof(tmp_avgprice));
   if (raw_avgprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(5, this->_internal_avgprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        5, this->_internal_avgprice(), target);
   }
 
   // double latestPrice = 6;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = this->_internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(6, this->_internal_latestprice(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        6, this->_internal_latestprice(), target);
   }
 
   // uint64 latestPriceTimestamp = 7;
   if (this->_internal_latestpricetimestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(7, this->_internal_latestpricetimestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        7, this->_internal_latestpricetimestamp(), target);
   }
 
   // string latestTime = 8;
   if (!this->_internal_latesttime().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_latesttime().data(), static_cast<int>(this->_internal_latesttime().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteBasicData.latestTime");
-    target = stream->WriteStringMaybeAliased(
-        8, this->_internal_latesttime(), target);
+    const std::string& _s = this->_internal_latesttime();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteBasicData.latestTime");
+    target = stream->WriteStringMaybeAliased(8, _s, target);
   }
 
   // double preClose = 9;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_preclose = this->_internal_preclose();
-  uint64_t raw_preclose;
+  ::uint64_t raw_preclose;
   memcpy(&raw_preclose, &tmp_preclose, sizeof(tmp_preclose));
   if (raw_preclose != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(9, this->_internal_preclose(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        9, this->_internal_preclose(), target);
   }
 
   // sint64 volume = 10;
   if (this->_internal_volume() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(10, this->_internal_volume(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+        10, this->_internal_volume(), target);
   }
 
   // double amount = 11;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = this->_internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(11, this->_internal_amount(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        11, this->_internal_amount(), target);
   }
 
   // double open = 12;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_open = this->_internal_open();
-  uint64_t raw_open;
+  ::uint64_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(12, this->_internal_open(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        12, this->_internal_open(), target);
   }
 
   // double high = 13;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_high = this->_internal_high();
-  uint64_t raw_high;
+  ::uint64_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(13, this->_internal_high(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        13, this->_internal_high(), target);
   }
 
   // double low = 14;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_low = this->_internal_low();
-  uint64_t raw_low;
+  ::uint64_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(14, this->_internal_low(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        14, this->_internal_low(), target);
   }
 
   // string hourTradingTag = 15;
   if (!this->_internal_hourtradingtag().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_hourtradingtag().data(), static_cast<int>(this->_internal_hourtradingtag().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteBasicData.hourTradingTag");
-    target = stream->WriteStringMaybeAliased(
-        15, this->_internal_hourtradingtag(), target);
+    const std::string& _s = this->_internal_hourtradingtag();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteBasicData.hourTradingTag");
+    target = stream->WriteStringMaybeAliased(15, _s, target);
   }
 
   // string marketStatus = 16;
   if (!this->_internal_marketstatus().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_marketstatus().data(), static_cast<int>(this->_internal_marketstatus().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteBasicData.marketStatus");
-    target = stream->WriteStringMaybeAliased(
-        16, this->_internal_marketstatus(), target);
+    const std::string& _s = this->_internal_marketstatus();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteBasicData.marketStatus");
+    target = stream->WriteStringMaybeAliased(16, _s, target);
   }
 
   // string identifier = 23;
   if (!this->_internal_identifier().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_identifier().data(), static_cast<int>(this->_internal_identifier().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.QuoteBasicData.identifier");
-    target = stream->WriteStringMaybeAliased(
-        23, this->_internal_identifier(), target);
+    const std::string& _s = this->_internal_identifier();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteBasicData.identifier");
+    target = stream->WriteStringMaybeAliased(23, _s, target);
   }
 
   // sint64 openInt = 24;
   if (this->_internal_openint() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(24, this->_internal_openint(), target);
+    target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+        24, this->_internal_openint(), target);
   }
 
   // uint64 tradeTime = 25;
   if (this->_internal_tradetime() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(25, this->_internal_tradetime(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        25, this->_internal_tradetime(), target);
   }
 
   // double preSettlement = 26;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_presettlement = this->_internal_presettlement();
-  uint64_t raw_presettlement;
+  ::uint64_t raw_presettlement;
   memcpy(&raw_presettlement, &tmp_presettlement, sizeof(tmp_presettlement));
   if (raw_presettlement != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(26, this->_internal_presettlement(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        26, this->_internal_presettlement(), target);
   }
 
   // float minTick = 27;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_mintick = this->_internal_mintick();
-  uint32_t raw_mintick;
+  ::uint32_t raw_mintick;
   memcpy(&raw_mintick, &tmp_mintick, sizeof(tmp_mintick));
   if (raw_mintick != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(27, this->_internal_mintick(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        27, this->_internal_mintick(), target);
   }
 
+  cached_has_bits = _impl_._has_bits_[0];
   // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-  if (this->_internal_has_mi()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(28, _Internal::mi(this),
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        28, _Internal::mi(this),
         _Internal::mi(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.QuoteBasicData)
   return target;
 }
 
-size_t QuoteBasicData::ByteSizeLong() const {
+::size_t QuoteBasicData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.QuoteBasicData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // string latestTime = 8;
   if (!this->_internal_latesttime().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_latesttime());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_latesttime());
   }
 
   // string hourTradingTag = 15;
   if (!this->_internal_hourtradingtag().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_hourtradingtag());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_hourtradingtag());
   }
 
   // string marketStatus = 16;
   if (!this->_internal_marketstatus().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_marketstatus());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_marketstatus());
   }
 
   // string identifier = 23;
   if (!this->_internal_identifier().empty()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_identifier());
+    total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_identifier());
   }
 
   // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-  if (this->_internal_has_mi()) {
-    total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.mi_);
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    total_size +=
+        2 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.mi_);
   }
 
   // uint64 timestamp = 3;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   // uint64 serverTimestamp = 4;
   if (this->_internal_servertimestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_servertimestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_servertimestamp());
   }
 
   // double avgPrice = 5;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgprice = this->_internal_avgprice();
-  uint64_t raw_avgprice;
+  ::uint64_t raw_avgprice;
   memcpy(&raw_avgprice, &tmp_avgprice, sizeof(tmp_avgprice));
   if (raw_avgprice != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double latestPrice = 6;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = this->_internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // uint64 latestPriceTimestamp = 7;
   if (this->_internal_latestpricetimestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_latestpricetimestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_latestpricetimestamp());
   }
 
   // double preClose = 9;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_preclose = this->_internal_preclose();
-  uint64_t raw_preclose;
+  ::uint64_t raw_preclose;
   memcpy(&raw_preclose, &tmp_preclose, sizeof(tmp_preclose));
   if (raw_preclose != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // sint64 volume = 10;
   if (this->_internal_volume() != 0) {
-    total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(this->_internal_volume());
+    total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(
+        this->_internal_volume());
   }
 
   // double amount = 11;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = this->_internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double open = 12;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_open = this->_internal_open();
-  uint64_t raw_open;
+  ::uint64_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double high = 13;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_high = this->_internal_high();
-  uint64_t raw_high;
+  ::uint64_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double low = 14;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_low = this->_internal_low();
-  uint64_t raw_low;
+  ::uint64_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
   if (this->_internal_type() != 0) {
     total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+                  ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
   }
 
   // float minTick = 27;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_mintick = this->_internal_mintick();
-  uint32_t raw_mintick;
+  ::uint32_t raw_mintick;
   memcpy(&raw_mintick, &tmp_mintick, sizeof(tmp_mintick));
   if (raw_mintick != 0) {
-    total_size += 2 + 4;
+    total_size += 6;
   }
 
   // sint64 openInt = 24;
   if (this->_internal_openint() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::SInt64Size(
-        this->_internal_openint());
+    total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
+                                    this->_internal_openint());
   }
 
   // uint64 tradeTime = 25;
   if (this->_internal_tradetime() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::UInt64Size(
-        this->_internal_tradetime());
+    total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
+                                    this->_internal_tradetime());
   }
 
   // double preSettlement = 26;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_presettlement = this->_internal_presettlement();
-  uint64_t raw_presettlement;
+  ::uint64_t raw_presettlement;
   memcpy(&raw_presettlement, &tmp_presettlement, sizeof(tmp_presettlement));
   if (raw_presettlement != 0) {
-    total_size += 2 + 8;
+    total_size += 10;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData QuoteBasicData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    QuoteBasicData::MergeImpl
+const ::google::protobuf::Message::ClassData QuoteBasicData::_class_data_ = {
+    QuoteBasicData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*QuoteBasicData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* QuoteBasicData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void QuoteBasicData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<QuoteBasicData*>(&to_msg);
   auto& from = static_cast<const QuoteBasicData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.QuoteBasicData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_symbol().empty()) {
@@ -962,7 +937,7 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (!from._internal_identifier().empty()) {
     _this->_internal_set_identifier(from._internal_identifier());
   }
-  if (from._internal_has_mi()) {
+  if ((from._impl_._has_bits_[0] & 0x00000001u) != 0) {
     _this->_internal_mutable_mi()->::tigeropen::push::pb::QuoteData_Minute::MergeFrom(
         from._internal_mi());
   }
@@ -972,16 +947,18 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (from._internal_servertimestamp() != 0) {
     _this->_internal_set_servertimestamp(from._internal_servertimestamp());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_avgprice = from._internal_avgprice();
-  uint64_t raw_avgprice;
+  ::uint64_t raw_avgprice;
   memcpy(&raw_avgprice, &tmp_avgprice, sizeof(tmp_avgprice));
   if (raw_avgprice != 0) {
     _this->_internal_set_avgprice(from._internal_avgprice());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_latestprice = from._internal_latestprice();
-  uint64_t raw_latestprice;
+  ::uint64_t raw_latestprice;
   memcpy(&raw_latestprice, &tmp_latestprice, sizeof(tmp_latestprice));
   if (raw_latestprice != 0) {
     _this->_internal_set_latestprice(from._internal_latestprice());
@@ -989,9 +966,10 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (from._internal_latestpricetimestamp() != 0) {
     _this->_internal_set_latestpricetimestamp(from._internal_latestpricetimestamp());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_preclose = from._internal_preclose();
-  uint64_t raw_preclose;
+  ::uint64_t raw_preclose;
   memcpy(&raw_preclose, &tmp_preclose, sizeof(tmp_preclose));
   if (raw_preclose != 0) {
     _this->_internal_set_preclose(from._internal_preclose());
@@ -999,30 +977,34 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (from._internal_volume() != 0) {
     _this->_internal_set_volume(from._internal_volume());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = from._internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
     _this->_internal_set_amount(from._internal_amount());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_open = from._internal_open();
-  uint64_t raw_open;
+  ::uint64_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
     _this->_internal_set_open(from._internal_open());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_high = from._internal_high();
-  uint64_t raw_high;
+  ::uint64_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
     _this->_internal_set_high(from._internal_high());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_low = from._internal_low();
-  uint64_t raw_low;
+  ::uint64_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
     _this->_internal_set_low(from._internal_low());
@@ -1030,9 +1012,10 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (from._internal_type() != 0) {
     _this->_internal_set_type(from._internal_type());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_mintick = from._internal_mintick();
-  uint32_t raw_mintick;
+  ::uint32_t raw_mintick;
   memcpy(&raw_mintick, &tmp_mintick, sizeof(tmp_mintick));
   if (raw_mintick != 0) {
     _this->_internal_set_mintick(from._internal_mintick());
@@ -1043,14 +1026,15 @@ void QuoteBasicData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   if (from._internal_tradetime() != 0) {
     _this->_internal_set_tradetime(from._internal_tradetime());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_presettlement = from._internal_presettlement();
-  uint64_t raw_presettlement;
+  ::uint64_t raw_presettlement;
   memcpy(&raw_presettlement, &tmp_presettlement, sizeof(tmp_presettlement));
   if (raw_presettlement != 0) {
     _this->_internal_set_presettlement(from._internal_presettlement());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void QuoteBasicData::CopyFrom(const QuoteBasicData& from) {
@@ -1060,36 +1044,25 @@ void QuoteBasicData::CopyFrom(const QuoteBasicData& from) {
   MergeFrom(from);
 }
 
-bool QuoteBasicData::IsInitialized() const {
+PROTOBUF_NOINLINE bool QuoteBasicData::IsInitialized() const {
   return true;
 }
 
-void QuoteBasicData::InternalSwap(QuoteBasicData* other) {
+::_pbi::CachedSize* QuoteBasicData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void QuoteBasicData::InternalSwap(QuoteBasicData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.latesttime_, lhs_arena,
-      &other->_impl_.latesttime_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.hourtradingtag_, lhs_arena,
-      &other->_impl_.hourtradingtag_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.marketstatus_, lhs_arena,
-      &other->_impl_.marketstatus_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.identifier_, lhs_arena,
-      &other->_impl_.identifier_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.latesttime_, &other->_impl_.latesttime_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.hourtradingtag_, &other->_impl_.hourtradingtag_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.marketstatus_, &other->_impl_.marketstatus_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.identifier_, &other->_impl_.identifier_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.presettlement_)
       + sizeof(QuoteBasicData::_impl_.presettlement_)
       - PROTOBUF_FIELD_OFFSET(QuoteBasicData, _impl_.mi_)>(
@@ -1097,22 +1070,18 @@ void QuoteBasicData::InternalSwap(QuoteBasicData* other) {
           reinterpret_cast<char*>(&other->_impl_.mi_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata QuoteBasicData::GetMetadata() const {
+::google::protobuf::Metadata QuoteBasicData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_QuoteBasicData_2eproto_getter, &descriptor_table_QuoteBasicData_2eproto_once,
       file_level_metadata_QuoteBasicData_2eproto[0]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::QuoteBasicData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::QuoteBasicData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::QuoteBasicData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

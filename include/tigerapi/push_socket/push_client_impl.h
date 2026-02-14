@@ -2,7 +2,7 @@
 #define PUSH_CLIENT_IMPL_H
 
 #include "tigerapi/model.h"
-#include "boost/asio/io_service.hpp"
+#include "boost/asio/io_context.hpp"
 #include "tigerapi/push_client.h"
 #include <thread>
 
@@ -115,7 +115,7 @@ namespace TIGER_API
 		std::function<void(const tigeropen::push::pb::OptionTopData& option_top_data)> option_top_changed_;
 	
 	private:
-		boost::asio::io_service io_service_;
+		boost::asio::io_context io_context_;
 		std::shared_ptr<TIGER_API::PushSocket> socket_;
 		std::shared_ptr<std::thread> worker_thread_;
 	};

@@ -4,277 +4,320 @@
 #include "TradeTickData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR TradeTickData_MergedVol::TradeTickData_MergedVol(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.vol_)*/{}
-  , /*decltype(_impl_._vol_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.mergetimes_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr TradeTickData_MergedVol::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : vol_{},
+        _vol_cached_byte_size_{0},
+        mergetimes_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR TradeTickData_MergedVol::TradeTickData_MergedVol(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct TradeTickData_MergedVolDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR TradeTickData_MergedVolDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR TradeTickData_MergedVolDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~TradeTickData_MergedVolDefaultTypeInternal() {}
   union {
     TradeTickData_MergedVol _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TradeTickData_MergedVolDefaultTypeInternal _TradeTickData_MergedVol_default_instance_;
-PROTOBUF_CONSTEXPR TradeTickData::TradeTickData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.time_)*/{}
-  , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.price_)*/{}
-  , /*decltype(_impl_._price_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.volume_)*/{}
-  , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-  , /*decltype(_impl_.partcode_)*/{}
-  , /*decltype(_impl_.mergedvols_)*/{}
-  , /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.type_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.cond_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.quotelevel_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sectype_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sn_)*/int64_t{0}
-  , /*decltype(_impl_.pricebase_)*/int64_t{0}
-  , /*decltype(_impl_.timestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_.priceoffset_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TradeTickData_MergedVolDefaultTypeInternal _TradeTickData_MergedVol_default_instance_;
+
+inline constexpr TradeTickData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : time_{},
+        _time_cached_byte_size_{0},
+        price_{},
+        _price_cached_byte_size_{0},
+        volume_{},
+        _volume_cached_byte_size_{0},
+        partcode_{},
+        mergedvols_{},
+        symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        type_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        cond_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        quotelevel_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sectype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sn_{::int64_t{0}},
+        pricebase_{::int64_t{0}},
+        timestamp_{::uint64_t{0u}},
+        priceoffset_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR TradeTickData::TradeTickData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct TradeTickDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR TradeTickDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR TradeTickDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~TradeTickDataDefaultTypeInternal() {}
   union {
     TradeTickData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TradeTickDataDefaultTypeInternal _TradeTickData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TradeTickDataDefaultTypeInternal _TradeTickData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_TradeTickData_2eproto[2];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_TradeTickData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_TradeTickData_2eproto = nullptr;
-
-const uint32_t TableStruct_TradeTickData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _impl_.mergetimes_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _impl_.vol_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.type_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.cond_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.sn_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.pricebase_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.priceoffset_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.time_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.price_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.volume_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.partcode_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.quotelevel_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.sectype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.mergedvols_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_TradeTickData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_TradeTickData_2eproto = nullptr;
+const ::uint32_t TableStruct_TradeTickData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _impl_.mergetimes_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData_MergedVol, _impl_.vol_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.type_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.cond_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.sn_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.pricebase_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.priceoffset_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.time_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.price_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.volume_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.partcode_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.quotelevel_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.sectype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TradeTickData, _impl_.mergedvols_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::TradeTickData_MergedVol)},
-  { 8, -1, -1, sizeof(::tigeropen::push::pb::TradeTickData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::TradeTickData_MergedVol)},
+        {10, -1, -1, sizeof(::tigeropen::push::pb::TradeTickData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_TradeTickData_MergedVol_default_instance_._instance,
-  &::tigeropen::push::pb::_TradeTickData_default_instance_._instance,
+    &::tigeropen::push::pb::_TradeTickData_MergedVol_default_instance_._instance,
+    &::tigeropen::push::pb::_TradeTickData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_TradeTickData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\023TradeTickData.proto\022\021tigeropen.push.pb"
-  "\"\324\002\n\rTradeTickData\022\016\n\006symbol\030\001 \001(\t\022\014\n\004ty"
-  "pe\030\002 \001(\t\022\014\n\004cond\030\003 \001(\t\022\n\n\002sn\030\004 \001(\003\022\021\n\tpr"
-  "iceBase\030\005 \001(\003\022\023\n\013priceOffset\030\006 \001(\005\022\014\n\004ti"
-  "me\030\007 \003(\003\022\r\n\005price\030\010 \003(\003\022\016\n\006volume\030\t \003(\003\022"
-  "\020\n\010partCode\030\n \003(\t\022\022\n\nquoteLevel\030\013 \001(\t\022\021\n"
-  "\ttimestamp\030\014 \001(\004\022\017\n\007secType\030\r \001(\t\022>\n\nmer"
-  "gedVols\030\016 \003(\0132*.tigeropen.push.pb.TradeT"
-  "ickData.MergedVol\032,\n\tMergedVol\022\022\n\nmergeT"
-  "imes\030\001 \001(\005\022\013\n\003vol\030\002 \003(\003b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_TradeTickData_2eproto_once;
+const char descriptor_table_protodef_TradeTickData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\023TradeTickData.proto\022\021tigeropen.push.pb"
+    "\"\324\002\n\rTradeTickData\022\016\n\006symbol\030\001 \001(\t\022\014\n\004ty"
+    "pe\030\002 \001(\t\022\014\n\004cond\030\003 \001(\t\022\n\n\002sn\030\004 \001(\003\022\021\n\tpr"
+    "iceBase\030\005 \001(\003\022\023\n\013priceOffset\030\006 \001(\005\022\014\n\004ti"
+    "me\030\007 \003(\003\022\r\n\005price\030\010 \003(\003\022\016\n\006volume\030\t \003(\003\022"
+    "\020\n\010partCode\030\n \003(\t\022\022\n\nquoteLevel\030\013 \001(\t\022\021\n"
+    "\ttimestamp\030\014 \001(\004\022\017\n\007secType\030\r \001(\t\022>\n\nmer"
+    "gedVols\030\016 \003(\0132*.tigeropen.push.pb.TradeT"
+    "ickData.MergedVol\032,\n\tMergedVol\022\022\n\nmergeT"
+    "imes\030\001 \001(\005\022\013\n\003vol\030\002 \003(\003b\006proto3"
+};
+static ::absl::once_flag descriptor_table_TradeTickData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_TradeTickData_2eproto = {
-    false, false, 391, descriptor_table_protodef_TradeTickData_2eproto,
+    false,
+    false,
+    391,
+    descriptor_table_protodef_TradeTickData_2eproto,
     "TradeTickData.proto",
-    &descriptor_table_TradeTickData_2eproto_once, nullptr, 0, 2,
-    schemas, file_default_instances, TableStruct_TradeTickData_2eproto::offsets,
-    file_level_metadata_TradeTickData_2eproto, file_level_enum_descriptors_TradeTickData_2eproto,
+    &descriptor_table_TradeTickData_2eproto_once,
+    nullptr,
+    0,
+    2,
+    schemas,
+    file_default_instances,
+    TableStruct_TradeTickData_2eproto::offsets,
+    file_level_metadata_TradeTickData_2eproto,
+    file_level_enum_descriptors_TradeTickData_2eproto,
     file_level_service_descriptors_TradeTickData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_TradeTickData_2eproto_getter() {
   return &descriptor_table_TradeTickData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_TradeTickData_2eproto(&descriptor_table_TradeTickData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_TradeTickData_2eproto(&descriptor_table_TradeTickData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class TradeTickData_MergedVol::_Internal {
  public:
 };
 
-TradeTickData_MergedVol::TradeTickData_MergedVol(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+TradeTickData_MergedVol::TradeTickData_MergedVol(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.TradeTickData.MergedVol)
 }
-TradeTickData_MergedVol::TradeTickData_MergedVol(const TradeTickData_MergedVol& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  TradeTickData_MergedVol* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.vol_){from._impl_.vol_}
-    , /*decltype(_impl_._vol_cached_byte_size_)*/{0}
-    , decltype(_impl_.mergetimes_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE TradeTickData_MergedVol::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : vol_{visibility, arena, from.vol_},
+        _vol_cached_byte_size_{0},
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _this->_impl_.mergetimes_ = from._impl_.mergetimes_;
+TradeTickData_MergedVol::TradeTickData_MergedVol(
+    ::google::protobuf::Arena* arena,
+    const TradeTickData_MergedVol& from)
+    : ::google::protobuf::Message(arena) {
+  TradeTickData_MergedVol* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  _impl_.mergetimes_ = from._impl_.mergetimes_;
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.TradeTickData.MergedVol)
 }
+inline PROTOBUF_NDEBUG_INLINE TradeTickData_MergedVol::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : vol_{visibility, arena},
+        _vol_cached_byte_size_{0},
+        _cached_size_{0} {}
 
-inline void TradeTickData_MergedVol::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.vol_){arena}
-    , /*decltype(_impl_._vol_cached_byte_size_)*/{0}
-    , decltype(_impl_.mergetimes_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
+inline void TradeTickData_MergedVol::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.mergetimes_ = {};
 }
-
 TradeTickData_MergedVol::~TradeTickData_MergedVol() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.TradeTickData.MergedVol)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void TradeTickData_MergedVol::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.vol_.~RepeatedField();
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.~Impl_();
 }
 
-void TradeTickData_MergedVol::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void TradeTickData_MergedVol::Clear() {
+PROTOBUF_NOINLINE void TradeTickData_MergedVol::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.TradeTickData.MergedVol)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.vol_.Clear();
   _impl_.mergetimes_ = 0;
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* TradeTickData_MergedVol::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // int32 mergeTimes = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _impl_.mergetimes_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated int64 vol = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt64Parser(_internal_mutable_vol(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 16) {
-          _internal_add_vol(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* TradeTickData_MergedVol::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* TradeTickData_MergedVol::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> TradeTickData_MergedVol::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_TradeTickData_MergedVol_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // repeated int64 vol = 2;
+    {::_pbi::TcParser::FastV64P1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData_MergedVol, _impl_.vol_)}},
+    // int32 mergeTimes = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TradeTickData_MergedVol, _impl_.mergetimes_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData_MergedVol, _impl_.mergetimes_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int32 mergeTimes = 1;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData_MergedVol, _impl_.mergetimes_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // repeated int64 vol = 2;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData_MergedVol, _impl_.vol_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt64)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+::uint8_t* TradeTickData_MergedVol::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.TradeTickData.MergedVol)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // int32 mergeTimes = 1;
   if (this->_internal_mergetimes() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_mergetimes(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<1>(
+            stream, this->_internal_mergetimes(), target);
   }
 
   // repeated int64 vol = 2;
   {
-    int byte_size = _impl_._vol_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._vol_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteInt64Packed(
           2, _internal_vol(), byte_size, target);
@@ -282,63 +325,65 @@ uint8_t* TradeTickData_MergedVol::_InternalSerialize(
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.TradeTickData.MergedVol)
   return target;
 }
 
-size_t TradeTickData_MergedVol::ByteSizeLong() const {
+::size_t TradeTickData_MergedVol::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.TradeTickData.MergedVol)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated int64 vol = 2;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      Int64Size(this->_impl_.vol_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._vol_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::Int64Size(
+        this->_internal_vol())
+    ;
+    _impl_._vol_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // int32 mergeTimes = 1;
   if (this->_internal_mergetimes() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_mergetimes());
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_mergetimes());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TradeTickData_MergedVol::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    TradeTickData_MergedVol::MergeImpl
+const ::google::protobuf::Message::ClassData TradeTickData_MergedVol::_class_data_ = {
+    TradeTickData_MergedVol::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TradeTickData_MergedVol::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* TradeTickData_MergedVol::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void TradeTickData_MergedVol::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void TradeTickData_MergedVol::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<TradeTickData_MergedVol*>(&to_msg);
   auto& from = static_cast<const TradeTickData_MergedVol&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.TradeTickData.MergedVol)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.vol_.MergeFrom(from._impl_.vol_);
+  _this->_internal_mutable_vol()->MergeFrom(from._internal_vol());
   if (from._internal_mergetimes() != 0) {
     _this->_internal_set_mergetimes(from._internal_mergetimes());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void TradeTickData_MergedVol::CopyFrom(const TradeTickData_MergedVol& from) {
@@ -348,181 +393,119 @@ void TradeTickData_MergedVol::CopyFrom(const TradeTickData_MergedVol& from) {
   MergeFrom(from);
 }
 
-bool TradeTickData_MergedVol::IsInitialized() const {
+PROTOBUF_NOINLINE bool TradeTickData_MergedVol::IsInitialized() const {
   return true;
 }
 
-void TradeTickData_MergedVol::InternalSwap(TradeTickData_MergedVol* other) {
+::_pbi::CachedSize* TradeTickData_MergedVol::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void TradeTickData_MergedVol::InternalSwap(TradeTickData_MergedVol* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.vol_.InternalSwap(&other->_impl_.vol_);
-  swap(_impl_.mergetimes_, other->_impl_.mergetimes_);
+        swap(_impl_.mergetimes_, other->_impl_.mergetimes_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata TradeTickData_MergedVol::GetMetadata() const {
+::google::protobuf::Metadata TradeTickData_MergedVol::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_TradeTickData_2eproto_getter, &descriptor_table_TradeTickData_2eproto_once,
       file_level_metadata_TradeTickData_2eproto[0]);
 }
-
 // ===================================================================
 
 class TradeTickData::_Internal {
  public:
 };
 
-TradeTickData::TradeTickData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+TradeTickData::TradeTickData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.TradeTickData)
 }
-TradeTickData::TradeTickData(const TradeTickData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  TradeTickData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.time_){from._impl_.time_}
-    , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-    , decltype(_impl_.price_){from._impl_.price_}
-    , /*decltype(_impl_._price_cached_byte_size_)*/{0}
-    , decltype(_impl_.volume_){from._impl_.volume_}
-    , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-    , decltype(_impl_.partcode_){from._impl_.partcode_}
-    , decltype(_impl_.mergedvols_){from._impl_.mergedvols_}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.type_){}
-    , decltype(_impl_.cond_){}
-    , decltype(_impl_.quotelevel_){}
-    , decltype(_impl_.sectype_){}
-    , decltype(_impl_.sn_){}
-    , decltype(_impl_.pricebase_){}
-    , decltype(_impl_.timestamp_){}
-    , decltype(_impl_.priceoffset_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE TradeTickData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : time_{visibility, arena, from.time_},
+        _time_cached_byte_size_{0},
+        price_{visibility, arena, from.price_},
+        _price_cached_byte_size_{0},
+        volume_{visibility, arena, from.volume_},
+        _volume_cached_byte_size_{0},
+        partcode_{visibility, arena, from.partcode_},
+        mergedvols_{visibility, arena, from.mergedvols_},
+        symbol_(arena, from.symbol_),
+        type_(arena, from.type_),
+        cond_(arena, from.cond_),
+        quotelevel_(arena, from.quotelevel_),
+        sectype_(arena, from.sectype_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.type_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.type_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_type().empty()) {
-    _this->_impl_.type_.Set(from._internal_type(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.cond_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cond_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_cond().empty()) {
-    _this->_impl_.cond_.Set(from._internal_cond(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.quotelevel_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.quotelevel_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_quotelevel().empty()) {
-    _this->_impl_.quotelevel_.Set(from._internal_quotelevel(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.sectype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sectype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_sectype().empty()) {
-    _this->_impl_.sectype_.Set(from._internal_sectype(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.sn_, &from._impl_.sn_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.priceoffset_) -
-    reinterpret_cast<char*>(&_impl_.sn_)) + sizeof(_impl_.priceoffset_));
+TradeTickData::TradeTickData(
+    ::google::protobuf::Arena* arena,
+    const TradeTickData& from)
+    : ::google::protobuf::Message(arena) {
+  TradeTickData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sn_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, sn_),
+           offsetof(Impl_, priceoffset_) -
+               offsetof(Impl_, sn_) +
+               sizeof(Impl_::priceoffset_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.TradeTickData)
 }
+inline PROTOBUF_NDEBUG_INLINE TradeTickData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : time_{visibility, arena},
+        _time_cached_byte_size_{0},
+        price_{visibility, arena},
+        _price_cached_byte_size_{0},
+        volume_{visibility, arena},
+        _volume_cached_byte_size_{0},
+        partcode_{visibility, arena},
+        mergedvols_{visibility, arena},
+        symbol_(arena),
+        type_(arena),
+        cond_(arena),
+        quotelevel_(arena),
+        sectype_(arena),
+        _cached_size_{0} {}
 
-inline void TradeTickData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.time_){arena}
-    , /*decltype(_impl_._time_cached_byte_size_)*/{0}
-    , decltype(_impl_.price_){arena}
-    , /*decltype(_impl_._price_cached_byte_size_)*/{0}
-    , decltype(_impl_.volume_){arena}
-    , /*decltype(_impl_._volume_cached_byte_size_)*/{0}
-    , decltype(_impl_.partcode_){arena}
-    , decltype(_impl_.mergedvols_){arena}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.type_){}
-    , decltype(_impl_.cond_){}
-    , decltype(_impl_.quotelevel_){}
-    , decltype(_impl_.sectype_){}
-    , decltype(_impl_.sn_){int64_t{0}}
-    , decltype(_impl_.pricebase_){int64_t{0}}
-    , decltype(_impl_.timestamp_){uint64_t{0u}}
-    , decltype(_impl_.priceoffset_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.type_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.type_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.cond_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cond_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.quotelevel_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.quotelevel_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.sectype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.sectype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void TradeTickData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sn_),
+           0,
+           offsetof(Impl_, priceoffset_) -
+               offsetof(Impl_, sn_) +
+               sizeof(Impl_::priceoffset_));
 }
-
 TradeTickData::~TradeTickData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.TradeTickData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void TradeTickData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.time_.~RepeatedField();
-  _impl_.price_.~RepeatedField();
-  _impl_.volume_.~RepeatedField();
-  _impl_.partcode_.~RepeatedPtrField();
-  _impl_.mergedvols_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
   _impl_.type_.Destroy();
   _impl_.cond_.Destroy();
   _impl_.quotelevel_.Destroy();
   _impl_.sectype_.Destroy();
+  _impl_.~Impl_();
 }
 
-void TradeTickData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void TradeTickData::Clear() {
+PROTOBUF_NOINLINE void TradeTickData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.TradeTickData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -536,241 +519,192 @@ void TradeTickData::Clear() {
   _impl_.cond_.ClearToEmpty();
   _impl_.quotelevel_.ClearToEmpty();
   _impl_.sectype_.ClearToEmpty();
-  ::memset(&_impl_.sn_, 0, static_cast<size_t>(
+  ::memset(&_impl_.sn_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.priceoffset_) -
       reinterpret_cast<char*>(&_impl_.sn_)) + sizeof(_impl_.priceoffset_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* TradeTickData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string symbol = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string type = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_type();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.type"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string cond = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_cond();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.cond"));
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 sn = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
-          _impl_.sn_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 priceBase = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _impl_.pricebase_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // int32 priceOffset = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
-          _impl_.priceoffset_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated int64 time = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt64Parser(_internal_mutable_time(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 56) {
-          _internal_add_time(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated int64 price = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt64Parser(_internal_mutable_price(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 64) {
-          _internal_add_price(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated int64 volume = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt64Parser(_internal_mutable_volume(), ptr, ctx);
-          CHK_(ptr);
-        } else if (static_cast<uint8_t>(tag) == 72) {
-          _internal_add_volume(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated string partCode = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            auto str = _internal_add_partcode();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-            CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.partCode"));
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<82>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      // string quoteLevel = 11;
-      case 11:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
-          auto str = _internal_mutable_quotelevel();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.quoteLevel"));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 timestamp = 12;
-      case 12:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 96)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string secType = 13;
-      case 13:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
-          auto str = _internal_mutable_sectype();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TradeTickData.secType"));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated .tigeropen.push.pb.TradeTickData.MergedVol mergedVols = 14;
-      case 14:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 114)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_mergedvols(), ptr);
-            CHK_(ptr);
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<114>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* TradeTickData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* TradeTickData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 14, 1, 87, 2> TradeTickData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    14, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294950912,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    14,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_TradeTickData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string symbol = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.symbol_)}},
+    // string type = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.type_)}},
+    // string cond = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.cond_)}},
+    // int64 sn = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TradeTickData, _impl_.sn_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.sn_)}},
+    // int64 priceBase = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TradeTickData, _impl_.pricebase_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.pricebase_)}},
+    // int32 priceOffset = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TradeTickData, _impl_.priceoffset_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.priceoffset_)}},
+    // repeated int64 time = 7;
+    {::_pbi::TcParser::FastV64P1,
+     {58, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.time_)}},
+    // repeated int64 price = 8;
+    {::_pbi::TcParser::FastV64P1,
+     {66, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.price_)}},
+    // repeated int64 volume = 9;
+    {::_pbi::TcParser::FastV64P1,
+     {74, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.volume_)}},
+    // repeated string partCode = 10;
+    {::_pbi::TcParser::FastUR1,
+     {82, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.partcode_)}},
+    // string quoteLevel = 11;
+    {::_pbi::TcParser::FastUS1,
+     {90, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.quotelevel_)}},
+    // uint64 timestamp = 12;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TradeTickData, _impl_.timestamp_), 63>(),
+     {96, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.timestamp_)}},
+    // string secType = 13;
+    {::_pbi::TcParser::FastUS1,
+     {106, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.sectype_)}},
+    // repeated .tigeropen.push.pb.TradeTickData.MergedVol mergedVols = 14;
+    {::_pbi::TcParser::FastMtR1,
+     {114, 63, 0, PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.mergedvols_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string symbol = 1;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.symbol_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string type = 2;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.type_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string cond = 3;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.cond_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 sn = 4;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.sn_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // int64 priceBase = 5;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.pricebase_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // int32 priceOffset = 6;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.priceoffset_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // repeated int64 time = 7;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.time_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt64)},
+    // repeated int64 price = 8;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.price_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt64)},
+    // repeated int64 volume = 9;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.volume_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedInt64)},
+    // repeated string partCode = 10;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.partcode_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    // string quoteLevel = 11;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.quotelevel_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint64 timestamp = 12;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // string secType = 13;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.sectype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated .tigeropen.push.pb.TradeTickData.MergedVol mergedVols = 14;
+    {PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.mergedvols_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::TradeTickData_MergedVol>()},
+  }}, {{
+    "\37\6\4\4\0\0\0\0\0\0\10\12\0\7\0\0"
+    "tigeropen.push.pb.TradeTickData"
+    "symbol"
+    "type"
+    "cond"
+    "partCode"
+    "quoteLevel"
+    "secType"
+  }},
+};
+
+::uint8_t* TradeTickData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.TradeTickData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.symbol");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // string type = 2;
   if (!this->_internal_type().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_type().data(), static_cast<int>(this->_internal_type().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.type");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_type(), target);
+    const std::string& _s = this->_internal_type();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.type");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string cond = 3;
   if (!this->_internal_cond().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_cond().data(), static_cast<int>(this->_internal_cond().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.cond");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_cond(), target);
+    const std::string& _s = this->_internal_cond();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.cond");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // int64 sn = 4;
   if (this->_internal_sn() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(4, this->_internal_sn(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<4>(
+            stream, this->_internal_sn(), target);
   }
 
   // int64 priceBase = 5;
   if (this->_internal_pricebase() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(5, this->_internal_pricebase(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<5>(
+            stream, this->_internal_pricebase(), target);
   }
 
   // int32 priceOffset = 6;
   if (this->_internal_priceoffset() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(6, this->_internal_priceoffset(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<6>(
+            stream, this->_internal_priceoffset(), target);
   }
 
   // repeated int64 time = 7;
   {
-    int byte_size = _impl_._time_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._time_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteInt64Packed(
           7, _internal_time(), byte_size, target);
@@ -779,7 +713,7 @@ uint8_t* TradeTickData::_InternalSerialize(
 
   // repeated int64 price = 8;
   {
-    int byte_size = _impl_._price_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._price_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteInt64Packed(
           8, _internal_price(), byte_size, target);
@@ -788,7 +722,7 @@ uint8_t* TradeTickData::_InternalSerialize(
 
   // repeated int64 volume = 9;
   {
-    int byte_size = _impl_._volume_cached_byte_size_.load(std::memory_order_relaxed);
+    int byte_size = _impl_._volume_cached_byte_size_.Get();
     if (byte_size > 0) {
       target = stream->WriteInt64Packed(
           9, _internal_volume(), byte_size, target);
@@ -796,200 +730,191 @@ uint8_t* TradeTickData::_InternalSerialize(
   }
 
   // repeated string partCode = 10;
-  for (int i = 0, n = this->_internal_partcode_size(); i < n; i++) {
-    const auto& s = this->_internal_partcode(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.partCode");
+  for (int i = 0, n = this->_internal_partcode_size(); i < n; ++i) {
+    const auto& s = this->_internal_partcode().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.partCode");
     target = stream->WriteString(10, s, target);
   }
 
   // string quoteLevel = 11;
   if (!this->_internal_quotelevel().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_quotelevel().data(), static_cast<int>(this->_internal_quotelevel().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.quoteLevel");
-    target = stream->WriteStringMaybeAliased(
-        11, this->_internal_quotelevel(), target);
+    const std::string& _s = this->_internal_quotelevel();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.quoteLevel");
+    target = stream->WriteStringMaybeAliased(11, _s, target);
   }
 
   // uint64 timestamp = 12;
   if (this->_internal_timestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(12, this->_internal_timestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        12, this->_internal_timestamp(), target);
   }
 
   // string secType = 13;
   if (!this->_internal_sectype().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_sectype().data(), static_cast<int>(this->_internal_sectype().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TradeTickData.secType");
-    target = stream->WriteStringMaybeAliased(
-        13, this->_internal_sectype(), target);
+    const std::string& _s = this->_internal_sectype();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TradeTickData.secType");
+    target = stream->WriteStringMaybeAliased(13, _s, target);
   }
 
   // repeated .tigeropen.push.pb.TradeTickData.MergedVol mergedVols = 14;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_mergedvols_size()); i < n; i++) {
-    const auto& repfield = this->_internal_mergedvols(i);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+    const auto& repfield = this->_internal_mergedvols().Get(i);
+    target = ::google::protobuf::internal::WireFormatLite::
         InternalWriteMessage(14, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.TradeTickData)
   return target;
 }
 
-size_t TradeTickData::ByteSizeLong() const {
+::size_t TradeTickData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.TradeTickData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated int64 time = 7;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      Int64Size(this->_impl_.time_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._time_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::Int64Size(
+        this->_internal_time())
+    ;
+    _impl_._time_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated int64 price = 8;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      Int64Size(this->_impl_.price_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._price_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::Int64Size(
+        this->_internal_price())
+    ;
+    _impl_._price_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated int64 volume = 9;
   {
-    size_t data_size = ::_pbi::WireFormatLite::
-      Int64Size(this->_impl_.volume_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
-    }
-    int cached_size = ::_pbi::ToCachedSize(data_size);
-    _impl_._volume_cached_byte_size_.store(cached_size,
-                                    std::memory_order_relaxed);
-    total_size += data_size;
+    std::size_t data_size = ::_pbi::WireFormatLite::Int64Size(
+        this->_internal_volume())
+    ;
+    _impl_._volume_cached_byte_size_.Set(::_pbi::ToCachedSize(data_size));
+    std::size_t tag_size = data_size == 0
+        ? 0
+        : 1 + ::_pbi::WireFormatLite::Int32Size(
+                            static_cast<int32_t>(data_size))
+    ;
+    total_size += tag_size + data_size;
   }
-
   // repeated string partCode = 10;
-  total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.partcode_.size());
-  for (int i = 0, n = _impl_.partcode_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.partcode_.Get(i));
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_partcode().size());
+  for (int i = 0, n = _internal_partcode().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_partcode().Get(i));
   }
-
   // repeated .tigeropen.push.pb.TradeTickData.MergedVol mergedVols = 14;
   total_size += 1UL * this->_internal_mergedvols_size();
-  for (const auto& msg : this->_impl_.mergedvols_) {
+  for (const auto& msg : this->_internal_mergedvols()) {
     total_size +=
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+      ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
   }
-
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // string type = 2;
   if (!this->_internal_type().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_type());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_type());
   }
 
   // string cond = 3;
   if (!this->_internal_cond().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_cond());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_cond());
   }
 
   // string quoteLevel = 11;
   if (!this->_internal_quotelevel().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_quotelevel());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_quotelevel());
   }
 
   // string secType = 13;
   if (!this->_internal_sectype().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_sectype());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_sectype());
   }
 
   // int64 sn = 4;
   if (this->_internal_sn() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_sn());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_sn());
   }
 
   // int64 priceBase = 5;
   if (this->_internal_pricebase() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_pricebase());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_pricebase());
   }
 
   // uint64 timestamp = 12;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   // int32 priceOffset = 6;
   if (this->_internal_priceoffset() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_priceoffset());
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_priceoffset());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TradeTickData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    TradeTickData::MergeImpl
+const ::google::protobuf::Message::ClassData TradeTickData::_class_data_ = {
+    TradeTickData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TradeTickData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* TradeTickData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void TradeTickData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void TradeTickData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<TradeTickData*>(&to_msg);
   auto& from = static_cast<const TradeTickData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.TradeTickData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.time_.MergeFrom(from._impl_.time_);
-  _this->_impl_.price_.MergeFrom(from._impl_.price_);
-  _this->_impl_.volume_.MergeFrom(from._impl_.volume_);
-  _this->_impl_.partcode_.MergeFrom(from._impl_.partcode_);
-  _this->_impl_.mergedvols_.MergeFrom(from._impl_.mergedvols_);
+  _this->_internal_mutable_time()->MergeFrom(from._internal_time());
+  _this->_internal_mutable_price()->MergeFrom(from._internal_price());
+  _this->_internal_mutable_volume()->MergeFrom(from._internal_volume());
+  _this->_internal_mutable_partcode()->MergeFrom(from._internal_partcode());
+  _this->_internal_mutable_mergedvols()->MergeFrom(
+      from._internal_mergedvols());
   if (!from._internal_symbol().empty()) {
     _this->_internal_set_symbol(from._internal_symbol());
   }
@@ -1017,7 +942,7 @@ void TradeTickData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
   if (from._internal_priceoffset() != 0) {
     _this->_internal_set_priceoffset(from._internal_priceoffset());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void TradeTickData::CopyFrom(const TradeTickData& from) {
@@ -1027,41 +952,29 @@ void TradeTickData::CopyFrom(const TradeTickData& from) {
   MergeFrom(from);
 }
 
-bool TradeTickData::IsInitialized() const {
+PROTOBUF_NOINLINE bool TradeTickData::IsInitialized() const {
   return true;
 }
 
-void TradeTickData::InternalSwap(TradeTickData* other) {
+::_pbi::CachedSize* TradeTickData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void TradeTickData::InternalSwap(TradeTickData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.time_.InternalSwap(&other->_impl_.time_);
   _impl_.price_.InternalSwap(&other->_impl_.price_);
   _impl_.volume_.InternalSwap(&other->_impl_.volume_);
   _impl_.partcode_.InternalSwap(&other->_impl_.partcode_);
   _impl_.mergedvols_.InternalSwap(&other->_impl_.mergedvols_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.type_, lhs_arena,
-      &other->_impl_.type_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.cond_, lhs_arena,
-      &other->_impl_.cond_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.quotelevel_, lhs_arena,
-      &other->_impl_.quotelevel_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.sectype_, lhs_arena,
-      &other->_impl_.sectype_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_, &other->_impl_.type_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.cond_, &other->_impl_.cond_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.quotelevel_, &other->_impl_.quotelevel_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.sectype_, &other->_impl_.sectype_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.priceoffset_)
       + sizeof(TradeTickData::_impl_.priceoffset_)
       - PROTOBUF_FIELD_OFFSET(TradeTickData, _impl_.sn_)>(
@@ -1069,26 +982,18 @@ void TradeTickData::InternalSwap(TradeTickData* other) {
           reinterpret_cast<char*>(&other->_impl_.sn_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata TradeTickData::GetMetadata() const {
+::google::protobuf::Metadata TradeTickData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_TradeTickData_2eproto_getter, &descriptor_table_TradeTickData_2eproto_once,
       file_level_metadata_TradeTickData_2eproto[1]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::TradeTickData_MergedVol*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::TradeTickData_MergedVol >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::TradeTickData_MergedVol >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::TradeTickData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::TradeTickData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::TradeTickData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

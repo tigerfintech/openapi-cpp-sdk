@@ -4,481 +4,486 @@
 #include "TickData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR TickData_Tick::TickData_Tick(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.type_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.cond_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.partcode_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.sn_)*/int64_t{0}
-  , /*decltype(_impl_.time_)*/int64_t{0}
-  , /*decltype(_impl_.price_)*/0
-  , /*decltype(_impl_.volume_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr TickData_Tick::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : type_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        cond_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        partcode_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        sn_{::int64_t{0}},
+        time_{::int64_t{0}},
+        price_{0},
+        volume_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR TickData_Tick::TickData_Tick(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct TickData_TickDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR TickData_TickDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR TickData_TickDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~TickData_TickDefaultTypeInternal() {}
   union {
     TickData_Tick _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TickData_TickDefaultTypeInternal _TickData_Tick_default_instance_;
-PROTOBUF_CONSTEXPR TickData::TickData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.ticks_)*/{}
-  , /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.source_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.timestamp_)*/int64_t{0}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TickData_TickDefaultTypeInternal _TickData_Tick_default_instance_;
+
+inline constexpr TickData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : ticks_{},
+        symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        timestamp_{::int64_t{0}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR TickData::TickData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct TickDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR TickDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR TickDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~TickDataDefaultTypeInternal() {}
   union {
     TickData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TickDataDefaultTypeInternal _TickData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TickDataDefaultTypeInternal _TickData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_TickData_2eproto[2];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_TickData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_TickData_2eproto = nullptr;
-
-const uint32_t TableStruct_TickData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.sn_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.time_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.price_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.volume_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.type_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.cond_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.partcode_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.ticks_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.source_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_TickData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_TickData_2eproto = nullptr;
+const ::uint32_t TableStruct_TickData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.sn_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.time_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.price_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.volume_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.type_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.cond_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData_Tick, _impl_.partcode_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.ticks_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.timestamp_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::TickData, _impl_.source_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::TickData_Tick)},
-  { 13, -1, -1, sizeof(::tigeropen::push::pb::TickData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::TickData_Tick)},
+        {15, -1, -1, sizeof(::tigeropen::push::pb::TickData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_TickData_Tick_default_instance_._instance,
-  &::tigeropen::push::pb::_TickData_default_instance_._instance,
+    &::tigeropen::push::pb::_TickData_Tick_default_instance_._instance,
+    &::tigeropen::push::pb::_TickData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_TickData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\016TickData.proto\022\021tigeropen.push.pb\"\335\001\n\010"
-  "TickData\022\016\n\006symbol\030\001 \001(\t\022/\n\005ticks\030\002 \003(\0132"
-  " .tigeropen.push.pb.TickData.Tick\022\021\n\ttim"
-  "estamp\030\003 \001(\003\022\016\n\006source\030\004 \001(\t\032m\n\004Tick\022\n\n\002"
-  "sn\030\001 \001(\003\022\014\n\004time\030\002 \001(\003\022\r\n\005price\030\003 \001(\002\022\016\n"
-  "\006volume\030\004 \001(\005\022\014\n\004type\030\005 \001(\t\022\014\n\004cond\030\006 \001("
-  "\t\022\020\n\010partCode\030\007 \001(\tb\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_TickData_2eproto_once;
+const char descriptor_table_protodef_TickData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\016TickData.proto\022\021tigeropen.push.pb\"\335\001\n\010"
+    "TickData\022\016\n\006symbol\030\001 \001(\t\022/\n\005ticks\030\002 \003(\0132"
+    " .tigeropen.push.pb.TickData.Tick\022\021\n\ttim"
+    "estamp\030\003 \001(\003\022\016\n\006source\030\004 \001(\t\032m\n\004Tick\022\n\n\002"
+    "sn\030\001 \001(\003\022\014\n\004time\030\002 \001(\003\022\r\n\005price\030\003 \001(\002\022\016\n"
+    "\006volume\030\004 \001(\005\022\014\n\004type\030\005 \001(\t\022\014\n\004cond\030\006 \001("
+    "\t\022\020\n\010partCode\030\007 \001(\tb\006proto3"
+};
+static ::absl::once_flag descriptor_table_TickData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_TickData_2eproto = {
-    false, false, 267, descriptor_table_protodef_TickData_2eproto,
+    false,
+    false,
+    267,
+    descriptor_table_protodef_TickData_2eproto,
     "TickData.proto",
-    &descriptor_table_TickData_2eproto_once, nullptr, 0, 2,
-    schemas, file_default_instances, TableStruct_TickData_2eproto::offsets,
-    file_level_metadata_TickData_2eproto, file_level_enum_descriptors_TickData_2eproto,
+    &descriptor_table_TickData_2eproto_once,
+    nullptr,
+    0,
+    2,
+    schemas,
+    file_default_instances,
+    TableStruct_TickData_2eproto::offsets,
+    file_level_metadata_TickData_2eproto,
+    file_level_enum_descriptors_TickData_2eproto,
     file_level_service_descriptors_TickData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_TickData_2eproto_getter() {
   return &descriptor_table_TickData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_TickData_2eproto(&descriptor_table_TickData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_TickData_2eproto(&descriptor_table_TickData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class TickData_Tick::_Internal {
  public:
 };
 
-TickData_Tick::TickData_Tick(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+TickData_Tick::TickData_Tick(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.TickData.Tick)
 }
-TickData_Tick::TickData_Tick(const TickData_Tick& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  TickData_Tick* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.type_){}
-    , decltype(_impl_.cond_){}
-    , decltype(_impl_.partcode_){}
-    , decltype(_impl_.sn_){}
-    , decltype(_impl_.time_){}
-    , decltype(_impl_.price_){}
-    , decltype(_impl_.volume_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE TickData_Tick::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : type_(arena, from.type_),
+        cond_(arena, from.cond_),
+        partcode_(arena, from.partcode_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.type_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.type_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_type().empty()) {
-    _this->_impl_.type_.Set(from._internal_type(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.cond_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cond_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_cond().empty()) {
-    _this->_impl_.cond_.Set(from._internal_cond(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.partcode_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.partcode_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_partcode().empty()) {
-    _this->_impl_.partcode_.Set(from._internal_partcode(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.sn_, &from._impl_.sn_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.volume_) -
-    reinterpret_cast<char*>(&_impl_.sn_)) + sizeof(_impl_.volume_));
+TickData_Tick::TickData_Tick(
+    ::google::protobuf::Arena* arena,
+    const TickData_Tick& from)
+    : ::google::protobuf::Message(arena) {
+  TickData_Tick* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sn_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, sn_),
+           offsetof(Impl_, volume_) -
+               offsetof(Impl_, sn_) +
+               sizeof(Impl_::volume_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.TickData.Tick)
 }
+inline PROTOBUF_NDEBUG_INLINE TickData_Tick::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : type_(arena),
+        cond_(arena),
+        partcode_(arena),
+        _cached_size_{0} {}
 
-inline void TickData_Tick::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.type_){}
-    , decltype(_impl_.cond_){}
-    , decltype(_impl_.partcode_){}
-    , decltype(_impl_.sn_){int64_t{0}}
-    , decltype(_impl_.time_){int64_t{0}}
-    , decltype(_impl_.price_){0}
-    , decltype(_impl_.volume_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.type_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.type_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.cond_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cond_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.partcode_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.partcode_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void TickData_Tick::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, sn_),
+           0,
+           offsetof(Impl_, volume_) -
+               offsetof(Impl_, sn_) +
+               sizeof(Impl_::volume_));
 }
-
 TickData_Tick::~TickData_Tick() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.TickData.Tick)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void TickData_Tick::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.type_.Destroy();
   _impl_.cond_.Destroy();
   _impl_.partcode_.Destroy();
+  _impl_.~Impl_();
 }
 
-void TickData_Tick::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void TickData_Tick::Clear() {
+PROTOBUF_NOINLINE void TickData_Tick::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.TickData.Tick)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.type_.ClearToEmpty();
   _impl_.cond_.ClearToEmpty();
   _impl_.partcode_.ClearToEmpty();
-  ::memset(&_impl_.sn_, 0, static_cast<size_t>(
+  ::memset(&_impl_.sn_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.volume_) -
       reinterpret_cast<char*>(&_impl_.sn_)) + sizeof(_impl_.volume_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* TickData_Tick::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // int64 sn = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _impl_.sn_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 time = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          _impl_.time_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // float price = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
-          _impl_.price_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // int32 volume = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
-          _impl_.volume_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string type = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          auto str = _internal_mutable_type();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TickData.Tick.type"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string cond = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          auto str = _internal_mutable_cond();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TickData.Tick.cond"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string partCode = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
-          auto str = _internal_mutable_partcode();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TickData.Tick.partCode"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* TickData_Tick::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* TickData_Tick::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 7, 0, 56, 2> TickData_Tick::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    7, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967168,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    7,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_TickData_Tick_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // int64 sn = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TickData_Tick, _impl_.sn_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.sn_)}},
+    // int64 time = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TickData_Tick, _impl_.time_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.time_)}},
+    // float price = 3;
+    {::_pbi::TcParser::FastF32S1,
+     {29, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.price_)}},
+    // int32 volume = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TickData_Tick, _impl_.volume_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.volume_)}},
+    // string type = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.type_)}},
+    // string cond = 6;
+    {::_pbi::TcParser::FastUS1,
+     {50, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.cond_)}},
+    // string partCode = 7;
+    {::_pbi::TcParser::FastUS1,
+     {58, 63, 0, PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.partcode_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int64 sn = 1;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.sn_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // int64 time = 2;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.time_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // float price = 3;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.price_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // int32 volume = 4;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.volume_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string type = 5;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.type_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string cond = 6;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.cond_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string partCode = 7;
+    {PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.partcode_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\37\0\0\0\0\4\4\10"
+    "tigeropen.push.pb.TickData.Tick"
+    "type"
+    "cond"
+    "partCode"
+  }},
+};
+
+::uint8_t* TickData_Tick::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.TickData.Tick)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // int64 sn = 1;
   if (this->_internal_sn() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(1, this->_internal_sn(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<1>(
+            stream, this->_internal_sn(), target);
   }
 
   // int64 time = 2;
   if (this->_internal_time() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(2, this->_internal_time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<2>(
+            stream, this->_internal_time(), target);
   }
 
   // float price = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_price = this->_internal_price();
-  uint32_t raw_price;
+  ::uint32_t raw_price;
   memcpy(&raw_price, &tmp_price, sizeof(tmp_price));
   if (raw_price != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_price(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        3, this->_internal_price(), target);
   }
 
   // int32 volume = 4;
   if (this->_internal_volume() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(4, this->_internal_volume(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<4>(
+            stream, this->_internal_volume(), target);
   }
 
   // string type = 5;
   if (!this->_internal_type().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_type().data(), static_cast<int>(this->_internal_type().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TickData.Tick.type");
-    target = stream->WriteStringMaybeAliased(
-        5, this->_internal_type(), target);
+    const std::string& _s = this->_internal_type();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TickData.Tick.type");
+    target = stream->WriteStringMaybeAliased(5, _s, target);
   }
 
   // string cond = 6;
   if (!this->_internal_cond().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_cond().data(), static_cast<int>(this->_internal_cond().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TickData.Tick.cond");
-    target = stream->WriteStringMaybeAliased(
-        6, this->_internal_cond(), target);
+    const std::string& _s = this->_internal_cond();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TickData.Tick.cond");
+    target = stream->WriteStringMaybeAliased(6, _s, target);
   }
 
   // string partCode = 7;
   if (!this->_internal_partcode().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_partcode().data(), static_cast<int>(this->_internal_partcode().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TickData.Tick.partCode");
-    target = stream->WriteStringMaybeAliased(
-        7, this->_internal_partcode(), target);
+    const std::string& _s = this->_internal_partcode();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TickData.Tick.partCode");
+    target = stream->WriteStringMaybeAliased(7, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.TickData.Tick)
   return target;
 }
 
-size_t TickData_Tick::ByteSizeLong() const {
+::size_t TickData_Tick::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.TickData.Tick)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string type = 5;
   if (!this->_internal_type().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_type());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_type());
   }
 
   // string cond = 6;
   if (!this->_internal_cond().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_cond());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_cond());
   }
 
   // string partCode = 7;
   if (!this->_internal_partcode().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_partcode());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_partcode());
   }
 
   // int64 sn = 1;
   if (this->_internal_sn() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_sn());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_sn());
   }
 
   // int64 time = 2;
   if (this->_internal_time() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_time());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_time());
   }
 
   // float price = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_price = this->_internal_price();
-  uint32_t raw_price;
+  ::uint32_t raw_price;
   memcpy(&raw_price, &tmp_price, sizeof(tmp_price));
   if (raw_price != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // int32 volume = 4;
   if (this->_internal_volume() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_volume());
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_volume());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TickData_Tick::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    TickData_Tick::MergeImpl
+const ::google::protobuf::Message::ClassData TickData_Tick::_class_data_ = {
+    TickData_Tick::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TickData_Tick::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* TickData_Tick::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void TickData_Tick::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void TickData_Tick::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<TickData_Tick*>(&to_msg);
   auto& from = static_cast<const TickData_Tick&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.TickData.Tick)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_type().empty()) {
@@ -496,9 +501,10 @@ void TickData_Tick::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
   if (from._internal_time() != 0) {
     _this->_internal_set_time(from._internal_time());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_price = from._internal_price();
-  uint32_t raw_price;
+  ::uint32_t raw_price;
   memcpy(&raw_price, &tmp_price, sizeof(tmp_price));
   if (raw_price != 0) {
     _this->_internal_set_price(from._internal_price());
@@ -506,7 +512,7 @@ void TickData_Tick::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
   if (from._internal_volume() != 0) {
     _this->_internal_set_volume(from._internal_volume());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void TickData_Tick::CopyFrom(const TickData_Tick& from) {
@@ -516,28 +522,22 @@ void TickData_Tick::CopyFrom(const TickData_Tick& from) {
   MergeFrom(from);
 }
 
-bool TickData_Tick::IsInitialized() const {
+PROTOBUF_NOINLINE bool TickData_Tick::IsInitialized() const {
   return true;
 }
 
-void TickData_Tick::InternalSwap(TickData_Tick* other) {
+::_pbi::CachedSize* TickData_Tick::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void TickData_Tick::InternalSwap(TickData_Tick* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.type_, lhs_arena,
-      &other->_impl_.type_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.cond_, lhs_arena,
-      &other->_impl_.cond_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.partcode_, lhs_arena,
-      &other->_impl_.partcode_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_, &other->_impl_.type_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.cond_, &other->_impl_.cond_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.partcode_, &other->_impl_.partcode_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.volume_)
       + sizeof(TickData_Tick::_impl_.volume_)
       - PROTOBUF_FIELD_OFFSET(TickData_Tick, _impl_.sn_)>(
@@ -545,280 +545,240 @@ void TickData_Tick::InternalSwap(TickData_Tick* other) {
           reinterpret_cast<char*>(&other->_impl_.sn_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata TickData_Tick::GetMetadata() const {
+::google::protobuf::Metadata TickData_Tick::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_TickData_2eproto_getter, &descriptor_table_TickData_2eproto_once,
       file_level_metadata_TickData_2eproto[0]);
 }
-
 // ===================================================================
 
 class TickData::_Internal {
  public:
 };
 
-TickData::TickData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+TickData::TickData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.TickData)
 }
-TickData::TickData(const TickData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  TickData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.ticks_){from._impl_.ticks_}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.source_){}
-    , decltype(_impl_.timestamp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE TickData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : ticks_{visibility, arena, from.ticks_},
+        symbol_(arena, from.symbol_),
+        source_(arena, from.source_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.source_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.source_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_source().empty()) {
-    _this->_impl_.source_.Set(from._internal_source(), 
-      _this->GetArenaForAllocation());
-  }
-  _this->_impl_.timestamp_ = from._impl_.timestamp_;
+TickData::TickData(
+    ::google::protobuf::Arena* arena,
+    const TickData& from)
+    : ::google::protobuf::Message(arena) {
+  TickData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  _impl_.timestamp_ = from._impl_.timestamp_;
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.TickData)
 }
+inline PROTOBUF_NDEBUG_INLINE TickData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : ticks_{visibility, arena},
+        symbol_(arena),
+        source_(arena),
+        _cached_size_{0} {}
 
-inline void TickData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.ticks_){arena}
-    , decltype(_impl_.symbol_){}
-    , decltype(_impl_.source_){}
-    , decltype(_impl_.timestamp_){int64_t{0}}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.source_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.source_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void TickData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.timestamp_ = {};
 }
-
 TickData::~TickData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.TickData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void TickData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.ticks_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
   _impl_.source_.Destroy();
+  _impl_.~Impl_();
 }
 
-void TickData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void TickData::Clear() {
+PROTOBUF_NOINLINE void TickData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.TickData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.ticks_.Clear();
   _impl_.symbol_.ClearToEmpty();
   _impl_.source_.ClearToEmpty();
-  _impl_.timestamp_ = int64_t{0};
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _impl_.timestamp_ = ::int64_t{0};
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* TickData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string symbol = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TickData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated .tigeropen.push.pb.TickData.Tick ticks = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_ticks(), ptr);
-            CHK_(ptr);
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 timestamp = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string source = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_source();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.TickData.source"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* TickData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* TickData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 1, 47, 2> TickData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    &_TickData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // string source = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(TickData, _impl_.source_)}},
+    // string symbol = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(TickData, _impl_.symbol_)}},
+    // repeated .tigeropen.push.pb.TickData.Tick ticks = 2;
+    {::_pbi::TcParser::FastMtR1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(TickData, _impl_.ticks_)}},
+    // int64 timestamp = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TickData, _impl_.timestamp_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(TickData, _impl_.timestamp_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string symbol = 1;
+    {PROTOBUF_FIELD_OFFSET(TickData, _impl_.symbol_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated .tigeropen.push.pb.TickData.Tick ticks = 2;
+    {PROTOBUF_FIELD_OFFSET(TickData, _impl_.ticks_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // int64 timestamp = 3;
+    {PROTOBUF_FIELD_OFFSET(TickData, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // string source = 4;
+    {PROTOBUF_FIELD_OFFSET(TickData, _impl_.source_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::tigeropen::push::pb::TickData_Tick>()},
+  }}, {{
+    "\32\6\0\0\6\0\0\0"
+    "tigeropen.push.pb.TickData"
+    "symbol"
+    "source"
+  }},
+};
+
+::uint8_t* TickData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.TickData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TickData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TickData.symbol");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // repeated .tigeropen.push.pb.TickData.Tick ticks = 2;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_ticks_size()); i < n; i++) {
-    const auto& repfield = this->_internal_ticks(i);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+    const auto& repfield = this->_internal_ticks().Get(i);
+    target = ::google::protobuf::internal::WireFormatLite::
         InternalWriteMessage(2, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   // int64 timestamp = 3;
   if (this->_internal_timestamp() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(3, this->_internal_timestamp(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<3>(
+            stream, this->_internal_timestamp(), target);
   }
 
   // string source = 4;
   if (!this->_internal_source().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_source().data(), static_cast<int>(this->_internal_source().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.TickData.source");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_source(), target);
+    const std::string& _s = this->_internal_source();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.TickData.source");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.TickData)
   return target;
 }
 
-size_t TickData::ByteSizeLong() const {
+::size_t TickData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.TickData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated .tigeropen.push.pb.TickData.Tick ticks = 2;
   total_size += 1UL * this->_internal_ticks_size();
-  for (const auto& msg : this->_impl_.ticks_) {
+  for (const auto& msg : this->_internal_ticks()) {
     total_size +=
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+      ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
   }
-
   // string symbol = 1;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // string source = 4;
   if (!this->_internal_source().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_source());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_source());
   }
 
   // int64 timestamp = 3;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TickData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    TickData::MergeImpl
+const ::google::protobuf::Message::ClassData TickData::_class_data_ = {
+    TickData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TickData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* TickData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void TickData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void TickData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<TickData*>(&to_msg);
   auto& from = static_cast<const TickData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.TickData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.ticks_.MergeFrom(from._impl_.ticks_);
+  _this->_internal_mutable_ticks()->MergeFrom(
+      from._internal_ticks());
   if (!from._internal_symbol().empty()) {
     _this->_internal_set_symbol(from._internal_symbol());
   }
@@ -828,7 +788,7 @@ void TickData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTO
   if (from._internal_timestamp() != 0) {
     _this->_internal_set_timestamp(from._internal_timestamp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void TickData::CopyFrom(const TickData& from) {
@@ -838,47 +798,36 @@ void TickData::CopyFrom(const TickData& from) {
   MergeFrom(from);
 }
 
-bool TickData::IsInitialized() const {
+PROTOBUF_NOINLINE bool TickData::IsInitialized() const {
   return true;
 }
 
-void TickData::InternalSwap(TickData* other) {
+::_pbi::CachedSize* TickData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void TickData::InternalSwap(TickData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.ticks_.InternalSwap(&other->_impl_.ticks_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.source_, lhs_arena,
-      &other->_impl_.source_, rhs_arena
-  );
-  swap(_impl_.timestamp_, other->_impl_.timestamp_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.source_, &other->_impl_.source_, arena);
+        swap(_impl_.timestamp_, other->_impl_.timestamp_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata TickData::GetMetadata() const {
+::google::protobuf::Metadata TickData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_TickData_2eproto_getter, &descriptor_table_TickData_2eproto_once,
       file_level_metadata_TickData_2eproto[1]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::TickData_Tick*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::TickData_Tick >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::TickData_Tick >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::TickData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::TickData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::TickData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

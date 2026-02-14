@@ -4,657 +4,648 @@
 #include "AssetData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR AssetData::AssetData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.account_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.currency_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.segtype_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.availablefunds_)*/0
-  , /*decltype(_impl_.excessliquidity_)*/0
-  , /*decltype(_impl_.netliquidation_)*/0
-  , /*decltype(_impl_.equitywithloan_)*/0
-  , /*decltype(_impl_.buyingpower_)*/0
-  , /*decltype(_impl_.cashbalance_)*/0
-  , /*decltype(_impl_.grosspositionvalue_)*/0
-  , /*decltype(_impl_.initmarginreq_)*/0
-  , /*decltype(_impl_.maintmarginreq_)*/0
-  , /*decltype(_impl_.timestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr AssetData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : account_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        currency_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        segtype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        availablefunds_{0},
+        excessliquidity_{0},
+        netliquidation_{0},
+        equitywithloan_{0},
+        buyingpower_{0},
+        cashbalance_{0},
+        grosspositionvalue_{0},
+        initmarginreq_{0},
+        maintmarginreq_{0},
+        timestamp_{::uint64_t{0u}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR AssetData::AssetData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct AssetDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR AssetDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR AssetDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~AssetDataDefaultTypeInternal() {}
   union {
     AssetData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AssetDataDefaultTypeInternal _AssetData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AssetDataDefaultTypeInternal _AssetData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_AssetData_2eproto[1];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_AssetData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_AssetData_2eproto = nullptr;
-
-const uint32_t TableStruct_AssetData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.account_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.currency_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.segtype_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.availablefunds_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.excessliquidity_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.netliquidation_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.equitywithloan_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.buyingpower_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.cashbalance_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.grosspositionvalue_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.initmarginreq_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.maintmarginreq_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.timestamp_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_AssetData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_AssetData_2eproto = nullptr;
+const ::uint32_t TableStruct_AssetData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.account_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.currency_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.segtype_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.availablefunds_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.excessliquidity_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.netliquidation_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.equitywithloan_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.buyingpower_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.cashbalance_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.grosspositionvalue_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.initmarginreq_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.maintmarginreq_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::AssetData, _impl_.timestamp_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::AssetData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::AssetData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_AssetData_default_instance_._instance,
+    &::tigeropen::push::pb::_AssetData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_AssetData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\017AssetData.proto\022\021tigeropen.push.pb\"\250\002\n"
-  "\tAssetData\022\017\n\007account\030\001 \001(\t\022\020\n\010currency\030"
-  "\002 \001(\t\022\017\n\007segType\030\003 \001(\t\022\026\n\016availableFunds"
-  "\030\004 \001(\001\022\027\n\017excessLiquidity\030\005 \001(\001\022\026\n\016netLi"
-  "quidation\030\006 \001(\001\022\026\n\016equityWithLoan\030\007 \001(\001\022"
-  "\023\n\013buyingPower\030\010 \001(\001\022\023\n\013cashBalance\030\t \001("
-  "\001\022\032\n\022grossPositionValue\030\n \001(\001\022\025\n\rinitMar"
-  "ginReq\030\013 \001(\001\022\026\n\016maintMarginReq\030\014 \001(\001\022\021\n\t"
-  "timestamp\030\r \001(\004b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_AssetData_2eproto_once;
+const char descriptor_table_protodef_AssetData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\017AssetData.proto\022\021tigeropen.push.pb\"\250\002\n"
+    "\tAssetData\022\017\n\007account\030\001 \001(\t\022\020\n\010currency\030"
+    "\002 \001(\t\022\017\n\007segType\030\003 \001(\t\022\026\n\016availableFunds"
+    "\030\004 \001(\001\022\027\n\017excessLiquidity\030\005 \001(\001\022\026\n\016netLi"
+    "quidation\030\006 \001(\001\022\026\n\016equityWithLoan\030\007 \001(\001\022"
+    "\023\n\013buyingPower\030\010 \001(\001\022\023\n\013cashBalance\030\t \001("
+    "\001\022\032\n\022grossPositionValue\030\n \001(\001\022\025\n\rinitMar"
+    "ginReq\030\013 \001(\001\022\026\n\016maintMarginReq\030\014 \001(\001\022\021\n\t"
+    "timestamp\030\r \001(\004b\006proto3"
+};
+static ::absl::once_flag descriptor_table_AssetData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_AssetData_2eproto = {
-    false, false, 343, descriptor_table_protodef_AssetData_2eproto,
+    false,
+    false,
+    343,
+    descriptor_table_protodef_AssetData_2eproto,
     "AssetData.proto",
-    &descriptor_table_AssetData_2eproto_once, nullptr, 0, 1,
-    schemas, file_default_instances, TableStruct_AssetData_2eproto::offsets,
-    file_level_metadata_AssetData_2eproto, file_level_enum_descriptors_AssetData_2eproto,
+    &descriptor_table_AssetData_2eproto_once,
+    nullptr,
+    0,
+    1,
+    schemas,
+    file_default_instances,
+    TableStruct_AssetData_2eproto::offsets,
+    file_level_metadata_AssetData_2eproto,
+    file_level_enum_descriptors_AssetData_2eproto,
     file_level_service_descriptors_AssetData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_AssetData_2eproto_getter() {
   return &descriptor_table_AssetData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_AssetData_2eproto(&descriptor_table_AssetData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_AssetData_2eproto(&descriptor_table_AssetData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class AssetData::_Internal {
  public:
 };
 
-AssetData::AssetData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+AssetData::AssetData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.AssetData)
 }
-AssetData::AssetData(const AssetData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  AssetData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.account_){}
-    , decltype(_impl_.currency_){}
-    , decltype(_impl_.segtype_){}
-    , decltype(_impl_.availablefunds_){}
-    , decltype(_impl_.excessliquidity_){}
-    , decltype(_impl_.netliquidation_){}
-    , decltype(_impl_.equitywithloan_){}
-    , decltype(_impl_.buyingpower_){}
-    , decltype(_impl_.cashbalance_){}
-    , decltype(_impl_.grosspositionvalue_){}
-    , decltype(_impl_.initmarginreq_){}
-    , decltype(_impl_.maintmarginreq_){}
-    , decltype(_impl_.timestamp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE AssetData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : account_(arena, from.account_),
+        currency_(arena, from.currency_),
+        segtype_(arena, from.segtype_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_account().empty()) {
-    _this->_impl_.account_.Set(from._internal_account(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.currency_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.currency_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_currency().empty()) {
-    _this->_impl_.currency_.Set(from._internal_currency(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.segtype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.segtype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_segtype().empty()) {
-    _this->_impl_.segtype_.Set(from._internal_segtype(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.availablefunds_, &from._impl_.availablefunds_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.timestamp_) -
-    reinterpret_cast<char*>(&_impl_.availablefunds_)) + sizeof(_impl_.timestamp_));
+AssetData::AssetData(
+    ::google::protobuf::Arena* arena,
+    const AssetData& from)
+    : ::google::protobuf::Message(arena) {
+  AssetData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, availablefunds_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, availablefunds_),
+           offsetof(Impl_, timestamp_) -
+               offsetof(Impl_, availablefunds_) +
+               sizeof(Impl_::timestamp_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.AssetData)
 }
+inline PROTOBUF_NDEBUG_INLINE AssetData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : account_(arena),
+        currency_(arena),
+        segtype_(arena),
+        _cached_size_{0} {}
 
-inline void AssetData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.account_){}
-    , decltype(_impl_.currency_){}
-    , decltype(_impl_.segtype_){}
-    , decltype(_impl_.availablefunds_){0}
-    , decltype(_impl_.excessliquidity_){0}
-    , decltype(_impl_.netliquidation_){0}
-    , decltype(_impl_.equitywithloan_){0}
-    , decltype(_impl_.buyingpower_){0}
-    , decltype(_impl_.cashbalance_){0}
-    , decltype(_impl_.grosspositionvalue_){0}
-    , decltype(_impl_.initmarginreq_){0}
-    , decltype(_impl_.maintmarginreq_){0}
-    , decltype(_impl_.timestamp_){uint64_t{0u}}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.account_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.account_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.currency_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.currency_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.segtype_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.segtype_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void AssetData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, availablefunds_),
+           0,
+           offsetof(Impl_, timestamp_) -
+               offsetof(Impl_, availablefunds_) +
+               sizeof(Impl_::timestamp_));
 }
-
 AssetData::~AssetData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.AssetData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void AssetData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.account_.Destroy();
   _impl_.currency_.Destroy();
   _impl_.segtype_.Destroy();
+  _impl_.~Impl_();
 }
 
-void AssetData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void AssetData::Clear() {
+PROTOBUF_NOINLINE void AssetData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.AssetData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.account_.ClearToEmpty();
   _impl_.currency_.ClearToEmpty();
   _impl_.segtype_.ClearToEmpty();
-  ::memset(&_impl_.availablefunds_, 0, static_cast<size_t>(
+  ::memset(&_impl_.availablefunds_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.timestamp_) -
       reinterpret_cast<char*>(&_impl_.availablefunds_)) + sizeof(_impl_.timestamp_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* AssetData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string account = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_account();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.AssetData.account"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string currency = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_currency();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.AssetData.currency"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string segType = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_segtype();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.AssetData.segType"));
-        } else
-          goto handle_unusual;
-        continue;
-      // double availableFunds = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 33)) {
-          _impl_.availablefunds_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double excessLiquidity = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 41)) {
-          _impl_.excessliquidity_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double netLiquidation = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 49)) {
-          _impl_.netliquidation_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double equityWithLoan = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 57)) {
-          _impl_.equitywithloan_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double buyingPower = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 65)) {
-          _impl_.buyingpower_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double cashBalance = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 73)) {
-          _impl_.cashbalance_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double grossPositionValue = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 81)) {
-          _impl_.grosspositionvalue_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double initMarginReq = 11;
-      case 11:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 89)) {
-          _impl_.initmarginreq_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // double maintMarginReq = 12;
-      case 12:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 97)) {
-          _impl_.maintmarginreq_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 timestamp = 13;
-      case 13:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 104)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* AssetData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* AssetData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 13, 0, 66, 2> AssetData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    13, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294959104,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    13,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_AssetData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string account = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.account_)}},
+    // string currency = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.currency_)}},
+    // string segType = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.segtype_)}},
+    // double availableFunds = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.availablefunds_)}},
+    // double excessLiquidity = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.excessliquidity_)}},
+    // double netLiquidation = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.netliquidation_)}},
+    // double equityWithLoan = 7;
+    {::_pbi::TcParser::FastF64S1,
+     {57, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.equitywithloan_)}},
+    // double buyingPower = 8;
+    {::_pbi::TcParser::FastF64S1,
+     {65, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.buyingpower_)}},
+    // double cashBalance = 9;
+    {::_pbi::TcParser::FastF64S1,
+     {73, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.cashbalance_)}},
+    // double grossPositionValue = 10;
+    {::_pbi::TcParser::FastF64S1,
+     {81, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.grosspositionvalue_)}},
+    // double initMarginReq = 11;
+    {::_pbi::TcParser::FastF64S1,
+     {89, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.initmarginreq_)}},
+    // double maintMarginReq = 12;
+    {::_pbi::TcParser::FastF64S1,
+     {97, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.maintmarginreq_)}},
+    // uint64 timestamp = 13;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(AssetData, _impl_.timestamp_), 63>(),
+     {104, 63, 0, PROTOBUF_FIELD_OFFSET(AssetData, _impl_.timestamp_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string account = 1;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.account_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string currency = 2;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.currency_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string segType = 3;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.segtype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // double availableFunds = 4;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.availablefunds_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double excessLiquidity = 5;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.excessliquidity_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double netLiquidation = 6;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.netliquidation_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double equityWithLoan = 7;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.equitywithloan_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double buyingPower = 8;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.buyingpower_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double cashBalance = 9;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.cashbalance_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double grossPositionValue = 10;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.grosspositionvalue_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double initMarginReq = 11;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.initmarginreq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // double maintMarginReq = 12;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.maintmarginreq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // uint64 timestamp = 13;
+    {PROTOBUF_FIELD_OFFSET(AssetData, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+  }},
+  // no aux_entries
+  {{
+    "\33\7\10\7\0\0\0\0\0\0\0\0\0\0\0\0"
+    "tigeropen.push.pb.AssetData"
+    "account"
+    "currency"
+    "segType"
+  }},
+};
+
+::uint8_t* AssetData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.AssetData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string account = 1;
   if (!this->_internal_account().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_account().data(), static_cast<int>(this->_internal_account().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.AssetData.account");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_account(), target);
+    const std::string& _s = this->_internal_account();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.AssetData.account");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // string currency = 2;
   if (!this->_internal_currency().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_currency().data(), static_cast<int>(this->_internal_currency().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.AssetData.currency");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_currency(), target);
+    const std::string& _s = this->_internal_currency();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.AssetData.currency");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string segType = 3;
   if (!this->_internal_segtype().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_segtype().data(), static_cast<int>(this->_internal_segtype().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.AssetData.segType");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_segtype(), target);
+    const std::string& _s = this->_internal_segtype();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.AssetData.segType");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // double availableFunds = 4;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_availablefunds = this->_internal_availablefunds();
-  uint64_t raw_availablefunds;
+  ::uint64_t raw_availablefunds;
   memcpy(&raw_availablefunds, &tmp_availablefunds, sizeof(tmp_availablefunds));
   if (raw_availablefunds != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(4, this->_internal_availablefunds(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        4, this->_internal_availablefunds(), target);
   }
 
   // double excessLiquidity = 5;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_excessliquidity = this->_internal_excessliquidity();
-  uint64_t raw_excessliquidity;
+  ::uint64_t raw_excessliquidity;
   memcpy(&raw_excessliquidity, &tmp_excessliquidity, sizeof(tmp_excessliquidity));
   if (raw_excessliquidity != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(5, this->_internal_excessliquidity(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        5, this->_internal_excessliquidity(), target);
   }
 
   // double netLiquidation = 6;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_netliquidation = this->_internal_netliquidation();
-  uint64_t raw_netliquidation;
+  ::uint64_t raw_netliquidation;
   memcpy(&raw_netliquidation, &tmp_netliquidation, sizeof(tmp_netliquidation));
   if (raw_netliquidation != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(6, this->_internal_netliquidation(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        6, this->_internal_netliquidation(), target);
   }
 
   // double equityWithLoan = 7;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_equitywithloan = this->_internal_equitywithloan();
-  uint64_t raw_equitywithloan;
+  ::uint64_t raw_equitywithloan;
   memcpy(&raw_equitywithloan, &tmp_equitywithloan, sizeof(tmp_equitywithloan));
   if (raw_equitywithloan != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(7, this->_internal_equitywithloan(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        7, this->_internal_equitywithloan(), target);
   }
 
   // double buyingPower = 8;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_buyingpower = this->_internal_buyingpower();
-  uint64_t raw_buyingpower;
+  ::uint64_t raw_buyingpower;
   memcpy(&raw_buyingpower, &tmp_buyingpower, sizeof(tmp_buyingpower));
   if (raw_buyingpower != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(8, this->_internal_buyingpower(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        8, this->_internal_buyingpower(), target);
   }
 
   // double cashBalance = 9;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_cashbalance = this->_internal_cashbalance();
-  uint64_t raw_cashbalance;
+  ::uint64_t raw_cashbalance;
   memcpy(&raw_cashbalance, &tmp_cashbalance, sizeof(tmp_cashbalance));
   if (raw_cashbalance != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(9, this->_internal_cashbalance(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        9, this->_internal_cashbalance(), target);
   }
 
   // double grossPositionValue = 10;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_grosspositionvalue = this->_internal_grosspositionvalue();
-  uint64_t raw_grosspositionvalue;
+  ::uint64_t raw_grosspositionvalue;
   memcpy(&raw_grosspositionvalue, &tmp_grosspositionvalue, sizeof(tmp_grosspositionvalue));
   if (raw_grosspositionvalue != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(10, this->_internal_grosspositionvalue(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        10, this->_internal_grosspositionvalue(), target);
   }
 
   // double initMarginReq = 11;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_initmarginreq = this->_internal_initmarginreq();
-  uint64_t raw_initmarginreq;
+  ::uint64_t raw_initmarginreq;
   memcpy(&raw_initmarginreq, &tmp_initmarginreq, sizeof(tmp_initmarginreq));
   if (raw_initmarginreq != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(11, this->_internal_initmarginreq(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        11, this->_internal_initmarginreq(), target);
   }
 
   // double maintMarginReq = 12;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_maintmarginreq = this->_internal_maintmarginreq();
-  uint64_t raw_maintmarginreq;
+  ::uint64_t raw_maintmarginreq;
   memcpy(&raw_maintmarginreq, &tmp_maintmarginreq, sizeof(tmp_maintmarginreq));
   if (raw_maintmarginreq != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(12, this->_internal_maintmarginreq(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        12, this->_internal_maintmarginreq(), target);
   }
 
   // uint64 timestamp = 13;
   if (this->_internal_timestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(13, this->_internal_timestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        13, this->_internal_timestamp(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.AssetData)
   return target;
 }
 
-size_t AssetData::ByteSizeLong() const {
+::size_t AssetData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.AssetData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string account = 1;
   if (!this->_internal_account().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_account());
   }
 
   // string currency = 2;
   if (!this->_internal_currency().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_currency());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_currency());
   }
 
   // string segType = 3;
   if (!this->_internal_segtype().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_segtype());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_segtype());
   }
 
   // double availableFunds = 4;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_availablefunds = this->_internal_availablefunds();
-  uint64_t raw_availablefunds;
+  ::uint64_t raw_availablefunds;
   memcpy(&raw_availablefunds, &tmp_availablefunds, sizeof(tmp_availablefunds));
   if (raw_availablefunds != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double excessLiquidity = 5;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_excessliquidity = this->_internal_excessliquidity();
-  uint64_t raw_excessliquidity;
+  ::uint64_t raw_excessliquidity;
   memcpy(&raw_excessliquidity, &tmp_excessliquidity, sizeof(tmp_excessliquidity));
   if (raw_excessliquidity != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double netLiquidation = 6;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_netliquidation = this->_internal_netliquidation();
-  uint64_t raw_netliquidation;
+  ::uint64_t raw_netliquidation;
   memcpy(&raw_netliquidation, &tmp_netliquidation, sizeof(tmp_netliquidation));
   if (raw_netliquidation != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double equityWithLoan = 7;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_equitywithloan = this->_internal_equitywithloan();
-  uint64_t raw_equitywithloan;
+  ::uint64_t raw_equitywithloan;
   memcpy(&raw_equitywithloan, &tmp_equitywithloan, sizeof(tmp_equitywithloan));
   if (raw_equitywithloan != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double buyingPower = 8;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_buyingpower = this->_internal_buyingpower();
-  uint64_t raw_buyingpower;
+  ::uint64_t raw_buyingpower;
   memcpy(&raw_buyingpower, &tmp_buyingpower, sizeof(tmp_buyingpower));
   if (raw_buyingpower != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double cashBalance = 9;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_cashbalance = this->_internal_cashbalance();
-  uint64_t raw_cashbalance;
+  ::uint64_t raw_cashbalance;
   memcpy(&raw_cashbalance, &tmp_cashbalance, sizeof(tmp_cashbalance));
   if (raw_cashbalance != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double grossPositionValue = 10;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_grosspositionvalue = this->_internal_grosspositionvalue();
-  uint64_t raw_grosspositionvalue;
+  ::uint64_t raw_grosspositionvalue;
   memcpy(&raw_grosspositionvalue, &tmp_grosspositionvalue, sizeof(tmp_grosspositionvalue));
   if (raw_grosspositionvalue != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double initMarginReq = 11;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_initmarginreq = this->_internal_initmarginreq();
-  uint64_t raw_initmarginreq;
+  ::uint64_t raw_initmarginreq;
   memcpy(&raw_initmarginreq, &tmp_initmarginreq, sizeof(tmp_initmarginreq));
   if (raw_initmarginreq != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // double maintMarginReq = 12;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_maintmarginreq = this->_internal_maintmarginreq();
-  uint64_t raw_maintmarginreq;
+  ::uint64_t raw_maintmarginreq;
   memcpy(&raw_maintmarginreq, &tmp_maintmarginreq, sizeof(tmp_maintmarginreq));
   if (raw_maintmarginreq != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // uint64 timestamp = 13;
   if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_timestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_timestamp());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData AssetData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    AssetData::MergeImpl
+const ::google::protobuf::Message::ClassData AssetData::_class_data_ = {
+    AssetData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*AssetData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* AssetData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void AssetData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void AssetData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<AssetData*>(&to_msg);
   auto& from = static_cast<const AssetData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.AssetData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_account().empty()) {
@@ -666,65 +657,74 @@ void AssetData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (!from._internal_segtype().empty()) {
     _this->_internal_set_segtype(from._internal_segtype());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_availablefunds = from._internal_availablefunds();
-  uint64_t raw_availablefunds;
+  ::uint64_t raw_availablefunds;
   memcpy(&raw_availablefunds, &tmp_availablefunds, sizeof(tmp_availablefunds));
   if (raw_availablefunds != 0) {
     _this->_internal_set_availablefunds(from._internal_availablefunds());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_excessliquidity = from._internal_excessliquidity();
-  uint64_t raw_excessliquidity;
+  ::uint64_t raw_excessliquidity;
   memcpy(&raw_excessliquidity, &tmp_excessliquidity, sizeof(tmp_excessliquidity));
   if (raw_excessliquidity != 0) {
     _this->_internal_set_excessliquidity(from._internal_excessliquidity());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_netliquidation = from._internal_netliquidation();
-  uint64_t raw_netliquidation;
+  ::uint64_t raw_netliquidation;
   memcpy(&raw_netliquidation, &tmp_netliquidation, sizeof(tmp_netliquidation));
   if (raw_netliquidation != 0) {
     _this->_internal_set_netliquidation(from._internal_netliquidation());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_equitywithloan = from._internal_equitywithloan();
-  uint64_t raw_equitywithloan;
+  ::uint64_t raw_equitywithloan;
   memcpy(&raw_equitywithloan, &tmp_equitywithloan, sizeof(tmp_equitywithloan));
   if (raw_equitywithloan != 0) {
     _this->_internal_set_equitywithloan(from._internal_equitywithloan());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_buyingpower = from._internal_buyingpower();
-  uint64_t raw_buyingpower;
+  ::uint64_t raw_buyingpower;
   memcpy(&raw_buyingpower, &tmp_buyingpower, sizeof(tmp_buyingpower));
   if (raw_buyingpower != 0) {
     _this->_internal_set_buyingpower(from._internal_buyingpower());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_cashbalance = from._internal_cashbalance();
-  uint64_t raw_cashbalance;
+  ::uint64_t raw_cashbalance;
   memcpy(&raw_cashbalance, &tmp_cashbalance, sizeof(tmp_cashbalance));
   if (raw_cashbalance != 0) {
     _this->_internal_set_cashbalance(from._internal_cashbalance());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_grosspositionvalue = from._internal_grosspositionvalue();
-  uint64_t raw_grosspositionvalue;
+  ::uint64_t raw_grosspositionvalue;
   memcpy(&raw_grosspositionvalue, &tmp_grosspositionvalue, sizeof(tmp_grosspositionvalue));
   if (raw_grosspositionvalue != 0) {
     _this->_internal_set_grosspositionvalue(from._internal_grosspositionvalue());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_initmarginreq = from._internal_initmarginreq();
-  uint64_t raw_initmarginreq;
+  ::uint64_t raw_initmarginreq;
   memcpy(&raw_initmarginreq, &tmp_initmarginreq, sizeof(tmp_initmarginreq));
   if (raw_initmarginreq != 0) {
     _this->_internal_set_initmarginreq(from._internal_initmarginreq());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_maintmarginreq = from._internal_maintmarginreq();
-  uint64_t raw_maintmarginreq;
+  ::uint64_t raw_maintmarginreq;
   memcpy(&raw_maintmarginreq, &tmp_maintmarginreq, sizeof(tmp_maintmarginreq));
   if (raw_maintmarginreq != 0) {
     _this->_internal_set_maintmarginreq(from._internal_maintmarginreq());
@@ -732,7 +732,7 @@ void AssetData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (from._internal_timestamp() != 0) {
     _this->_internal_set_timestamp(from._internal_timestamp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void AssetData::CopyFrom(const AssetData& from) {
@@ -742,28 +742,22 @@ void AssetData::CopyFrom(const AssetData& from) {
   MergeFrom(from);
 }
 
-bool AssetData::IsInitialized() const {
+PROTOBUF_NOINLINE bool AssetData::IsInitialized() const {
   return true;
 }
 
-void AssetData::InternalSwap(AssetData* other) {
+::_pbi::CachedSize* AssetData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void AssetData::InternalSwap(AssetData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.account_, lhs_arena,
-      &other->_impl_.account_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.currency_, lhs_arena,
-      &other->_impl_.currency_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.segtype_, lhs_arena,
-      &other->_impl_.segtype_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.account_, &other->_impl_.account_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.currency_, &other->_impl_.currency_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.segtype_, &other->_impl_.segtype_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(AssetData, _impl_.timestamp_)
       + sizeof(AssetData::_impl_.timestamp_)
       - PROTOBUF_FIELD_OFFSET(AssetData, _impl_.availablefunds_)>(
@@ -771,22 +765,18 @@ void AssetData::InternalSwap(AssetData* other) {
           reinterpret_cast<char*>(&other->_impl_.availablefunds_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata AssetData::GetMetadata() const {
+::google::protobuf::Metadata AssetData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_AssetData_2eproto_getter, &descriptor_table_AssetData_2eproto_once,
       file_level_metadata_AssetData_2eproto[0]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::AssetData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::AssetData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::AssetData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

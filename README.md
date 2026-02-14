@@ -159,6 +159,58 @@ make -j 8
 
 使用[vcpkg](https://vcpkg.io/en/getting-started.html)
 
+### Windows 下的项目结构
+建议先了解以下目录/文件位置，便于排查依赖与构建产物：
+
+- 解决方案与工程文件
+  - openapi-cpp-sdk.sln：解决方案入口
+  - openapi-cpp-sdk.vcxproj：SDK 工程
+  - demo/openapi_cpp_test/openapi_cpp_test.vcxproj：示例工程
+- 代码与头文件
+  - src/：SDK 源码
+  - include/：SDK 头文件（含 protobuf 生成代码）
+  - include/openapi_pb/pb_source/：protobuf 生成的 .pb.cc/.pb.h
+- 构建产物（Windows）
+  - output/Windows/<平台>/<配置>/：编译输出（dll/lib/exe/pdb）
+  - temp/：编译中间文件
+- 依赖相关
+  - vcpkg/：vcpkg 依赖安装目录（如使用 vcpkg）
+  - .deps/boost/boost_1_86_0：本地 Boost（如绕过 vcpkg）
+
+示例目录结构：
+```
+openapi-cpp-sdk/
+├─ openapi-cpp-sdk.sln
+├─ openapi-cpp-sdk.vcxproj
+├─ demo/
+│  └─ openapi_cpp_test/
+│     └─ openapi_cpp_test.vcxproj
+├─ include/
+│  └─ openapi_pb/
+│     └─ pb_source/
+├─ src/
+├─ output/
+│  └─ Windows/
+│     └─ x64/
+│        └─ Release-MD/
+├─ temp/
+└─ .deps/
+   └─ boost/
+      └─ boost_1_86_0/
+```
+
+### Windows 依赖说明
+Windows 构建依赖以下组件（可通过 vcpkg 或本地目录提供）：
+
+- Boost 1.86.0（推荐放在 .deps/boost/boost_1_86_0）
+- OpenSSL（vcpkg 安装或本地库）
+- cpprestsdk 2.10.x（vcpkg 安装或本地库）
+- protobuf 3.21.12（生成 libprotobuf/libprotobufd，并放到 output/Windows 对应目录）
+
+默认情况下工程会使用：
+- BOOST_ROOT 指向 .deps/boost/boost_1_86_0
+- vcpkg/installed/<triplet>/include 与 lib 作为默认依赖路径
+
 
 ### 安装 boost
 如使用sdk自带的库文件，此步骤可跳过
@@ -189,13 +241,16 @@ git checkout v3.21.12
 解决方案下创建lib目录，按需依次创建其他层级为：lib/x86/Debug、lib/x86/Release、lib/x64/Debug、lib/x64/Release
 将pb解决方案编译好的lib库依次拷贝到对应的层级目录，Debug：libprotobufd.lib，Release：libprotobuf.lib
 ```
-```
+
 
 ### 安装 tigerapi sdk
 源码output里的dll或lib为sdk编译后的库，项目配置引入后即可调用sdk
 
 
-
+### 自动安装脚本(todo)
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1 -Triplet x64-windows
+```
 
 
 # 快速开始

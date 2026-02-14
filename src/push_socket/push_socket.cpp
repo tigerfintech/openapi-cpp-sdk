@@ -4,15 +4,16 @@
 #include <regex>
 #include "google/protobuf/util/json_util.h"
 #include "cpprest/json.h"
+#include <chrono>
 
 static const int MEMORY_POOL_PAGE_SIZE = 1024;
 static const int MEMORY_POOL_BLOCK_NUM = 1024;
 static const std::string CONNECTED_HEART_BEAT_CFG_KEY = "heart-beat";
 
-std::shared_ptr<TIGER_API::PushSocket> TIGER_API::PushSocket::create_push_socket(boost::asio::io_service* io_service,
+std::shared_ptr<TIGER_API::PushSocket> TIGER_API::PushSocket::create_push_socket(boost::asio::io_context* io_context,
 	const TIGER_API::ClientConfig& client_config)
 {
-	return std::shared_ptr<TIGER_API::PushSocket>(new TIGER_API::PushSocket(io_service, client_config));
+	return std::shared_ptr<TIGER_API::PushSocket>(new TIGER_API::PushSocket(io_context, client_config));
 }
 
 TIGER_API::PushSocket::~PushSocket()
@@ -20,17 +21,17 @@ TIGER_API::PushSocket::~PushSocket()
 
 }
 
-TIGER_API::PushSocket::PushSocket(boost::asio::io_service* io_service,
+TIGER_API::PushSocket::PushSocket(boost::asio::io_context* io_context,
 	const TIGER_API::ClientConfig& client_config)
 {
-	io_service_ = io_service;
+	io_context_ = io_context;
 	client_config_ = client_config;
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
 	
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
-	keep_alive_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
-	reconnect_timer_ = std::make_shared<boost::asio::deadline_timer>(*io_service);
+	keep_alive_timer_ = std::make_shared<boost::asio::steady_timer>(*io_context_);
+	reconnect_timer_ = std::make_shared<boost::asio::steady_timer>(*io_context_);
 }
 
 void TIGER_API::PushSocket::set_connected_callback(const std::function<void()>& cb)
@@ -60,17 +61,18 @@ void TIGER_API::PushSocket::connect()
 	{
 		socket_state_ = SocketState::CONNECTING;
 
-		boost::asio::ip::tcp::resolver resolver(*io_service_);
-		boost::asio::ip::tcp::resolver::query query(utility::conversions::to_utf8string(client_config_.get_socket_url()),
+		boost::asio::ip::tcp::resolver resolver(*io_context_);
+		auto results = resolver.resolve(
+			utility::conversions::to_utf8string(client_config_.get_socket_url()),
 			utility::conversions::to_utf8string(client_config_.get_socket_port()));
-		boost::asio::ip::tcp::resolver::iterator rit = resolver.resolve(query);
-		
-		std::string str_target_server_ip = rit->endpoint().address().to_string();
+		auto endpoint = results.begin()->endpoint();
+
+		std::string str_target_server_ip = endpoint.address().to_string();
 		LOG(INFO) << "resolved ip: " << str_target_server_ip;
 
 		init_socket();
 
-		socket_->lowest_layer().async_connect(*rit,
+		socket_->lowest_layer().async_connect(endpoint,
 			boost::bind(&PushSocket::handle_connect, this, boost::asio::placeholders::error));
 	}
 	catch (const boost::system::system_error& e)
@@ -85,12 +87,7 @@ void TIGER_API::PushSocket::disconnect()
 	if (keep_alive_timer_)
 	{
 		LOG(INFO) << "stop keep alive scheduled task";
-		boost::system::error_code ec;
-		keep_alive_timer_->cancel(ec);
-		if (ec)
-		{
-			LOG(ERROR) << ec;
-		}
+		keep_alive_timer_->cancel();
 	}
 	close_session();
 }
@@ -134,7 +131,7 @@ void TIGER_API::PushSocket::init_socket()
 		ssl_content.load_verify_file(utility::conversions::to_utf8string(client_config_.socket_ca_certs));
 	}
 
-	socket_.emplace(*io_service_, ssl_content);
+	socket_.emplace(*io_context_, ssl_content);
 
 	socket_->set_verify_callback(boost::bind(&PushSocket::verify_certificate, this, _1, _2));
 }
@@ -250,7 +247,7 @@ void TIGER_API::PushSocket::send_authentication()
 
 void TIGER_API::PushSocket::start_keep_alive()
 {
-	keep_alive_timer_->expires_from_now(boost::posix_time::milliseconds(500));
+	keep_alive_timer_->expires_after(std::chrono::milliseconds(500));
 	keep_alive_timer_->async_wait(boost::bind(&PushSocket::handle_timer, this, boost::asio::placeholders::error));
 }
 
@@ -269,7 +266,7 @@ void TIGER_API::PushSocket::auto_reconnect()
 {
 	LOG(INFO) << "try reconnecting after " << reconnect_interval_ / 1000 << " seconds...";
 	socket_state_  = SocketState::CONNECTING;
-	reconnect_timer_->expires_from_now(boost::posix_time::milliseconds(reconnect_interval_));
+	reconnect_timer_->expires_after(std::chrono::milliseconds(reconnect_interval_));
 	reconnect_timer_->async_wait([this](const boost::system::error_code& error) 
 	{
 		if (!error) 
@@ -290,12 +287,7 @@ void TIGER_API::PushSocket::cancel_reconnect_timer()
 	LOG(INFO) << "stop auto reconnect scheduled task";
 	if (reconnect_timer_)
 	{
-		boost::system::error_code ec;
-		reconnect_timer_->cancel(ec);
-		if (ec)
-		{
-			LOG(ERROR) << ec;
-		}
+		reconnect_timer_->cancel();
 	}
 }
 

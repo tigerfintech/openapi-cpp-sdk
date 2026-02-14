@@ -4,540 +4,562 @@
 #include "KlineData.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace tigeropen {
 namespace push {
 namespace pb {
-PROTOBUF_CONSTEXPR KlineData::KlineData(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.symbol_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.time_)*/int64_t{0}
-  , /*decltype(_impl_.open_)*/0
-  , /*decltype(_impl_.high_)*/0
-  , /*decltype(_impl_.low_)*/0
-  , /*decltype(_impl_.close_)*/0
-  , /*decltype(_impl_.volume_)*/int64_t{0}
-  , /*decltype(_impl_.avg_)*/0
-  , /*decltype(_impl_.count_)*/0
-  , /*decltype(_impl_.amount_)*/0
-  , /*decltype(_impl_.servertimestamp_)*/uint64_t{0u}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr KlineData::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : symbol_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        time_{::int64_t{0}},
+        open_{0},
+        high_{0},
+        low_{0},
+        close_{0},
+        volume_{::int64_t{0}},
+        avg_{0},
+        count_{0},
+        amount_{0},
+        servertimestamp_{::uint64_t{0u}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR KlineData::KlineData(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct KlineDataDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR KlineDataDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR KlineDataDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~KlineDataDefaultTypeInternal() {}
   union {
     KlineData _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 KlineDataDefaultTypeInternal _KlineData_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 KlineDataDefaultTypeInternal _KlineData_default_instance_;
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
 static ::_pb::Metadata file_level_metadata_KlineData_2eproto[1];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_KlineData_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_KlineData_2eproto = nullptr;
-
-const uint32_t TableStruct_KlineData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.time_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.open_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.high_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.low_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.close_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.avg_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.volume_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.count_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.symbol_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.amount_),
-  PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.servertimestamp_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_KlineData_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_KlineData_2eproto = nullptr;
+const ::uint32_t TableStruct_KlineData_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.time_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.open_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.high_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.low_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.close_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.avg_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.volume_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.count_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.symbol_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.amount_),
+    PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::KlineData, _impl_.servertimestamp_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tigeropen::push::pb::KlineData)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::tigeropen::push::pb::KlineData)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tigeropen::push::pb::_KlineData_default_instance_._instance,
+    &::tigeropen::push::pb::_KlineData_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_KlineData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\017KlineData.proto\022\021tigeropen.push.pb\"\266\001\n"
-  "\tKlineData\022\014\n\004time\030\001 \001(\003\022\014\n\004open\030\002 \001(\002\022\014"
-  "\n\004high\030\003 \001(\002\022\013\n\003low\030\004 \001(\002\022\r\n\005close\030\005 \001(\002"
-  "\022\013\n\003avg\030\006 \001(\002\022\016\n\006volume\030\007 \001(\003\022\r\n\005count\030\010"
-  " \001(\005\022\016\n\006symbol\030\t \001(\t\022\016\n\006amount\030\n \001(\001\022\027\n\017"
-  "serverTimestamp\030\013 \001(\004b\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_KlineData_2eproto_once;
+const char descriptor_table_protodef_KlineData_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\017KlineData.proto\022\021tigeropen.push.pb\"\266\001\n"
+    "\tKlineData\022\014\n\004time\030\001 \001(\003\022\014\n\004open\030\002 \001(\002\022\014"
+    "\n\004high\030\003 \001(\002\022\013\n\003low\030\004 \001(\002\022\r\n\005close\030\005 \001(\002"
+    "\022\013\n\003avg\030\006 \001(\002\022\016\n\006volume\030\007 \001(\003\022\r\n\005count\030\010"
+    " \001(\005\022\016\n\006symbol\030\t \001(\t\022\016\n\006amount\030\n \001(\001\022\027\n\017"
+    "serverTimestamp\030\013 \001(\004b\006proto3"
+};
+static ::absl::once_flag descriptor_table_KlineData_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_KlineData_2eproto = {
-    false, false, 229, descriptor_table_protodef_KlineData_2eproto,
+    false,
+    false,
+    229,
+    descriptor_table_protodef_KlineData_2eproto,
     "KlineData.proto",
-    &descriptor_table_KlineData_2eproto_once, nullptr, 0, 1,
-    schemas, file_default_instances, TableStruct_KlineData_2eproto::offsets,
-    file_level_metadata_KlineData_2eproto, file_level_enum_descriptors_KlineData_2eproto,
+    &descriptor_table_KlineData_2eproto_once,
+    nullptr,
+    0,
+    1,
+    schemas,
+    file_default_instances,
+    TableStruct_KlineData_2eproto::offsets,
+    file_level_metadata_KlineData_2eproto,
+    file_level_enum_descriptors_KlineData_2eproto,
     file_level_service_descriptors_KlineData_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_KlineData_2eproto_getter() {
   return &descriptor_table_KlineData_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_KlineData_2eproto(&descriptor_table_KlineData_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_KlineData_2eproto(&descriptor_table_KlineData_2eproto);
 namespace tigeropen {
 namespace push {
 namespace pb {
-
 // ===================================================================
 
 class KlineData::_Internal {
  public:
 };
 
-KlineData::KlineData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+KlineData::KlineData(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:tigeropen.push.pb.KlineData)
 }
-KlineData::KlineData(const KlineData& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  KlineData* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.time_){}
-    , decltype(_impl_.open_){}
-    , decltype(_impl_.high_){}
-    , decltype(_impl_.low_){}
-    , decltype(_impl_.close_){}
-    , decltype(_impl_.volume_){}
-    , decltype(_impl_.avg_){}
-    , decltype(_impl_.count_){}
-    , decltype(_impl_.amount_){}
-    , decltype(_impl_.servertimestamp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE KlineData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : symbol_(arena, from.symbol_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_symbol().empty()) {
-    _this->_impl_.symbol_.Set(from._internal_symbol(), 
-      _this->GetArenaForAllocation());
-  }
-  ::memcpy(&_impl_.time_, &from._impl_.time_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.servertimestamp_) -
-    reinterpret_cast<char*>(&_impl_.time_)) + sizeof(_impl_.servertimestamp_));
+KlineData::KlineData(
+    ::google::protobuf::Arena* arena,
+    const KlineData& from)
+    : ::google::protobuf::Message(arena) {
+  KlineData* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, time_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, time_),
+           offsetof(Impl_, servertimestamp_) -
+               offsetof(Impl_, time_) +
+               sizeof(Impl_::servertimestamp_));
+
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.KlineData)
 }
+inline PROTOBUF_NDEBUG_INLINE KlineData::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : symbol_(arena),
+        _cached_size_{0} {}
 
-inline void KlineData::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.symbol_){}
-    , decltype(_impl_.time_){int64_t{0}}
-    , decltype(_impl_.open_){0}
-    , decltype(_impl_.high_){0}
-    , decltype(_impl_.low_){0}
-    , decltype(_impl_.close_){0}
-    , decltype(_impl_.volume_){int64_t{0}}
-    , decltype(_impl_.avg_){0}
-    , decltype(_impl_.count_){0}
-    , decltype(_impl_.amount_){0}
-    , decltype(_impl_.servertimestamp_){uint64_t{0u}}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.symbol_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.symbol_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void KlineData::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, time_),
+           0,
+           offsetof(Impl_, servertimestamp_) -
+               offsetof(Impl_, time_) +
+               sizeof(Impl_::servertimestamp_));
 }
-
 KlineData::~KlineData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.KlineData)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void KlineData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.symbol_.Destroy();
+  _impl_.~Impl_();
 }
 
-void KlineData::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void KlineData::Clear() {
+PROTOBUF_NOINLINE void KlineData::Clear() {
 // @@protoc_insertion_point(message_clear_start:tigeropen.push.pb.KlineData)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.symbol_.ClearToEmpty();
-  ::memset(&_impl_.time_, 0, static_cast<size_t>(
+  ::memset(&_impl_.time_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.servertimestamp_) -
       reinterpret_cast<char*>(&_impl_.time_)) + sizeof(_impl_.servertimestamp_));
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* KlineData::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // int64 time = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _impl_.time_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // float open = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
-          _impl_.open_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float high = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
-          _impl_.high_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float low = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
-          _impl_.low_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float close = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
-          _impl_.close_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float avg = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
-          _impl_.avg_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // int64 volume = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
-          _impl_.volume_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // int32 count = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 64)) {
-          _impl_.count_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string symbol = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
-          auto str = _internal_mutable_symbol();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tigeropen.push.pb.KlineData.symbol"));
-        } else
-          goto handle_unusual;
-        continue;
-      // double amount = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 81)) {
-          _impl_.amount_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 serverTimestamp = 11;
-      case 11:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
-          _impl_.servertimestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* KlineData::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* KlineData::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 11, 0, 50, 2> KlineData::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    11, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294965248,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    11,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_KlineData_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // int64 time = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(KlineData, _impl_.time_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.time_)}},
+    // float open = 2;
+    {::_pbi::TcParser::FastF32S1,
+     {21, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.open_)}},
+    // float high = 3;
+    {::_pbi::TcParser::FastF32S1,
+     {29, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.high_)}},
+    // float low = 4;
+    {::_pbi::TcParser::FastF32S1,
+     {37, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.low_)}},
+    // float close = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.close_)}},
+    // float avg = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.avg_)}},
+    // int64 volume = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(KlineData, _impl_.volume_), 63>(),
+     {56, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.volume_)}},
+    // int32 count = 8;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(KlineData, _impl_.count_), 63>(),
+     {64, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.count_)}},
+    // string symbol = 9;
+    {::_pbi::TcParser::FastUS1,
+     {74, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.symbol_)}},
+    // double amount = 10;
+    {::_pbi::TcParser::FastF64S1,
+     {81, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.amount_)}},
+    // uint64 serverTimestamp = 11;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(KlineData, _impl_.servertimestamp_), 63>(),
+     {88, 63, 0, PROTOBUF_FIELD_OFFSET(KlineData, _impl_.servertimestamp_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int64 time = 1;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.time_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // float open = 2;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.open_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float high = 3;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.high_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float low = 4;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.low_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float close = 5;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.close_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float avg = 6;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.avg_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // int64 volume = 7;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.volume_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // int32 count = 8;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.count_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // string symbol = 9;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.symbol_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // double amount = 10;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.amount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // uint64 serverTimestamp = 11;
+    {PROTOBUF_FIELD_OFFSET(KlineData, _impl_.servertimestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+  }},
+  // no aux_entries
+  {{
+    "\33\0\0\0\0\0\0\0\0\6\0\0\0\0\0\0"
+    "tigeropen.push.pb.KlineData"
+    "symbol"
+  }},
+};
+
+::uint8_t* KlineData::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:tigeropen.push.pb.KlineData)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // int64 time = 1;
   if (this->_internal_time() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(1, this->_internal_time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<1>(
+            stream, this->_internal_time(), target);
   }
 
   // float open = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_open = this->_internal_open();
-  uint32_t raw_open;
+  ::uint32_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_open(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        2, this->_internal_open(), target);
   }
 
   // float high = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_high = this->_internal_high();
-  uint32_t raw_high;
+  ::uint32_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_high(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        3, this->_internal_high(), target);
   }
 
   // float low = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_low = this->_internal_low();
-  uint32_t raw_low;
+  ::uint32_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_low(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        4, this->_internal_low(), target);
   }
 
   // float close = 5;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_close = this->_internal_close();
-  uint32_t raw_close;
+  ::uint32_t raw_close;
   memcpy(&raw_close, &tmp_close, sizeof(tmp_close));
   if (raw_close != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_close(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        5, this->_internal_close(), target);
   }
 
   // float avg = 6;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_avg = this->_internal_avg();
-  uint32_t raw_avg;
+  ::uint32_t raw_avg;
   memcpy(&raw_avg, &tmp_avg, sizeof(tmp_avg));
   if (raw_avg != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_avg(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+        6, this->_internal_avg(), target);
   }
 
   // int64 volume = 7;
   if (this->_internal_volume() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(7, this->_internal_volume(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt64ToArrayWithField<7>(
+            stream, this->_internal_volume(), target);
   }
 
   // int32 count = 8;
   if (this->_internal_count() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt32ToArray(8, this->_internal_count(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+        WriteInt32ToArrayWithField<8>(
+            stream, this->_internal_count(), target);
   }
 
   // string symbol = 9;
   if (!this->_internal_symbol().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_symbol().data(), static_cast<int>(this->_internal_symbol().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tigeropen.push.pb.KlineData.symbol");
-    target = stream->WriteStringMaybeAliased(
-        9, this->_internal_symbol(), target);
+    const std::string& _s = this->_internal_symbol();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.KlineData.symbol");
+    target = stream->WriteStringMaybeAliased(9, _s, target);
   }
 
   // double amount = 10;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = this->_internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(10, this->_internal_amount(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+        10, this->_internal_amount(), target);
   }
 
   // uint64 serverTimestamp = 11;
   if (this->_internal_servertimestamp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(11, this->_internal_servertimestamp(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        11, this->_internal_servertimestamp(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:tigeropen.push.pb.KlineData)
   return target;
 }
 
-size_t KlineData::ByteSizeLong() const {
+::size_t KlineData::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:tigeropen.push.pb.KlineData)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string symbol = 9;
   if (!this->_internal_symbol().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_symbol());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_symbol());
   }
 
   // int64 time = 1;
   if (this->_internal_time() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_time());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_time());
   }
 
   // float open = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_open = this->_internal_open();
-  uint32_t raw_open;
+  ::uint32_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // float high = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_high = this->_internal_high();
-  uint32_t raw_high;
+  ::uint32_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // float low = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_low = this->_internal_low();
-  uint32_t raw_low;
+  ::uint32_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // float close = 5;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_close = this->_internal_close();
-  uint32_t raw_close;
+  ::uint32_t raw_close;
   memcpy(&raw_close, &tmp_close, sizeof(tmp_close));
   if (raw_close != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // int64 volume = 7;
   if (this->_internal_volume() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_volume());
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+        this->_internal_volume());
   }
 
   // float avg = 6;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_avg = this->_internal_avg();
-  uint32_t raw_avg;
+  ::uint32_t raw_avg;
   memcpy(&raw_avg, &tmp_avg, sizeof(tmp_avg));
   if (raw_avg != 0) {
-    total_size += 1 + 4;
+    total_size += 5;
   }
 
   // int32 count = 8;
   if (this->_internal_count() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_count());
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+        this->_internal_count());
   }
 
   // double amount = 10;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = this->_internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
-    total_size += 1 + 8;
+    total_size += 9;
   }
 
   // uint64 serverTimestamp = 11;
   if (this->_internal_servertimestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_servertimestamp());
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+        this->_internal_servertimestamp());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData KlineData::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    KlineData::MergeImpl
+const ::google::protobuf::Message::ClassData KlineData::_class_data_ = {
+    KlineData::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*KlineData::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* KlineData::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void KlineData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void KlineData::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<KlineData*>(&to_msg);
   auto& from = static_cast<const KlineData&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:tigeropen.push.pb.KlineData)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_symbol().empty()) {
@@ -546,30 +568,34 @@ void KlineData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (from._internal_time() != 0) {
     _this->_internal_set_time(from._internal_time());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_open = from._internal_open();
-  uint32_t raw_open;
+  ::uint32_t raw_open;
   memcpy(&raw_open, &tmp_open, sizeof(tmp_open));
   if (raw_open != 0) {
     _this->_internal_set_open(from._internal_open());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_high = from._internal_high();
-  uint32_t raw_high;
+  ::uint32_t raw_high;
   memcpy(&raw_high, &tmp_high, sizeof(tmp_high));
   if (raw_high != 0) {
     _this->_internal_set_high(from._internal_high());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_low = from._internal_low();
-  uint32_t raw_low;
+  ::uint32_t raw_low;
   memcpy(&raw_low, &tmp_low, sizeof(tmp_low));
   if (raw_low != 0) {
     _this->_internal_set_low(from._internal_low());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_close = from._internal_close();
-  uint32_t raw_close;
+  ::uint32_t raw_close;
   memcpy(&raw_close, &tmp_close, sizeof(tmp_close));
   if (raw_close != 0) {
     _this->_internal_set_close(from._internal_close());
@@ -577,9 +603,10 @@ void KlineData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (from._internal_volume() != 0) {
     _this->_internal_set_volume(from._internal_volume());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  static_assert(sizeof(::uint32_t) == sizeof(float),
+                "Code assumes ::uint32_t and float are the same size.");
   float tmp_avg = from._internal_avg();
-  uint32_t raw_avg;
+  ::uint32_t raw_avg;
   memcpy(&raw_avg, &tmp_avg, sizeof(tmp_avg));
   if (raw_avg != 0) {
     _this->_internal_set_avg(from._internal_avg());
@@ -587,9 +614,10 @@ void KlineData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (from._internal_count() != 0) {
     _this->_internal_set_count(from._internal_count());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
   double tmp_amount = from._internal_amount();
-  uint64_t raw_amount;
+  ::uint64_t raw_amount;
   memcpy(&raw_amount, &tmp_amount, sizeof(tmp_amount));
   if (raw_amount != 0) {
     _this->_internal_set_amount(from._internal_amount());
@@ -597,7 +625,7 @@ void KlineData::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (from._internal_servertimestamp() != 0) {
     _this->_internal_set_servertimestamp(from._internal_servertimestamp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void KlineData::CopyFrom(const KlineData& from) {
@@ -607,20 +635,20 @@ void KlineData::CopyFrom(const KlineData& from) {
   MergeFrom(from);
 }
 
-bool KlineData::IsInitialized() const {
+PROTOBUF_NOINLINE bool KlineData::IsInitialized() const {
   return true;
 }
 
-void KlineData::InternalSwap(KlineData* other) {
+::_pbi::CachedSize* KlineData::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void KlineData::InternalSwap(KlineData* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.symbol_, lhs_arena,
-      &other->_impl_.symbol_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbol_, &other->_impl_.symbol_, arena);
+  ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(KlineData, _impl_.servertimestamp_)
       + sizeof(KlineData::_impl_.servertimestamp_)
       - PROTOBUF_FIELD_OFFSET(KlineData, _impl_.time_)>(
@@ -628,22 +656,18 @@ void KlineData::InternalSwap(KlineData* other) {
           reinterpret_cast<char*>(&other->_impl_.time_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata KlineData::GetMetadata() const {
+::google::protobuf::Metadata KlineData::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_KlineData_2eproto_getter, &descriptor_table_KlineData_2eproto_once,
       file_level_metadata_KlineData_2eproto[0]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace pb
 }  // namespace push
 }  // namespace tigeropen
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tigeropen::push::pb::KlineData*
-Arena::CreateMaybeMessage< ::tigeropen::push::pb::KlineData >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tigeropen::push::pb::KlineData >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"
