@@ -3,102 +3,102 @@
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
-Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
+Tiger OpenAPI C++ SDK is the official C++ client for Tiger Brokers Open Platform, providing trading, market data, and WebSocket push functionalities.
 
-[English](README_EN.md) | 中文
+English | [中文](README.md)
 
-## 主要特性
+## Features
 
-- 🚀 完整的交易接口支持（下单、撤单、查询持仓等）
-- 📊 实时行情数据获取（K线、报价、逐笔成交等）
-- 🔌 WebSocket 长连接推送（持仓、订单、行情实时推送）
-- 🌐 跨平台支持（macOS、Linux、Windows）
-- 🛡️ 类型安全的 C++ API 设计
-- 📦 支持静态库和动态库编译
+- 🚀 Complete trading API support (place orders, cancel orders, query positions, etc.)
+- 📊 Real-time market data (K-line, quotes, tick-by-tick trades, etc.)
+- 🔌 WebSocket push notifications (positions, orders, real-time quotes)
+- 🌐 Cross-platform support (macOS, Linux, Windows)
+- 🛡️ Type-safe C++ API design
+- 📦 Static and dynamic library compilation support
 
-## 环境要求
+## Requirements
 
-| 平台 | 编译器 | CMake | 依赖管理 |
-|------|--------|-------|---------|
-| macOS | Clang (Xcode) | 3.15+ | Homebrew + 源码 |
-| Linux | GCC/G++ | 3.15+ | apt + 源码 |
+| Platform | Compiler | CMake | Package Manager |
+|----------|----------|-------|-----------------|
+| macOS | Clang (Xcode) | 3.15+ | Homebrew + Source |
+| Linux | GCC/G++ | 3.15+ | apt + Source |
 | Windows | MSVC 2019/2022 | 3.15+ | vcpkg |
 
-### 核心依赖
+### Core Dependencies
 
-- **Boost** 1.86.0（system, thread, log, program_options, chrono, filesystem）
-- **OpenSSL** 1.0.1+（推荐 3.x）
-- **cpprestsdk** 最新版（HTTP 客户端）
-- **Protobuf** v25.1（libprotobuf 4.25.1）
-- **Abseil** 20240722+（Protobuf v25 运行时依赖）
-- **C++ 标准**: C++17
+- **Boost** 1.86.0 (system, thread, log, program_options, chrono, filesystem)
+- **OpenSSL** 1.0.1+ (3.x recommended)
+- **cpprestsdk** Latest (HTTP client)
+- **Protobuf** v25.1 (libprotobuf 4.25.1)
+- **Abseil** 20240722+ (Protobuf v25 runtime dependency)
+- **C++ Standard**: C++17
 
-## 快速开始
+## Quick Start
 
-### 一键构建（推荐）
+### One-Click Build (Recommended)
 
 #### macOS/Linux
 
 ```bash
-# 赋予执行权限（仅首次）
+# Grant execute permission (first time only)
 chmod +x scripts/build_linux_mac.sh
 
-# 默认构建（Debug 模式，自动安装依赖并运行 demo）
+# Default build (Debug mode, auto-install dependencies and run demo)
 ./scripts/build_linux_mac.sh
 
-# Release 模式构建
+# Release mode build
 BUILD_TYPE=Release ./scripts/build_linux_mac.sh
 
-# 仅构建 SDK，跳过 demo
+# Build SDK only, skip demo
 SKIP_DEMO=1 ./scripts/build_linux_mac.sh
 ```
 
-脚本会自动完成：
-1. 安装系统依赖（Homebrew/apt）
-2. 编译 Boost、cpprestsdk、Protobuf
-3. 构建 SDK（Debug + Release）
-4. 构建并运行 demo
+The script will automatically:
+1. Install system dependencies (Homebrew/apt)
+2. Compile Boost, cpprestsdk, Protobuf
+3. Build SDK (Debug + Release)
+4. Build and run demo
 
 #### Windows
 
 ```powershell
-# 默认构建（x64 + x86，Debug + Release，MT + MD 共 8 个变体）
+# Default build (x64 + x86, Debug + Release, MT + MD = 8 variants)
 powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1
 
-# 仅构建 x64 Release MD
+# Build x64 Release MD only
 powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1 `
     -SingleBuild -Triplet x64-windows -BuildType Release -RuntimeFlavors MD
 ```
 
-### 使用预编译库
+### Using Pre-compiled Libraries
 
-如果不想从源码编译，可以直接使用 `output/` 目录下的预编译库：
+If you don't want to build from source, use the pre-compiled libraries in the `output/` directory:
 
 ```
 output/
 ├── Mac/
-│   ├── Debug.zip      # macOS Debug 静态库 + 头文件
-│   └── Release.zip    # macOS Release 静态库 + 头文件
+│   ├── Debug.zip      # macOS Debug static library + headers
+│   └── Release.zip    # macOS Release static library + headers
 ├── Linux/
 │   ├── Debug/
 │   └── Release/
 └── Windows/
     └── x64/
-        ├── Release-MD/  # x64 Release 动态运行时
-        └── Release-MT/  # x64 Release 静态运行时
+        ├── Release-MD/  # x64 Release dynamic runtime
+        └── Release-MT/  # x64 Release static runtime
 ```
 
-## 手动编译
+## Manual Build
 
 ### macOS
 
-#### 1. 安装基础工具
+#### 1. Install Basic Tools
 
 ```bash
 brew install cmake wget automake libtool pkg-config openssl@3 abseil
 ```
 
-#### 2. 安装 Boost
+#### 2. Install Boost
 
 ```bash
 cd /usr/local
@@ -110,7 +110,7 @@ cd boost_1_86_0
 ./b2 -j $(sysctl -n hw.ncpu)
 ```
 
-#### 3. 编译 cpprestsdk
+#### 3. Build cpprestsdk
 
 ```bash
 cd /tmp
@@ -130,7 +130,7 @@ cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 4. 编译 Protobuf
+#### 4. Build Protobuf
 
 ```bash
 cd /tmp
@@ -148,7 +148,7 @@ cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 5. 构建 SDK
+#### 5. Build SDK
 
 ```bash
 cd <project_root>
@@ -164,7 +164,7 @@ cmake --build build/Debug -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build/Debug
 ```
 
-#### 6. 构建 Demo
+#### 6. Build Demo
 
 ```bash
 cd demo
@@ -180,14 +180,14 @@ cmake -S . -B build \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 
-# 运行 demo（需要设置动态库路径）
+# Run demo (set dynamic library path)
 export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
 ./build/openapi_cpp_test
 ```
 
 ### Linux (Ubuntu)
 
-#### 1. 安装系统依赖
+#### 1. Install System Dependencies
 
 ```bash
 sudo apt-get update
@@ -195,11 +195,11 @@ sudo apt-get install -y git wget bzip2 unzip gcc g++ libtool automake autoconf \
     build-essential cmake libssl-dev libabsl-dev zlib1g-dev pkg-config
 ```
 
-#### 2-6. 编译步骤
+#### 2-6. Build Steps
 
-与 macOS 类似，主要区别：
-- 去掉 `OPENSSL_ROOT_DIR` 参数（Linux 上 OpenSSL 在系统路径）
-- 使用 `LD_LIBRARY_PATH` 代替 `DYLD_LIBRARY_PATH`
+Similar to macOS, main differences:
+- Remove `OPENSSL_ROOT_DIR` parameter (OpenSSL is in system path on Linux)
+- Use `LD_LIBRARY_PATH` instead of `DYLD_LIBRARY_PATH`
 
 ```bash
 export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
@@ -207,48 +207,48 @@ export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v2
 
 ### Windows
 
-Windows 平台提供两种编译方式：
+Windows platform provides two build methods:
 
-#### 方式一：使用 Visual Studio（推荐）
+#### Method 1: Using Visual Studio (Recommended)
 
-1. **前置要求**
-   - Visual Studio 2019 或 2022
-   - 安装"使用 C++ 的桌面开发"工作负载
+1. **Prerequisites**
+   - Visual Studio 2019 or 2022
+   - Install "Desktop development with C++" workload
 
-2. **准备依赖**
+2. **Prepare Dependencies**
 
-   项目使用 vcpkg 管理依赖，支持两种方式：
+   The project uses vcpkg for dependency management, supporting two approaches:
 
-   **自动安装（推荐）**：
+   **Automatic Installation (Recommended)**:
    ```powershell
-   # vcpkg 会根据 vcpkg.json 自动安装依赖
-   # 首次打开解决方案时自动触发
+   # vcpkg will automatically install dependencies based on vcpkg.json
+   # Triggered automatically when opening the solution for the first time
    ```
 
-   **手动安装**：
+   **Manual Installation**:
    ```powershell
    git clone https://github.com/microsoft/vcpkg .vcpkg
    .\.vcpkg\bootstrap-vcpkg.bat -disableMetrics
    .\.vcpkg\vcpkg install boost:x64-windows openssl:x64-windows cpprestsdk:x64-windows protobuf:x64-windows
    ```
 
-3. **打开并编译**
-   - 双击打开 `openapi-cpp-sdk.sln`
-   - 选择配置（推荐 `Release-MD|x64`）
-   - 右键解决方案 → 生成解决方案
+3. **Open and Build**
+   - Double-click to open `openapi-cpp-sdk.sln`
+   - Select configuration (recommended: `Release-MD|x64`)
+   - Right-click solution → Build Solution
 
-4. **配置说明**
+4. **Configuration Options**
 
-   解决方案提供 8 种配置组合：
+   The solution provides 8 configuration combinations:
 
-   | 配置 | 平台 | 运行时库 | 说明 |
-   |------|------|---------|------|
-   | Debug-MD | x64/Win32 | /MDd | Debug + 动态运行时 |
-   | Debug-MT | x64/Win32 | /MTd | Debug + 静态运行时 |
-   | Release-MD | x64/Win32 | /MD | Release + 动态运行时（推荐） |
-   | Release-MT | x64/Win32 | /MT | Release + 静态运行时 |
+   | Configuration | Platform | Runtime Library | Description |
+   |--------------|----------|-----------------|-------------|
+   | Debug-MD | x64/Win32 | /MDd | Debug + Dynamic runtime |
+   | Debug-MT | x64/Win32 | /MTd | Debug + Static runtime |
+   | Release-MD | x64/Win32 | /MD | Release + Dynamic runtime (Recommended) |
+   | Release-MT | x64/Win32 | /MT | Release + Static runtime |
 
-5. **编译产物**
+5. **Build Artifacts**
    ```
    output/Windows/
    ├── x64/
@@ -261,29 +261,29 @@ Windows 平台提供两种编译方式：
        └── ...
    ```
 
-6. **依赖路径配置**
+6. **Dependency Path Configuration**
 
-   工程文件已配置好依赖路径：
-   - Boost: `.deps/boost/boost_1_86_0`（可通过环境变量 `BOOST_ROOT` 覆盖）
-   - vcpkg 依赖: `vcpkg_installed/x64-windows/`（自动管理）
-   - SDK 头文件: `include/`
+   Project files are pre-configured with dependency paths:
+   - Boost: `.deps/boost/boost_1_86_0` (can be overridden by `BOOST_ROOT` environment variable)
+   - vcpkg dependencies: `vcpkg_installed/x64-windows/` (automatically managed)
+   - SDK headers: `include/`
 
-#### 方式二：使用 CMake 命令行
+#### Method 2: Using CMake Command Line
 
-1. **安装 vcpkg**
+1. **Install vcpkg**
 
 ```powershell
 git clone https://github.com/microsoft/vcpkg .vcpkg
 .\.vcpkg\bootstrap-vcpkg.bat -disableMetrics
 ```
 
-2. **安装依赖**
+2. **Install Dependencies**
 
 ```powershell
 .\.vcpkg\vcpkg install boost:x64-windows openssl:x64-windows cpprestsdk:x64-windows protobuf:x64-windows
 ```
 
-3. **构建 SDK**
+3. **Build SDK**
 
 ```powershell
 $env:VCPKG_ROOT = "$PWD\.vcpkg"
@@ -299,7 +299,7 @@ cmake --build build\windows --config Release
 cmake --install build\windows --config Release
 ```
 
-4. **构建 Demo**
+4. **Build Demo**
 
 ```powershell
 cmake -S demo -B demo\build\windows -A x64 `
@@ -312,9 +312,9 @@ cmake -S demo -B demo\build\windows -A x64 `
 cmake --build demo\build\windows --config Release --target openapi_cpp_test
 ```
 
-## 使用示例
+## Usage Examples
 
-### HTTP 行情接口
+### HTTP Market Data API
 
 ```cpp
 #include "tigerapi/quote_client.h"
@@ -322,125 +322,125 @@ cmake --build demo\build\windows --config Release --target openapi_cpp_test
 TigerClient client;
 client.init("your_tiger_id", "your_private_key", "your_account");
 
-// 获取 K 线数据
+// Get K-line data
 std::vector<std::string> symbols = {"AAPL", "TSLA"};
 ResponseModel response = client.grab_quote_kline(symbols, "day", "2024-01-01", "2024-12-31");
 ```
 
-### WebSocket 长连接推送
+### WebSocket Push Notifications
 
 ```cpp
 #include "tigerapi/push_client.h"
 
-// 创建推送客户端
+// Create push client
 PushClient push_client(tiger_id, private_key, "your_language");
 
-// 订阅持仓推送
+// Subscribe to position updates
 push_client.subscribe_position();
 
-// 订阅行情推送
+// Subscribe to quote updates
 push_client.subscribe_quote({"AAPL", "TSLA"});
 
-// 连接并接收推送
+// Connect and receive push notifications
 push_client.connect();
 ```
 
-更多示例请参考 `demo/openapi_cpp_test/openapi_cpp_test.cpp`。
+For more examples, see `demo/openapi_cpp_test/openapi_cpp_test.cpp`.
 
-## 项目结构
+## Project Structure
 
 ```
 openapi-cpp-sdk/
-├── include/                    # 头文件
-│   ├── tigerapi/              # SDK 公共头文件
-│   ├── cpprest/               # cpprestsdk 头文件
-│   ├── google/protobuf/       # Protobuf v25.1 头文件
-│   └── openapi_pb/            # Protobuf 生成的消息定义
-├── src/                       # SDK 源码实现
-├── demo/                      # 示例代码
+├── include/                    # Header files
+│   ├── tigerapi/              # SDK public headers
+│   ├── cpprest/               # cpprestsdk headers
+│   ├── google/protobuf/       # Protobuf v25.1 headers
+│   └── openapi_pb/            # Protobuf generated message definitions
+├── src/                       # SDK source implementation
+├── demo/                      # Example code
 │   └── openapi_cpp_test/
-├── scripts/                   # 构建脚本
-│   ├── build_linux_mac.sh    # macOS/Linux 一键构建
-│   └── install_windows_deps.ps1  # Windows 一键构建
-├── output/                    # 编译产物
+├── scripts/                   # Build scripts
+│   ├── build_linux_mac.sh    # macOS/Linux one-click build
+│   └── install_windows_deps.ps1  # Windows one-click build
+├── output/                    # Build artifacts
 │   ├── Mac/
 │   ├── Linux/
 │   └── Windows/
-└── CMakeLists.txt            # CMake 配置
+└── CMakeLists.txt            # CMake configuration
 ```
 
-## 常见问题
+## Troubleshooting
 
 ### macOS
 
-**Q: 找不到 OpenSSL**
+**Q: OpenSSL not found**
 ```bash
-# 指定 OpenSSL 路径
+# Specify OpenSSL path
 -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 ```
 
-**Q: 架构不匹配（arm64 vs x86_64）**
+**Q: Architecture mismatch (arm64 vs x86_64)**
 
-修改 `CMakeLists.txt` 和 `demo/CMakeLists.txt` 中的架构参数：
+Modify architecture parameter in `CMakeLists.txt` and `demo/CMakeLists.txt`:
 ```cmake
-# ARM Mac（默认）
+# ARM Mac (default)
 set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 ...")
 
 # Intel Mac
 set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++17 ...")
 ```
 
-**Q: 运行时找不到动态库**
+**Q: Dynamic library not found at runtime**
 ```bash
 export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
 ```
 
 ### Linux
 
-**Q: 运行时找不到 .so 文件**
+**Q: .so file not found at runtime**
 ```bash
 export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
 
-**Q: vcpkg bootstrap 失败**
+**Q: vcpkg bootstrap failed**
 
-确保安装了 Visual Studio "使用 C++ 的桌面开发"工作负载。
+Ensure Visual Studio "Desktop development with C++" workload is installed.
 
-**Q: 运行时库不匹配（MT vs MD）**
+**Q: Runtime library mismatch (MT vs MD)**
 
-确保 SDK 和 demo 使用相同的 `-DCMAKE_MSVC_RUNTIME_LIBRARY` 设置。
+Ensure SDK and demo use the same `-DCMAKE_MSVC_RUNTIME_LIBRARY` setting.
 
-### 所有平台
+### All Platforms
 
-**Q: Protobuf 版本冲突**
+**Q: Protobuf version conflict**
 
-确保使用 Protobuf v25.1（libprotobuf 4.25.1），需要 Abseil 和 C++17 支持。
+Ensure using Protobuf v25.1 (libprotobuf 4.25.1), requires Abseil and C++17 support.
 
-**Q: 编译警告被当作错误**
+**Q: Warnings treated as errors**
 ```bash
-# 添加编译参数关闭警告
+# Add compile flag to disable warnings
 -DCMAKE_CXX_FLAGS="-w"
 ```
 
-## 更新日志
+## Changelog
 
-查看 [changlog.md](changlog.md) 了解版本更新历史。
+See [changlog.md](changlog.md) for version history.
 
-## 许可证
+## License
 
 Apache License 2.0
 
-## 相关链接
+## Related Links
 
-- [老虎证券开放平台](https://quant.itigerup.com/)
-- [API 文档](https://quant.itigerup.com/openapi/zh/docs/intro/quickStart)
+- [Tiger Brokers Open Platform](https://quant.itigerup.com/)
+- [API Documentation](https://quant.itigerup.com/openapi/en/docs/intro/quickStart)
 - [Python SDK](https://github.com/tigerbrokers/openapi-python-sdk)
 - [Java SDK](https://github.com/tigerbrokers/openapi-java-sdk)
 
-## 技术支持
+## Support
 
-如有问题，请通过以下方式联系：
-- 提交 [GitHub Issue](https://github.com/tigerbrokers/openapi-cpp-sdk/issues)
-- 发送邮件至：openapi@tigerbrokers.com
+For questions or issues:
+- Submit a [GitHub Issue](https://github.com/tigerbrokers/openapi-cpp-sdk/issues)
+- Email: openapi@tigerbrokers.com
