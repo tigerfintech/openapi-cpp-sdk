@@ -2,6 +2,7 @@
 #define PUSH_FRAME_SERIALIZE_H
 #include <vector>
 #include <string>
+#include <cstdint>
 
 namespace TIGER_API
 {

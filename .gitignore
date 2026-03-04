@@ -33,6 +33,8 @@
 
 .vs
 .vscode
+.kiro
+.claude
 *.dSYM
 .idea
 .DS_store
@@ -83,3 +85,13 @@ output/Linux/Release/
 
 *.properties
 temp/
+.cache/
+.deps/
+.local_opt/
+.local_sdk/
+.vcpkg/
+vcpkg_installed/
+vcpkg_installed_x86/
+vcpkg_installed_static/
+ $boostDir/
+.deps-bak/

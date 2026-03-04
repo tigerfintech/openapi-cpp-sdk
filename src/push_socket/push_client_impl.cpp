@@ -1,17 +1,30 @@
-﻿#include "../include/tigerapi/push_socket/push_client_impl.h"
-#include "../include/tigerapi/client_config.h"
-#include "../include/tigerapi/push_socket/push_socket.h"
-#include "../include/tigerapi/tick_util.h"
-#include "../include/openapi_pb/pb_source/PushData.pb.h"
-#include "../include/tigerapi/enums.h"
-#include "../include/openapi_pb/pb_source/SocketCommon.pb.h"
+﻿#include "tigerapi/push_socket/push_client_impl.h"
+#include "tigerapi/client_config.h"
+#include "tigerapi/push_socket/push_socket.h"
+#include "tigerapi/tick_util.h"
+#include "openapi_pb/pb_source/PushData.pb.h"
+#include "tigerapi/enums.h"
+#include "openapi_pb/pb_source/SocketCommon.pb.h"
 
 #include "google/protobuf/util/json_util.h"
 #include <vector>
 #include <memory>
 #include <cmath>
 #include <numeric>
+
+#ifdef U
+#pragma push_macro("U")
+#undef U
+#define BOOST_RESTORE_U_MACRO
+#endif
+
 #include <boost/algorithm/string.hpp>
+#include <boost/asio/post.hpp>
+
+#ifdef BOOST_RESTORE_U_MACRO
+#pragma pop_macro("U")
+#undef BOOST_RESTORE_U_MACRO
+#endif
 
 std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_push_client_impl(const TIGER_API::ClientConfig& client_config)
 {
@@ -20,19 +33,22 @@ std::shared_ptr<TIGER_API::PushClientImpl> TIGER_API::PushClientImpl::create_pus
 
 TIGER_API::PushClientImpl::~PushClientImpl()
 {
-	io_service_.stop();
+    io_context_.stop();
 
 	if (worker_thread_)
 	{
-		worker_thread_->join();
+        if (worker_thread_->joinable())
+        {
+            worker_thread_->join();
+        }
 	}
 }
 
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
 {
-	socket_ = PushSocket::create_push_socket(&io_service_, client_config);
+    socket_ = PushSocket::create_push_socket(&io_context_, client_config);
     socket_->set_on_message_callback(
-        [this](auto && message) { on_message(std::forward<decltype(message)>(message)); });
+        [this](const std::shared_ptr<tigeropen::push::pb::Response>& message) { on_message(message); });
     client_config_ = client_config;
 }
 
@@ -45,15 +61,15 @@ void TIGER_API::PushClientImpl::connect()
 	{
 		socket_->connect();
 
-		LOG(INFO) << "io_service run on work thread";
-		io_service_.run();
+        LOG(INFO) << "io_context run on work thread";
+        io_context_.run();
 	}));
 }
 
 void TIGER_API::PushClientImpl::disconnect()
 {
 	// cross-thread call, need to post a task asynchronouly
-	io_service_.post(boost::bind(&PushClientImpl::do_disconnect, this));
+    boost::asio::post(io_context_, boost::bind(&PushClientImpl::do_disconnect, this));
 }
 
 void TIGER_API::PushClientImpl::set_connected_callback(const std::function<void()>& cb)
@@ -357,7 +373,7 @@ unsigned int TIGER_API::PushClientImpl::send_frame(const tigeropen::push::pb::Re
 	LOG(DEBUG) << "send frame:" << packed_frame_json;
 
 	// cross-thread call, need to post a task asynchronouly
-	io_service_.post(boost::bind(&PushClientImpl::do_write, this, packed_frame));
+    boost::asio::post(io_context_, boost::bind(&PushClientImpl::do_write, this, packed_frame));
 
 	return request.id();
 }

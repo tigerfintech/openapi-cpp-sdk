@@ -1,214 +1,446 @@
-# 编译步骤
+# Tiger OpenAPI C++ SDK
+
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+
+Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
+
+[English](README_EN.md) | 中文
+
+## 主要特性
+
+- 🚀 完整的交易接口支持（下单、撤单、查询持仓等）
+- 📊 实时行情数据获取（K线、报价、逐笔成交等）
+- 🔌 WebSocket 长连接推送（持仓、订单、行情实时推送）
+- 🌐 跨平台支持（macOS、Linux、Windows）
+- 🛡️ 类型安全的 C++ API 设计
+- 📦 支持静态库和动态库编译
+
 ## 环境要求
-- Linux/Mac: GCC/Clang, CMake 3.0+
-- Windows: Visual Studio 2015+, vcpkg
 
+| 平台 | 编译器 | CMake | 依赖管理 |
+|------|--------|-------|---------|
+| macOS | Clang (Xcode) | 3.15+ | Homebrew + 源码 |
+| Linux | GCC/G++ | 3.15+ | apt + 源码 |
+| Windows | MSVC 2019/2022 | 3.15+ | vcpkg |
 
+### 核心依赖
 
-## Linux/Mac
+- **Boost** 1.86.0（system, thread, log, program_options, chrono, filesystem）
+- **OpenSSL** 1.0.1+（推荐 3.x）
+- **cpprestsdk** 最新版（HTTP 客户端）
+- **Protobuf** v25.1（libprotobuf 4.25.1）
+- **Abseil** 20240722+（Protobuf v25 运行时依赖）
+- **C++ 标准**: C++17
 
-### 安装 Boost
-[参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/unix-variants.html)
+## 快速开始
 
-安装方式一：使用 homebrew
-```shell
-brew install boost 
+### 一键构建（推荐）
+
+#### macOS/Linux
+
+```bash
+# 赋予执行权限（仅首次）
+chmod +x scripts/build_linux_mac.sh
+
+# 默认构建（Debug 模式，自动安装依赖并运行 demo）
+./scripts/build_linux_mac.sh
+
+# Release 模式构建
+BUILD_TYPE=Release ./scripts/build_linux_mac.sh
+
+# 仅构建 SDK，跳过 demo
+SKIP_DEMO=1 ./scripts/build_linux_mac.sh
 ```
 
-安装方式二：源码安装
-1. 下载源码到任意路径： https://www.boost.org/users/history/version_1_81_0.html,  
-   以 /usr/local/ 为例 (如果没有权限，请命令前加 sudo)
-    ```shell
-    cd /usr/local/
-    wget https://archives.boost.io/release/1.81.0/source/boost_1_81_0.tar.bz2
-    ```
-2. 解压：
-    ```
-    tar --bzip2 -xf boost_1_81_0.tar.bz2
-    ```
-3. 编译 (注意权限, 如有报错可前面加sudo重试)
-    ```shell
-    cd /usr/local/boost_1_81_0
-    ./bootstrap.sh
-    ./b2 headers
-    ./b2
-    ```
+脚本会自动完成：
+1. 安装系统依赖（Homebrew/apt）
+2. 编译 Boost、cpprestsdk、Protobuf
+3. 构建 SDK（Debug + Release）
+4. 构建并运行 demo
 
+#### Windows
 
-### 编译安装 cpprestsdk
+```powershell
+# 默认构建（x64 + x86，Debug + Release，MT + MD 共 8 个变体）
+powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1
+
+# 仅构建 x64 Release MD
+powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1 `
+    -SingleBuild -Triplet x64-windows -BuildType Release -RuntimeFlavors MD
 ```
-cd /tmp  # 选择暂存源码的目录，此处用 /tmp，也可根据本机环境指定其他系统路径
+
+### 使用预编译库
+
+如果不想从源码编译，可以直接使用 `output/` 目录下的预编译库：
+
+```
+output/
+├── Mac/
+│   ├── Debug.zip      # macOS Debug 静态库 + 头文件
+│   └── Release.zip    # macOS Release 静态库 + 头文件
+├── Linux/
+│   ├── Debug/
+│   └── Release/
+└── Windows/
+    └── x64/
+        ├── Release-MD/  # x64 Release 动态运行时
+        └── Release-MT/  # x64 Release 静态运行时
+```
+
+## 手动编译
+
+### macOS
+
+#### 1. 安装基础工具
+
+```bash
+brew install cmake wget automake libtool pkg-config openssl@3 abseil
+```
+
+#### 2. 安装 Boost
+
+```bash
+cd /usr/local
+wget https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
+tar --bzip2 -xf boost_1_86_0.tar.bz2
+cd boost_1_86_0
+./bootstrap.sh
+./b2 headers
+./b2 -j $(sysctl -n hw.ncpu)
+```
+
+#### 3. 编译 cpprestsdk
+
+```bash
+cd /tmp
 git clone https://github.com/microsoft/cpprestsdk.git
 cd cpprestsdk
 git submodule update --init
-mkdir build
-cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug-DBOOST_ROOT=/usr/local/boost_1_81_0 -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest ..
-make -j 8
-make install
-```
-如果找不到openssl或boost 或其他错误，可尝试指定路径，关闭某些模块 (如果有报错最好删除build目录重新创建)：
-```
-cmake .. \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprest \
-  -DBUILD_SHARED_LIBS=ON \
-  -DBUILD_SAMPLES=OFF \
-  -DBUILD_TESTS=OFF \
-  -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 \
-  -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
-  -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
-  -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
-  -DBOOST_ROOT=/usr/local/boost_1_81_0 \
-  -DCMAKE_CXX_FLAGS="-Wno-error=null-pointer-subtraction" 
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/cpprestsdk \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SAMPLES=OFF \
+    -DBUILD_TESTS=OFF \
+    -DBOOST_ROOT=/usr/local/boost_1_86_0 \
+    -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3) \
+    -DCMAKE_CXX_FLAGS="-Wno-error=null-pointer-subtraction -w"
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build
 ```
 
-**说明**
-[参考文档](https://github.com/Microsoft/cpprestsdk/wiki/Getting-Started-Tutorial)
-直接通过包管理软件安装的 cpprestsdk 可能不是最新版本， 可能会有未知问题
+#### 4. 编译 Protobuf
 
-### 编译安装 protobuf
-使用 v3.1.0 版本
-```
-cd /tmp  # 选择暂存源码的目录，此处用 /tmp，也可根据本机环境指定其他系统路径
-git clone https://github.com/protocolbuffers/protobuf
-cd protobuf
-git checkout v3.1.0
-mkdir cmake_build
-cd cmake_build
-cmake .. \
+```bash
+cd /tmp
+curl -sL https://github.com/protocolbuffers/protobuf/releases/download/v25.1/protobuf-25.1.tar.gz -o protobuf-25.1.tar.gz
+tar xzf protobuf-25.1.tar.gz
+cd protobuf-25.1
+cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v25.1 \
+    -DCMAKE_CXX_STANDARD=17 \
     -Dprotobuf_BUILD_TESTS=OFF \
-    -Dprotobuf_BUILD_SHARED_LIBS=ON
-make -j 8
-make install
+    -Dprotobuf_ABSL_PROVIDER=package \
+    -DCMAKE_PREFIX_PATH=$(brew --prefix)
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build
 ```
 
-### 编译 tigerapi sdk
-若使用编译好的sdk，此步骤可跳过  
-准备工作：根据系统环境调整 CMakeLists.txt 的相关路径
+#### 5. 构建 SDK
 
-1. 进入源码目录
-2. 创建编译目录
-   ```
-   mkdir build
-   cd build
-   ```
-3. 编译
-```
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
-    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
-make -j 6
-make install
+```bash
+cd <project_root>
+export CPATH="$(brew --prefix abseil)/include:$CPATH"
+
+cmake -S . -B build/Debug \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/tigerapi/Debug \
+    -DBOOST_ROOT=/usr/local/boost_1_86_0 \
+    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v25.1" \
+    -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+cmake --build build/Debug -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build/Debug
 ```
 
-### 安装 tigerapi sdk
-将头文件放入头文件路径， 如 /usr/local/include
-将库文件放入库文件路径， 如 /usr/local/lib/
+#### 6. 构建 Demo
 
-
-### 验证测试
-编译运行demo项目
-```
+```bash
 cd demo
-mkdir build
-cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
-    -DBOOST_ROOT=/usr/local/boost_1_81_0  ..
-make -j 8
-./openapi_cpp_test
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBOOST_ROOT=/usr/local/boost_1_86_0 \
+    -DTIGERAPI_INCLUDE_DIR=/usr/local/opt/tigerapi/Debug/include \
+    -DTIGERAPI_LIBRARY=/usr/local/opt/tigerapi/Debug/lib/libtigerapi.a \
+    -DCPPREST_INCLUDE_DIR=/usr/local/opt/cpprestsdk/include \
+    -DCPPREST_LIBRARY=/usr/local/opt/cpprestsdk/lib/libcpprest.dylib \
+    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v25.1/include \
+    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v25.1/lib/libprotobuf.dylib \
+    -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+
+# 运行 demo（需要设置动态库路径）
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
+./build/openapi_cpp_test
 ```
 
+### Linux (Ubuntu)
 
+#### 1. 安装系统依赖
 
-## Windows
-依赖：Visual Stodio C++ 开发环境 https://visualstudio.microsoft.com/zh-hans/
-下载安装Visual Stodio Installer，勾选 "使用C++的桌面开发"
-
-使用[vcpkg](https://vcpkg.io/en/getting-started.html)
-
-
-### 安装 boost
-如使用sdk自带的库文件，此步骤可跳过
-[参考文档](https://www.boost.org/doc/libs/1_81_0/more/getting_started/windows.html)
-``` 
-vcpkg install boost
+```bash
+sudo apt-get update
+sudo apt-get install -y git wget bzip2 unzip gcc g++ libtool automake autoconf \
+    build-essential cmake libssl-dev libabsl-dev zlib1g-dev pkg-config
 ```
 
-### 安装 openssl
-如使用sdk自带的库文件，此步骤可跳过
-``` 
-vcpkg install openssl
+#### 2-6. 编译步骤
+
+与 macOS 类似，主要区别：
+- 去掉 `OPENSSL_ROOT_DIR` 参数（Linux 上 OpenSSL 在系统路径）
+- 使用 `LD_LIBRARY_PATH` 代替 `DYLD_LIBRARY_PATH`
+
+```bash
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
 ```
 
-### 安装 cpprestsdk
-如使用sdk自带的库文件，此步骤可跳过
-```
-PS> vcpkg install cpprestsdk cpprestsdk:x64-windows
-```
-### 编译protobuf
-git clone https://github.com/protocolbuffers/protobuf
-```
-git checkout v3.1.0
+### Windows
 
-使用cmake-gui生成windows解决方案
-```
-解决方案中选择“libprotobuf”工程生成pb依赖库，代码生成配置为/MDd和/MD,
-解决方案下创建lib目录，按需依次创建其他层级为：lib/x86/Debug、lib/x86/Release、lib/x64/Debug、lib/x64/Release
-将pb解决方案编译好的lib库依次拷贝到对应的层级目录，Debug：libprotobufd.lib，Release：libprotobuf.lib
-```
-```
+Windows 平台提供两种编译方式：
 
-### 安装 tigerapi sdk
-源码output里的dll或lib为sdk编译后的库，项目配置引入后即可调用sdk
+#### 方式一：使用 Visual Studio（推荐）
 
+1. **前置要求**
+   - Visual Studio 2019 或 2022
+   - 安装"使用 C++ 的桌面开发"工作负载
 
+2. **准备依赖**
 
+   项目使用 vcpkg 管理依赖，支持两种方式：
 
-
-# 快速开始
-安装后，可参照demo目录的示例
-
-
-
-# 常见编译问题
-1. mac系统 dyld: Library not loaded: /usr/local/opt/icu4c/lib/libicudata.70.dylib
-``` 
-dyld: Library not loaded: /usr/local/opt/icu4c/lib/libicudata.70.dylib
-  Referenced from: /usr/local/opt/boost/lib/libboost_log-mt.dylib
-  Reason: image not found
-```
-Fix:
-``` 
-cd /usr/local/opt/icu4c/lib
-ln -s libicudata.dylib libicudata.70.dylib
-ln -s libicui18n.dylib libicui18n.70.dylib
-ln -s libicuuc.dylib libicuuc.70.dylib
-```
-将环境变量添加到shell配置：(如 ~/.bashrc 或 ~/.zshrc)，添加后需重启shell生效
-```shell
-export LDFLAGS="-L/usr/local/opt/icu4c/lib"
-export CPPFLAGS="-I/usr/local/opt/icu4c/include"
-```
-2. mac 系统编译 cpprestsdk 时，报错：
+   **自动安装（推荐）**：
+   ```powershell
+   # vcpkg 会根据 vcpkg.json 自动安装依赖
+   # 首次打开解决方案时自动触发
    ```
-   CMake Error at Release/cmake/cpprest_find_openssl.cmake:40 (list):
-  list GET given empty list
-Call Stack (most recent call first):
-  Release/cmake/cpprest_find_websocketpp.cmake:18 (cpprest_find_openssl)
-  Release/src/CMakeLists.txt:68 (cpprest_find_websocketpp)
-```
-Fix 指定openssl路径：
-```
-cmake .. \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=ON \
-  -DCMAKE_INSTALL_PREFIX=/usr/local \
-  -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 \
-  -DOPENSSL_CRYPTO_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libcrypto.dylib \
-  -DOPENSSL_SSL_LIBRARY=/opt/homebrew/opt/openssl@3/lib/libssl.dylib \
-  -DOPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include \
-  -DBOOST_ROOT=/usr/local/boost_1_81_0
+
+   **手动安装**：
+   ```powershell
+   git clone https://github.com/microsoft/vcpkg .vcpkg
+   .\.vcpkg\bootstrap-vcpkg.bat -disableMetrics
+   .\.vcpkg\vcpkg install boost:x64-windows openssl:x64-windows cpprestsdk:x64-windows protobuf:x64-windows
+   ```
+
+3. **打开并编译**
+   - 双击打开 `openapi-cpp-sdk.sln`
+   - 选择配置（推荐 `Release-MD|x64`）
+   - 右键解决方案 → 生成解决方案
+
+4. **配置说明**
+
+   解决方案提供 8 种配置组合：
+
+   | 配置 | 平台 | 运行时库 | 说明 |
+   |------|------|---------|------|
+   | Debug-MD | x64/Win32 | /MDd | Debug + 动态运行时 |
+   | Debug-MT | x64/Win32 | /MTd | Debug + 静态运行时 |
+   | Release-MD | x64/Win32 | /MD | Release + 动态运行时（推荐） |
+   | Release-MT | x64/Win32 | /MT | Release + 静态运行时 |
+
+5. **编译产物**
+   ```
+   output/Windows/
+   ├── x64/
+   │   ├── Release-MD/
+   │   │   ├── openapi-cpp-sdk.dll
+   │   │   ├── openapi-cpp-sdk.lib
+   │   │   └── openapi_cpp_test.exe
+   │   └── Release-MT/
+   └── Win32/
+       └── ...
+   ```
+
+6. **依赖路径配置**
+
+   工程文件已配置好依赖路径：
+   - Boost: `.deps/boost/boost_1_86_0`（可通过环境变量 `BOOST_ROOT` 覆盖）
+   - vcpkg 依赖: `vcpkg_installed/x64-windows/`（自动管理）
+   - SDK 头文件: `include/`
+
+#### 方式二：使用 CMake 命令行
+
+1. **安装 vcpkg**
+
+```powershell
+git clone https://github.com/microsoft/vcpkg .vcpkg
+.\.vcpkg\bootstrap-vcpkg.bat -disableMetrics
 ```
 
+2. **安装依赖**
+
+```powershell
+.\.vcpkg\vcpkg install boost:x64-windows openssl:x64-windows cpprestsdk:x64-windows protobuf:x64-windows
+```
+
+3. **构建 SDK**
+
+```powershell
+$env:VCPKG_ROOT = "$PWD\.vcpkg"
+$toolchain = "$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+
+cmake -S . -B build\windows -A x64 `
+    -DCMAKE_BUILD_TYPE=Release `
+    -DCMAKE_TOOLCHAIN_FILE=$toolchain `
+    -DVCPKG_TARGET_TRIPLET=x64-windows `
+    -DCMAKE_INSTALL_PREFIX=output\Windows\x64\Release-MD
+
+cmake --build build\windows --config Release
+cmake --install build\windows --config Release
+```
+
+4. **构建 Demo**
+
+```powershell
+cmake -S demo -B demo\build\windows -A x64 `
+    -DCMAKE_BUILD_TYPE=Release `
+    -DCMAKE_TOOLCHAIN_FILE=$toolchain `
+    -DVCPKG_TARGET_TRIPLET=x64-windows `
+    -DTIGERAPI_INCLUDE_DIR=output\Windows\x64\Release-MD\include `
+    -DTIGERAPI_LIBRARY=output\Windows\x64\Release-MD\lib\tigerapi.lib
+
+cmake --build demo\build\windows --config Release --target openapi_cpp_test
+```
+
+## 使用示例
+
+### HTTP 行情接口
+
+```cpp
+#include "tigerapi/quote_client.h"
+
+TigerClient client;
+client.init("your_tiger_id", "your_private_key", "your_account");
+
+// 获取 K 线数据
+std::vector<std::string> symbols = {"AAPL", "TSLA"};
+ResponseModel response = client.grab_quote_kline(symbols, "day", "2024-01-01", "2024-12-31");
+```
+
+### WebSocket 长连接推送
+
+```cpp
+#include "tigerapi/push_client.h"
+
+// 创建推送客户端
+PushClient push_client(tiger_id, private_key, "your_language");
+
+// 订阅持仓推送
+push_client.subscribe_position();
+
+// 订阅行情推送
+push_client.subscribe_quote({"AAPL", "TSLA"});
+
+// 连接并接收推送
+push_client.connect();
+```
+
+更多示例请参考 `demo/openapi_cpp_test/openapi_cpp_test.cpp`。
+
+## 项目结构
+
+```
+openapi-cpp-sdk/
+├── include/                    # 头文件
+│   ├── tigerapi/              # SDK 公共头文件
+│   ├── cpprest/               # cpprestsdk 头文件
+│   ├── google/protobuf/       # Protobuf v25.1 头文件
+│   └── openapi_pb/            # Protobuf 生成的消息定义
+├── src/                       # SDK 源码实现
+├── demo/                      # 示例代码
+│   └── openapi_cpp_test/
+├── scripts/                   # 构建脚本
+│   ├── build_linux_mac.sh    # macOS/Linux 一键构建
+│   └── install_windows_deps.ps1  # Windows 一键构建
+├── output/                    # 编译产物
+│   ├── Mac/
+│   ├── Linux/
+│   └── Windows/
+└── CMakeLists.txt            # CMake 配置
+```
+
+## 常见问题
+
+### macOS
+
+**Q: 找不到 OpenSSL**
+```bash
+# 指定 OpenSSL 路径
+-DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+```
+
+**Q: 架构不匹配（arm64 vs x86_64）**
+
+修改 `CMakeLists.txt` 和 `demo/CMakeLists.txt` 中的架构参数：
+```cmake
+# ARM Mac（默认）
+set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 ...")
+
+# Intel Mac
+set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++17 ...")
+```
+
+**Q: 运行时找不到动态库**
+```bash
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
+```
+
+### Linux
+
+**Q: 运行时找不到 .so 文件**
+```bash
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
+```
+
+### Windows
+
+**Q: vcpkg bootstrap 失败**
+
+确保安装了 Visual Studio "使用 C++ 的桌面开发"工作负载。
+
+**Q: 运行时库不匹配（MT vs MD）**
+
+确保 SDK 和 demo 使用相同的 `-DCMAKE_MSVC_RUNTIME_LIBRARY` 设置。
+
+### 所有平台
+
+**Q: Protobuf 版本冲突**
+
+确保使用 Protobuf v25.1（libprotobuf 4.25.1），需要 Abseil 和 C++17 支持。
+
+**Q: 编译警告被当作错误**
+```bash
+# 添加编译参数关闭警告
+-DCMAKE_CXX_FLAGS="-w"
+```
+
+## 更新日志
+
+查看 [changlog.md](changlog.md) 了解版本更新历史。
+
+## 许可证
+
+Apache License 2.0
+
+## 相关链接
+
+- [老虎证券开放平台](https://quant.itigerup.com/)
+- [API 文档](https://quant.itigerup.com/openapi/zh/docs/intro/quickStart)
+- [Python SDK](https://github.com/tigerbrokers/openapi-python-sdk)
+- [Java SDK](https://github.com/tigerbrokers/openapi-java-sdk)
+
+## 技术支持
+
+如有问题，请通过以下方式联系：
+- 提交 [GitHub Issue](https://github.com/tigerbrokers/openapi-cpp-sdk/issues)
+- 发送邮件至：openapi@tigerbrokers.com

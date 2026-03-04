@@ -1,6 +1,6 @@
-#include "../include/tigerapi/client_config.h"
-#include "../include/tigerapi/properties.h"
-#include "../include/tigerapi/enums.h"
+#include "tigerapi/client_config.h"
+#include "tigerapi/properties.h"
+#include "tigerapi/enums.h"
 
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)

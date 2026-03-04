@@ -1,82 +1,48 @@
-﻿// Protocol Buffers - Google's data interchange format
+// Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 #ifndef GOOGLE_PROTOBUF_MAP_ENTRY_H__
 #define GOOGLE_PROTOBUF_MAP_ENTRY_H__
 
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/map_entry_lite.h>
-#include <google/protobuf/map_type_handler.h>
-#include <google/protobuf/metadata.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/unknown_field_set.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/has_bits.h"
+#include "google/protobuf/map_type_handler.h"
+#include "google/protobuf/message.h"
+#include "google/protobuf/message_lite.h"
+#include "google/protobuf/parse_context.h"
+#include "google/protobuf/unknown_field_set.h"
+#include "google/protobuf/wire_format_lite.h"
+
+// Must be included last.
+#include "google/protobuf/port_def.inc"
+
+#ifdef SWIG
+#error "You cannot SWIG proto headers"
+#endif
 
 namespace google {
 namespace protobuf {
 class Arena;
 namespace internal {
-template <typename Key, typename Value,
+template <typename Derived, typename Key, typename Value,
           WireFormatLite::FieldType kKeyFieldType,
-          WireFormatLite::FieldType kValueFieldType,
-          int default_enum_value>
+          WireFormatLite::FieldType kValueFieldType>
 class MapField;
 }
-}
+}  // namespace protobuf
+}  // namespace google
 
+namespace google {
 namespace protobuf {
 namespace internal {
-
-// Register all MapEntry default instances so we can delete them in
-// ShutdownProtobufLibrary().
-void LIBPROTOBUF_EXPORT RegisterMapEntryDefaultInstance(
-    MessageLite* default_instance);
-
-// This is the common base class for MapEntry. It is used by MapFieldBase in
-// reflection api, in which the static type of key and value is unknown.
-class LIBPROTOBUF_EXPORT MapEntryBase : public Message {
- public:
-  ::google::protobuf::Metadata GetMetadata() const {
-    ::google::protobuf::Metadata metadata;
-    metadata.descriptor = descriptor_;
-    metadata.reflection = reflection_;
-    return metadata;
-  }
-
- protected:
-  MapEntryBase() : descriptor_(NULL), reflection_(NULL) {  }
-  virtual ~MapEntryBase() {}
-
-  const Descriptor* descriptor_;
-  const Reflection* reflection_;
-};
 
 // MapEntry is the returned google::protobuf::Message when calling AddMessage of
 // google::protobuf::Reflection. In order to let it work with generated message
@@ -95,216 +61,153 @@ class LIBPROTOBUF_EXPORT MapEntryBase : public Message {
 //                         field.
 //
 // cpp type | proto type  | in-memory type | MapEntry accessor type
-// int32      TYPE_INT32    int32            int32
-// int32      TYPE_FIXED32  int32            int32
+// int32_t    TYPE_INT32    int32_t          int32_t
+// int32_t    TYPE_FIXED32  int32_t          int32_t
 // string     TYPE_STRING   ArenaStringPtr   string
 // FooEnum    TYPE_ENUM     int              int
 // FooMessage TYPE_MESSAGE  FooMessage*      FooMessage
 //
 // The in-memory types of primitive types can be inferred from its proto type,
 // while we need to explicitly specify the cpp type if proto type is
-// TYPE_MESSAGE to infer the in-memory type.  Moreover, default_enum_value is
-// used to initialize enum field in proto2.
-template <typename Key, typename Value,
+// TYPE_MESSAGE to infer the in-memory type.
+template <typename Derived, typename Key, typename Value,
           WireFormatLite::FieldType kKeyFieldType,
-          WireFormatLite::FieldType kValueFieldType,
-          int default_enum_value>
-class MapEntry : public MapEntryBase {
+          WireFormatLite::FieldType kValueFieldType>
+class MapEntry : public Message {
   // Provide utilities to parse/serialize key/value.  Provide utilities to
   // manipulate internal stored type.
-  typedef MapTypeHandler<kKeyFieldType, Key> KeyTypeHandler;
-  typedef MapTypeHandler<kValueFieldType, Value> ValueTypeHandler;
+  using KeyTypeHandler = MapTypeHandler<kKeyFieldType, Key>;
+  using ValueTypeHandler = MapTypeHandler<kValueFieldType, Value>;
 
-  // Enum type cannot be used for MapTypeHandler::Read. Define a type
-  // which will replace Enum with int.
-  typedef typename KeyTypeHandler::MapEntryAccessorType KeyMapEntryAccessorType;
-  typedef typename ValueTypeHandler::MapEntryAccessorType
-      ValueMapEntryAccessorType;
+  // Define internal memory layout. Strings and messages are stored as
+  // pointers, while other types are stored as values.
+  using KeyOnMemory = typename KeyTypeHandler::TypeOnMemory;
+  using ValueOnMemory = typename ValueTypeHandler::TypeOnMemory;
 
-  // Abbreviation for MapEntry
-  typedef typename google::protobuf::internal::MapEntry<
-      Key, Value, kKeyFieldType, kValueFieldType, default_enum_value> EntryType;
+  // Constants for field number.
+  static const int kKeyFieldNumber = 1;
+  static const int kValueFieldNumber = 2;
 
-  // Abbreviation for MapEntryLite
-  typedef typename google::protobuf::internal::MapEntryLite<
-      Key, Value, kKeyFieldType, kValueFieldType, default_enum_value>
-      EntryLiteType;
+  // Constants for field tag.
+  static const uint8_t kKeyTag =
+      GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(kKeyFieldNumber, KeyTypeHandler::kWireType);
+  static const uint8_t kValueTag = GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(
+      kValueFieldNumber, ValueTypeHandler::kWireType);
+  static const size_t kTagSize = 1;
 
  public:
-  ~MapEntry() {
-    if (this == default_instance_) {
-      delete reflection_;
-    }
+  constexpr MapEntry()
+      : key_(KeyTypeHandler::Constinit()),
+        value_(ValueTypeHandler::Constinit()),
+        _has_bits_{} {}
+
+  explicit MapEntry(Arena* arena)
+      : Message(arena),
+        key_(KeyTypeHandler::Constinit()),
+        value_(ValueTypeHandler::Constinit()),
+        _has_bits_{} {}
+
+  MapEntry(const MapEntry&) = delete;
+  MapEntry& operator=(const MapEntry&) = delete;
+
+  ~MapEntry() override {
+    if (GetArena() != nullptr) return;
+    Message::_internal_metadata_.template Delete<UnknownFieldSet>();
+    KeyTypeHandler::DeleteNoArena(key_);
+    ValueTypeHandler::DeleteNoArena(value_);
   }
+
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
 
   // accessors ======================================================
 
-  virtual inline const KeyMapEntryAccessorType& key() const {
-    return entry_lite_.key();
+  inline const auto& key() const {
+    return KeyTypeHandler::GetExternalReference(key_);
   }
-  inline KeyMapEntryAccessorType* mutable_key() {
-    return entry_lite_.mutable_key();
+  inline const auto& value() const {
+    return ValueTypeHandler::DefaultIfNotInitialized(value_);
   }
-  virtual inline const ValueMapEntryAccessorType& value() const {
-    return entry_lite_.value();
+  inline auto* mutable_key() {
+    _has_bits_[0] |= 0x00000001u;
+    return KeyTypeHandler::EnsureMutable(&key_, GetArena());
   }
-  inline ValueMapEntryAccessorType* mutable_value() {
-    return entry_lite_.mutable_value();
-  }
-
-  // implements Message =============================================
-
-  bool MergePartialFromCodedStream(::google::protobuf::io::CodedInputStream* input) {
-    return entry_lite_.MergePartialFromCodedStream(input);
+  inline auto* mutable_value() {
+    _has_bits_[0] |= 0x00000002u;
+    return ValueTypeHandler::EnsureMutable(&value_, GetArena());
   }
 
-  size_t ByteSizeLong() const {
-    return entry_lite_.ByteSizeLong();
+  // TODO: These methods currently differ in behavior from the ones
+  // implemented via reflection. This means that a MapEntry does not behave the
+  // same as an equivalent object made via DynamicMessage.
+
+  const char* _InternalParse(const char* ptr, ParseContext* ctx) final {
+    while (!ctx->Done(&ptr)) {
+      uint32_t tag;
+      ptr = ReadTag(ptr, &tag);
+      GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+      if (tag == kKeyTag) {
+        auto* key = mutable_key();
+        ptr = KeyTypeHandler::Read(ptr, ctx, key);
+        if (!Derived::ValidateKey(key)) return nullptr;
+      } else if (tag == kValueTag) {
+        auto* value = mutable_value();
+        ptr = ValueTypeHandler::Read(ptr, ctx, value);
+        if (!Derived::ValidateValue(value)) return nullptr;
+      } else {
+        if (tag == 0 || WireFormatLite::GetTagWireType(tag) ==
+                            WireFormatLite::WIRETYPE_END_GROUP) {
+          ctx->SetLastTag(tag);
+          return ptr;
+        }
+        ptr = UnknownFieldParse(tag, static_cast<std::string*>(nullptr), ptr,
+                                ctx);
+      }
+      GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    }
+    return ptr;
   }
 
-  void SerializeWithCachedSizes(::google::protobuf::io::CodedOutputStream* output) const {
-    entry_lite_.SerializeWithCachedSizes(output);
-  }
-
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(bool deterministic,
-                                                   ::google::protobuf::uint8* output) const {
-    return entry_lite_.InternalSerializeWithCachedSizesToArray(deterministic,
-                                                               output);
-  }
-
-  int GetCachedSize() const {
-    return entry_lite_.GetCachedSize();
-  }
-
-  bool IsInitialized() const {
-    return entry_lite_.IsInitialized();
-  }
-
-  Message* New() const {
-    MapEntry* entry = new MapEntry;
-    entry->descriptor_ = descriptor_;
-    entry->reflection_ = reflection_;
-    entry->set_default_instance(default_instance_);
-    return entry;
-  }
-
-  Message* New(Arena* arena) const {
-    MapEntry* entry = Arena::CreateMessage<MapEntry>(arena);
-    entry->descriptor_ = descriptor_;
-    entry->reflection_ = reflection_;
-    entry->set_default_instance(default_instance_);
-    return entry;
-  }
-
-  int SpaceUsed() const {
-    int size = sizeof(MapEntry);
-    size += entry_lite_.SpaceUsed();
+  size_t ByteSizeLong() const final {
+    size_t size = 0;
+    size += kTagSize + static_cast<size_t>(KeyTypeHandler::ByteSize(key()));
+    size += kTagSize + static_cast<size_t>(ValueTypeHandler::ByteSize(value()));
+    _cached_size_.Set(ToCachedSize(size));
     return size;
   }
 
-  void CopyFrom(const ::google::protobuf::Message& from) {
-    Clear();
-    MergeFrom(from);
+  ::uint8_t* _InternalSerialize(::uint8_t* ptr,
+                                io::EpsCopyOutputStream* stream) const final {
+    ptr = KeyTypeHandler::Write(kKeyFieldNumber, key(), ptr, stream);
+    return ValueTypeHandler::Write(kValueFieldNumber, value(), ptr, stream);
   }
 
-  void MergeFrom(const ::google::protobuf::Message& from) {
-    GOOGLE_CHECK_NE(&from, this);
-    const MapEntry* source = dynamic_cast_if_available<const MapEntry*>(&from);
-    if (source == NULL) {
-      ReflectionOps::Merge(from, this);
-    } else {
-      MergeFrom(*source);
-    }
+  bool IsInitialized() const final {
+    return ValueTypeHandler::IsInitialized(value_);
   }
 
-  void CopyFrom(const MapEntry& from) {
-    Clear();
-    MergeFrom(from);
+  Message* New(Arena* arena) const final {
+    return Arena::CreateMessage<Derived>(arena);
   }
 
-  void MergeFrom(const MapEntry& from) {
-    entry_lite_.MergeFrom(from.entry_lite_);
-  }
+  CachedSize* AccessCachedSize() const final { return &_cached_size_; }
 
-  void Clear() {
-    entry_lite_.Clear();
-  }
+ protected:
+  friend class google::protobuf::Arena;
+  template <typename C, typename K, typename V, WireFormatLite::FieldType,
+            WireFormatLite::FieldType>
+  friend class MapField;
 
-  void InitAsDefaultInstance() {
-    entry_lite_.InitAsDefaultInstance();
-  }
-
-  Arena* GetArena() const {
-    return entry_lite_.GetArena();
-  }
-
-  // Create default MapEntry instance for given descriptor. Descriptor has to be
-  // given when creating default MapEntry instance because different map field
-  // may have the same type and MapEntry class. The given descriptor is needed
-  // to distinguish instances of the same MapEntry class.
-  static MapEntry* CreateDefaultInstance(const Descriptor* descriptor) {
-    MapEntry* entry = new MapEntry;
-    const Reflection* reflection = new GeneratedMessageReflection(
-        descriptor, entry, offsets_,
-        GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapEntry, entry_lite_._has_bits_),
-        GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapEntry, _unknown_fields_), -1,
-        DescriptorPool::generated_pool(),
-        ::google::protobuf::MessageFactory::generated_factory(),
-        sizeof(MapEntry),
-        GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapEntry, _internal_metadata_));
-    entry->descriptor_ = descriptor;
-    entry->reflection_ = reflection;
-    entry->set_default_instance(entry);
-    entry->InitAsDefaultInstance();
-    RegisterMapEntryDefaultInstance(entry);
-    return entry;
-  }
-
- private:
-  MapEntry()
-      : _internal_metadata_(NULL), default_instance_(NULL), entry_lite_() {}
-
-  explicit MapEntry(Arena* arena)
-      : _internal_metadata_(arena),
-        default_instance_(NULL),
-        entry_lite_(arena) {}
-
-  inline Arena* GetArenaNoVirtual() const {
-    return entry_lite_.GetArenaNoVirtual();
-  }
-
-  void set_default_instance(MapEntry* default_instance) {
-    default_instance_ = default_instance;
-    entry_lite_.set_default_instance(&default_instance->entry_lite_);
-  }
-
-  static int offsets_[2];
-  UnknownFieldSet _unknown_fields_;
-  InternalMetadataWithArena _internal_metadata_;
-  MapEntry* default_instance_;
-  EntryLiteType entry_lite_;
-
-  friend class ::google::protobuf::Arena;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  template <typename K, typename V, WireFormatLite::FieldType k_wire_type,
-            WireFormatLite::FieldType, int default_enum>
-  friend class internal::MapField;
-  friend class internal::GeneratedMessageReflection;
-
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MapEntry);
-};
-
-template <typename Key, typename Value, WireFormatLite::FieldType kKeyFieldType,
-          WireFormatLite::FieldType kValueFieldType, int default_enum_value>
-int MapEntry<Key, Value, kKeyFieldType, kValueFieldType,
-             default_enum_value>::offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapEntry, entry_lite_.key_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MapEntry, entry_lite_.value_),
+  KeyOnMemory key_;
+  ValueOnMemory value_;
+  HasBits<1> _has_bits_;
+  mutable CachedSize _cached_size_;
 };
 
 }  // namespace internal
 }  // namespace protobuf
-
 }  // namespace google
+
+#include "google/protobuf/port_undef.inc"
+
 #endif  // GOOGLE_PROTOBUF_MAP_ENTRY_H__

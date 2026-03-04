@@ -1,9 +1,9 @@
 ﻿//
 // Created by sukai on 2022/12/21.
 //
-#include "../include/tigerapi/quote_client.h"
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/utils.h"
+#include "tigerapi/quote_client.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/utils.h"
 
 
 namespace TIGER_API {
@@ -69,7 +69,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
-        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
         return post(TIMELINE, obj);
     }
 
@@ -78,8 +78,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = (long long) begin_time;
-        obj[P_END_TIME] = (long long) end_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
@@ -137,8 +137,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_TRADE_SESSION] = value::string(trade_session);
-        obj[P_BEGIN_INDEX] = (long long) begin_index;
-        obj[P_END_INDEX] = (long long) end_index;
+        obj[P_BEGIN_INDEX] = value::number(static_cast<int64_t>(begin_index));
+        obj[P_END_INDEX] = value::number(static_cast<int64_t>(end_index));
         obj[P_LIMIT] = limit;
         return post(TRADE_TICK, obj);
     }
@@ -236,7 +236,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
-        basic[P_EXPIRY] = (long long) expiry;
+        basic[P_EXPIRY] = value::number(static_cast<int64_t>(expiry));
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
@@ -269,9 +269,9 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_BEGIN_TIME] = (long long) begin_time;
-            obj[P_END_TIME] = (long long) end_time;
-            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+            obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
             obj[P_PERIOD] = value::string(U("day"));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
@@ -352,8 +352,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = (long long) begin_time;
-        obj[P_END_TIME] = (long long) end_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
         return post(FUTURE_KLINE, obj);
@@ -405,8 +405,8 @@ namespace TIGER_API {
     value QuoteClient::get_future_tick(utility::string_t contract_code, long begin_index, long end_index, int limit) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODE] = value::string(contract_code);
-        obj[P_BEGIN_INDEX] = (int64_t) begin_index;
-        obj[P_END_INDEX] = (int64_t) end_index;
+        obj[P_BEGIN_INDEX] = value::number(static_cast<int64_t>(begin_index));
+        obj[P_END_INDEX] = value::number(static_cast<int64_t>(end_index));
         obj[P_LIMIT] = limit;
         return post(FUTURE_TICK, obj);
     }

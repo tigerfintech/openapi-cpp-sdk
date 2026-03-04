@@ -2,7 +2,7 @@
 // Created by sukai on 2022/12/23.
 //
 
-#include "../include/tigerapi/trade_client.h"
+#include "tigerapi/trade_client.h"
 
 namespace TIGER_API {
     TradeClient::TradeClient() {}
@@ -92,7 +92,7 @@ namespace TIGER_API {
             obj[U("sub_accounts")] = sub_accounts;
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = (long long) expiry;
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(expiry));
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -139,10 +139,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = (long long) start_date;
+            obj[P_START_DATE] = value::number(static_cast<int64_t>(start_date));
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = (long long) end_date;
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
         }
         if (limit != 0) {
             obj[P_LIMIT] = limit;
@@ -184,13 +184,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = (long long) start_date;
+            obj[P_START_DATE] = value::number(static_cast<int64_t>(start_date));
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = (long long) end_date;
-        }
-        if (parent_id != 0) {
-            obj[U("parent_id")] = parent_id;
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
         }
         if (!sort_by.empty()) {
             obj[U("sort_by")] = value::string(sort_by);
@@ -226,13 +223,10 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = (long long) start_date;
+            obj[P_START_DATE] = value::number(static_cast<int64_t>(start_date));
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = (long long) end_date;
-        }
-        if (parent_id != 0) {
-            obj[U("parent_id")] = parent_id;
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
         }
         if (!sort_by.empty()) {
             obj[U("sort_by")] = value::string(sort_by);
@@ -268,13 +262,13 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         if (start_date != -1 && start_date != 0) {
-            obj[P_START_DATE] = (long long) start_date;
+            obj[P_START_DATE] = value::number(static_cast<int64_t>(start_date));
         }
         if (end_date != -1 && end_date != 0) {
-            obj[P_END_DATE] = (long long) end_date;
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
         }
         if (parent_id != 0) {
-            obj[U("parent_id")] = parent_id;
+            obj[U("parent_id")] = value::number(static_cast<uint64_t>(parent_id));
         }
         if (!sort_by.empty()) {
             obj[U("sort_by")] = value::string(sort_by);
@@ -296,7 +290,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
-        obj[U("order_id")] = order_id;
+        obj[U("order_id")] = value::number(static_cast<int64_t>(order_id));
         return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
     }
 
@@ -308,7 +302,7 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
         if (order_id != 0) {
-            obj[U("order_id")] = (long long) order_id;
+            obj[U("order_id")] = value::number(static_cast<int64_t>(order_id));
         }
         if (!sec_type.empty()) {
             obj[U("sec_type")] = value::string(sec_type);
@@ -326,13 +320,13 @@ namespace TIGER_API {
             obj[U("right")] = value::string(right);
         }
         if (start_time != 0) {
-            obj[U("start_time")] = (long long) start_time;
+            obj[U("start_time")] = value::number(static_cast<int64_t>(start_time));
         }
         if (end_time != 0) {
-            obj[U("end_time")] = (long long) end_time;
+            obj[U("end_time")] = value::number(static_cast<int64_t>(end_time));
         }
         if (limit != 0) {
-            obj[U("limit")] = (long long) limit;
+            obj[U("limit")] = value::number(static_cast<int64_t>(limit));
         }
         return post(ORDER_TRANSACTIONS, obj)[P_ITEMS];
     }
@@ -355,7 +349,7 @@ namespace TIGER_API {
             obj[P_EXCHANGE] = value::string(exchange);
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = (long long) expiry;
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(expiry));
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -389,7 +383,7 @@ namespace TIGER_API {
             obj[P_EXCHANGE] = value::string(exchange);
         }
         if (expiry != -1 && expiry != 0) {
-            obj[P_EXPIRY] = (long long) expiry;
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(expiry));
         }
         if (!strike.empty()) {
             obj[P_STRIKE] = value::string(strike);
@@ -464,10 +458,10 @@ namespace TIGER_API {
         }
 
         if (order.order_id != 0) {
-            obj[U("order_id")] = (long long) order.order_id;
+            obj[U("order_id")] = value::number(static_cast<int64_t>(order.order_id));
         }
         if (order.id != 0) {
-            obj[U("id")] = order.id;
+            obj[U("id")] = value::number(static_cast<uint64_t>(order.id));
         }
         if (!order.order_type.empty()) {
             obj[U("order_type")] = value::string(order.order_type);
@@ -476,7 +470,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = (int64_t) order.total_quantity;
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (order.limit_price != 0) {
            obj[U("limit_price")] = order.limit_price;
@@ -509,7 +503,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = (long long) order.expire_time;
+            obj[U("expire_time")] = value::number(static_cast<int64_t>(order.expire_time));
         }
         value res = post(PLACE_ORDER, obj);
         try {
@@ -525,7 +519,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
         set_secret_key(obj);
-        obj[U("id")] = id;
+        obj[U("id")] = value::number(static_cast<uint64_t>(id));
         obj[U("is_brief")] = is_brief;
         value res = post(ORDERS, obj);
         if (!res.is_null()) {
@@ -541,7 +535,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param();
         set_secret_key(obj);
-        obj[U("id")] = id;
+        obj[U("id")] = value::number(static_cast<uint64_t>(id));
         value res = post(CANCEL_ORDER, obj);
         return res;
     }
@@ -552,7 +546,7 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(order.account);
         set_secret_key(obj);
         if (order.id != 0) {
-            obj[U("id")] = order.id;
+            obj[U("id")] = value::number(static_cast<uint64_t>(order.id));
         }
         if (!order.order_type.empty()) {
             obj[U("order_type")] = value::string(order.order_type);
@@ -561,7 +555,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = order.total_quantity;
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (order.limit_price != 0) {
             obj[U("limit_price")] = order.limit_price;
@@ -591,7 +585,7 @@ namespace TIGER_API {
             obj[U("user_mark")] = value::string(order.user_mark);
         }
         if (order.expire_time) {
-            obj[U("expire_time")] = (long long) order.expire_time;
+            obj[U("expire_time")] = value::number(static_cast<int64_t>(order.expire_time));
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
@@ -604,7 +598,7 @@ namespace TIGER_API {
         obj[P_ACCOUNT] = get_account_param(order.account);
         set_secret_key(obj);
         if (order.id != 0) {
-            obj[U("id")] = order.id;
+            obj[U("id")] = value::number(static_cast<uint64_t>(order.id));
         }
         if (!order.order_type.empty()) {
             obj[U("order_type")] = value::string(order.order_type);
@@ -613,9 +607,9 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (total_quantity != 0) {
-            obj[U("total_quantity")] = (long long) total_quantity;
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(total_quantity));
         } else {
-            obj[U("total_quantity")] = order.total_quantity;
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (limit_price != 0) {
             obj[U("limit_price")] = limit_price;
@@ -639,7 +633,7 @@ namespace TIGER_API {
             obj[U("outside_rth")] = outside_rth;
         }
         if (expire_time) {
-            obj[U("expire_time")] = (long long) expire_time;
+            obj[U("expire_time")] = value::number(static_cast<int64_t>(expire_time));
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
@@ -673,7 +667,7 @@ namespace TIGER_API {
             obj[U("action")] = value::string(order.action);
         }
         if (order.total_quantity) {
-            obj[U("total_quantity")] = order.total_quantity;
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
         }
         if (order.limit_price != 0) {
             obj[U("limit_price")] = order.limit_price;
