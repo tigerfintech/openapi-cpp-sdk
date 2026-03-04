@@ -33,6 +33,8 @@
 
 .vs
 .vscode
+.kiro
+.claude
 *.dSYM
 .idea
 .DS_store

@@ -81,6 +81,16 @@ if(UNIX) # Darwing or Linux
         find_package(OpenSSL REQUIRED)
         message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
         message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
+        
+        # Find Abseil (required by Protobuf v25)
+        find_package(absl QUIET)
+        if(NOT absl_FOUND)
+            set(ABSL_PREFIX "/opt/homebrew/Cellar/abseil/20240722.0")
+            if(EXISTS "${ABSL_PREFIX}")
+                set(CMAKE_PREFIX_PATH "${ABSL_PREFIX};${CMAKE_PREFIX_PATH}")
+                find_package(absl REQUIRED)
+            endif()
+        endif()
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -97,7 +107,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
 #    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
@@ -138,6 +148,12 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework CoreFoundation")
     target_link_libraries(${PROJECT_NAME} "-framework Security")
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
+    if(absl_FOUND)
+        target_link_libraries(${PROJECT_NAME} 
+            absl::base absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord absl::log_internal_message
+        )
+    endif()
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
