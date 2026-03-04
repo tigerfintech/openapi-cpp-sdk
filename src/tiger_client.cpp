@@ -1,7 +1,7 @@
-﻿#include "../include/tigerapi/tiger_client.h"
-#include "../include/tigerapi/version.h"
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/logger.h"
+﻿#include "tigerapi/tiger_client.h"
+#include "tigerapi/version.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/logger.h"
 
 namespace TIGER_API {
 
@@ -148,7 +148,7 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);

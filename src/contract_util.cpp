@@ -1,8 +1,8 @@
 ﻿//
 // Created by sukai on 2022/12/27.
 //
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/utils.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/utils.h"
 
 #include <regex>
 #include <string>

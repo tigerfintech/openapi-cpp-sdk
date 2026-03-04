@@ -1,0 +1,14 @@
+
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.json",
+	"name": "openapi-cpp-sdk",
+	"version": "1.0.0",
+	"builtin-baseline": "054637a2ae63c6c647b3169251759910cc4c984a",
+	"dependencies": [
+		"abseil",
+		{ "name": "protobuf", "version>=": "3.21.12" },
+		"openssl",
+		{ "name": "cpprestsdk", "default-features": false }
+	]
+}
+
