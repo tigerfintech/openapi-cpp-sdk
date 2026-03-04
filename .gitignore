@@ -95,6 +95,3 @@ vcpkg_installed_x86/
 vcpkg_installed_static/
  $boostDir/
 .deps-bak/
-
-# Protobuf headers (should use system/external protobuf)
-include/google/protobuf/
