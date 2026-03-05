@@ -169,6 +169,40 @@ namespace TIGER_API {
         value transfer_segment_fund(utility::string_t from_segment, utility::string_t to_segment, double amount, utility::string_t currency = U("USD"));
         value place_forex_order(utility::string_t seg_type, utility::string_t source_currency, utility::string_t target_currency, double source_amount);
 
+        /** Preview order **/
+        value preview_order(Order &order);
+
+        /** Get aggregate assets **/
+        value get_aggregate_assets(utility::string_t account = U(""), utility::string_t seg_type = U(""), utility::string_t base_currency = U(""));
+
+        /** Cancel segment fund transfer **/
+        value cancel_segment_fund(long long id);
+
+        /** Get funding history (transfer fund records) **/
+        value get_funding_history(utility::string_t seg_type = U(""));
+
+        /** Get fund details **/
+        value get_fund_details(const value &seg_types = value::null(), utility::string_t account = U(""),
+                               utility::string_t fund_type = U(""), utility::string_t currency = U(""),
+                               int start = 0, int limit = 0, utility::string_t start_date = U(""), utility::string_t end_date = U(""));
+
+        /** Transfer position between accounts **/
+        value transfer_position(utility::string_t from_account, utility::string_t to_account,
+                                const value &transfers = value::null(), utility::string_t market = U(""));
+
+        /** Get position transfer records **/
+        value get_position_transfer_records(utility::string_t since_date = U(""), utility::string_t to_date = U(""),
+                                            utility::string_t status = U(""), utility::string_t market = U(""),
+                                            utility::string_t symbol = U(""), utility::string_t account_id = U(""));
+
+        /** Get position transfer detail **/
+        value get_position_transfer_detail(utility::string_t transfer_id, utility::string_t account_id = U(""));
+
+        /** Get position transfer external records **/
+        value get_position_transfer_external_records(utility::string_t since_date = U(""), utility::string_t to_date = U(""),
+                                                     utility::string_t status = U(""), utility::string_t market = U(""),
+                                                     utility::string_t symbol = U(""), utility::string_t account_id = U(""));
+
 
     private:
         value get_account_param(const utility::string_t &account=U(""));
