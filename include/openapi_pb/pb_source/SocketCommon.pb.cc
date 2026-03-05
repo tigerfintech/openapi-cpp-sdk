@@ -64,23 +64,23 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_SocketCommon_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
     "\n\022SocketCommon.proto\022\021tigeropen.push.pb\""
-    "\240\003\n\014SocketCommon\"\227\001\n\007Command\022\013\n\007UNKNOWN\020"
+    "\250\003\n\014SocketCommon\"\227\001\n\007Command\022\013\n\007UNKNOWN\020"
     "\000\022\013\n\007CONNECT\020\001\022\r\n\tCONNECTED\020\002\022\010\n\004SEND\020\003\022"
     "\r\n\tSUBSCRIBE\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\016\n\nDISCO"
     "NNECT\020\006\022\013\n\007MESSAGE\020\007\022\r\n\tHEARTBEAT\020\010\022\r\n\tE"
-    "RRORINFO\020\t\"\301\001\n\010DataType\022\013\n\007Unknown\020\000\022\t\n\005"
+    "RRORINFO\020\t\"\311\001\n\010DataType\022\013\n\007Unknown\020\000\022\t\n\005"
     "Quote\020\001\022\n\n\006Option\020\002\022\n\n\006Future\020\003\022\016\n\nQuote"
     "Depth\020\004\022\r\n\tTradeTick\020\005\022\t\n\005Asset\020\006\022\014\n\010Pos"
     "ition\020\007\022\017\n\013OrderStatus\020\010\022\024\n\020OrderTransac"
     "tion\020\t\022\014\n\010StockTop\020\n\022\r\n\tOptionTop\020\013\022\t\n\005K"
-    "line\020\014\"2\n\tQuoteType\022\010\n\004None\020\000\022\t\n\005BASIC\020\001"
-    "\022\007\n\003BBO\020\002\022\007\n\003ALL\020\003b\006proto3"
+    "line\020\014\022\006\n\002Cc\020\r\"2\n\tQuoteType\022\010\n\004None\020\000\022\t\n"
+    "\005BASIC\020\001\022\007\n\003BBO\020\002\022\007\n\003ALL\020\003b\006proto3"
 };
 static ::absl::once_flag descriptor_table_SocketCommon_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_SocketCommon_2eproto = {
     false,
     false,
-    466,
+    474,
     descriptor_table_protodef_SocketCommon_2eproto,
     "SocketCommon.proto",
     &descriptor_table_SocketCommon_2eproto_once,
@@ -148,9 +148,9 @@ const ::google::protobuf::EnumDescriptor* SocketCommon_DataType_descriptor() {
   return file_level_enum_descriptors_SocketCommon_2eproto[1];
 }
 PROTOBUF_CONSTINIT const uint32_t SocketCommon_DataType_internal_data_[] = {
-    851968u, 0u, };
+    917504u, 0u, };
 bool SocketCommon_DataType_IsValid(int value) {
-  return 0 <= value && value <= 12;
+  return 0 <= value && value <= 13;
 }
 #if (__cplusplus < 201703) && \
   (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
@@ -168,6 +168,7 @@ constexpr SocketCommon_DataType SocketCommon::OrderTransaction;
 constexpr SocketCommon_DataType SocketCommon::StockTop;
 constexpr SocketCommon_DataType SocketCommon::OptionTop;
 constexpr SocketCommon_DataType SocketCommon::Kline;
+constexpr SocketCommon_DataType SocketCommon::Cc;
 constexpr SocketCommon_DataType SocketCommon::DataType_MIN;
 constexpr SocketCommon_DataType SocketCommon::DataType_MAX;
 constexpr int SocketCommon::DataType_ARRAYSIZE;

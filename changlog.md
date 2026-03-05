@@ -1,45 +1,64 @@
 ## 1.2.0
-### New 
-  1. include/tigerapi/service_types.h — 新增 25 个服务类型常量                          
-  分类: Quote 行情                                                                      
-  新增常量: MARKET_SCANNER_TAGS, STOCK_FUNDAMENTAL, TRADE_RANK, QUOTE_OVERNIGHT,        
-  BROKER_HOLD                                                                           
-  ────────────────────────────────────────
-  分类: Option 期权                                                                     
-  新增常量: OPTION_DEPTH, ALL_HK_OPTION_SYMBOLS, OPTION_TIMELINE, OPTION_ANALYSIS       
-  ────────────────────────────────────────                                              
-  分类: Future 期货
-  新增常量: FUTURE_DEPTH, FUTURE_HISTORY_MAIN_CONTRACT
-  ────────────────────────────────────────
-  分类: Fund 基金
-  新增常量: FUND_ALL_SYMBOLS, FUND_CONTRACTS, FUND_QUOTE, FUND_HISTORY_QUOTE
-  ────────────────────────────────────────
-  分类: Financial 财务
-  新增常量: FINANCIAL_CURRENCY, FINANCIAL_EXCHANGE_RATE
-  ────────────────────────────────────────
-  分类: Trade 交易
-  新增常量: CANCEL_SEGMENT_FUND, TRANSFER_FUND, AGGREGATE_ASSETS, FUND_DETAILS,
-    POSITION_TRANSFER, POSITION_TRANSFER_RECORDS, POSITION_TRANSFER_DETAIL,
-    POSITION_TRANSFER_EXTERNAL_RECORDS
-  2. 已有接口补充缺失参数
 
-  - get_capital_flow — 新增 begin_time, end_time, limit
-  - get_stock_broker — 新增 lang, sec_type
-  - get_capital_distribution — 新增 lang
+### QuoteClient - 参数补充 (2025-03-05 更新)
+- `get_capital_flow` - 新增 `begin_time`、`end_time`、`limit` 参数
+- `get_stock_broker` - 新增 `lang`、`sec_type` 参数
+- `get_capital_distribution` - 新增 `lang` 参数
+- `get_stock_detail` - 新增 `lang`、`sec_type` 参数
+- `get_industry_list` - 新增 `industry_level`、`lang` 参数 + 完整实现
+- `get_industry_stocks` - 新增 `industry_id`、`market`、`lang` 参数 + 完整实现
+- `get_stock_industry` - 新增 `symbol`、`market`、`sec_type`、`lang` 参数 + 完整实现
 
-  3. QuoteClient 新增 17 个方法
+### QuoteClient - 新增接口
+#### 期权
+- `get_option_symbols` - 获取所有港股期权标的
+- `get_option_depth` - 获取期权深度行情数据
+- `get_option_timeline` - 获取期权分时数据
+- `get_option_analysis` - 获取期权分析数据
 
-  期权: get_option_symbols, get_option_depth, get_option_timeline, get_option_analysis
-  期货: get_future_depth, get_future_history_main_contract
-  基金: get_fund_symbols, get_fund_contracts, get_fund_quote, get_fund_history_quote
-  其他: get_stock_fundamental, get_trade_rank, get_quote_overnight, get_broker_hold,
-  get_market_scanner_tags, get_financial_currency, get_financial_exchange_rate
+#### 期货
+- `get_future_depth` - 获取期货深度行情数据
+- `get_future_history_main_contract` - 获取期货历史主力合约
 
-  4. TradeClient 新增 9 个方法
+#### 基金（新增类别）
+- `get_fund_symbols` - 获取所有基金标的
+- `get_fund_contracts` - 获取基金合约
+- `get_fund_quote` - 获取基金实时行情
+- `get_fund_history_quote` - 获取基金历史行情
 
-  preview_order, get_aggregate_assets, cancel_segment_fund, get_funding_history,
-  get_fund_details, transfer_position, get_position_transfer_records,
-  get_position_transfer_detail, get_position_transfer_external_records
+#### 财经
+- `get_financial_currency` - 获取财经货币数据
+- `get_financial_exchange_rate` - 获取财经汇率数据
+
+#### 其他
+- `get_stock_fundamental` - 获取股票基本面数据
+- `get_trade_rank` - 获取交易排行数据
+- `get_quote_overnight` - 获取隔夜行情数据
+- `get_broker_hold` - 获取券商持仓数据
+- `get_market_scanner_tags` - 获取市场扫描标签
+
+### TradeClient - 新增接口
+- `preview_order` - 下单前预览订单
+- `get_aggregate_assets` - 获取跨账户汇总资产
+- `cancel_segment_fund` - 取消分段资金划转
+- `get_funding_history` - 获取资金划转历史
+- `get_fund_details` - 获取资金明细记录
+- `transfer_position` - 账户间持仓划转
+- `get_position_transfer_records` - 获取持仓划转记录
+- `get_position_transfer_detail` - 获取持仓划转详情
+- `get_position_transfer_external_records` - 获取外部持仓划转记录
+
+### PushClient - 新增功能
+- `subscribe_cc` / `unsubscribe_cc` - 加密货币行情订阅
+- `set_heartbeat_callback` - 心跳事件回调支持
+- `subscribe_stock_top` / `unsubscribe_stock_top` - 新增 `indicators` 参数
+- `subscribe_option_top` / `unsubscribe_option_top` - 新增 `indicators` 参数
+
+### Protobuf
+- 在 `SocketCommon.proto` DataType 枚举中新增 `Cc = 13`，支持加密货币
+
+### 服务类型
+- 新增约 25 个服务类型常量：`MARKET_SCANNER_TAGS`、`STOCK_FUNDAMENTAL`、`TRADE_RANK`、`QUOTE_OVERNIGHT`、`BROKER_HOLD`、`OPTION_DEPTH`、`ALL_HK_OPTION_SYMBOLS`、`OPTION_TIMELINE`、`OPTION_ANALYSIS`、`FUTURE_DEPTH`、`FUTURE_HISTORY_MAIN_CONTRACT`、`FUND_ALL_SYMBOLS`、`FUND_CONTRACTS`、`FUND_QUOTE`、`FUND_HISTORY_QUOTE`、`FINANCIAL_CURRENCY`、`FINANCIAL_EXCHANGE_RATE`、`CANCEL_SEGMENT_FUND`、`TRANSFER_FUND`、`AGGREGATE_ASSETS`、`FUND_DETAILS`、`POSITION_TRANSFER`、`POSITION_TRANSFER_RECORDS`、`POSITION_TRANSFER_DETAIL`、`POSITION_TRANSFER_EXTERNAL_RECORDS`
 
 
 ## 1.1.0 (2025-08-08)
@@ -80,4 +99,3 @@
 ## 0.1.0 (2023-02-15)
 ### New
 - Beta版本，支持交易、行情接口
-

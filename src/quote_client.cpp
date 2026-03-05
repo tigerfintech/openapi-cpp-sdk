@@ -59,9 +59,15 @@ namespace TIGER_API {
         return post(BRIEF, obj);
     }
 
-    value QuoteClient::get_stock_detail(const value &symbols) {
+    value QuoteClient::get_stock_detail(const value &symbols, utility::string_t lang, utility::string_t sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
         return post(STOCK_DETAIL, obj);
     }
 
@@ -693,6 +699,46 @@ namespace TIGER_API {
             obj[U("multi_tag_field_list")] = multi_tags_fields;
         }
         return post(MARKET_SCANNER_TAGS, obj);
+    }
+
+    // Industry related interfaces
+
+    value QuoteClient::get_industry_list(utility::string_t industry_level, utility::string_t lang) {
+        value obj = value::object(true);
+        if (!industry_level.empty()) {
+            obj[U("industry_level")] = value::string(industry_level);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(INDUSTRY_LIST, obj);
+    }
+
+    value QuoteClient::get_industry_stocks(utility::string_t industry_id, utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[U("industry_id")] = value::string(industry_id);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(INDUSTRY_STOCKS, obj);
+    }
+
+    value QuoteClient::get_stock_industry(utility::string_t symbol, utility::string_t market, utility::string_t sec_type, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOL] = value::string(symbol);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(STOCK_INDUSTRY, obj);
     }
 
 

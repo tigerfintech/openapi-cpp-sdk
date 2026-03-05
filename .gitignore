@@ -94,4 +94,9 @@ vcpkg_installed/
 vcpkg_installed_x86/
 vcpkg_installed_static/
  $boostDir/
-.deps-bak/
+build-debug/
+build-release/
+demo/build_test/
+.claude/
+.kiro/
+CLAUDE.md

@@ -30,7 +30,7 @@ namespace TIGER_API {
         value get_trading_calendar(utility::string_t market, utility::string_t begin_date, utility::string_t end_date);
         value get_quote_stock_trade(const value &symbols);
         value get_brief(const value &symbols, bool include_hour_trading=false, bool include_ask_bid=false, QuoteRight right=QuoteRight::br);
-        value get_stock_detail(const value &symbols);
+        value get_stock_detail(const value &symbols, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_timeline(const value &symbols, bool include_hour_trading=false, time_t begin_time=-1);
         value get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
@@ -106,9 +106,9 @@ namespace TIGER_API {
         value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                          utility::string_t timezone=U(""), utility::string_t lang=U(""));
 
-        value get_industry_list();
-        value get_industry_stocks();
-        value get_stock_industry();
+        value get_industry_list(utility::string_t industry_level=U("GGROUP"), utility::string_t lang=U(""));
+        value get_industry_stocks(utility::string_t industry_id, utility::string_t market=U("US"), utility::string_t lang=U(""));
+        value get_stock_industry(utility::string_t symbol, utility::string_t market=U("US"), utility::string_t sec_type=U(""), utility::string_t lang=U(""));
 
         /** Other quote related api **/
         value get_stock_fundamental(const value &symbols, utility::string_t market=U(""), utility::string_t sec_type=U(""), utility::string_t lang=U(""));

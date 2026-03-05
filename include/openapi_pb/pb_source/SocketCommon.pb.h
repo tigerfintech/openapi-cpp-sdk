@@ -129,6 +129,7 @@ enum SocketCommon_DataType : int {
   SocketCommon_DataType_StockTop = 10,
   SocketCommon_DataType_OptionTop = 11,
   SocketCommon_DataType_Kline = 12,
+  SocketCommon_DataType_Cc = 13,
   SocketCommon_DataType_SocketCommon_DataType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
   SocketCommon_DataType_SocketCommon_DataType_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -138,8 +139,8 @@ enum SocketCommon_DataType : int {
 bool SocketCommon_DataType_IsValid(int value);
 extern const uint32_t SocketCommon_DataType_internal_data_[];
 constexpr SocketCommon_DataType SocketCommon_DataType_DataType_MIN = static_cast<SocketCommon_DataType>(0);
-constexpr SocketCommon_DataType SocketCommon_DataType_DataType_MAX = static_cast<SocketCommon_DataType>(12);
-constexpr int SocketCommon_DataType_DataType_ARRAYSIZE = 12 + 1;
+constexpr SocketCommon_DataType SocketCommon_DataType_DataType_MAX = static_cast<SocketCommon_DataType>(13);
+constexpr int SocketCommon_DataType_DataType_ARRAYSIZE = 13 + 1;
 const ::google::protobuf::EnumDescriptor*
 SocketCommon_DataType_descriptor();
 template <typename T>
@@ -152,7 +153,7 @@ const std::string& SocketCommon_DataType_Name(T value) {
 template <>
 inline const std::string& SocketCommon_DataType_Name(SocketCommon_DataType value) {
   return ::google::protobuf::internal::NameOfDenseEnum<SocketCommon_DataType_descriptor,
-                                                 0, 12>(
+                                                 0, 13>(
       static_cast<int>(value));
 }
 inline bool SocketCommon_DataType_Parse(absl::string_view name, SocketCommon_DataType* value) {
@@ -353,6 +354,7 @@ class SocketCommon final :
   static constexpr DataType StockTop = SocketCommon_DataType_StockTop;
   static constexpr DataType OptionTop = SocketCommon_DataType_OptionTop;
   static constexpr DataType Kline = SocketCommon_DataType_Kline;
+  static constexpr DataType Cc = SocketCommon_DataType_Cc;
   static inline bool DataType_IsValid(int value) {
     return SocketCommon_DataType_IsValid(value);
   }

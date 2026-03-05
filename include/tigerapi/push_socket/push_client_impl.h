@@ -75,12 +75,17 @@ namespace TIGER_API
 		virtual unsigned int unsubscribe_market(const std::string& market) override;
 
 		virtual void set_stock_top_changed_callback(const std::function<void(const tigeropen::push::pb::StockTopData&)>& cb) override;
-		virtual unsigned int subscribe_stock_top(const std::string& market) override;
-		virtual unsigned int unsubscribe_stock_top(const std::string& market) override;
-		
+		virtual unsigned int subscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) override;
+		virtual unsigned int unsubscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) override;
+
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) override;
-		virtual unsigned int subscribe_option_top(const std::string& market) override;
-		virtual unsigned int unsubscribe_option_top(const std::string& market) override;
+		virtual unsigned int subscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) override;
+		virtual unsigned int unsubscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) override;
+
+		virtual unsigned int subscribe_cc(const std::vector<std::string>& symbols) override;
+		virtual unsigned int unsubscribe_cc(const std::vector<std::string>& symbols) override;
+
+		virtual void set_heartbeat_callback(const std::function<void()>& cb) override;
 
 		virtual const ClientConfig& get_client_config() const override;
 
@@ -113,7 +118,8 @@ namespace TIGER_API
 		std::function<void(const TradeTick& tick_data)> tick_changed_;
 		std::function<void(const tigeropen::push::pb::StockTopData& stock_top_data)> stock_top_changed_;
 		std::function<void(const tigeropen::push::pb::OptionTopData& option_top_data)> option_top_changed_;
-	
+		std::function<void()> heartbeat_callback_;
+
 	private:
 		boost::asio::io_context io_context_;
 		std::shared_ptr<TIGER_API::PushSocket> socket_;
