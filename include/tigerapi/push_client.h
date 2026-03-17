@@ -88,12 +88,17 @@ namespace TIGER_API
 		virtual unsigned int unsubscribe_market(const std::string& market) = 0;
 
 		virtual void set_stock_top_changed_callback(const std::function<void(const tigeropen::push::pb::StockTopData&)>& cb) = 0;
-		virtual unsigned int subscribe_stock_top(const std::string& market) = 0;
-		virtual unsigned int unsubscribe_stock_top(const std::string& market) = 0;
+		virtual unsigned int subscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+		virtual unsigned int unsubscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
 
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) = 0;
-		virtual unsigned int subscribe_option_top(const std::string& market) = 0;
-		virtual unsigned int unsubscribe_option_top(const std::string& market) = 0;
+		virtual unsigned int subscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+		virtual unsigned int unsubscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+
+		virtual unsigned int subscribe_cc(const std::vector<std::string>& symbols) = 0;
+		virtual unsigned int unsubscribe_cc(const std::vector<std::string>& symbols) = 0;
+
+		virtual void set_heartbeat_callback(const std::function<void()>& cb) = 0;
 
 	};
 }

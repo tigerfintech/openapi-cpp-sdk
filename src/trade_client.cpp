@@ -766,4 +766,213 @@ namespace TIGER_API {
         return post(PLACE_FOREX_ORDER, obj);
     }
 
+    value TradeClient::preview_order(Order &order) {
+        value obj = value::object(true);
+        Contract contract = order.contract;
+        if (!contract.symbol.empty()) {
+            obj[U("symbol")] = value::string(contract.symbol);
+        }
+        if (!contract.currency.empty()) {
+            obj[U("currency")] = value::string(contract.currency);
+        }
+        if (!contract.sec_type.empty()) {
+            obj[U("sec_type")] = value::string(contract.sec_type);
+        }
+        if (!contract.exchange.empty()) {
+            obj[U("exchange")] = value::string(contract.exchange);
+        }
+        if (!contract.expiry.empty()) {
+            obj[U("expiry")] = value::string(contract.expiry);
+        }
+        if (!contract.strike.empty()) {
+            obj[U("strike")] = value::string(contract.strike);
+        }
+        if (!contract.right.empty()) {
+            obj[U("right")] = value::string(contract.right);
+        }
+        if (contract.multiplier != 0) {
+            obj[U("multiplier")] = contract.multiplier;
+        }
+
+        obj[P_ACCOUNT] = get_account_param(order.account);
+        set_secret_key(obj);
+
+        if (!order.order_type.empty()) {
+            obj[U("order_type")] = value::string(order.order_type);
+        }
+        if (!order.action.empty()) {
+            obj[U("action")] = value::string(order.action);
+        }
+        if (order.total_quantity) {
+            obj[U("total_quantity")] = value::number(static_cast<int64_t>(order.total_quantity));
+        }
+        if (order.limit_price != 0) {
+            obj[U("limit_price")] = order.limit_price;
+        }
+        if (!order.s_limit_price.empty()) {
+            obj[U("limit_price")] = value::string(order.s_limit_price);
+        }
+        if (order.aux_price != 0) {
+            obj[U("aux_price")] = order.aux_price;
+        }
+        if (order.trail_stop_price != 0) {
+            obj[U("trail_stop_price")] = order.trail_stop_price;
+        }
+        if (order.trailing_percent != 0) {
+            obj[U("trailing_percent")] = order.trailing_percent;
+        }
+        if (order.percent_offset != 0) {
+            obj[U("percent_offset")] = order.percent_offset;
+        }
+        if (!order.time_in_force.empty()) {
+            obj[U("time_in_force")] = value::string(order.time_in_force);
+        }
+        if (order.outside_rth) {
+            obj[U("outside_rth")] = order.outside_rth;
+        }
+        if (order.expire_time) {
+            obj[U("expire_time")] = value::number(static_cast<int64_t>(order.expire_time));
+        }
+        return post(PREVIEW_ORDER, obj);
+    }
+
+    value TradeClient::get_aggregate_assets(utility::string_t account, utility::string_t seg_type, utility::string_t base_currency) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        if (!seg_type.empty()) {
+            obj[P_SEG_TYPE] = value::string(seg_type);
+        }
+        if (!base_currency.empty()) {
+            obj[U("base_currency")] = value::string(base_currency);
+        }
+        return post(AGGREGATE_ASSETS, obj);
+    }
+
+    value TradeClient::cancel_segment_fund(long long id) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
+        obj[U("id")] = value::number(static_cast<int64_t>(id));
+        return post(CANCEL_SEGMENT_FUND, obj);
+    }
+
+    value TradeClient::get_funding_history(utility::string_t seg_type) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
+        if (!seg_type.empty()) {
+            obj[P_SEG_TYPE] = value::string(seg_type);
+        }
+        return post(TRANSFER_FUND, obj);
+    }
+
+    value TradeClient::get_fund_details(const value &seg_types, utility::string_t account,
+                                        utility::string_t fund_type, utility::string_t currency,
+                                        int start, int limit, utility::string_t start_date, utility::string_t end_date) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        if (!seg_types.is_null() && seg_types.size() > 0) {
+            obj[U("seg_types")] = seg_types;
+        }
+        if (!fund_type.empty()) {
+            obj[U("fund_type")] = value::string(fund_type);
+        }
+        if (!currency.empty()) {
+            obj[P_CURRENCY] = value::string(currency);
+        }
+        if (start > 0) {
+            obj[U("start")] = start;
+        }
+        if (limit > 0) {
+            obj[P_LIMIT] = limit;
+        }
+        if (!start_date.empty()) {
+            obj[P_START_DATE] = value::string(start_date);
+        }
+        if (!end_date.empty()) {
+            obj[P_END_DATE] = value::string(end_date);
+        }
+        return post(FUND_DETAILS, obj);
+    }
+
+    value TradeClient::transfer_position(utility::string_t from_account, utility::string_t to_account,
+                                         const value &transfers, utility::string_t market) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param();
+        set_secret_key(obj);
+        if (!from_account.empty()) {
+            obj[U("from_account")] = value::string(from_account);
+        }
+        if (!to_account.empty()) {
+            obj[U("to_account")] = value::string(to_account);
+        }
+        if (!transfers.is_null() && transfers.size() > 0) {
+            obj[U("transfers")] = transfers;
+        }
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        return post(POSITION_TRANSFER, obj);
+    }
+
+    value TradeClient::get_position_transfer_records(utility::string_t since_date, utility::string_t to_date,
+                                                     utility::string_t status, utility::string_t market,
+                                                     utility::string_t symbol, utility::string_t account_id) {
+        value obj = value::object(true);
+        obj[U("account_id")] = get_account_param(account_id);
+        set_secret_key(obj);
+        if (!since_date.empty()) {
+            obj[U("since_date")] = value::string(since_date);
+        }
+        if (!to_date.empty()) {
+            obj[U("to_date")] = value::string(to_date);
+        }
+        if (!status.empty()) {
+            obj[U("status")] = value::string(status);
+        }
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!symbol.empty()) {
+            obj[P_SYMBOL] = value::string(symbol);
+        }
+        return post(POSITION_TRANSFER_RECORDS, obj);
+    }
+
+    value TradeClient::get_position_transfer_detail(utility::string_t transfer_id, utility::string_t account_id) {
+        value obj = value::object(true);
+        obj[U("account_id")] = get_account_param(account_id);
+        set_secret_key(obj);
+        if (!transfer_id.empty()) {
+            obj[U("transfer_id")] = value::string(transfer_id);
+        }
+        return post(POSITION_TRANSFER_DETAIL, obj);
+    }
+
+    value TradeClient::get_position_transfer_external_records(utility::string_t since_date, utility::string_t to_date,
+                                                              utility::string_t status, utility::string_t market,
+                                                              utility::string_t symbol, utility::string_t account_id) {
+        value obj = value::object(true);
+        obj[U("account_id")] = get_account_param(account_id);
+        set_secret_key(obj);
+        if (!since_date.empty()) {
+            obj[U("since_date")] = value::string(since_date);
+        }
+        if (!to_date.empty()) {
+            obj[U("to_date")] = value::string(to_date);
+        }
+        if (!status.empty()) {
+            obj[U("status")] = value::string(status);
+        }
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!symbol.empty()) {
+            obj[P_SYMBOL] = value::string(symbol);
+        }
+        return post(POSITION_TRANSFER_EXTERNAL_RECORDS, obj);
+    }
+
 }

@@ -179,6 +179,36 @@ public:
         ucout << U("fix price by tick size: ") << res << endl;
     }
 
+    // --- New Trade interfaces ---
+    static void test_preview_order(const std::shared_ptr<TradeClient>& trade_client) {
+        Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
+        Order order = OrderUtil::limit_order(contract, U("BUY"), 1, 100.0);
+        value res = trade_client->preview_order(order);
+        ucout << U("preview order: ") << res << endl;
+    }
+
+    static void test_get_aggregate_assets(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_aggregate_assets();
+        ucout << U("aggregate assets: ") << res << endl;
+    }
+
+    static void test_get_funding_history(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_funding_history(U("SEC"));
+        ucout << U("funding history: ") << res << endl;
+    }
+
+    static void test_get_fund_details(const std::shared_ptr<TradeClient>& trade_client) {
+        value seg_types = value::array();
+        seg_types[0] = value::string(U("SEC"));
+        value res = trade_client->get_fund_details(seg_types);
+        ucout << U("fund details: ") << res << endl;
+    }
+
+    static void test_get_position_transfer_records(const std::shared_ptr<TradeClient>& trade_client) {
+        value res = trade_client->get_position_transfer_records(U("2025-01-01"), U("2025-01-31"));
+        ucout << U("position transfer records: ") << res << endl;
+    }
+
     static void test_trade(const std::shared_ptr<TradeClient>& trade_client) {
         TestTradeClient::test_place_order(trade_client);
     }
@@ -292,13 +322,28 @@ public:
         ucout << U("Result: ") << result << endl;
     }
 
+    static void test_get_stock_broker(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_stock_broker(U("00700"), 40, U("zh_CN"), U("STK"));
+        ucout << U("Result: ") << result << endl;
+    }
+
     static void test_get_capital_flow(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_capital_flow(U("AAPL"), U("US"), U("intraday"));
         ucout << U("Result: ") << result << endl;
     }
 
+    static void test_get_capital_flow_with_time(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_capital_flow(U("AAPL"), U("US"), U("day"), 1704067200000, -1, 10);
+        ucout << U("Result: ") << result << endl;
+    }
+
     static void test_get_capital_distribution(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_capital_distribution(U("AAPL"));
+        ucout << U("Result: ") << result << endl;
+    }
+
+    static void test_get_capital_distribution_with_lang(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_capital_distribution(U("AAPL"), Market::US, U("zh_CN"));
         ucout << U("Result: ") << result << endl;
     }
 
@@ -404,6 +449,136 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    // --- New Option interfaces ---
+    static void test_get_option_symbols(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_option_symbols(U("HK"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_option_depth(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        value item = value::object(true);
+        item[U("symbol")] = value::string(U("AAPL"));
+        item[U("expiry")] = value::number(static_cast<int64_t>(1773932400000));
+        item[U("right")] = value::string(U("CALL"));
+        item[U("strike")] = value::string(U("200.0"));
+        symbols[0] = item;
+        value result = quote_client->get_option_depth(symbols, U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_option_timeline(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        value item = value::object(true);
+        item[U("symbol")] = value::string(U("AAPL"));
+        item[U("expiry")] = value::number(static_cast<int64_t>(1773932400000));
+        item[U("right")] = value::string(U("CALL"));
+        item[U("strike")] = value::string(U("200.0"));
+        symbols[0] = item;
+        value result = quote_client->get_option_timeline(symbols, U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_option_analysis(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        value item = value::object(true);
+        item[U("symbol")] = value::string(U("AAPL"));
+        item[U("period")] = value::string(U("52week"));
+        symbols[0] = item;
+        value result = quote_client->get_option_analysis(symbols, U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    // --- New Future interfaces ---
+    static void test_get_future_depth(std::shared_ptr<QuoteClient> quote_client) {
+        value contract_codes = value::array();
+        contract_codes[0] = value::string(U("CL2412"));
+        value result = quote_client->get_future_depth(contract_codes);
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_future_history_main_contract(std::shared_ptr<QuoteClient> quote_client) {
+        value contract_codes = value::array();
+        contract_codes[0] = value::string(U("CL"));
+        contract_codes[1] = value::string(U("ES"));
+        value result = quote_client->get_future_history_main_contract(contract_codes, 1672531200000, 1675209600000);
+        ucout << U("result: ") << result << endl;
+    }
+
+    // --- New Fund interfaces ---
+    static void test_get_fund_symbols(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_fund_symbols();
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_fund_contracts(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("IE00BYX5NX33.USD"));
+        value result = quote_client->get_fund_contracts(symbols);
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_fund_quote(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("IE00BYX5NX33.USD"));
+        value result = quote_client->get_fund_quote(symbols);
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_fund_history_quote(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("IE00BYX5NX33.USD"));
+        value result = quote_client->get_fund_history_quote(symbols, 1704067200000, 1706745600000, 10);
+        ucout << U("result: ") << result << endl;
+    }
+
+    // --- New Financial interfaces ---
+    static void test_get_financial_currency(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("AAPL"));
+        value result = quote_client->get_financial_currency(symbols, U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_financial_exchange_rate(std::shared_ptr<QuoteClient> quote_client) {
+        value currency_list = value::array();
+        currency_list[0] = value::string(U("USD/CNH"));
+        value result = quote_client->get_financial_exchange_rate(currency_list, U("2024-01-01"), U("2024-01-31"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    // --- Other new quote interfaces ---
+    static void test_get_stock_fundamental(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("AAPL"));
+        symbols[1] = value::string(U("TSLA"));
+        value result = quote_client->get_stock_fundamental(symbols, U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_trade_rank(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_trade_rank(U("US"));
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_quote_overnight(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("AAPL"));
+        value result = quote_client->get_quote_overnight(symbols);
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_broker_hold(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_broker_hold(U("HK"), U(""), U(""), 10);
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_market_scanner_tags(std::shared_ptr<QuoteClient> quote_client) {
+        value multi_tags_fields = value::array();
+        multi_tags_fields[0] = value::string(U("MultiTagField_Industry"));
+        value result = quote_client->get_market_scanner_tags(U("US"), multi_tags_fields);
+        ucout << U("result: ") << result << endl;
+    }
 
     static void test_quote(const std::shared_ptr<QuoteClient> quote_client) {
         TestQuoteClient::test_get_kline(quote_client);
@@ -598,43 +773,204 @@ public:
     }
 };
 
+// Test result tracking
+struct TestResult {
+    utility::string_t name;
+    bool passed;
+    utility::string_t error_msg;
+};
+
+template<typename Func>
+TestResult run_test(const utility::string_t& name, Func func) {
+    TestResult result;
+    result.name = name;
+    try {
+        func();
+        result.passed = true;
+    } catch (const std::exception& e) {
+        result.passed = false;
+        result.error_msg = utility::conversions::to_string_t(e.what());
+    } catch (...) {
+        result.passed = false;
+        result.error_msg = U("Unknown exception");
+    }
+    utility::string_t status = result.passed ? U("[PASS]") : U("[FAIL]");
+    ucout << status << U(" ") << name;
+    if (!result.passed) {
+        ucout << U(" - ") << result.error_msg;
+    }
+    ucout << endl;
+    return result;
+}
+
+void print_report(const std::vector<TestResult>& results) {
+    int total = results.size();
+    int passed = 0, failed = 0;
+    for (const auto& r : results) {
+        if (r.passed) passed++; else failed++;
+    }
+    ucout << endl;
+    ucout << U("========================================") << endl;
+    ucout << U("          TEST RESULT REPORT            ") << endl;
+    ucout << U("========================================") << endl;
+    ucout << U("Total: ") << total << U("  Passed: ") << passed << U("  Failed: ") << failed << endl;
+    ucout << U("----------------------------------------") << endl;
+
+    if (failed > 0) {
+        ucout << U("Failed tests:") << endl;
+        for (const auto& r : results) {
+            if (!r.passed) {
+                ucout << U("  [FAIL] ") << r.name << U(" - ") << r.error_msg << endl;
+            }
+        }
+        ucout << U("----------------------------------------") << endl;
+    }
+
+    ucout << U("All tests:") << endl;
+    for (const auto& r : results) {
+        utility::string_t status = r.passed ? U("[PASS]") : U("[FAIL]");
+        ucout << U("  ") << status << U(" ") << r.name << endl;
+    }
+    ucout << U("========================================") << endl;
+}
+
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
-    //Set Tiger OpenAPI SDK configuration
-    bool sand_box = false;
-    // change directory to project root
     ClientConfig config = ClientConfig(false, U("demo/openapi_cpp_test/"));
-    //config.set_server_url(U("http://127.0.0.1:8085/gateway"));
-    //config.set_server_public_key(SANDBOX_TIGER_PUBLIC_KEY);
-    //ClientConfig config = ClientConfig(false);
+    config.use_full_tick = true;
 
-	// config.private_key = U("");
-	// config.tiger_id = U("");
-	// config.account = U("");
-	config.use_full_tick = true;
-    //config.lang = U("en_US");
+    std::vector<TestResult> results;
 
-    //Create a push client instance
-    // auto push_client = IPushClient::create_push_client(config);
-    // TestPushClient::test_push_client(push_client, config);
-
-    /**
-     *  QuoteClient
-     */
+    // ===== QuoteClient Tests =====
+    ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
-    TestQuoteClient::test_quote(quote_client);
 
-    /**
-     * TradeClient
-     */
-//    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
-//    TestTradeClient::test_trade(trade_client);
+    ucout << U("\n--- Part 2: Modified existing APIs (added parameters) ---\n") << endl;
 
-    /**
-    *  TigerApi
-    */
-    //std::shared_ptr<TigerClient> tigerapi = std::make_shared<TigerClient>(config);
-    //TestTigerApi::test_grab_quote_permission(tigerapi);
+    results.push_back(run_test(U("get_stock_broker (with lang, sec_type)"), [&]() {
+        TestQuoteClient::test_get_stock_broker(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_capital_flow (original)"), [&]() {
+        TestQuoteClient::test_get_capital_flow(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_capital_flow (with begin_time, limit)"), [&]() {
+        TestQuoteClient::test_get_capital_flow_with_time(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_capital_distribution (original)"), [&]() {
+        TestQuoteClient::test_get_capital_distribution(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_capital_distribution (with lang)"), [&]() {
+        TestQuoteClient::test_get_capital_distribution_with_lang(quote_client);
+    }));
+
+    ucout << U("\n--- Part 3.1: New Option interfaces ---\n") << endl;
+
+    results.push_back(run_test(U("get_option_symbols"), [&]() {
+        TestQuoteClient::test_get_option_symbols(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_option_depth"), [&]() {
+        TestQuoteClient::test_get_option_depth(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_option_timeline"), [&]() {
+        TestQuoteClient::test_get_option_timeline(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_option_analysis"), [&]() {
+        TestQuoteClient::test_get_option_analysis(quote_client);
+    }));
+
+    ucout << U("\n--- Part 3.2: New Future interfaces ---\n") << endl;
+
+    results.push_back(run_test(U("get_future_depth"), [&]() {
+        TestQuoteClient::test_get_future_depth(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_future_history_main_contract"), [&]() {
+        TestQuoteClient::test_get_future_history_main_contract(quote_client);
+    }));
+
+    ucout << U("\n--- Part 3.3: New Fund interfaces ---\n") << endl;
+
+    results.push_back(run_test(U("get_fund_symbols"), [&]() {
+        TestQuoteClient::test_get_fund_symbols(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_fund_contracts"), [&]() {
+        TestQuoteClient::test_get_fund_contracts(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_fund_quote"), [&]() {
+        TestQuoteClient::test_get_fund_quote(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_fund_history_quote"), [&]() {
+        TestQuoteClient::test_get_fund_history_quote(quote_client);
+    }));
+
+    ucout << U("\n--- Part 3.4: Other new quote interfaces ---\n") << endl;
+
+    results.push_back(run_test(U("get_stock_fundamental"), [&]() {
+        TestQuoteClient::test_get_stock_fundamental(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_trade_rank"), [&]() {
+        TestQuoteClient::test_get_trade_rank(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_quote_overnight"), [&]() {
+        TestQuoteClient::test_get_quote_overnight(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_broker_hold"), [&]() {
+        TestQuoteClient::test_get_broker_hold(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_market_scanner_tags"), [&]() {
+        TestQuoteClient::test_get_market_scanner_tags(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_financial_currency"), [&]() {
+        TestQuoteClient::test_get_financial_currency(quote_client);
+    }));
+
+    results.push_back(run_test(U("get_financial_exchange_rate"), [&]() {
+        TestQuoteClient::test_get_financial_exchange_rate(quote_client);
+    }));
+
+    // ===== TradeClient Tests =====
+    ucout << U("\n===== Initializing TradeClient =====\n") << endl;
+    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+
+    ucout << U("\n--- Part 4: New Trade interfaces ---\n") << endl;
+
+    results.push_back(run_test(U("preview_order"), [&]() {
+        TestTradeClient::test_preview_order(trade_client);
+    }));
+
+    results.push_back(run_test(U("get_aggregate_assets"), [&]() {
+        TestTradeClient::test_get_aggregate_assets(trade_client);
+    }));
+
+    results.push_back(run_test(U("get_funding_history"), [&]() {
+        TestTradeClient::test_get_funding_history(trade_client);
+    }));
+
+    results.push_back(run_test(U("get_fund_details"), [&]() {
+        TestTradeClient::test_get_fund_details(trade_client);
+    }));
+
+    results.push_back(run_test(U("get_position_transfer_records"), [&]() {
+        TestTradeClient::test_get_position_transfer_records(trade_client);
+    }));
+
+    // Print final report
+    print_report(results);
 
     return 0;
 }

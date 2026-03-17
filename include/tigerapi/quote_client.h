@@ -30,7 +30,7 @@ namespace TIGER_API {
         value get_trading_calendar(utility::string_t market, utility::string_t begin_date, utility::string_t end_date);
         value get_quote_stock_trade(const value &symbols);
         value get_brief(const value &symbols, bool include_hour_trading=false, bool include_ask_bid=false, QuoteRight right=QuoteRight::br);
-        value get_stock_detail(const value &symbols);
+        value get_stock_detail(const value &symbols, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_timeline(const value &symbols, bool include_hour_trading=false, time_t begin_time=-1);
         value get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
@@ -48,10 +48,12 @@ namespace TIGER_API {
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
         value get_quote_depth(const value &symbols, Market market = Market::US);
-        value get_stock_broker(utility::string_t symbol, int limit=40);
-        value get_capital_distribution(utility::string_t symbol, Market market = Market::US);
-        value get_capital_flow(utility::string_t symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY);
-        value get_capital_flow(utility::string_t symbol, utility::string_t market, utility::string_t period = U("day"));
+        value get_stock_broker(utility::string_t symbol, int limit=40, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
+        value get_capital_distribution(utility::string_t symbol, Market market = Market::US, utility::string_t lang=U(""));
+        value get_capital_flow(utility::string_t symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY,
+                              time_t begin_time=-1, time_t end_time=-1, int limit=200);
+        value get_capital_flow(utility::string_t symbol, utility::string_t market, utility::string_t period = U("day"),
+                              time_t begin_time=-1, time_t end_time=-1, int limit=200);
 
         /** Option quote related api **/
         value get_option_expiration(const value &symbols);
@@ -62,6 +64,10 @@ namespace TIGER_API {
         value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         value get_option_trade_tick(value identifiers);
+        value get_option_symbols(utility::string_t market=U("HK"), utility::string_t lang=U(""));
+        value get_option_depth(const value &symbols, utility::string_t market=U("US"));
+        value get_option_timeline(const value &symbols, utility::string_t market=U("US"), time_t begin_time=-1);
+        value get_option_analysis(const value &symbols, utility::string_t market=U("US"), utility::string_t lang=U(""));
         value get_warrant_real_time_quote(const value &symbols);
         value get_warrant_real_time_quote(const utility::string_t symbol);
         value get_warrant_filter(const utility::string_t symbol, int page_size = 100, int page = 0,
@@ -83,15 +89,34 @@ namespace TIGER_API {
         vector<RealtimeQuote> get_future_real_time_quote(value contract_codes);
         value get_future_tick(utility::string_t contract_code, long begin_index=0, long end_index=100, int limit=1000);
         value get_future_trading_date(utility::string_t contract_code, utility::string_t trading_date);
+        value get_future_depth(value contract_codes, utility::string_t lang=U(""));
+        value get_future_history_main_contract(value contract_codes, time_t begin_time=-1, time_t end_time=-1);
+
+        /** Fund quote related api **/
+        value get_fund_symbols(utility::string_t lang=U(""));
+        value get_fund_contracts(const value &symbols, utility::string_t lang=U(""));
+        value get_fund_quote(const value &symbols, utility::string_t lang=U(""));
+        value get_fund_history_quote(const value &symbols, time_t begin_time=-1, time_t end_time=-1, int limit=200, utility::string_t lang=U(""));
 
         /** Financial related api **/
         value get_financial_daily();
         value get_financial_report();
         value get_corporate_action();
+        value get_financial_currency(const value &symbols, utility::string_t market=U(""), utility::string_t lang=U(""));
+        value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
+                                         utility::string_t timezone=U(""), utility::string_t lang=U(""));
 
-        value get_industry_list();
-        value get_industry_stocks();
-        value get_stock_industry();
+        value get_industry_list(utility::string_t industry_level=U("GGROUP"), utility::string_t lang=U(""));
+        value get_industry_stocks(utility::string_t industry_id, utility::string_t market=U("US"), utility::string_t lang=U(""));
+        value get_stock_industry(utility::string_t symbol, utility::string_t market=U("US"), utility::string_t sec_type=U(""), utility::string_t lang=U(""));
+
+        /** Other quote related api **/
+        value get_stock_fundamental(const value &symbols, utility::string_t market=U(""), utility::string_t sec_type=U(""), utility::string_t lang=U(""));
+        value get_trade_rank(utility::string_t market=U(""), utility::string_t lang=U(""));
+        value get_quote_overnight(const value &symbols, utility::string_t lang=U(""));
+        value get_broker_hold(utility::string_t market=U("HK"), utility::string_t order_by=U(""), utility::string_t direction=U(""),
+                              int limit=0, int page=0, utility::string_t lang=U(""));
+        value get_market_scanner_tags(utility::string_t market=U(""), const value &multi_tags_fields=value::null());
 
         // Market scanner
         value get_market_scanner();
