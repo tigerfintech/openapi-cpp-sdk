@@ -141,7 +141,54 @@ namespace TIGER_API {
     }
 
     utility::string_t Utils::fill_private_key_marker(utility::string_t &private_key) {
-        return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+        // If key already has PEM header, return as-is
+        if (private_key.find(U("-----BEGIN")) != std::string::npos) {
+            return private_key;
+        }
+        // Detect PKCS#8 DER base64: PKCS#8 PrivateKeyInfo starts with 30 82 ... 02 01 00 30
+        // The 4th byte (index 3) after base64 decode is 0x02 for PKCS#1, 0x30 for PKCS#8.
+        // More reliably: try to detect by checking for RSA OID bytes in the DER header.
+        // PKCS#8 DER base64 strings start with "MIICdw" or "MIIEv" pattern (contains AlgorithmIdentifier).
+        // PKCS#1 DER base64 strings start with "MIICXg", "MIICWw", "MIIEo" etc.
+        // Simplest reliable check: decode first 16 bytes and look for PKCS#8 sequence marker (0x30 at byte 4).
+        bool is_pkcs8 = false;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+        std::string key_utf8 = utility::conversions::utf16_to_utf8(private_key);
+#else
+        std::string key_utf8 = private_key;
+#endif
+        // Decode first few bytes to determine format
+        BIO* b64bio = BIO_new(BIO_f_base64());
+        BIO* membio = BIO_new_mem_buf(key_utf8.c_str(), -1);
+        BIO_set_flags(b64bio, BIO_FLAGS_BASE64_NO_NL);
+        BIO* chainbio = BIO_push(b64bio, membio);
+        unsigned char header[8] = {0};
+        int read_len = BIO_read(chainbio, header, 8);
+        BIO_free_all(chainbio);
+        // PKCS#8 PrivateKeyInfo: SEQUENCE { INTEGER 0, SEQUENCE { OID ... } ... }
+        // byte[0]=0x30 (SEQUENCE), byte[4]=0x02 (INTEGER version=0), byte[6] or nearby=0x30 (SEQUENCE AlgId)
+        // PKCS#1 RSAPrivateKey: SEQUENCE { INTEGER 0, INTEGER n, ... }
+        // byte[0]=0x30 (SEQUENCE), byte[4]=0x02, byte[6]=first INTEGER of modulus
+        // Distinguish: in PKCS#8, after the outer SEQUENCE header and version INTEGER,
+        // there is an AlgorithmIdentifier SEQUENCE (0x30). In PKCS#1, there are multiple INTEGERs.
+        // Simple heuristic: PKCS#8 DER base64 decoded byte[4] is typically 0x02 (version INTEGER tag)
+        // and byte[7] is 0x30 (AlgorithmIdentifier SEQUENCE tag).
+        // For a 2048-bit key: PKCS#8 header = 30 82 xx xx 02 01 00 30 ...
+        //                     PKCS#1 header = 30 82 xx xx 02 03 00 ... (version INTEGER then modulus)
+        // Reliable: check byte[6] after outer sequence: PKCS#8 has 0x30 there, PKCS#1 has 0x02
+        if (read_len >= 8 && header[0] == 0x30) {
+            // byte[4] is the tag of the first element inside the outer SEQUENCE
+            // For PKCS#8: version INTEGER (0x02), then length 0x01, value 0x00, then AlgId SEQUENCE (0x30)
+            // So byte[4]=0x02, byte[5]=0x01, byte[6]=0x00, byte[7]=0x30
+            if (read_len >= 8 && header[4] == 0x02 && header[5] == 0x01 && header[6] == 0x00 && header[7] == 0x30) {
+                is_pkcs8 = true;
+            }
+        }
+        if (is_pkcs8) {
+            return add_start_end(private_key, U("-----BEGIN PRIVATE KEY-----\n"), U("\n-----END PRIVATE KEY-----"));
+        } else {
+            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+        }
     }
 
     utility::string_t Utils::fill_public_key_marker(utility::string_t &public_key) {
