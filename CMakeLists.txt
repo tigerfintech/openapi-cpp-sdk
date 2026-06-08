@@ -19,7 +19,7 @@ if(NOT (UNIX OR WIN32))
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
+find_package(Boost REQUIRED COMPONENTS thread log program_options chrono filesystem)
 if(WIN32)
     # Prevent FindThreads from insisting on pthreads when building with MSVC
     set(CMAKE_USE_WIN32_THREADS_INIT ON)
@@ -114,14 +114,23 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # headers search paths ...
+# ABSL_INCLUDE_DIR and Protobuf_INCLUDE_DIRS must come before CMAKE_SOURCE_DIR/include
+# so that absl headers and the system protobuf stubs are resolved correctly.
+# The vendored include/google/ directory contains legacy stubs that #include absl.
+if(DEFINED ENV{HOMEBREW_PREFIX})
+    set(HOMEBREW_INCLUDE_DIR "$ENV{HOMEBREW_PREFIX}/include")
+else()
+    set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
+endif()
 set(HEADER_SEARCH_PATHS
+    ${HOMEBREW_INCLUDE_DIR}
+    ${Protobuf_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     ${CPPREST_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIRS}
-    ${Protobuf_INCLUDE_DIRS}
 )
 list(FILTER HEADER_SEARCH_PATHS EXCLUDE REGEX "^$")
 list(REMOVE_DUPLICATES HEADER_SEARCH_PATHS)
