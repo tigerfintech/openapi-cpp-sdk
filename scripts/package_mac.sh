@@ -7,6 +7,12 @@ set -e
 PROJECT_ROOT=$(pwd)
 JOBS=${JOBS:-8}
 
+# Homebrew's boost (1.90+) has an incompatible ABI with the cpprestsdk we link against,
+# causing SIGSEGV at runtime (do_use_service 1-arg vs 2-arg). We pin boost 1.86 built
+# separately at /usr/local/boost_1_86_0. Do NOT replace this with $(brew --prefix)/include.
+BOOST_1_86_ROOT="${BOOST_1_86_ROOT:-/usr/local/boost_1_86_0}"
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(brew --prefix)}"
+
 echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - macOS Package"
 echo "=========================================="
@@ -37,11 +43,11 @@ echo ""
 echo "==> Step 2/5: Building Debug..."
 cmake -S . -B build-debug \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/cpprestsdk;/opt/homebrew/opt/protobuf" \
-    -DProtobuf_ROOT=/opt/homebrew/opt/protobuf \
-    -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DBoost_INCLUDE_DIR=/usr/local/boost_1_86_0 \
-    -DBoost_LIBRARY_DIR=/usr/local/boost_1_86_0/stage/lib \
+    -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
+    -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
+    -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
+    -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
+    -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
     -DBoost_NO_BOOST_CMAKE=ON \
     -DBoost_NO_SYSTEM_PATHS=ON \
     -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
@@ -52,11 +58,11 @@ echo ""
 echo "==> Step 2/5: Building Release..."
 cmake -S . -B build-release \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/cpprestsdk;/opt/homebrew/opt/protobuf" \
-    -DProtobuf_ROOT=/opt/homebrew/opt/protobuf \
-    -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DBoost_INCLUDE_DIR=/usr/local/boost_1_86_0 \
-    -DBoost_LIBRARY_DIR=/usr/local/boost_1_86_0/stage/lib \
+    -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
+    -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
+    -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
+    -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
+    -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
     -DBoost_NO_BOOST_CMAKE=ON \
     -DBoost_NO_SYSTEM_PATHS=ON \
     -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
