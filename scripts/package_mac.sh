@@ -17,6 +17,21 @@ echo "==> Step 1/5: Creating build directories..."
 rm -rf build-debug build-release
 mkdir -p build-debug build-release
 
+# Helper: fix boost include order in flags.make after cmake configure.
+# cmake injects /opt/homebrew/include (boost 1.90) before /usr/local/boost_1_86_0
+# via absl INTERFACE_INCLUDE_DIRECTORIES, causing boost ABI mismatch (SIGSEGV).
+# This function patches the generated flags.make to put boost 1.86 first.
+fix_boost_include_order() {
+    local flags_file="$1/CMakeFiles/tigerapi.dir/flags.make"
+    if [ ! -f "$flags_file" ]; then return; fi
+    ABSL_VER=$(ls /opt/homebrew/Cellar/abseil/ 2>/dev/null | head -1)
+    if [ -z "$ABSL_VER" ]; then ABSL_VER="20240722.0"; fi
+    sed -i '' \
+        "s|-I/opt/homebrew/include \(.*\)-I/usr/local/boost_1_86_0|-I/usr/local/boost_1_86_0 \1-I/opt/homebrew/Cellar/abseil/${ABSL_VER}/include|" \
+        "$flags_file"
+    echo "    [boost ABI fix applied: $(grep 'CXX_INCLUDES' "$flags_file" | cut -c1-120)...)"
+}
+
 # 2. 配置并构建 Debug
 echo ""
 echo "==> Step 2/5: Building Debug..."
@@ -30,6 +45,7 @@ cmake -S . -B build-debug \
     -DBoost_NO_BOOST_CMAKE=ON \
     -DBoost_NO_SYSTEM_PATHS=ON \
     -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
+fix_boost_include_order build-debug
 cmake --build build-debug -j${JOBS}
 
 echo ""
@@ -44,6 +60,7 @@ cmake -S . -B build-release \
     -DBoost_NO_BOOST_CMAKE=ON \
     -DBoost_NO_SYSTEM_PATHS=ON \
     -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
+fix_boost_include_order build-release
 cmake --build build-release -j${JOBS}
 
 # 3. 安装
