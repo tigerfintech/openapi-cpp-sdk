@@ -234,6 +234,20 @@ public:
         TestTradeClient::test_place_order(trade_client);
     }
 
+    static void test_option_exercise(const std::shared_ptr<TradeClient>& trade_client) {
+        // Query positions available for exercise
+        value positions = trade_client->get_option_exercise_positions(U("Exercise"));
+        ucout << U("option exercise positions: ") << positions << endl;
+
+        // Query exercise records
+        value records = trade_client->get_option_exercise_records(U("Exercise"), U(""), U(""), U(""), 1, 20);
+        ucout << U("option exercise records: ") << records << endl;
+
+        // Preview exercise effect (replace contract_id with a real one from positions above)
+        // value check = trade_client->check_option_exercise(1684414425LL, U("Exercise"), 1.0, U("2025-06-20"), 0);
+        // ucout << U("option exercise check: ") << check << endl;
+    }
+
 };
 
 /**
@@ -1457,6 +1471,12 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("preview_order"), [&]() {
         TestTradeClient::test_preview_order(trade_client);
+    }));
+
+    ucout << U("\n--- Trade: Option Exercise API ---\n") << endl;
+
+    results.push_back(run_test(U("option_exercise_positions"), [&]() {
+        TestTradeClient::test_option_exercise(trade_client);
     }));
 
     // ===================================================================

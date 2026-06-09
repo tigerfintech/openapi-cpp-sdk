@@ -73,6 +73,13 @@ static utility::string_t CAPITAL_DISTRIBUTION = U("capital_distribution");  // s
 static utility::string_t CAPITAL_FLOW = U("capital_flow");  // stock capital flow
 static utility::string_t KLINE_QUOTA = U("kline_quota"); // historical k-line quota
 
+// Option Exercise (early exercise / abandon)
+static utility::string_t OPTION_EXERCISE_SUBMIT   = U("option_exercise_submit");
+static utility::string_t OPTION_EXERCISE_CHECK     = U("option_exercise_check");
+static utility::string_t OPTION_EXERCISE_RECORD    = U("option_exercise_record");
+static utility::string_t OPTION_EXERCISE_POSITION  = U("option_exercise_position");
+static utility::string_t OPTION_EXERCISE_CANCEL    = U("option_exercise_cancel");
+
 // Option
 static utility::string_t OPTION_EXPIRATION = U("option_expiration");
 static utility::string_t OPTION_CHAIN = U("option_chain");
