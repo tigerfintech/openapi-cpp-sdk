@@ -11,9 +11,10 @@ echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - macOS Package"
 echo "=========================================="
 
-# 1. 创建构建目录
+# 1. 创建构建目录（清理旧 cmake cache 确保路径生效）
 echo ""
 echo "==> Step 1/5: Creating build directories..."
+rm -rf build-debug build-release
 mkdir -p build-debug build-release
 
 # 2. 配置并构建 Debug
@@ -21,18 +22,28 @@ echo ""
 echo "==> Step 2/5: Building Debug..."
 cmake -S . -B build-debug \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v25.1" \
+    -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/cpprestsdk;/opt/homebrew/opt/protobuf" \
+    -DProtobuf_ROOT=/opt/homebrew/opt/protobuf \
     -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DBoost_INCLUDE_DIR=/usr/local/boost_1_86_0 \
+    -DBoost_LIBRARY_DIR=/usr/local/boost_1_86_0/stage/lib \
+    -DBoost_NO_BOOST_CMAKE=ON \
+    -DBoost_NO_SYSTEM_PATHS=ON \
+    -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
 cmake --build build-debug -j${JOBS}
 
 echo ""
 echo "==> Step 2/5: Building Release..."
 cmake -S . -B build-release \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v25.1" \
+    -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/cpprestsdk;/opt/homebrew/opt/protobuf" \
+    -DProtobuf_ROOT=/opt/homebrew/opt/protobuf \
     -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DBoost_INCLUDE_DIR=/usr/local/boost_1_86_0 \
+    -DBoost_LIBRARY_DIR=/usr/local/boost_1_86_0/stage/lib \
+    -DBoost_NO_BOOST_CMAKE=ON \
+    -DBoost_NO_SYSTEM_PATHS=ON \
+    -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
 cmake --build build-release -j${JOBS}
 
 # 3. 安装
