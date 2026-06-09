@@ -415,6 +415,10 @@ public:
     static void test_get_future_real_time_quote(std::shared_ptr<QuoteClient> quote_client) {
         // Dynamically get current main contract code
         value current = quote_client->get_future_current_contract(U("CL"));
+        if (!current.is_object() || !current.has_field(U("contractCode")) ||
+            !current[U("contractCode")].is_string()) {
+            throw std::runtime_error("Missing contractCode in future current contract response");
+        }
         utility::string_t contract_code = current[U("contractCode")].as_string();
         ucout << U("Using current CL contract: ") << contract_code << endl;
         value symbols = value::array();
@@ -452,6 +456,11 @@ public:
         value exp_symbols = value::array();
         exp_symbols[0] = value::string(U("AAPL"));
         value expirations = quote_client->get_option_expiration(exp_symbols);
+        if (!expirations.is_array() || expirations.size() == 0 ||
+            !expirations[0].is_object() || !expirations[0].has_field(U("dates")) ||
+            !expirations[0][U("dates")].is_array()) {
+            throw std::runtime_error("No valid option expiration dates returned");
+        }
         value dates = expirations[0][U("dates")];
         utility::string_t identifier;
 
@@ -1088,8 +1097,17 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
     // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
-    utility::string_t home = Utils::str8to16(std::string(std::getenv("HOME") ? std::getenv("HOME") : ""));
-    ClientConfig config = ClientConfig(false, home + U("/.tigeropen/"));
+    utility::string_t config_path;
+    const char* home_env = std::getenv("HOME");
+    const char* userprofile_env = std::getenv("USERPROFILE");
+    if (home_env && *home_env) {
+        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
+    } else if (userprofile_env && *userprofile_env) {
+        config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+    } else {
+        config_path = U("demo/openapi_cpp_test/");
+    }
+    ClientConfig config = ClientConfig(false, config_path);
     config.use_full_tick = true;
 
     std::vector<TestResult> results;

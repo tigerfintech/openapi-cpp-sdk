@@ -189,7 +189,10 @@ utility::string_t TIGER_API::ClientConfig::get_props_path(const utility::string_
 	}
 	// If props_path already points to a file (ends with .properties), use it directly
 	// for the config file; for token file, derive from its directory.
-	if (props_path.find(U(".properties")) != utility::string_t::npos) {
+	const utility::string_t suffix = U(".properties");
+	const bool is_props_file = props_path.size() >= suffix.size() &&
+	    props_path.substr(props_path.size() - suffix.size()) == suffix;
+	if (is_props_file) {
 		if (filename == DEFAULT_PROPS_FILE) {
 			return props_path;
 		}
