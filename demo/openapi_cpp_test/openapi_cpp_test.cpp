@@ -487,7 +487,13 @@ public:
             if (chain.is_array() && chain.size() > 0) {
                 value items = chain[0][U("items")];
                 if (items.is_array() && items.size() > 0) {
-                    identifier = items[0][U("identifier")].as_string();
+                    // items[i] has shape {"call": {..., "identifier": "..."}, "put": {...}}
+                    value first = items[0];
+                    if (first.has_field(U("call")) && first[U("call")].has_field(U("identifier"))) {
+                        identifier = first[U("call")][U("identifier")].as_string();
+                    } else if (first.has_field(U("put")) && first[U("put")].has_field(U("identifier"))) {
+                        identifier = first[U("put")][U("identifier")].as_string();
+                    }
                 }
             }
             tried++;
