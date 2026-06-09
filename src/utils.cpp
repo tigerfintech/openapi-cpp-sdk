@@ -160,11 +160,23 @@ namespace TIGER_API {
         // Decode first few bytes to determine format
         BIO* b64bio = BIO_new(BIO_f_base64());
         BIO* membio = BIO_new_mem_buf(key_utf8.c_str(), -1);
+        if (b64bio == nullptr || membio == nullptr) {
+            if (b64bio != nullptr) BIO_free(b64bio);
+            if (membio != nullptr) BIO_free(membio);
+            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+        }
         BIO_set_flags(b64bio, BIO_FLAGS_BASE64_NO_NL);
         BIO* chainbio = BIO_push(b64bio, membio);
+        if (chainbio == nullptr) {
+            BIO_free_all(b64bio);
+            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+        }
         unsigned char header[8] = {0};
         int read_len = BIO_read(chainbio, header, 8);
         BIO_free_all(chainbio);
+        if (read_len <= 0) {
+            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+        }
         // PKCS#8 PrivateKeyInfo: SEQUENCE { INTEGER 0, SEQUENCE { OID ... } ... }
         // byte[0]=0x30 (SEQUENCE), byte[4]=0x02 (INTEGER version=0), byte[6] or nearby=0x30 (SEQUENCE AlgId)
         // PKCS#1 RSAPrivateKey: SEQUENCE { INTEGER 0, INTEGER n, ... }
