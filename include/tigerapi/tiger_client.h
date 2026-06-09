@@ -18,15 +18,12 @@ using namespace web::json;
 namespace TIGER_API {
     class OPENAPI_EXPORT TigerClient {
     public:
-        TigerClient() {};
-        TigerClient(const ClientConfig &cf) {
-            set_config(cf);
-        }
-        ~TigerClient() {};
+        explicit TigerClient(const ClientConfig &cf);
+        ~TigerClient() = default;
 
-        ClientConfig client_config;
-
-        void set_config(const ClientConfig &cf);
+        // client_config is read-only after construction; TigerClient is thread-safe
+        // for concurrent send_request() calls once constructed.
+        const ClientConfig client_config;
 
         value post(const utility::string_t &api_method, value &params);
 

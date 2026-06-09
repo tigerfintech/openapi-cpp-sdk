@@ -6,10 +6,9 @@
 
 namespace TIGER_API {
 
-    void TigerClient::set_config(const ClientConfig &cf) {
-        client_config = cf;
+    TigerClient::TigerClient(const ClientConfig &cf)
+        : client_config(cf), http_client_(std::make_unique<http_client>(cf.get_server_url())) {
         client_config.check();
-        http_client_ = std::make_unique<http_client>(client_config.get_server_url());
     }
 
     utility::string_t TigerClient::build_sign_content(const value &obj) {
@@ -94,11 +93,6 @@ namespace TIGER_API {
         value result_data;
         utility::string_t result_str;
         try {
-            // http_client_ is initialized in set_config(). Fallback in case send_request
-            // is called without set_config (e.g. via the default constructor path).
-            if (!http_client_) {
-                http_client_ = std::make_unique<http_client>(client_config.get_server_url());
-            }
             LOG(DEBUG) << U("request:\n") << U("Server: ") << http_client_->base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
                LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());

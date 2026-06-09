@@ -16,8 +16,7 @@
 namespace TIGER_API {
     class OPENAPI_EXPORT TradeClient : public TigerClient {
     public:
-        TradeClient();
-        TradeClient(const ClientConfig &cf);
+        explicit TradeClient(const ClientConfig &cf);
 
         /** Get account list **/
         value get_accounts();

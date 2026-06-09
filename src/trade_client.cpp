@@ -5,8 +5,6 @@
 #include "tigerapi/trade_client.h"
 
 namespace TIGER_API {
-    TradeClient::TradeClient() {}
-
     TradeClient::TradeClient(const ClientConfig &cf) : TigerClient(cf) {
         this->client_config.check_account();
     }
