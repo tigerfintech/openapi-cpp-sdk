@@ -37,6 +37,7 @@ namespace TIGER_API {
         value identifiers_to_options(value identifiers);
 
     private:
+        std::unique_ptr<http_client> http_client_;
 
         utility::string_t build_sign_content(const value &obj);
 

@@ -17,6 +17,15 @@ echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - macOS Package"
 echo "=========================================="
 
+# Preflight: verify pinned boost 1.86 exists before handing off to cmake.
+# Without this check cmake silently falls back to Homebrew boost 1.90 (ABI incompatible).
+if [ ! -d "$BOOST_1_86_ROOT" ]; then
+    echo "ERROR: Boost 1.86 not found at $BOOST_1_86_ROOT"
+    echo "  Install with: cd /usr/local && wget .../boost_1_86_0.tar.gz && tar xf ... && cd boost_1_86_0 && ./bootstrap.sh && ./b2"
+    echo "  Or override: BOOST_1_86_ROOT=/path/to/boost_1_86_0 $0"
+    exit 1
+fi
+
 # 1. 创建构建目录（清理旧 cmake cache 确保路径生效）
 echo ""
 echo "==> Step 1/5: Creating build directories..."
@@ -27,47 +36,46 @@ mkdir -p build-debug build-release
 # cmake injects /opt/homebrew/include (boost 1.90) before /usr/local/boost_1_86_0
 # via absl INTERFACE_INCLUDE_DIRECTORIES, causing boost ABI mismatch (SIGSEGV).
 # This function patches the generated flags.make to put boost 1.86 first.
+# NOTE: With CMakeLists.txt now using target_include_directories(SYSTEM) for protobuf,
+# this patch may become unnecessary — kept as a safety net for now.
 fix_boost_include_order() {
     local flags_file="$1/CMakeFiles/tigerapi.dir/flags.make"
     if [ ! -f "$flags_file" ]; then return; fi
-    ABSL_VER=$(ls /opt/homebrew/Cellar/abseil/ 2>/dev/null | head -1)
+    # Only patch if the bad ordering is present (idempotent)
+    if ! grep -q "\-I/opt/homebrew/include.*\-I${BOOST_1_86_ROOT}" "$flags_file" 2>/dev/null; then
+        return
+    fi
+    ABSL_VER=$(ls "${HOMEBREW_PREFIX}/Cellar/abseil/" 2>/dev/null | head -1)
     if [ -z "$ABSL_VER" ]; then ABSL_VER="20240722.0"; fi
     sed -i '' \
-        "s|-I/opt/homebrew/include \(.*\)-I/usr/local/boost_1_86_0|-I/usr/local/boost_1_86_0 \1-I/opt/homebrew/Cellar/abseil/${ABSL_VER}/include|" \
+        "s|-I/opt/homebrew/include \(.*\)-I${BOOST_1_86_ROOT}|-I${BOOST_1_86_ROOT} \1-I${HOMEBREW_PREFIX}/Cellar/abseil/${ABSL_VER}/include|" \
         "$flags_file"
     echo "    [boost ABI fix applied: $(grep 'CXX_INCLUDES' "$flags_file" | cut -c1-120)...)"
 }
 
-# 2. 配置并构建 Debug
-echo ""
-echo "==> Step 2/5: Building Debug..."
-cmake -S . -B build-debug \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
-    -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
-    -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
-    -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
-    -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
-    -DBoost_NO_BOOST_CMAKE=ON \
-    -DBoost_NO_SYSTEM_PATHS=ON \
-    -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
-fix_boost_include_order build-debug
-cmake --build build-debug -j${JOBS}
+# Shared cmake configure + build function for Debug and Release variants.
+build_variant() {
+    local BUILD_TYPE="$1"
+    local BUILD_DIR="$2"
+    echo ""
+    echo "==> Step 2/5: Building ${BUILD_TYPE}..."
+    cmake -S . -B "${BUILD_DIR}" \
+        -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+        -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
+        -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
+        -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
+        -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
+        -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
+        -DBoost_NO_BOOST_CMAKE=ON \
+        -DBoost_NO_SYSTEM_PATHS=ON \
+        -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
+    fix_boost_include_order "${BUILD_DIR}"
+    cmake --build "${BUILD_DIR}" -j${JOBS}
+}
 
-echo ""
-echo "==> Step 2/5: Building Release..."
-cmake -S . -B build-release \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
-    -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
-    -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
-    -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
-    -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
-    -DBoost_NO_BOOST_CMAKE=ON \
-    -DBoost_NO_SYSTEM_PATHS=ON \
-    -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
-fix_boost_include_order build-release
-cmake --build build-release -j${JOBS}
+# 2. 配置并构建
+build_variant Debug build-debug
+build_variant Release build-release
 
 # 3. 安装
 echo ""

@@ -78,9 +78,10 @@ namespace TIGER_API {
     utility::string_t Utils::json_format(utility::string_t json_str) {
         int level = 0;
         utility::string_t json_format_str;
+        json_format_str.reserve(json_str.length() * 2);
         for (int i = 0; i < json_str.length(); i++) {
             utility::char_t c = json_str.at(i);
-            if (level > 0 && '\n' == json_format_str.at(json_format_str.length() - 1)) {
+            if (level > 0 && !json_format_str.empty() && '\n' == json_format_str.at(json_format_str.length() - 1)) {
                 json_format_str += get_level_str(level);
             }
             switch (c) {

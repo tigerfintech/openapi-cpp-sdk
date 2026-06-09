@@ -19,7 +19,7 @@ if(NOT (UNIX OR WIN32))
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS thread log program_options chrono filesystem)
+find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 if(WIN32)
     # Prevent FindThreads from insisting on pthreads when building with MSVC
     set(CMAKE_USE_WIN32_THREADS_INIT ON)
@@ -122,18 +122,30 @@ if(DEFINED ENV{HOMEBREW_PREFIX})
 else()
     set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
 endif()
-set(HEADER_SEARCH_PATHS
-    ${HOMEBREW_INCLUDE_DIR}
-    ${Protobuf_INCLUDE_DIRS}
+# Private headers (project-owned): resolved BEFORE system/third-party headers.
+set(PRIVATE_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/include
-    ${CPPREST_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIR}
+)
+# System/third-party headers: marked SYSTEM so the compiler searches them AFTER
+# PRIVATE_INCLUDE_DIRS, preventing absl/protobuf INTERFACE_INCLUDE_DIRECTORIES
+# from injecting /opt/homebrew/include before our pinned Boost 1.86 headers.
+set(SYSTEM_INCLUDE_DIRS
+    ${Protobuf_INCLUDE_DIRS}
+    ${HOMEBREW_INCLUDE_DIR}
+    ${CPPREST_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIRS}
 )
-list(FILTER HEADER_SEARCH_PATHS EXCLUDE REGEX "^$")
-list(REMOVE_DUPLICATES HEADER_SEARCH_PATHS)
+foreach(_dir IN LISTS PRIVATE_INCLUDE_DIRS SYSTEM_INCLUDE_DIRS)
+    if(_dir STREQUAL "")
+        list(REMOVE_ITEM PRIVATE_INCLUDE_DIRS "${_dir}")
+        list(REMOVE_ITEM SYSTEM_INCLUDE_DIRS "${_dir}")
+    endif()
+endforeach()
+list(REMOVE_DUPLICATES PRIVATE_INCLUDE_DIRS)
+list(REMOVE_DUPLICATES SYSTEM_INCLUDE_DIRS)
 
 set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
 set(LIBRARIES_SEARCH_PATHS
@@ -153,7 +165,8 @@ message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
-include_directories(${HEADER_SEARCH_PATHS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PRIVATE_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SYSTEM_INCLUDE_DIRS})
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         "-framework CoreFoundation"
