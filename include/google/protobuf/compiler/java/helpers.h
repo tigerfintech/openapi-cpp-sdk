@@ -20,7 +20,6 @@
 #include "google/protobuf/compiler/java/options.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
-#include "google/protobuf/descriptor_legacy.h"
 #include "google/protobuf/io/printer.h"
 
 // Must be last.
@@ -58,6 +57,11 @@ void PrintEnumVerifierLogic(
     absl::string_view var_name, absl::string_view terminating_string,
     bool enforce_lite);
 
+// Prints the Protobuf Java Version validator checking that the runtime and
+// gencode versions are compatible.
+void PrintGencodeVersionValidator(io::Printer* printer, bool oss_runtime,
+                                  absl::string_view java_class_name);
+
 // Converts a name to camel-case. If cap_first_letter is true, capitalize the
 // first letter.
 std::string ToCamelCase(absl::string_view input, bool lower_first);
@@ -74,8 +78,7 @@ std::string UniqueFileScopeIdentifier(const Descriptor* descriptor);
 // Gets the unqualified class name for the file.  For each .proto file, there
 // will be one Java class containing all the immutable messages and another
 // Java class containing all the mutable messages.
-// TODO: remove the default value after updating client code.
-std::string FileClassName(const FileDescriptor* file, bool immutable = true);
+std::string FileClassName(const FileDescriptor* file, bool immutable);
 
 // Returns the file's Java package name.
 std::string FileJavaPackage(const FileDescriptor* file, bool immutable,
@@ -105,7 +108,7 @@ std::string ExtraMessageOrBuilderInterfaces(const Descriptor* descriptor);
 // Get the unqualified Java class name for mutable messages. i.e. without
 // package or outer classnames.
 inline std::string ShortMutableJavaClassName(const Descriptor* descriptor) {
-  return descriptor->name();
+  return std::string(descriptor->name());
 }
 
 // Whether the given descriptor is for one of the core descriptor protos. We
@@ -148,7 +151,7 @@ inline bool MultipleJavaFiles(const FileDescriptor* descriptor,
 // `immutable` should be set to true if we're generating for the immutable API.
 template <typename Descriptor>
 bool IsOwnFile(const Descriptor* descriptor, bool immutable) {
-  return descriptor->containing_type() == NULL &&
+  return descriptor->containing_type() == nullptr &&
          MultipleJavaFiles(descriptor->file(), immutable);
 }
 
@@ -338,23 +341,6 @@ inline bool HasHasbit(const FieldDescriptor* descriptor) {
   return internal::cpp::HasHasbit(descriptor);
 }
 
-// Whether generate classes expose public PARSER instances.
-inline bool ExposePublicParser(const FileDescriptor* descriptor) {
-  // TODO: Mark the PARSER private in 3.1.x releases.
-  return FileDescriptorLegacy(descriptor).syntax() ==
-         FileDescriptorLegacy::Syntax::SYNTAX_PROTO2;
-}
-
-// Whether unknown enum values are kept (i.e., not stored in UnknownFieldSet
-// but in the message and can be queried using additional getters that return
-// ints.
-inline bool SupportUnknownEnumValue(const FieldDescriptor* field) {
-  // TODO: Check Java legacy_enum_field_treated_as_closed feature.
-  return field->type() != FieldDescriptor::TYPE_ENUM ||
-         FileDescriptorLegacy(field->file()).syntax() ==
-             FileDescriptorLegacy::SYNTAX_PROTO3;
-}
-
 // Check whether a message has repeated fields.
 bool HasRepeatedFields(const Descriptor* descriptor);
 
@@ -374,15 +360,6 @@ inline bool IsWrappersProtoFile(const FileDescriptor* descriptor) {
   return descriptor->name() == "google/protobuf/wrappers.proto";
 }
 
-inline bool CheckUtf8(const FieldDescriptor* descriptor) {
-  return descriptor->requires_utf8_validation() ||
-         descriptor->file()->options().java_string_check_utf8();
-}
-
-inline std::string GeneratedCodeVersionSuffix() {
-  return "V3";
-}
-
 void WriteUInt32ToUtf16CharSequence(uint32_t number,
                                     std::vector<uint16_t>* output);
 
@@ -393,16 +370,6 @@ inline void WriteIntToUtf16CharSequence(int value,
 
 // Escape a UTF-16 character so it can be embedded in a Java string literal.
 void EscapeUtf16ToString(uint16_t code, std::string* output);
-
-// Only the lowest two bytes of the return value are used. The lowest byte
-// is the integer value of a j/c/g/protobuf/FieldType enum. For the other
-// byte:
-//    bit 0: whether the field is required.
-//    bit 1: whether the field requires UTF-8 validation.
-//    bit 2: whether the field needs isInitialized check.
-//    bit 3: whether the field is a map field with proto2 enum value.
-//    bits 4-7: unused
-int GetExperimentalJavaFieldType(const FieldDescriptor* field);
 
 // To get the total number of entries need to be built for experimental runtime
 // and the first field number that are not in the table part

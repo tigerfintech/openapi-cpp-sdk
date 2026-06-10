@@ -48,8 +48,8 @@ if(UNIX) # Darwing or Linux
             NAMES google/protobuf/service.h google/protobuf/descriptor.h
             HINTS
                 ${PROTOBUF_PREFIX}/include
-                /usr/local/opt/protobuf/include
                 /opt/homebrew/opt/protobuf/include
+                /usr/local/opt/protobuf/include
                 /usr/local/include
         )
     endif()
@@ -58,8 +58,8 @@ if(UNIX) # Darwing or Linux
             NAMES protobuf
             HINTS
                 ${PROTOBUF_PREFIX}/lib
-                /usr/local/opt/protobuf/lib
                 /opt/homebrew/opt/protobuf/lib
+                /usr/local/opt/protobuf/lib
                 /usr/local/lib
         )
     endif()
@@ -120,13 +120,10 @@ endif()
 add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 
 # headers search paths ...
-set(HEADER_SEARCH_PATHS ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR} ${Protobuf_INCLUDE_DIR})
-
-# 在 HEADER_SEARCH_PATHS 如果有 /opt/homebrew/include, 则将其移到最后(因为其中的protobuf是homebrew的， 会优先于自定义的protobuf)
-if(HEADER_SEARCH_PATHS MATCHES "/opt/homebrew/include")
-    list(REMOVE_ITEM HEADER_SEARCH_PATHS "/opt/homebrew/include")
-    list(APPEND HEADER_SEARCH_PATHS "/opt/homebrew/include")
-endif()
+# Protobuf_INCLUDE_DIR must come before TIGERAPI_INCLUDE_DIR so the system protobuf
+# headers (5.x) shadow the vendored include/google/ stubs (4.x) in the SDK tree.
+# pb_source/*.pb.h are now generated with protobuf 5.x and require 5.x headers.
+set(HEADER_SEARCH_PATHS ${Protobuf_INCLUDE_DIR} ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
 message(HEADER_SEARCH_PATHS " ${HEADER_SEARCH_PATHS}")
 
 

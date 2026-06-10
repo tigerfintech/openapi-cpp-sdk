@@ -1,5 +1,5 @@
 // Protocol Buffers - Google's data interchange format
-// Copyright 2008 Google Inc.  All rights reserved.
+// Copyright 2008 Google LLC.  All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/descriptor.h"
@@ -43,9 +44,7 @@ namespace internal {
 PROTOBUF_EXPORT extern const char kDebugStringSilentMarker[1];
 PROTOBUF_EXPORT extern const char kDebugStringSilentMarkerForDetection[3];
 
-PROTOBUF_EXPORT extern std::atomic<bool> enable_debug_text_format_marker;
-PROTOBUF_EXPORT extern std::atomic<bool> enable_debug_text_detection;
-PROTOBUF_EXPORT extern std::atomic<bool> enable_debug_text_redaction;
+PROTOBUF_EXPORT extern std::atomic<bool> enable_debug_string_safe_format;
 PROTOBUF_EXPORT int64_t GetRedactedFieldCount();
 PROTOBUF_EXPORT bool ShouldRedactField(const FieldDescriptor* field);
 
@@ -65,7 +64,10 @@ PROTOBUF_EXPORT enum class FieldReporterLevel {
   kUtf8Format = 8,
   kDebugString = 12,
   kShortDebugString = 13,
-  kUtf8DebugString = 14
+  kUtf8DebugString = 14,
+  kUnredactedDebugFormatForTest = 15,
+  kUnredactedShortDebugFormatForTest = 16,
+  kUnredactedUtf8DebugFormatForTest = 17
 };
 
 }  // namespace internal
@@ -74,13 +76,26 @@ namespace io {
 class ErrorCollector;  // tokenizer.h
 }
 
+namespace python {
+namespace cmessage {
+class PythonFieldValuePrinter;
+}
+}  // namespace python
+
 namespace internal {
 // Enum used to set printing options for StringifyMessage.
 PROTOBUF_EXPORT enum class Option;
 
-// Converts a protobuf message to a string with redaction enabled.
+// Converts a protobuf message to a string. If enable_safe_format is true,
+// sensitive fields are redacted, and a per-process randomized prefix is
+// inserted.
 PROTOBUF_EXPORT std::string StringifyMessage(const Message& message,
-                                             Option option);
+                                             Option option,
+                                             FieldReporterLevel reporter_level,
+                                             bool enable_safe_format);
+
+class UnsetFieldsMetadataTextFormatTestUtil;
+class UnsetFieldsMetadataMessageDifferencerTestUtil;
 }  // namespace internal
 
 // This class implements protocol buffer text format, colloquially known as text
@@ -440,8 +455,9 @@ class PROTOBUF_EXPORT TextFormat {
     friend std::string Message::DebugString() const;
     friend std::string Message::ShortDebugString() const;
     friend std::string Message::Utf8DebugString() const;
-    friend std::string internal::StringifyMessage(const Message& message,
-                                                  internal::Option option);
+    friend std::string internal::StringifyMessage(
+        const Message& message, internal::Option option,
+        internal::FieldReporterLevel reporter_level, bool enable_safe_format);
 
     // Sets whether silent markers will be inserted.
     void SetInsertSilentMarker(bool v) { insert_silent_marker_ = v; }
@@ -518,6 +534,10 @@ class PROTOBUF_EXPORT TextFormat {
       return it == custom_printers_.end() ? default_field_value_printer_.get()
                                           : it->second.get();
     }
+
+    friend class google::protobuf::python::cmessage::PythonFieldValuePrinter;
+    static void HardenedPrintString(absl::string_view src,
+                                    TextFormat::BaseTextGenerator* generator);
 
     int initial_indent_level_;
     bool single_line_mode_;
@@ -719,11 +739,40 @@ class PROTOBUF_EXPORT TextFormat {
     // the maximum allowed nesting of proto messages.
     void SetRecursionLimit(int limit) { recursion_limit_ = limit; }
 
-    // If called, the parser will report an error if a parsed field had no
+    // Metadata representing all the fields that were explicitly unset in
+    // textproto. Example:
+    // "some_int_field: 0"
+    // where some_int_field has implicit presence.
+    //
+    // This class should only be used to pass data between TextFormat and the
+    // MessageDifferencer.
+    class UnsetFieldsMetadata {
+     public:
+      UnsetFieldsMetadata() = default;
+
+     private:
+      using Id = std::pair<const Message*, const FieldDescriptor*>;
+      // Return an id representing the unset field in the given message.
+      static Id GetUnsetFieldId(const Message& message,
+                                const FieldDescriptor& fd);
+
+      // List of ids of explicitly unset proto fields.
+      absl::flat_hash_set<Id> ids_;
+
+      friend class ::google::protobuf::internal::
+          UnsetFieldsMetadataMessageDifferencerTestUtil;
+      friend class ::google::protobuf::internal::UnsetFieldsMetadataTextFormatTestUtil;
+      friend class ::google::protobuf::util::MessageDifferencer;
+      friend class ::google::protobuf::TextFormat::Parser;
+    };
+
+    // If called, the parser will report the parsed fields that had no
     // effect on the resulting proto (for example, fields with no presence that
-    // were set to their default value).
-    void ErrorOnNoOpFields(bool return_error) {
-      error_on_no_op_fields_ = return_error;
+    // were set to their default value). These can be passed to the Partially()
+    // matcher as an indicator to explicitly check these fields are missing
+    // in the actual.
+    void OutputNoOpFields(UnsetFieldsMetadata* no_op_fields) {
+      no_op_fields_ = no_op_fields;
     }
 
    private:
@@ -748,7 +797,7 @@ class PROTOBUF_EXPORT TextFormat {
     bool allow_relaxed_whitespace_;
     bool allow_singular_overwrites_;
     int recursion_limit_;
-    bool error_on_no_op_fields_ = false;
+    UnsetFieldsMetadata* no_op_fields_ = nullptr;
   };
 
 

@@ -114,16 +114,18 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # headers search paths ...
-# ABSL_INCLUDE_DIR and Protobuf_INCLUDE_DIRS must come before CMAKE_SOURCE_DIR/include
-# so that absl headers and the system protobuf stubs are resolved correctly.
-# The vendored include/google/ directory contains legacy stubs that #include absl.
+# Protobuf_INCLUDE_DIRS must come before CMAKE_SOURCE_DIR/include so that the
+# system protobuf headers (5.x) shadow the vendored include/google/ stubs (4.x).
+# The vendored include/google/ directory is kept for Windows/user convenience but
+# must not be resolved first on macOS where pb_source files are generated with 5.x.
 if(DEFINED ENV{HOMEBREW_PREFIX})
     set(HOMEBREW_INCLUDE_DIR "$ENV{HOMEBREW_PREFIX}/include")
 else()
     set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
 endif()
-# Private headers (project-owned): resolved BEFORE system/third-party headers.
+# Protobuf first, then project headers, so system protobuf shadows include/google/.
 set(PRIVATE_INCLUDE_DIRS
+    ${Protobuf_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIR}
@@ -132,7 +134,6 @@ set(PRIVATE_INCLUDE_DIRS
 # PRIVATE_INCLUDE_DIRS, preventing absl/protobuf INTERFACE_INCLUDE_DIRECTORIES
 # from injecting /opt/homebrew/include before our pinned Boost 1.86 headers.
 set(SYSTEM_INCLUDE_DIRS
-    ${Protobuf_INCLUDE_DIRS}
     ${HOMEBREW_INCLUDE_DIR}
     ${CPPREST_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
