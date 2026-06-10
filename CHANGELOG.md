@@ -14,9 +14,9 @@
 - `Utils::add_start_end()` / `get_sign()` / `fill_private_key_marker()` 参数改为 `const` 引用
 
 ### Build
-- vendored `include/google/protobuf/` 升级为 protobuf 5.28.3（与 Homebrew 运行库版本一致）
-- CMakeLists 调整 include 顺序，防止旧版 vendored 头文件遮蔽系统 protobuf
-- demo/CMakeLists.txt `find_path` HINTS 顺序修正，Homebrew arm64 路径优先于 `/usr/local/opt/protobuf`
+- vendored `include/google/protobuf/` 升级为 protobuf 5.28.3
+- CMakeLists 调整 include 顺序，确保系统 protobuf 头文件优先于 vendored 副本
+- demo/CMakeLists.txt 修正 protobuf `find_path` 搜索路径顺序
 
 ## 1.2.2 (2026-05-07)
 ### New
