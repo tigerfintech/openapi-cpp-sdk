@@ -1,6 +1,22 @@
-## 1.2.3 (2026-06-08)
+## 1.2.3 (2026-06-10)
 ### New
 - 新增期权提前行权接口：`submit_option_exercise` 提交行权/放弃申请、`cancel_option_exercise` 撤销申请、`check_option_exercise` 行权检验（预估持仓变化）、`get_option_exercise_records` 分页查询行权记录、`get_option_exercise_positions` 查询可行权持仓
+
+### Fix
+- `json_format()` 修复空字符串时 `length() - 1` 下溢 crash；添加 `reserve()` 消除 O(n²) 字符追加
+- `identifiers_to_options()` 修复稀疏数组问题（插入索引与循环索引分离）
+- `send_request()` 修复 `result[P_SIGN]` 缺少 `has_field` 检查导致的异常
+- `build_sign_content()` 修复对非字符串字段调用 `as_string()` 的类型错误
+
+### Refactor
+- `TigerClient` 线程安全：`client_config` 改为 `const` 成员，构造时一次性初始化；`http_client` 提升为成员变量只初始化一次
+- `ClientConfig` 的 `check()`、`check_account()`、`get_server_url()` 等方法补充 `const` 限定符
+- `Utils::add_start_end()` / `get_sign()` / `fill_private_key_marker()` 参数改为 `const` 引用
+
+### Build
+- vendored `include/google/protobuf/` 升级为 protobuf 5.28.3（与 Homebrew 运行库版本一致）
+- CMakeLists 调整 include 顺序，防止旧版 vendored 头文件遮蔽系统 protobuf
+- demo/CMakeLists.txt `find_path` HINTS 顺序修正，Homebrew arm64 路径优先于 `/usr/local/opt/protobuf`
 
 ## 1.2.2 (2026-05-07)
 ### New
