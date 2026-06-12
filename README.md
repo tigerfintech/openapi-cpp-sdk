@@ -434,8 +434,8 @@ Apache License 2.0
 
 ## 相关链接
 
-- [老虎证券开放平台](https://quant.itigerup.com/)
-- [API 文档](https://quant.itigerup.com/openapi/zh/docs/intro/quickStart)
+- [老虎证券开放平台](https://developer.itigerup.com/)
+- [API 文档](https://docs.itigerup.com/docs/)
 - [Python SDK](https://github.com/tigerbrokers/openapi-python-sdk)
 - [Java SDK](https://github.com/tigerbrokers/openapi-java-sdk)
 
