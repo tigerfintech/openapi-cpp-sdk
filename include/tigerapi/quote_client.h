@@ -122,6 +122,7 @@ namespace TIGER_API {
 
         // general
         value get_kline_quota(bool with_details = false);
+        value get_addon_entitlements();
 
     };
 }

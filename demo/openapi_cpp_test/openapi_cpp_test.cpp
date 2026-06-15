@@ -587,6 +587,11 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    static void test_get_addon_entitlements(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_addon_entitlements();
+        ucout << U("result: ") << result << endl;
+    }
+
     // --- New Option interfaces ---
     static void test_get_option_symbols(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_option_symbols(U("HK"));

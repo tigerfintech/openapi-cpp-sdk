@@ -478,6 +478,11 @@ namespace TIGER_API {
         return post(KLINE_QUOTA, obj);
     }
 
+    value QuoteClient::get_addon_entitlements() {
+        value obj = value::object(true);
+        return post(ADDON_ENTITLEMENTS, obj);
+    }
+
     // Option new interfaces
 
     value QuoteClient::get_option_symbols(utility::string_t market, utility::string_t lang) {
