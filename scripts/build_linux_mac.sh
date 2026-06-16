@@ -177,19 +177,33 @@ find_tiger_library() {
 ensure_prereqs() {
   local base=(git cmake tar)
   if [[ "$OS_NAME" == "Linux" ]]; then
-    base+=(wget bzip2 unzip gcc g++ make libtool automake autoconf pkg-config)
-    base+=(libssl-dev zlib1g-dev)
-    if ! dpkg -s build-essential >/dev/null 2>&1; then
-      base+=(build-essential)
-    fi
     local sudo_prefix=(sudo)
     if ! command -v sudo >/dev/null 2>&1; then
-      warn "sudo not detected, attempting apt-get without it (requires root shell)."
+      warn "sudo not detected, attempting package manager without it (requires root shell)."
       sudo_prefix=()
     fi
-    log "Installing base packages via apt."
-    "${sudo_prefix[@]}" apt-get update
-    "${sudo_prefix[@]}" apt-get install -y "${base[@]}"
+    if command -v apt-get >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc g++ make libtool automake autoconf pkg-config)
+      base+=(libssl-dev zlib1g-dev)
+      if ! dpkg -s build-essential >/dev/null 2>&1; then
+        base+=(build-essential)
+      fi
+      log "Installing base packages via apt."
+      "${sudo_prefix[@]}" apt-get update
+      "${sudo_prefix[@]}" apt-get install -y "${base[@]}"
+    elif command -v dnf >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc gcc-c++ make libtool automake autoconf pkgconfig)
+      base+=(openssl-devel zlib-devel)
+      log "Installing base packages via dnf."
+      "${sudo_prefix[@]}" dnf install -y "${base[@]}"
+    elif command -v yum >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc gcc-c++ make libtool automake autoconf pkgconfig)
+      base+=(openssl-devel zlib-devel)
+      log "Installing base packages via yum."
+      "${sudo_prefix[@]}" yum install -y "${base[@]}"
+    else
+      fail "No supported package manager found (apt-get / dnf / yum). Install dependencies manually."
+    fi
   else
     if ! command -v brew >/dev/null 2>&1; then
       fail "Homebrew is required on macOS. Install from https://brew.sh first."
