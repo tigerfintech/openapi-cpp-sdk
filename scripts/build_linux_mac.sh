@@ -101,7 +101,7 @@ else
   PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
   PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
 fi
-SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}/sdk}"
+SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
 
@@ -478,14 +478,6 @@ build_sdk() {
     cmake --build "$build_dir" -- -j "$NUM_JOBS"
     ${SUDO_INSTALL:+$SUDO_INSTALL} cmake --install "$build_dir"
     log "SDK (${cfg}) installed to ${install_dir}"
-    if [[ -d "${install_dir}/lib" ]]; then
-      rm -rf "${output_dir}"
-      mkdir -p "${output_dir}/lib"
-      cp -R "${install_dir}/lib/." "${output_dir}/lib/"
-      log "SDK (${cfg}) libraries copied to ${output_dir}/lib"
-    else
-      warn "SDK (${cfg}) install missing lib/ directory; nothing copied to output."
-    fi
   done
 }
 
