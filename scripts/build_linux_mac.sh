@@ -262,14 +262,30 @@ build_boost() {
   log "Building Boost ${BOOST_VERSION} from source..."
   local src_dir="${CACHE_DIR}/boost_${BOOST_VERSION}"
   if [[ ! -d "$src_dir" ]]; then
-    [[ -f "${CACHE_DIR}/${BOOST_TARBALL}" ]] || wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL"
+    if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
+      wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
+        rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
+        fail "Failed to download Boost from ${BOOST_URL}"
+      }
+    fi
     tar -C "$CACHE_DIR" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
+    # Verify the expected directory was produced by the tarball.
+    if [[ ! -d "$src_dir" ]]; then
+      # Tarball may have extracted to a differently named directory; detect it.
+      local actual_dir
+      actual_dir="$(tar -tjf "${CACHE_DIR}/${BOOST_TARBALL}" 2>/dev/null | head -1 | cut -d/ -f1)"
+      if [[ -n "$actual_dir" && -d "${CACHE_DIR}/${actual_dir}" ]]; then
+        mv "${CACHE_DIR}/${actual_dir}" "$src_dir"
+      else
+        fail "Boost source directory not found after extraction (expected ${src_dir})"
+      fi
+    fi
+  fi
+  if [[ ! -f "${src_dir}/bootstrap.sh" ]]; then
+    fail "bootstrap.sh not found in ${src_dir} — tarball may be corrupt. Delete ${CACHE_DIR}/${BOOST_TARBALL} and retry."
   fi
   pushd "$src_dir" >/dev/null
-  if ! ./bootstrap.sh --prefix "$BOOST_ROOT"; then
-    warn "Boost bootstrap.sh does not accept --prefix, falling back to default staging."
-    ./bootstrap.sh
-  fi
+  ./bootstrap.sh --prefix "$BOOST_ROOT"
   ./b2 headers
   ./b2 -j "$NUM_JOBS" --prefix="$BOOST_ROOT" install
   popd >/dev/null
