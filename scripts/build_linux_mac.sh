@@ -382,6 +382,8 @@ build_protobuf() {
   pushd "$repo" >/dev/null
   git fetch --tags
   git checkout "$PROTOBUF_VERSION"
+  # abseil-cpp is a required submodule for protobuf >= 22 (v5.x series)
+  git submodule update --init --recursive
   mkdir -p cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
