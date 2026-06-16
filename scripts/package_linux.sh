@@ -27,12 +27,27 @@ ensure_boost() {
     fi
     echo ""
     echo "==> Boost ${BOOST_DOTTED} not found at ${BOOST_1_86_ROOT}, building from source..."
+
+    # Check write permission on the parent directory before attempting install.
+    local boost_parent
+    boost_parent="$(dirname "${BOOST_1_86_ROOT}")"
+    if [ ! -w "${boost_parent}" ]; then
+        echo "ERROR: ${BOOST_1_86_ROOT} requires write permission on ${boost_parent}."
+        echo "  Option 1: run with sudo: sudo BOOST_ROOT=${BOOST_1_86_ROOT} $0"
+        echo "  Option 2: point to a writable path: BOOST_ROOT=\$HOME/boost_1_86_0 $0"
+        exit 1
+    fi
+
     mkdir -p "${CACHE_DIR}"
     local src_dir="${CACHE_DIR}/boost_${BOOST_VERSION}"
     if [ ! -d "${src_dir}" ]; then
         if [ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]; then
             echo "    Downloading ${BOOST_URL} ..."
-            wget -q --show-progress -O "${CACHE_DIR}/${BOOST_TARBALL}" "${BOOST_URL}"
+            if ! wget -q --show-progress -O "${CACHE_DIR}/${BOOST_TARBALL}" "${BOOST_URL}"; then
+                rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
+                echo "ERROR: Failed to download Boost from ${BOOST_URL}"
+                exit 1
+            fi
         fi
         echo "    Extracting..."
         tar -C "${CACHE_DIR}" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
