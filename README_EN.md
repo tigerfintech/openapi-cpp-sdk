@@ -62,12 +62,12 @@ The script will automatically:
 #### Windows
 
 ```powershell
-# Default build (x64 + x86, Debug + Release, MT + MD = 8 variants)
-powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1
+# Build SDK + demo (x64 Release MD)
+powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 `
+    -Triplet x64-windows -BuildType Release -Runtime MD
 
-# Build x64 Release MD only
-powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1 `
-    -SingleBuild -Triplet x64-windows -BuildType Release -RuntimeFlavors MD
+# Rebuild all 8 Windows precompiled zip packages
+powershell -ExecutionPolicy Bypass -File scripts\package_windows.ps1
 ```
 
 ### Using Pre-compiled Libraries
@@ -83,9 +83,17 @@ output/
 │   ├── Debug/
 │   └── Release/
 └── Windows/
-    └── x64/
-        ├── Release-MD/  # x64 Release dynamic runtime
-        └── Release-MT/  # x64 Release static runtime
+    ├── readme.md
+    ├── x64/
+    │   ├── Debug-MD.zip
+    │   ├── Debug-MT.zip
+    │   ├── Release-MD.zip
+    │   └── Release-MT.zip
+    └── Win32/
+        ├── Debug-MD.zip
+        ├── Debug-MT.zip
+        ├── Release-MD.zip
+        └── Release-MT.zip
 ```
 
 ## Manual Build
@@ -268,6 +276,15 @@ Windows platform provides two build methods:
    - vcpkg dependencies: `vcpkg_installed/x64-windows/` (automatically managed)
    - SDK headers: `include/`
 
+7. **Package all Windows zips**
+
+    ```powershell
+    .\scripts\package_windows.ps1
+
+    # Re-compress existing output directories without rebuilding
+    .\scripts\package_windows.ps1 -SkipBuild
+    ```
+
 #### Method 2: Using CMake Command Line
 
 1. **Install vcpkg**
@@ -354,14 +371,15 @@ openapi-cpp-sdk/
 ├── include/                    # Header files
 │   ├── tigerapi/              # SDK public headers
 │   ├── cpprest/               # cpprestsdk headers
-│   ├── google/protobuf/       # Protobuf v25.1 headers
+│   ├── google/protobuf/       # Protobuf 5.28.3 headers
 │   └── openapi_pb/            # Protobuf generated message definitions
 ├── src/                       # SDK source implementation
 ├── demo/                      # Example code
 │   └── openapi_cpp_test/
 ├── scripts/                   # Build scripts
 │   ├── build_linux_mac.sh    # macOS/Linux one-click build
-│   └── install_windows_deps.ps1  # Windows one-click build
+│   ├── build_windows.ps1     # Windows CMake build
+│   └── package_windows.ps1   # Windows zip packaging
 ├── output/                    # Build artifacts
 │   ├── Mac/
 │   ├── Linux/

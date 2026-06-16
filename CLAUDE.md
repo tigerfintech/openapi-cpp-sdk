@@ -76,6 +76,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 Windows 输出包位于 `output/Windows/{Win32,x64}`，每个平台包含 `Debug-MD`、`Debug-MT`、`Release-MD`、`Release-MT` 四个 zip。`output/` 下只跟踪 zip 包和 `output/Windows/readme.md`。
 
+重新生成 Windows zip 包使用：
+
+```powershell
+.\scripts\package_windows.ps1
+```
+
 ## 文档
 
 - 开发者平台：https://developer.itigerup.com/

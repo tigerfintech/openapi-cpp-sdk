@@ -67,6 +67,9 @@ msbuild openapi-cpp-sdk.vcxproj /t:Rebuild /p:Configuration=Release-MD /p:Platfo
 
 # 构建 demo
 msbuild demo\openapi_cpp_test\openapi_cpp_test.vcxproj /t:Rebuild /p:Configuration=Release-MD /p:Platform=x64 /m /nr:false
+
+# 重新生成 Windows 8 个预编译 zip 包
+powershell -ExecutionPolicy Bypass -File scripts\package_windows.ps1
 ```
 
 ### 使用预编译库
@@ -290,6 +293,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 # 使用 Protobuf 源码安装路径（默认是 vcpkg）
 .\scripts\build_windows.ps1 -Triplet x64-windows -BuildType Release -Runtime MD -ProtobufProvider Source
+
+# 重新生成 output/Windows/{Win32,x64} 下 8 个 zip 包
+.\scripts\package_windows.ps1
+
+# 仅重新压缩已有输出目录，不重新编译
+.\scripts\package_windows.ps1 -SkipBuild
 ```
 
 如果需要手动执行 CMake，可参考以下命令。
