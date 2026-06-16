@@ -98,6 +98,9 @@ if(UNIX) # Darwing or Linux
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
+        # protobuf 5.x source build installs absl alongside protobuf; find it.
+        find_package(absl QUIET HINTS "${PROTOBUF_PREFIX}/lib/cmake/absl"
+                                      "${PROTOBUF_PREFIX}/lib64/cmake/absl")
     endif()
 
 elseif(WIN32) # Windows systems including Win64.
@@ -143,13 +146,17 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
-#    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    if(APPLE)
+        set(_arch_flag "-arch arm64")
+    else()
+        set(_arch_flag "")
+    endif()
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DBOOST_LOG_DYN_LINK")
+    # protobuf 5.x / absl lts_20240116 require C++17
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
 endif()
 
 # Project construction ...
@@ -195,5 +202,10 @@ if (APPLE)
 else()
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
-
+    if(absl_FOUND)
+        target_link_libraries(${PROJECT_NAME}
+            absl::base absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord absl::log_internal_message
+        )
+    endif()
 endif()
