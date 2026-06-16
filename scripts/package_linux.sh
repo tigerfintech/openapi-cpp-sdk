@@ -97,11 +97,14 @@ ensure_boost() {
 
 ensure_boost
 
-# 1. 创建构建目录（清理旧 cmake cache 确保路径生效）
-echo ""
-echo "==> Step 1/4: Creating build directories..."
-rm -rf build-debug build-release
-mkdir -p build-debug build-release
+# Detect whether a previous build (e.g. from build_linux_mac.sh) already produced
+# the installed libraries. If both Debug and Release are present, skip compilation.
+SKIP_BUILD=0
+if [ -f "output/Linux/Debug/lib/libtigerapi.a" ] && [ -f "output/Linux/Release/lib/libtigerapi.a" ]; then
+    echo ""
+    echo "    [package] Detected existing build at output/Linux/{Debug,Release} — skipping compilation."
+    SKIP_BUILD=1
+fi
 
 # Resolve cmake config directory for protobuf (handles lib64 and share variants).
 _find_protobuf_cmake_dir() {
@@ -155,16 +158,27 @@ build_variant() {
     cmake --build "${BUILD_DIR}" -j"${JOBS}"
 }
 
-# 2. 配置并构建
-build_variant Debug build-debug
-build_variant Release build-release
+if [ "$SKIP_BUILD" -eq 0 ]; then
+    # 1. 创建构建目录（清理旧 cmake cache 确保路径生效）
+    echo ""
+    echo "==> Step 1/4: Creating build directories..."
+    rm -rf build-debug build-release
+    mkdir -p build-debug build-release
 
-# 3. 安装 (installs headers + lib under output/Linux/Debug and output/Linux/Release)
-echo ""
-echo "==> Step 3/4: Installing to output/Linux/..."
-mkdir -p output/Linux/Debug output/Linux/Release
-cmake --install build-debug --prefix output/Linux/Debug
-cmake --install build-release --prefix output/Linux/Release
+    # 2. 配置并构建
+    build_variant Debug build-debug
+    build_variant Release build-release
+
+    # 3. 安装 (installs headers + lib under output/Linux/Debug and output/Linux/Release)
+    echo ""
+    echo "==> Step 3/4: Installing to output/Linux/..."
+    mkdir -p output/Linux/Debug output/Linux/Release
+    cmake --install build-debug --prefix output/Linux/Debug
+    cmake --install build-release --prefix output/Linux/Release
+else
+    echo ""
+    echo "==> Steps 1-3/4: Skipped (using existing build)."
+fi
 
 # 4. 打包
 echo ""
