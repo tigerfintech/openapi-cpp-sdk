@@ -279,10 +279,10 @@ Windows platform provides two build methods:
 7. **Package all Windows zips**
 
     ```powershell
-    .\scripts\package_windows.ps1
+    .\scripts\package_windows.bat
 
     # Re-compress existing output directories without rebuilding
-    .\scripts\package_windows.ps1 -SkipBuild
+    .\scripts\package_windows.bat -SkipBuild
     ```
 
 #### Method 2: Using CMake Command Line
@@ -379,7 +379,8 @@ openapi-cpp-sdk/
 ├── scripts/                   # Build scripts
 │   ├── build_linux_mac.sh    # macOS/Linux one-click build
 │   ├── build_windows.ps1     # Windows CMake build
-│   └── package_windows.ps1   # Windows zip packaging
+│   ├── package_windows.ps1   # Windows zip packaging
+│   └── package_windows.bat   # Execution-policy-safe Windows packaging wrapper
 ├── output/                    # Build artifacts
 │   ├── Mac/
 │   ├── Linux/

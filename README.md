@@ -295,10 +295,10 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 .\scripts\build_windows.ps1 -Triplet x64-windows -BuildType Release -Runtime MD -ProtobufProvider Source
 
 # 重新生成 output/Windows/{Win32,x64} 下 8 个 zip 包
-.\scripts\package_windows.ps1
+.\scripts\package_windows.bat
 
 # 仅重新压缩已有输出目录，不重新编译
-.\scripts\package_windows.ps1 -SkipBuild
+.\scripts\package_windows.bat -SkipBuild
 ```
 
 如果需要手动执行 CMake，可参考以下命令。

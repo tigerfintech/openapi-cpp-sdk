@@ -79,7 +79,7 @@ Windows 输出包位于 `output/Windows/{Win32,x64}`，每个平台包含 `Debug
 重新生成 Windows zip 包使用：
 
 ```powershell
-.\scripts\package_windows.ps1
+.\scripts\package_windows.bat
 ```
 
 ## 文档

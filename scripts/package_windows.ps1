@@ -19,7 +19,7 @@ param(
     [ValidateSet('Debug-MD', 'Debug-MT', 'Release-MD', 'Release-MT')]
     [string[]]$Configuration = @('Debug-MD', 'Debug-MT', 'Release-MD', 'Release-MT'),
 
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
+    [string]$RepoRoot,
 
     [string]$MSBuildPath = 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe',
 
@@ -29,6 +29,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
+    $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+}
 
 function Write-Step {
     param([string]$Message)
