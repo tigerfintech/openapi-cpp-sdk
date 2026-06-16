@@ -111,14 +111,19 @@ message(STATUS "Protobuf libraries: ${Protobuf_LIBRARIES}")
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
-#    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    # -arch only makes sense on Apple; Linux Clang does not need it.
+    if(APPLE)
+        set(_arch_flag "-arch arm64")
+    else()
+        set(_arch_flag "")
+    endif()
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DBOOST_LOG_DYN_LINK")
+    # protobuf 5.x / absl lts_20240116 require C++17; gnu++17 keeps GNU extensions.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
 
 endif()
 
