@@ -246,19 +246,49 @@ detect_openssl() {
   log "OpenSSL detected at ${OPENSSL_ROOT_DIR}"
 }
 
+## Check if a system/package-manager Boost meets our version window (>= 1.86, < 1.90).
+## Returns 0 and sets BOOST_ROOT if acceptable, 1 otherwise.
+_check_system_boost() {
+  local include_dir="$1"
+  [[ -f "${include_dir}/boost/version.hpp" ]] || return 1
+  local ver_num
+  ver_num=$(grep -m1 '#define BOOST_VERSION ' "${include_dir}/boost/version.hpp" | awk '{print $3}')
+  [[ -n "$ver_num" ]] || return 1
+  local major=$(( ver_num / 100000 ))
+  local minor=$(( (ver_num / 100) % 1000 ))
+  # Require >= 1.86 and < 1.90 (1.90+ has ABI incompatibility with cpprestsdk on macOS)
+  if (( major == 1 && minor >= 86 && minor < 90 )); then
+    log "Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
+    return 0
+  fi
+  warn "System Boost ${major}.${minor} outside compatible range [1.86, 1.90); will build 1.86 from source."
+  return 1
+}
+
 build_boost() {
   if [[ -d "${BOOST_ROOT}/include/boost" ]]; then
     log "Boost already available at ${BOOST_ROOT}"
     return
   fi
-  if [[ "$OS_NAME" == "Darwin" ]]; then
-    if command -v brew >/dev/null 2>&1 && brew list boost >/dev/null 2>&1; then
-      BOOST_ROOT="$(brew --prefix boost)"
+
+  # Probe system/package-manager Boost first (fast path).
+  local candidate_roots=()
+  if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1; then
+    local brew_boost
+    brew_boost="$(brew --prefix boost 2>/dev/null || true)"
+    [[ -n "$brew_boost" ]] && candidate_roots+=("$brew_boost")
+  fi
+  # Common system paths on Linux
+  candidate_roots+=("/usr" "/usr/local")
+
+  for root in "${candidate_roots[@]}"; do
+    if _check_system_boost "${root}/include"; then
+      BOOST_ROOT="$root"
       export BOOST_ROOT
-      log "Using Homebrew boost at ${BOOST_ROOT}"
       return
     fi
-  fi
+  done
+
   log "Building Boost ${BOOST_VERSION} from source..."
   # b2-nodocs tarball extracts to boost-<dotted> (e.g. boost-1.86.0), not boost_1_86_0.
   local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"

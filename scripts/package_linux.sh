@@ -19,12 +19,38 @@ echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - Linux Package"
 echo "=========================================="
 
-# Preflight: ensure Boost 1.86 is present; auto-build from source if not.
+# Returns 0 and sets BOOST_1_86_ROOT if a system Boost in [1.86, 1.90) is found at $1/include.
+_check_system_boost() {
+    local include_dir="$1"
+    [ -f "${include_dir}/boost/version.hpp" ] || return 1
+    local ver_num
+    ver_num=$(grep -m1 '#define BOOST_VERSION ' "${include_dir}/boost/version.hpp" | awk '{print $3}')
+    [ -n "$ver_num" ] || return 1
+    local major=$(( ver_num / 100000 ))
+    local minor=$(( (ver_num / 100) % 1000 ))
+    if [ "$major" -eq 1 ] && [ "$minor" -ge 86 ] && [ "$minor" -lt 90 ]; then
+        echo "    [boost] Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
+        return 0
+    fi
+    echo "    [boost] System Boost ${major}.${minor} outside [1.86, 1.90); will build from source."
+    return 1
+}
+
+# Preflight: prefer system Boost in [1.86,1.90); auto-build 1.86 from source if not found.
 ensure_boost() {
     if [ -d "${BOOST_1_86_ROOT}/include/boost" ]; then
         echo "    [boost] Found at ${BOOST_1_86_ROOT}"
         return
     fi
+
+    # Fast path: check common system locations first.
+    for root in /usr /usr/local; do
+        if _check_system_boost "${root}/include"; then
+            BOOST_1_86_ROOT="$root"
+            return
+        fi
+    done
+
     echo ""
     echo "==> Boost ${BOOST_DOTTED} not found at ${BOOST_1_86_ROOT}, building from source..."
 
