@@ -34,6 +34,10 @@
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
 
+#if defined(_WIN32) && !defined(PROTOBUF_USE_DLLS)
+#define PROTOBUF_USE_DLLS
+#endif
+
 // The definitions in this file are intended to be portable across Clang,
 // GCC, and MSVC. Function-like macros are usable without an #ifdef guard.
 // Syntax macros (for example, attributes) are always defined, although

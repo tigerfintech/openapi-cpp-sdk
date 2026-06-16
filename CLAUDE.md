@@ -18,7 +18,7 @@
 | Boost | 1.86.0 | system, thread, log, program_options |
 | OpenSSL | 1.0.1+ | 加密通信 |
 | cpprestsdk | latest | HTTP 客户端 |
-| Protobuf | v25.1 | 数据序列化 |
+| Protobuf | 5.28.3 | 数据序列化 |
 | Abseil | 20240722+ | Protobuf 运行时依赖 |
 
 ## 目录结构
@@ -31,6 +31,7 @@ openapi-cpp-sdk/
 ├── scripts/              # 构建脚本
 ├── CMakeLists.txt        # CMake 配置
 ├── vcpkg.json            # Windows 依赖管理
+├── CHANGELOG.md          # 版本更新历史
 └── README.md
 ```
 
@@ -57,12 +58,23 @@ BUILD_TYPE=Release ./scripts/build_linux_mac.sh
 
 ### Windows
 
-使用 Visual Studio 打开 `openapi-cpp-sdk.sln`，或使用 CMake：
+使用 Visual Studio 打开 `openapi-cpp-sdk.sln`，或在 Developer PowerShell 中使用 MSBuild：
 
-```bash
-cmake -B build -DCMAKE_TOOLCHAIN_FILE=[vcpkg-root]/scripts/buildsystems/vcpkg.cmake
-cmake --build build
+```powershell
+msbuild openapi-cpp-sdk.vcxproj /t:Rebuild /p:Configuration=Release-MD /p:Platform=x64 /m /nr:false
+msbuild demo\openapi_cpp_test\openapi_cpp_test.vcxproj /t:Rebuild /p:Configuration=Release-MD /p:Platform=x64 /m /nr:false
 ```
+
+Visual Studio 工程使用 vcpkg manifest 依赖，Windows SDK 目标版本为 `10.0.22621.0`。Win32 使用 `vcpkg_installed_x86`，x64 使用 `vcpkg_installed`。工程保留项目 include 优先，vcpkg include 放最后，并通过 `PROTOBUF_USE_DLLS` 匹配 vcpkg DLL 版 Protobuf。
+
+CMake 路径保留在 `scripts/build_windows.ps1`，脚本默认使用 vcpkg manifest 安装 Protobuf 5.28.3、Abseil、OpenSSL 和 cpprestsdk，Boost 1.86.0 仍由脚本源码构建并缓存到 `.deps/`。如需和 macOS/Linux 保持源码安装路径，可使用 `-ProtobufProvider Source`。常用命令：
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+.\scripts\build_windows.ps1 -Triplet x64-windows -BuildType Release -Runtime MD
+```
+
+Windows 输出包位于 `output/Windows/{Win32,x64}`，每个平台包含 `Debug-MD`、`Debug-MT`、`Release-MD`、`Release-MT` 四个 zip。`output/` 下只跟踪 zip 包和 `output/Windows/readme.md`。
 
 ## 文档
 

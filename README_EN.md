@@ -426,7 +426,7 @@ Ensure using Protobuf v25.1 (libprotobuf 4.25.1), requires Abseil and C++17 supp
 
 ## Changelog
 
-See [changlog.md](changlog.md) for version history.
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
@@ -434,8 +434,8 @@ Apache License 2.0
 
 ## Related Links
 
-- [Tiger Brokers Open Platform](https://quant.itigerup.com/)
-- [API Documentation](https://quant.itigerup.com/openapi/en/docs/intro/quickStart)
+- [Tiger Brokers Open Platform](https://developer.itigerup.com/)
+- [API Documentation](https://docs.itigerup.com)
 - [Python SDK](https://github.com/tigerbrokers/openapi-python-sdk)
 - [Java SDK](https://github.com/tigerbrokers/openapi-java-sdk)
 

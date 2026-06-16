@@ -1,101 +1,76 @@
-# Prerequisites
+# Build artifacts
+*.a
+*.app
 *.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
+*.dylib
+*.exe
+*.gch
 *.lai
 *.la
-*.a
 *.lib
-
-# Executables
-*.exe
+*.lo
+*.mod
+*.obj
+*.o
 *.out
-*.app
-
-.vs
-.vscode
-.kiro
-.claude
+*.pch
+*.slo
+*.smod
+*.so
 *.dSYM
-.idea
-.DS_store
-cmake-build-debug
-build
-*-build
-demo/openapi_cpp_test/Debug/
-demo/openapi_cpp_test/Release/
-demo/openapi_cpp_test/myeasylog.log
-demo/openapi_cpp_test/CMakeCache.txt
-demo/openapi_cpp_test/CMakeFiles
-demo/openapi_cpp_test/Makefile
-demo/openapi_cpp_test/cmake_install.cmake
-output/Debug/openapi-cpp-sdk.exp
-output/Debug/openapi-cpp-sdk.ilk
-output/Debug/openapi-cpp-sdk.pdb
-output/Debug/openapi_cpp_test.ilk
-output/Debug/openapi_cpp_test.pdb
-output/Release/openapi-cpp-sdk.exp
-output/Release/openapi-cpp-sdk.pdb
-output/Release/openapi_cpp_test.iobj
-output/Release/openapi_cpp_test.ipdb
-output/Release/openapi_cpp_test.pdb
-/output/Release/openapi-cpp-sdk.ipdb
-/output/Release/openapi-cpp-sdk.iobj
+*.iobj
+*.ilk
+*.ipdb
+*.pdb
+*.exp
 
+# Build directories
 Debug/
 Release/
-*.log
-
-output/Windows/Win32/Debug-MD/*.lib
-output/Windows/Win32/Debug-MT/*.lib
-output/Windows/Win32/Release-MD/*.lib
-output/Windows/Win32/Release-MT/*.lib
-
-output/Windows/x64/Debug-MD/*.lib
-output/Windows/x64/Debug-MT/*.lib
-output/Windows/x64/Release-MD/*.lib
-output/Windows/x64/Release-MT/*.lib
-
-output/Mac/Debug/*.dylib
-output/Mac/Debug/*.a
-output/Mac/Release/*.dylib
-output/Mac/Release/*.a
-
-output/Linux/Debug/
-output/Linux/Release/
-
-*.properties
+build/
+*-build/
+build-debug/
+build-release/
+cmake-build-debug/
 temp/
+
+# IDE and local tool state
 .cache/
+.claude/
 .deps/
+.idea/
+.kiro/
 .local_opt/
 .local_sdk/
 .vcpkg/
+.vs/
+.vscode/
+.DS_Store
+.DS_store
+
+# Dependency install roots
 vcpkg_installed/
 vcpkg_installed_x86/
 vcpkg_installed_static/
- $boostDir/
-build-debug/
-build-release/
+
+# Demo local files
 demo/build_test/
-.claude/
-.kiro/
+demo/openapi_cpp_test/Debug/
+demo/openapi_cpp_test/Release/
+demo/openapi_cpp_test/CMakeCache.txt
+demo/openapi_cpp_test/CMakeFiles/
+demo/openapi_cpp_test/Makefile
+demo/openapi_cpp_test/cmake_install.cmake
+demo/openapi_cpp_test/myeasylog.log
+
+# Local configuration and logs
+*.log
+*.properties
+test_report.txt
+
+# Output packages
+output/**
+!output/**/
+!output/**/*.zip
+!output/Windows/readme.md

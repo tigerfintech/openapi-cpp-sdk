@@ -4,12 +4,12 @@
 
 .DESCRIPTION
     This script codifies the Windows guidance from README.md:
-      * Requires a Visual Studio C++ workload and CMake 3.15+.
-      * Installs OpenSSL and cpprestsdk with vcpkg using the selected triplet.
-      * Builds Boost 1.86.0 and Protobuf 3.21.12 directly from their official source archives
-        (matching the Linux/macOS instructions) and caches the artifacts under .deps/.
-      * Configures, builds, installs, and optionally runs the SDK demo using the freshly built
-        dependencies so that Windows behavior mirrors Linux/macOS.
+            * Requires a Visual Studio C++ workload and CMake 3.15+.
+            * Installs OpenSSL and cpprestsdk with vcpkg using the selected triplet.
+            * Builds Boost 1.86.0 directly from its official source archive and caches it under .deps/.
+            * Uses vcpkg Protobuf by default, while keeping a source-install Protobuf path for CMake parity
+                with macOS/Linux.
+            * Configures, builds, installs, and optionally runs the SDK demo using the prepared dependencies.
 
     Typical usage:
         powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
@@ -49,17 +49,18 @@
     [string]$BoostRoot,
     [string]$ProtobufRoot,
 
+    [ValidateSet("Vcpkg","Source")]
+    [string]$ProtobufProvider = "Vcpkg",
+
     [string]$BoostVersion = "1.86.0",
-    [string]$ProtobufVersion = "3.21.12"
+    [string]$ProtobufVersion = "5.28.3"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-if (-not $PSScriptRoot) {
-    $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-}
-$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot ".." ) ).Path
+$ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+$RepoRoot = (Resolve-Path (Join-Path $ScriptRoot ".." ) ).Path
 
 if (-not $BuildDir) {
     $BuildDir = Join-Path $RepoRoot "build/windows"
@@ -81,7 +82,7 @@ if (-not $VcpkgRoot) {
 
 $DepsRoot          = Join-Path $RepoRoot ".deps"
 $DownloadsDir      = Join-Path $DepsRoot "downloads"
-$SourceDir         = Join-Path $DepsRoot "src"
+$DepsSourceDir     = Join-Path $DepsRoot "src"
 $DepsBuildDir      = Join-Path $DepsRoot "build"
 $DepsInstallDir    = Join-Path $DepsRoot "install"
 $ProcessorCount    = [Math]::Max([Environment]::ProcessorCount, 1)
@@ -131,7 +132,7 @@ function Ensure-Directory {
 
 $null = Ensure-Directory -Path $DepsRoot
 $null = Ensure-Directory -Path $DownloadsDir
-$null = Ensure-Directory -Path $SourceDir
+$null = Ensure-Directory -Path $DepsSourceDir
 $null = Ensure-Directory -Path $DepsBuildDir
 $null = Ensure-Directory -Path $DepsInstallDir
 
@@ -163,6 +164,11 @@ function Download-Archive {
 
     if (-not $Urls -or $Urls.Count -eq 0) {
         throw "No URLs provided to Download-Archive for $FriendlyName"
+    }
+
+    $destinationDir = Split-Path -Parent $Destination
+    if ($destinationDir) {
+        Ensure-Directory -Path $destinationDir | Out-Null
     }
 
     foreach ($url in $Urls) {
@@ -213,6 +219,25 @@ function Extract-Archive {
         Remove-Item -Path $DestinationPath -Recurse -Force -ErrorAction SilentlyContinue
     }
 
+    $tar = Get-Command tar -ErrorAction SilentlyContinue
+    if ($tar) {
+        try {
+            Write-Info "Extracting $FriendlyName with tar"
+            Ensure-Directory -Path $DestinationPath | Out-Null
+            & $tar.Source -xf $ArchivePath -C $DestinationPath
+            if ($LASTEXITCODE -eq 0) {
+                return
+            }
+            Write-Warn "tar extraction of $FriendlyName exited with code $LASTEXITCODE; falling back to Expand-Archive."
+        }
+        catch {
+            Write-Warn "tar extraction of $FriendlyName failed: $($_.Exception.Message); falling back to Expand-Archive."
+            if (Test-Path $DestinationPath) {
+                Remove-Item -Path $DestinationPath -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
+
     try {
         Write-Info "Extracting $FriendlyName"
         Expand-Archive -LiteralPath $ArchivePath -DestinationPath $DestinationPath -Force
@@ -258,7 +283,10 @@ function Ensure-PortableCMake {
         $url = "https://github.com/Kitware/CMake/releases/download/v$PortableCmakeVersion/$archiveName"
         if (-not (Test-Path $archivePath)) {
             Write-Info "Downloading portable CMake $PortableCmakeVersion"
-            Invoke-WebRequest -Uri $url -OutFile $archivePath -UseBasicParsing
+            $null = Download-Archive -Urls @($url) -Destination $archivePath -FriendlyName "CMake $PortableCmakeVersion"
+        } elseif (-not (Test-ZipArchive -ArchivePath $archivePath)) {
+            Remove-Item -Path $archivePath -Force -ErrorAction SilentlyContinue
+            $null = Download-Archive -Urls @($url) -Destination $archivePath -FriendlyName "CMake $PortableCmakeVersion"
         }
         if (Test-Path $cmakeRoot) {
             Remove-Item -Path $cmakeRoot -Recurse -Force
@@ -318,9 +346,9 @@ function Install-VcpkgPackages {
     if ($HasVcpkgManifest) {
         Push-Location $RepoRoot
         try {
-            $args = @("install")
-            if ($TripletValue) { $args += "--triplet"; $args += $TripletValue }
-            & $VcpkgExe @args
+            $vcpkgArgs = @("install")
+            if ($TripletValue) { $vcpkgArgs += "--triplet"; $vcpkgArgs += $TripletValue }
+            & $VcpkgExe @vcpkgArgs
             if ($LASTEXITCODE -ne 0) {
                 throw "vcpkg install failed for manifest triplet '$TripletValue'"
             }
@@ -332,19 +360,40 @@ function Install-VcpkgPackages {
     }
 
     if (-not $Packages -or $Packages.Count -eq 0) { return }
-    $args = @("install")
+    $vcpkgArgs = @("install")
     foreach ($pkg in $Packages) {
         if ($TripletValue) {
-            $args += "${pkg}:$TripletValue"
+            $vcpkgArgs += "${pkg}:$TripletValue"
         } else {
-            $args += $pkg
+            $vcpkgArgs += $pkg
         }
     }
-    $args += "--clean-after-build"
-    & $VcpkgExe @args
+    $vcpkgArgs += "--clean-after-build"
+    & $VcpkgExe @vcpkgArgs
     if ($LASTEXITCODE -ne 0) {
         throw "vcpkg install failed for packages $($Packages -join ', ')"
     }
+}
+
+function Resolve-VcpkgTripletRoot {
+    param([string]$TripletValue)
+
+    $candidates = @()
+    if ($HasVcpkgManifest) {
+        if ($TripletValue -match "x86") {
+            $candidates += Join-Path (Join-Path $RepoRoot "vcpkg_installed_x86") $TripletValue
+        }
+        $candidates += Join-Path (Join-Path $RepoRoot "vcpkg_installed") $TripletValue
+    }
+    $candidates += Join-Path (Join-Path $VcpkgRoot "installed") $TripletValue
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path $candidate) {
+            return (Resolve-Path $candidate).Path
+        }
+    }
+
+    throw "Unable to locate vcpkg installed triplet root for '$TripletValue'. Checked: $($candidates -join '; ')"
 }
 
 function Get-TripletDescriptor {
@@ -370,6 +419,33 @@ function Get-MsvcRuntimeLibrary {
             return "MultiThreadedDLL"
         }
     }
+}
+
+function Get-ProtobufReleaseVersion {
+    param([string]$Version)
+
+    if ($Version -match '^5\.(\d+\.\d+)$') {
+        return $Matches[1]
+    }
+    return $Version
+}
+
+function Resolve-ProtobufCMakeDir {
+    param([string]$Root)
+
+    $candidates = @(
+        (Join-Path $Root "share\protobuf"),
+        (Join-Path $Root "lib\cmake\protobuf"),
+        (Join-Path $Root "cmake")
+    )
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path (Join-Path $candidate "protobuf-config.cmake")) {
+            return $candidate
+        }
+    }
+
+    throw "Unable to locate protobuf-config.cmake under '$Root'."
 }
 
 function Prepare-BoostDependency {
@@ -406,19 +482,21 @@ function Prepare-BoostDependency {
         $null = Download-Archive -Urls $urls -Destination $archivePath -FriendlyName "Boost $Version"
     }
 
-    $sourceDir = Join-Path $SourceDir "boost_${token}"
+    $sourceDir = Join-Path $DepsSourceDir "boost_${token}"
     $hasFiles = $false
     if (Test-Path $sourceDir) {
-        $hasFiles = (Get-ChildItem -Path $sourceDir -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1) -ne $null
+        $hasFiles = $null -ne (Get-ChildItem -Path $sourceDir -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1)
     }
     if (-not $hasFiles) {
         Write-Info "Extracting Boost $Version"
-        Extract-Archive -ArchivePath $archivePath -DestinationPath $SourceDir -RetryUrls $urls -FriendlyName "Boost $Version"
+        Extract-Archive -ArchivePath $archivePath -DestinationPath $DepsSourceDir -RetryUrls $urls -FriendlyName "Boost $Version"
     }
 
     $tripletRoot = Ensure-Directory -Path (Join-Path $DepsInstallDir $Triplet)
     $installDir = Join-Path $tripletRoot "boost-$Version"
-    $stamp = Join-Path $installDir ".complete"
+    $boostVariant = if ($BuildType -like "Debug*") { "debug" } else { "release" }
+    $boostRuntimeLink = if ($Runtime -eq "MT") { "static" } else { "shared" }
+    $stamp = Join-Path $installDir ".complete-$BuildType-$Runtime"
     if (-not (Test-Path $stamp)) {
         Ensure-Directory -Path $installDir | Out-Null
         $addressModel = 64
@@ -442,10 +520,10 @@ function Prepare-BoostDependency {
                 "toolset=msvc",
                 "address-model=$addressModel",
                 "architecture=$architecture",
-                "link=shared,static",
-                "runtime-link=shared,static",
+                "link=static",
+                "runtime-link=$boostRuntimeLink",
                 "threading=multi",
-                "variant=debug,release",
+                "variant=$boostVariant",
                 "--layout=tagged",
                 "--prefix=$installDir",
                 "-j$ProcessorCount"
@@ -476,97 +554,141 @@ function Prepare-ProtobufDependency {
     if ($ProtobufRoot) {
         $resolved = Resolve-Path $ProtobufRoot -ErrorAction Stop
         $includeDir = Join-Path $resolved "include"
-        $libDir = Join-Path $resolved "lib"
+        $libDir = if ($BuildType -like "Debug*") { Join-Path $resolved "debug\lib" } else { Join-Path $resolved "lib" }
+        $releaseLibDir = Join-Path $resolved "lib"
         $binDir = Join-Path $resolved "bin"
-        $protoc = Join-Path $binDir "protoc.exe"
-        foreach ($path in @($includeDir,$libDir,$binDir,$protoc)) {
+        $toolsDir = Join-Path $resolved "tools\protobuf"
+        $cmakeDir = Resolve-ProtobufCMakeDir -Root $resolved
+        $protoc = Join-Path $toolsDir "protoc.exe"
+        if (-not (Test-Path $protoc)) {
+            $protoc = Join-Path $binDir "protoc.exe"
+        }
+        $protobufLibName = if ($BuildType -like "Debug*") { "libprotobufd.lib" } else { "libprotobuf.lib" }
+        $protobufLib = Join-Path $libDir $protobufLibName
+        foreach ($path in @($includeDir,$libDir,$releaseLibDir,$binDir,$cmakeDir,$protoc,$protobufLib)) {
             if (-not (Test-Path $path)) {
                 throw "Provided Protobuf root '$resolved' is missing $path."
             }
         }
-        return [pscustomobject]@{ Root=$resolved; Include=$includeDir; Lib=$libDir; Bin=$binDir; Protoc=$protoc }
+        return [pscustomobject]@{ Root=$resolved; Include=$includeDir; Lib=$libDir; ReleaseLib=$releaseLibDir; Bin=$binDir; CMakeDir=$cmakeDir; Protoc=$protoc; Library=$protobufLib }
     }
 
     if ($SkipDeps) {
         throw "Protobuf root not provided and -SkipDeps was supplied."
     }
 
-    $archiveName = "protobuf-cpp-$Version.zip"
-    $archivePath = Join-Path $DownloadsDir $archiveName
-    if (-not (Test-Path $archivePath)) {
-        $null = Download-Archive -Urls @("https://github.com/protocolbuffers/protobuf/releases/download/v$Version/$archiveName") -Destination $archivePath -FriendlyName "Protobuf $Version"
-    } elseif (-not (Test-ZipArchive -ArchivePath $archivePath)) {
-        Remove-Item -Path $archivePath -Force
-        $null = Download-Archive -Urls @("https://github.com/protocolbuffers/protobuf/releases/download/v$Version/$archiveName") -Destination $archivePath -FriendlyName "Protobuf $Version"
-    }
+    if ($ProtobufProvider -eq "Source") {
+        $releaseVersion = Get-ProtobufReleaseVersion -Version $Version
+        $archiveName = "protobuf-$releaseVersion.zip"
+        $archivePath = Join-Path $DownloadsDir $archiveName
+        $downloadUrl = "https://github.com/protocolbuffers/protobuf/releases/download/v$releaseVersion/$archiveName"
 
-    $sourceDir = Join-Path $SourceDir "protobuf-$Version"
-    $hasFiles = $false
-    if (Test-Path $sourceDir) {
-        $hasFiles = (Get-ChildItem -Path $sourceDir -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1) -ne $null
-    }
-    if (-not $hasFiles) {
-        Write-Info "Extracting Protobuf $Version"
-        Extract-Archive -ArchivePath $archivePath -DestinationPath $SourceDir -RetryUrls @("https://github.com/protocolbuffers/protobuf/releases/download/v$Version/$archiveName") -FriendlyName "Protobuf $Version"
-    }
-
-    $tripletRoot = Ensure-Directory -Path (Join-Path $DepsInstallDir $Triplet)
-    $runtimeToken = $Runtime.ToUpperInvariant()
-    $installDir = Join-Path $tripletRoot "protobuf-$Version-$runtimeToken"
-    $stamp = Join-Path $installDir ".complete"
-
-    if (-not (Test-Path $stamp)) {
-        if (Test-Path $installDir) {
-            Remove-Item -Path $installDir -Recurse -Force
-        }
-        Ensure-Directory -Path $installDir | Out-Null
-
-        $buildDir = Join-Path $DepsBuildDir "protobuf-$Triplet-$runtimeToken"
-        if (Test-Path $buildDir) {
-            Remove-Item -Path $buildDir -Recurse -Force
-        }
-        Ensure-Directory -Path $buildDir | Out-Null
-
-        $runtimeLibrary = Get-MsvcRuntimeLibrary -RuntimeFlavor $Runtime -Configuration $BuildType
-        $staticRuntime = if ($Runtime.ToUpperInvariant() -eq "MT") { "ON" } else { "OFF" }
-
-        $cmakeArgs = @("-S", $sourceDir, "-B", $buildDir,
-            "-DCMAKE_INSTALL_PREFIX=$installDir",
-            "-Dprotobuf_BUILD_TESTS=OFF",
-            "-Dprotobuf_BUILD_CONFORMANCE=OFF",
-            "-Dprotobuf_WITH_ZLIB=ON",
-            "-Dprotobuf_BUILD_SHARED_LIBS=ON",
-            "-Dprotobuf_MSVC_STATIC_RUNTIME=$staticRuntime",
-            "-DCMAKE_MSVC_RUNTIME_LIBRARY=$runtimeLibrary"
-        )
-        if ($Generator) { $cmakeArgs = @("-G", $Generator) + $cmakeArgs }
-        if ($Descriptor -and $Descriptor.ArchArg -and ($Generator -match "Visual Studio")) {
-            $cmakeArgs = @("-A", $Descriptor.ArchArg) + $cmakeArgs
+        if (-not (Test-Path $archivePath)) {
+            $null = Download-Archive -Urls @($downloadUrl) -Destination $archivePath -FriendlyName "Protobuf $Version"
+        } elseif (-not (Test-ZipArchive -ArchivePath $archivePath)) {
+            Remove-Item -Path $archivePath -Force
+            $null = Download-Archive -Urls @($downloadUrl) -Destination $archivePath -FriendlyName "Protobuf $Version"
         }
 
-        Write-Info "Configuring Protobuf $Version"
-        cmake @cmakeArgs
-
-        foreach ($config in @("Release","Debug")) {
-            $buildArgs = @("--build", $buildDir, "--config", $config, "--target", "install", "--parallel", $ProcessorCount)
-            cmake @buildArgs
+        $sourceDir = Join-Path $DepsSourceDir "protobuf-$releaseVersion"
+        $hasFiles = $false
+        if (Test-Path $sourceDir) {
+            $hasFiles = $null -ne (Get-ChildItem -Path $sourceDir -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1)
+        }
+        if (-not $hasFiles) {
+            Write-Info "Extracting Protobuf $Version source"
+            Extract-Archive -ArchivePath $archivePath -DestinationPath $DepsSourceDir -RetryUrls @($downloadUrl) -FriendlyName "Protobuf $Version"
         }
 
-        New-Item -ItemType File -Path $stamp -Force | Out-Null
+        $tripletInstallRoot = Ensure-Directory -Path (Join-Path $DepsInstallDir $Triplet)
+        $runtimeToken = $Runtime.ToUpperInvariant()
+        $installDir = Join-Path $tripletInstallRoot "protobuf-$Version-$runtimeToken"
+        $stamp = Join-Path $installDir ".complete-$BuildType"
+        if (-not (Test-Path $stamp)) {
+            if (Test-Path $installDir) {
+                Remove-Item -Path $installDir -Recurse -Force
+            }
+            Ensure-Directory -Path $installDir | Out-Null
+
+            $buildDir = Join-Path $DepsBuildDir "protobuf-$Triplet-$runtimeToken-$BuildType"
+            if (Test-Path $buildDir) {
+                Remove-Item -Path $buildDir -Recurse -Force
+            }
+            Ensure-Directory -Path $buildDir | Out-Null
+
+            $runtimeLibrary = Get-MsvcRuntimeLibrary -RuntimeFlavor $Runtime -Configuration $BuildType
+            $staticRuntime = if ($Runtime.ToUpperInvariant() -eq "MT") { "ON" } else { "OFF" }
+
+            $protobufCmakeArgs = @("-S", $sourceDir, "-B", $buildDir,
+                "-DCMAKE_INSTALL_PREFIX=$installDir",
+                "-DCMAKE_TOOLCHAIN_FILE=$(Join-Path $VcpkgRoot 'scripts\buildsystems\vcpkg.cmake')",
+                "-DVCPKG_TARGET_TRIPLET=$Triplet",
+                "-Dprotobuf_BUILD_TESTS=OFF",
+                "-Dprotobuf_BUILD_CONFORMANCE=OFF",
+                "-Dprotobuf_BUILD_EXAMPLES=OFF",
+                "-Dprotobuf_BUILD_SHARED_LIBS=ON",
+                "-Dprotobuf_ABSL_PROVIDER=package",
+                "-Dprotobuf_UTF8_RANGE_PROVIDER=package",
+                "-Dprotobuf_MSVC_STATIC_RUNTIME=$staticRuntime",
+                "-DCMAKE_MSVC_RUNTIME_LIBRARY=$runtimeLibrary"
+            )
+            if ($Generator) { $protobufCmakeArgs = @("-G", $Generator) + $protobufCmakeArgs }
+            if ($Descriptor -and $Descriptor.ArchArg -and ($Generator -match "Visual Studio")) {
+                $protobufCmakeArgs = @("-A", $Descriptor.ArchArg) + $protobufCmakeArgs
+            }
+
+            Write-Info "Configuring Protobuf $Version from source"
+            cmake @protobufCmakeArgs
+            if ($LASTEXITCODE -ne 0) { throw "Protobuf source configure failed." }
+
+            Write-Info "Building Protobuf $Version from source"
+            cmake --build $buildDir --config $BuildType --target install --parallel $ProcessorCount
+            if ($LASTEXITCODE -ne 0) { throw "Protobuf source build failed." }
+
+            New-Item -ItemType File -Path $stamp -Force | Out-Null
+        }
+
+        $root = (Resolve-Path $installDir).Path
+        $includeDir = Join-Path $root "include"
+        $configLibDir = Join-Path $root "lib"
+        $releaseLibDir = Join-Path $root "lib"
+        $binDir = Join-Path $root "bin"
+        $cmakeDir = Resolve-ProtobufCMakeDir -Root $root
+        $protoc = Join-Path $binDir "protoc.exe"
+        $protobufLibName = if ($BuildType -like "Debug*") { "libprotobufd.lib" } else { "libprotobuf.lib" }
+        $protobufLib = Join-Path $configLibDir $protobufLibName
+
+        foreach ($path in @($includeDir,$configLibDir,$releaseLibDir,$binDir,$cmakeDir,$protoc,$protobufLib)) {
+            if (-not (Test-Path $path)) {
+                throw "Missing source-built Protobuf component '$path'."
+            }
+        }
+
+        return [pscustomobject]@{ Root=$root; Include=$includeDir; Lib=$configLibDir; ReleaseLib=$releaseLibDir; Bin=$binDir; CMakeDir=$cmakeDir; Protoc=$protoc; Library=$protobufLib }
     }
 
-    $root = (Resolve-Path $installDir).Path
+    $root = Resolve-VcpkgTripletRoot -TripletValue $Triplet
     $includeDir = Join-Path $root "include"
-    $libDir = Join-Path $root "lib"
+    $configLibDir = if ($BuildType -like "Debug*") { Join-Path $root "debug\lib" } else { Join-Path $root "lib" }
+    $releaseLibDir = Join-Path $root "lib"
     $binDir = Join-Path $root "bin"
-    $protoc = Join-Path $binDir "protoc.exe"
-    foreach ($path in @($includeDir,$libDir,$binDir,$protoc)) {
+    $toolsDir = Join-Path $root "tools\protobuf"
+    $cmakeDir = Join-Path $root "share\protobuf"
+    $protoc = Join-Path $toolsDir "protoc.exe"
+    if (-not (Test-Path $protoc)) {
+        $protoc = Join-Path $binDir "protoc.exe"
+    }
+
+    $protobufLibName = if ($BuildType -like "Debug*") { "libprotobufd.lib" } else { "libprotobuf.lib" }
+    $protobufLib = Join-Path $configLibDir $protobufLibName
+
+    foreach ($path in @($includeDir,$configLibDir,$releaseLibDir,$binDir,$cmakeDir,$protoc,$protobufLib)) {
         if (-not (Test-Path $path)) {
-            throw "Missing Protobuf component '$path' after build."
+            throw "Missing vcpkg Protobuf component '$path'. Run vcpkg install for triplet '$Triplet'."
         }
     }
 
-    return [pscustomobject]@{ Root=$root; Include=$includeDir; Lib=$libDir; Bin=$binDir; Protoc=$protoc }
+    return [pscustomobject]@{ Root=$root; Include=$includeDir; Lib=$configLibDir; ReleaseLib=$releaseLibDir; Bin=$binDir; CMakeDir=$cmakeDir; Protoc=$protoc; Library=$protobufLib }
 }
 
 function Invoke-CMakeConfigure {
@@ -581,24 +703,24 @@ function Invoke-CMakeConfigure {
     )
 
     Ensure-Directory -Path $BinaryDir | Out-Null
-    $args = @("-S", $SourceDir, "-B", $BinaryDir, "-DCMAKE_BUILD_TYPE=$BuildTypeValue")
-    if ($GeneratorValue) { $args = @("-G", $GeneratorValue) + $args }
-    if ($Architecture) { $args = @("-A", $Architecture) + $args }
-    if ($ToolchainFile) { $args += "-DCMAKE_TOOLCHAIN_FILE=$ToolchainFile" }
+    $cmakeArgs = @("-S", $SourceDir, "-B", $BinaryDir, "-DCMAKE_BUILD_TYPE=$BuildTypeValue")
+    if ($GeneratorValue) { $cmakeArgs = @("-G", $GeneratorValue) + $cmakeArgs }
+    if ($Architecture) { $cmakeArgs = @("-A", $Architecture) + $cmakeArgs }
+    if ($ToolchainFile) { $cmakeArgs += "-DCMAKE_TOOLCHAIN_FILE=$ToolchainFile" }
     foreach ($key in $Definitions.Keys) {
         $value = $Definitions[$key]
         if ($null -ne $value -and $value -ne "") {
-            $args += "-D${key}=$value"
+            $cmakeArgs += "-D${key}=$value"
         }
     }
-    cmake @args
+    cmake @cmakeArgs
 }
 
 function Invoke-CMakeBuild {
     param([string]$BinaryDir,[string]$BuildTypeValue,[string[]]$Targets)
-    $args = @("--build", $BinaryDir, "--config", $BuildTypeValue, "--parallel", $ProcessorCount)
-    if ($Targets -and $Targets.Count -gt 0) { $args += "--target"; $args += $Targets }
-    cmake @args
+    $cmakeBuildArgs = @("--build", $BinaryDir, "--config", $BuildTypeValue, "--parallel", $ProcessorCount)
+    if ($Targets -and $Targets.Count -gt 0) { $cmakeBuildArgs += "--target"; $cmakeBuildArgs += $Targets }
+    cmake @cmakeBuildArgs
 }
 
 function Invoke-CMakeInstall { param([string]$BinaryDir,[string]$BuildTypeValue) cmake --install $BinaryDir --config $BuildTypeValue }
@@ -679,23 +801,25 @@ if (-not (Test-Path $toolchainFile)) {
     throw "vcpkg toolchain file missing at $toolchainFile"
 }
 
-Write-Info "Preparing Boost/Protobuf source dependencies"
+Write-Info "Preparing Boost source dependency and Protobuf ($ProtobufProvider provider)"
 $boostLayout = Prepare-BoostDependency -Version $BoostVersion -Descriptor $descriptor
 $protobufLayout = Prepare-ProtobufDependency -Version $ProtobufVersion -Descriptor $descriptor
-$tripletRoot = Join-Path $VcpkgRoot "installed" $Triplet
+$tripletRoot = Resolve-VcpkgTripletRoot -TripletValue $Triplet
 
 if (-not $SkipSdk) {
     Write-Info "Configuring Tiger OpenAPI SDK"
     $sdkDefines = @{
         "CMAKE_INSTALL_PREFIX"       = $InstallPrefix
         "CMAKE_MSVC_RUNTIME_LIBRARY" = Get-MsvcRuntimeLibrary -RuntimeFlavor $Runtime -Configuration $BuildType
-        "BOOST_ROOT"                 = $boostLayout.Root
+        "Boost_ROOT"                 = $boostLayout.Root
         "BOOST_INCLUDEDIR"           = $boostLayout.Include
         "BOOST_LIBRARYDIR"           = $boostLayout.Lib
         "Boost_USE_STATIC_LIBS"      = "ON"
         "Protobuf_ROOT"              = $protobufLayout.Root
-        "Protobuf_DIR"               = Join-Path $protobufLayout.Root "lib/cmake/protobuf"
+        "Protobuf_DIR"               = $protobufLayout.CMakeDir
         "Protobuf_PROTOC_EXECUTABLE" = $protobufLayout.Protoc
+        "Protobuf_INCLUDE_DIR"       = $protobufLayout.Include
+        "Protobuf_LIBRARY"           = $protobufLayout.Library
         "Protobuf_USE_STATIC_LIBS"   = "OFF"
         "CPPREST_PREFIX"             = $tripletRoot
         "OPENSSL_ROOT_DIR"           = $tripletRoot
@@ -735,16 +859,17 @@ if (-not $SkipDemo) {
         "CMAKE_MSVC_RUNTIME_LIBRARY" = Get-MsvcRuntimeLibrary -RuntimeFlavor $Runtime -Configuration $BuildType
         "TIGERAPI_INCLUDE_DIR"       = $tigerHeaders
         "TIGERAPI_LIBRARY"           = $tigerLibrary
-        "BOOST_ROOT"                 = $boostLayout.Root
+        "Boost_ROOT"                 = $boostLayout.Root
         "BOOST_INCLUDEDIR"           = $boostLayout.Include
         "BOOST_LIBRARYDIR"           = $boostLayout.Lib
         "Boost_USE_STATIC_LIBS"      = "ON"
         "Protobuf_ROOT"              = $protobufLayout.Root
-        "Protobuf_DIR"               = Join-Path $protobufLayout.Root "lib/cmake/protobuf"
+        "Protobuf_DIR"               = $protobufLayout.CMakeDir
         "Protobuf_PROTOC_EXECUTABLE" = $protobufLayout.Protoc
+        "Protobuf_INCLUDE_DIR"       = $protobufLayout.Include
+        "Protobuf_LIBRARY"           = $protobufLayout.Library
         "Protobuf_USE_STATIC_LIBS"   = "OFF"
         "CPPREST_PREFIX"             = $tripletRoot
-        "PROTOBUF_PREFIX"            = $protobufLayout.Root
         "CMAKE_PREFIX_PATH"          = ($boostLayout.Root, $protobufLayout.Root, $tripletRoot, $InstallPrefix -join ';')
         "VCPKG_TARGET_TRIPLET"       = $Triplet
     }

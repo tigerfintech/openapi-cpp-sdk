@@ -39,11 +39,22 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{a0427c13-8778-450a-a8f1-9e4984b882a5}</ProjectGuid>
     <RootNamespace>openapicpptest</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <BOOST_ROOT Condition="'$(BOOST_ROOT)'==''">$(ProjectDir)..\..\.deps\boost\boost_1_86_0</BOOST_ROOT>
-    <IncludePath>$(BOOST_ROOT);$(BOOST_ROOT)\libs\asio\include;$(IncludePath)</IncludePath>
+    <BoostTriplet Condition="'$(Platform)'=='Win32'">x86-windows</BoostTriplet>
+    <BoostTriplet Condition="'$(Platform)'!='Win32'">x64-windows</BoostTriplet>
+    <OPENAPI_BOOST_INSTALL_ROOT>$(ProjectDir)..\..\.deps\install\$(BoostTriplet)\boost-1.86.0</OPENAPI_BOOST_INSTALL_ROOT>
+    <OPENAPI_BOOST_ROOT>$(ProjectDir)..\..\.deps\src\boost_1_86_0</OPENAPI_BOOST_ROOT>
+    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgAutoLink>false</VcpkgAutoLink>
+    <VcpkgInstalledDir Condition="'$(Platform)'=='Win32'">$(ProjectDir)..\..\vcpkg_installed_x86\</VcpkgInstalledDir>
+    <VcpkgInstalledDir Condition="'$(Platform)'!='Win32'">$(ProjectDir)..\..\vcpkg_installed\</VcpkgInstalledDir>
+    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'!='Win32'">x64-windows</VcpkgTriplet>
+    <VcpkgConfigDir Condition="'$(Configuration)'=='Debug-MD' Or '$(Configuration)'=='Debug-MT'">debug\</VcpkgConfigDir>
+    <VcpkgConfigDir Condition="'$(Configuration)'=='Release-MD' Or '$(Configuration)'=='Release-MT'"></VcpkgConfigDir>
+    <IncludePath>$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'" Label="Configuration">
@@ -164,62 +175,62 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x86-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x86-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x86-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x86-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x64-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x64-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x86-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x86-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;libprotobufd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -228,17 +239,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x86-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x86-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
@@ -247,9 +258,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\vcpkg_installed\x64-windows\include;..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -257,8 +268,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\vcpkg_installed\x64-windows\lib;..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -267,17 +278,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'">
@@ -286,9 +297,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(OPENAPI_BOOST_ROOT)\include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -296,8 +307,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;libprotobuf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_INSTALL_ROOT)\lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openapi-cpp-sdk.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -343,3 +354,4 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
+

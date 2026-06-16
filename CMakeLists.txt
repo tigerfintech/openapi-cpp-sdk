@@ -1,5 +1,9 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
+
 
 # Find the source file that contains the version information
 find_file(VERSION_FILE include/tigerapi/version.h PATHS ${CMAKE_SOURCE_DIR})
@@ -19,13 +23,13 @@ if(NOT (UNIX OR WIN32))
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
 
-find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 if(WIN32)
     # Prevent FindThreads from insisting on pthreads when building with MSVC
     set(CMAKE_USE_WIN32_THREADS_INIT ON)
     set(CMAKE_THREAD_PREFER_PTHREAD OFF)
     set(THREADS_PREFER_PTHREAD_FLAG OFF)
 endif()
+find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -149,10 +153,14 @@ list(REMOVE_DUPLICATES PRIVATE_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES SYSTEM_INCLUDE_DIRS)
 
 set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
+set(PROTOBUF_LIBS "${Protobuf_LIBRARIES}")
+if(TARGET protobuf::libprotobuf)
+    set(PROTOBUF_LIBS protobuf::libprotobuf)
+endif()
 set(LIBRARIES_SEARCH_PATHS
     ${OPENSSL_LIBS}
     ${Boost_LIBRARIES}
-    ${Protobuf_LIBRARIES}
+    ${PROTOBUF_LIBS}
     OpenSSL::SSL
     OpenSSL::Crypto
 )

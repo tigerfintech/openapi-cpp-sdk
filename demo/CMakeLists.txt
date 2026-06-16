@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
+
 
 project(openapi_cpp_test)
 
@@ -82,7 +86,7 @@ if(UNIX) # Darwing or Linux
         message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
         message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
         
-        # Find Abseil (required by Protobuf v25)
+        # Find Abseil (required by Protobuf 5.x)
         find_package(absl QUIET)
         if(NOT absl_FOUND)
             set(ABSL_PREFIX "/opt/homebrew/Cellar/abseil/20240722.0")
@@ -97,7 +101,40 @@ if(UNIX) # Darwing or Linux
     endif()
 
 elseif(WIN32) # Windows systems including Win64.
-    message(FATAL_ERROR "-- please compile by visual studio")
+    set(CMAKE_USE_WIN32_THREADS_INIT ON)
+    set(CMAKE_THREAD_PREFER_PTHREAD OFF)
+    set(THREADS_PREFER_PTHREAD_FLAG OFF)
+    find_package(Boost REQUIRED COMPONENTS system thread log program_options chrono filesystem)
+    find_package(Threads REQUIRED)
+    find_package(OpenSSL REQUIRED)
+    find_package(Protobuf REQUIRED)
+    find_package(absl CONFIG REQUIRED)
+    find_package(cpprestsdk CONFIG REQUIRED)
+
+    if(NOT TIGERAPI_INCLUDE_DIR)
+        find_path(TIGERAPI_INCLUDE_DIR NAMES tigerapi/easylogging++.h tigerapi/client_config.h)
+    endif()
+    if(NOT TIGERAPI_LIBRARY)
+        find_library(TIGERAPI_LIBRARY NAMES tigerapi openapi-cpp-sdk)
+    endif()
+    if(NOT TIGERAPI_INCLUDE_DIR OR NOT TIGERAPI_LIBRARY)
+        message(FATAL_ERROR "TigerAPI headers or library not found. Set TIGERAPI_INCLUDE_DIR/TIGERAPI_LIBRARY explicitly.")
+    endif()
+
+    set(CPPREST_INCLUDE_DIR "")
+    set(CPPREST_LIBRARY cpprestsdk::cpprest)
+    set(Protobuf_INCLUDE_DIR ${Protobuf_INCLUDE_DIRS})
+    if(TARGET protobuf::libprotobuf)
+        set(Protobuf_LIBRARY protobuf::libprotobuf)
+    elseif(NOT Protobuf_LIBRARY)
+        set(Protobuf_LIBRARY ${Protobuf_LIBRARIES})
+    endif()
+    if(TARGET absl::abseil_dll)
+        set(ABSL_LIBRARY absl::abseil_dll)
+    endif()
+    message(STATUS "Protobuf version: ${Protobuf_VERSION}")
+    message(STATUS "Protobuf include dir: ${Protobuf_INCLUDE_DIR}")
+    message(STATUS "Protobuf libraries: ${Protobuf_LIBRARY}")
 else()
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
@@ -118,6 +155,9 @@ endif()
 # Project construction ...
 # src files ...
 add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN PROTOBUF_USE_DLLS)
+endif()
 
 # headers search paths ...
 # Protobuf_INCLUDE_DIR must come before TIGERAPI_INCLUDE_DIR so the system protobuf
@@ -135,7 +175,7 @@ if(APPLE)
     set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
 else()
     set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
-    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} )
+    set(LIBRARIES_SEARCH_PATHS ${OPENSSL_LIBS} ${Boost_LIBRARIES} ${ZIP_LIBRARY} ${CPPREST_LIBRARY} ${TIGERAPI_LIBRARY} ${Protobuf_LIBRARY} ${ABSL_LIBRARY})
 endif()
 
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
