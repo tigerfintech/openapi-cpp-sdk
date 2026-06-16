@@ -29,8 +29,8 @@ if(WIN32)
     set(CMAKE_THREAD_PREFER_PTHREAD OFF)
     set(THREADS_PREFER_PTHREAD_FLAG OFF)
 endif()
-# Boost 1.86–1.89: safe range. 1.90+ changes Boost.Asio internals that break cpprestsdk
-# on macOS (SIGSEGV in do_use_service). Pass -DBOOST_ROOT to pin to a source-built copy.
+# Requires Boost >= 1.86. cpprestsdk is built from source against the same BOOST_ROOT,
+# so ABI is consistent regardless of version. Pass -DBOOST_ROOT to use a specific copy.
 find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)

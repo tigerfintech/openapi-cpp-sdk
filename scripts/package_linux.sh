@@ -28,11 +28,11 @@ _check_system_boost() {
     [ -n "$ver_num" ] || return 1
     local major=$(( ver_num / 100000 ))
     local minor=$(( (ver_num / 100) % 1000 ))
-    if [ "$major" -eq 1 ] && [ "$minor" -ge 86 ] && [ "$minor" -lt 90 ]; then
+    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -ge 86 ]); then
         echo "    [boost] Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
         return 0
     fi
-    echo "    [boost] System Boost ${major}.${minor} outside [1.86, 1.90); will build from source."
+    echo "    [boost] System Boost ${major}.${minor} < 1.86; will build from source."
     return 1
 }
 

@@ -256,12 +256,13 @@ _check_system_boost() {
   [[ -n "$ver_num" ]] || return 1
   local major=$(( ver_num / 100000 ))
   local minor=$(( (ver_num / 100) % 1000 ))
-  # Require >= 1.86 and < 1.90 (1.90+ has ABI incompatibility with cpprestsdk on macOS)
-  if (( major == 1 && minor >= 86 && minor < 90 )); then
+  # Require >= 1.86. cpprestsdk is always built from source against the same BOOST_ROOT,
+  # so any version >= 1.86 is ABI-consistent end-to-end.
+  if (( major > 1 || (major == 1 && minor >= 86) )); then
     log "Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
     return 0
   fi
-  warn "System Boost ${major}.${minor} outside compatible range [1.86, 1.90); will build 1.86 from source."
+  warn "System Boost ${major}.${minor} < 1.86; will build 1.86 from source."
   return 1
 }
 
