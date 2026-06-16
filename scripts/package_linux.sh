@@ -123,6 +123,14 @@ build_variant() {
     local BUILD_DIR="$2"
     local PROTOBUF_CMAKE_DIR
     PROTOBUF_CMAKE_DIR=$(_find_protobuf_cmake_dir)
+    # Resolve OpenSSL paths explicitly so cpprestsdk's find_dependency(OpenSSL)
+    # cannot produce a broken OpenSSL::SSL target with INTERFACE_INCLUDE_DIRECTORIES="/include".
+    local openssl_root="${OPENSSL_ROOT_DIR:-/usr}"
+    local openssl_include="${OPENSSL_INCLUDE_DIR:-${openssl_root}/include}"
+    local openssl_crypto="${OPENSSL_CRYPTO_LIBRARY:-${openssl_root}/lib/libcrypto.so}"
+    local openssl_ssl="${OPENSSL_SSL_LIBRARY:-${openssl_root}/lib/libssl.so}"
+    [ -f "$openssl_crypto" ] || openssl_crypto="${openssl_root}/lib64/libcrypto.so"
+    [ -f "$openssl_ssl" ]   || openssl_ssl="${openssl_root}/lib64/libssl.so"
     echo ""
     echo "==> Step 2/4: Building ${BUILD_TYPE}..."
     # Remove stale cache to prevent cached Protobuf_ROOT/Protobuf_DIR from a previous
@@ -130,11 +138,15 @@ build_variant() {
     rm -f "${BUILD_DIR}/CMakeCache.txt"
     cmake -S . -B "${BUILD_DIR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-        -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_1_86_ROOT}" \
+        -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_1_86_ROOT};${openssl_root}" \
         -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
         -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
         -DProtobuf_DIR="${PROTOBUF_CMAKE_DIR}" \
         -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
+        -DOPENSSL_ROOT_DIR="${openssl_root}" \
+        -DOPENSSL_INCLUDE_DIR="${openssl_include}" \
+        -DOPENSSL_CRYPTO_LIBRARY="${openssl_crypto}" \
+        -DOPENSSL_SSL_LIBRARY="${openssl_ssl}" \
         -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
         -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}/include" \
         -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/lib" \
