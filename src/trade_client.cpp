@@ -985,10 +985,10 @@ namespace TIGER_API {
         if (!executing_date.empty()) {
             obj[U("executing_date")] = value::string(executing_date);
         }
-        if (is_force >= 0) {
+        if (is_force != PARAM_NOT_SET) {
             obj[U("is_force")] = value::boolean(is_force != 0);
         }
-        if (itm_rate >= 0) {
+        if (itm_rate != PARAM_NOT_SET) {
             obj[U("itm_rate")] = value::number(itm_rate);
         }
         return post(OPTION_EXERCISE_SUBMIT, obj);
@@ -1006,10 +1006,10 @@ namespace TIGER_API {
         if (!executing_date.empty()) {
             obj[U("executing_date")] = value::string(executing_date);
         }
-        if (is_force >= 0) {
+        if (is_force != PARAM_NOT_SET) {
             obj[U("is_force")] = value::boolean(is_force != 0);
         }
-        if (itm_rate >= 0) {
+        if (itm_rate != PARAM_NOT_SET) {
             obj[U("itm_rate")] = value::number(itm_rate);
         }
         return post(OPTION_EXERCISE_CHECK, obj);

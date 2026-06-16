@@ -121,7 +121,7 @@ namespace TIGER_API {
                 throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
             }
             if (!result.has_field(P_SIGN) || !result[P_SIGN].is_string()) {
-                LOG(ERROR) << U("Exception: response missing sign field");
+                LOG(ERROR) << U("Exception: response missing sign field, response: ") << result_str;
                 throw std::runtime_error("Exception: response missing sign field");
             }
             utility::string_t res_sign = result[P_SIGN].as_string();

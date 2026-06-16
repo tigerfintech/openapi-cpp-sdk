@@ -22,7 +22,9 @@ namespace TIGER_API {
         ~TigerClient() = default;
 
         // client_config is read-only after construction; TigerClient is thread-safe
-        // for concurrent send_request() calls once constructed.
+        // for concurrent send_request() calls once constructed, provided the underlying
+        // cpprestsdk http_client::request() supports concurrent calls (verified on
+        // cpprestsdk >= 2.10 where http_client is documented as thread-safe).
         const ClientConfig client_config;
 
         value post(const utility::string_t &api_method, value &params);

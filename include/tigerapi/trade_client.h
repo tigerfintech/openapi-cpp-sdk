@@ -204,19 +204,22 @@ namespace TIGER_API {
 
         /** Option early exercise / abandon **/
 
+        // Sentinel value for optional int parameters that are not set.
+        static const int PARAM_NOT_SET = -1;
+
         /**
          * Submit an option early exercise or abandon (expire) request.
          * @param contract_id  Option contract ID
          * @param type         Exercise type: "Exercise" | "Expire"
          * @param quantity     Number of contracts (> 0)
          * @param executing_date  Execution date yyyy-MM-dd. Required when type=Exercise
-         * @param is_force     Whether to force exercise. Required when type=Exercise (-1 = not set)
-         * @param itm_rate     In-the-money rate 0-10. Optional, only for Expire type
+         * @param is_force     Whether to force exercise. Required when type=Exercise (PARAM_NOT_SET = omit)
+         * @param itm_rate     In-the-money rate 0-10. Optional, only for Expire type (PARAM_NOT_SET = omit)
          * @param account      Trading account; defaults to config account
          */
         value submit_option_exercise(long long contract_id, utility::string_t type, double quantity,
-                                     utility::string_t executing_date = U(""), int is_force = -1,
-                                     int itm_rate = -1, utility::string_t account = U(""));
+                                     utility::string_t executing_date = U(""), int is_force = PARAM_NOT_SET,
+                                     int itm_rate = PARAM_NOT_SET, utility::string_t account = U(""));
 
         /**
          * Preview the stock position changes from an exercise/expire request.
@@ -224,13 +227,13 @@ namespace TIGER_API {
          * @param type             Exercise type: "Exercise" | "Expire"
          * @param quantity         Number of contracts (> 0; required)
          * @param executing_date   Execution date yyyy-MM-dd. Required when type=Exercise
-         * @param is_force         Whether to force exercise. Required when type=Exercise (-1 = not set)
-         * @param itm_rate         In-the-money rate 0-10. Optional, only for Expire type (-1 = not set)
+         * @param is_force         Whether to force exercise. Required when type=Exercise (PARAM_NOT_SET = omit)
+         * @param itm_rate         In-the-money rate 0-10. Optional, only for Expire type (PARAM_NOT_SET = omit)
          * @param account          Trading account; defaults to config account
          */
         value check_option_exercise(long long contract_id, utility::string_t type, double quantity,
-                                    utility::string_t executing_date = U(""), int is_force = -1,
-                                    int itm_rate = -1, utility::string_t account = U(""));
+                                    utility::string_t executing_date = U(""), int is_force = PARAM_NOT_SET,
+                                    int itm_rate = PARAM_NOT_SET, utility::string_t account = U(""));
 
         /**
          * Query paginated option exercise/expire records.
