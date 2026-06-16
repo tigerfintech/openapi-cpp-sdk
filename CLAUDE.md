@@ -16,7 +16,7 @@
 | 依赖 | 版本 | 用途 |
 |------|------|------|
 | Boost | 1.86.0 | system, thread, log, program_options |
-| OpenSSL | 1.0.1+ | 加密通信 |
+| OpenSSL | 3.x | 加密通信 |
 | cpprestsdk | latest | HTTP 客户端 |
 | Protobuf | 5.28.3 | 数据序列化 |
 | Abseil | 20240722+ | Protobuf 运行时依赖 |
@@ -38,6 +38,7 @@ openapi-cpp-sdk/
 ## 主要特性
 
 - 完整的交易接口支持（下单、撤单、查询持仓）
+- 期权行权（submit / check / get_records / get_positions / cancel）
 - 实时行情数据获取（K线、报价、逐笔成交）
 - WebSocket 长连接推送（持仓、订单、行情实时推送）
 - 跨平台支持（macOS、Linux、Windows）
@@ -50,10 +51,24 @@ openapi-cpp-sdk/
 
 ```bash
 chmod +x scripts/build_linux_mac.sh
-./scripts/build_linux_mac.sh
+./scripts/build_linux_mac.sh           # Debug + Release
+BUILD_TYPE=Release ./scripts/build_linux_mac.sh  # 仅 Release
+```
 
-# Release 模式
-BUILD_TYPE=Release ./scripts/build_linux_mac.sh
+构建策略：优先使用系统已安装的 Boost（>= 1.86）；不满足则自动从源码编译 1.86.0。
+macOS 使用 Homebrew protobuf 5.28.3；Linux 从源码编译 protobuf v5.28.3（含 abseil-cpp 子模块）。
+
+**输出路径**：`output/{Mac,Linux}/{Debug,Release}/`（lib + include），无额外 `sdk/` 子目录。
+
+### Linux 打包
+
+```bash
+# build_linux_mac.sh 成功后直接打包（自动跳过重新编译）
+./scripts/package_linux.sh
+# 输出：output/Linux/Debug.zip  output/Linux/Release.zip
+
+# 强制重新编译再打包
+rm -rf output/Linux/ && ./scripts/package_linux.sh
 ```
 
 ### Windows
