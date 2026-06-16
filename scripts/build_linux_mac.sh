@@ -286,7 +286,7 @@ build_boost() {
     fail "bootstrap.sh not found in ${src_dir} — tarball may be corrupt. Delete ${CACHE_DIR}/${BOOST_TARBALL} and retry."
   fi
   pushd "$src_dir" >/dev/null
-  ./bootstrap.sh --prefix "$BOOST_ROOT"
+  ./bootstrap.sh
   ./b2 headers
   ./b2 -j "$NUM_JOBS" --prefix="$BOOST_ROOT" install
   popd >/dev/null

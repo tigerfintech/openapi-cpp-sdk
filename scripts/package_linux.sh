@@ -58,8 +58,7 @@ ensure_boost() {
         exit 1
     fi
     pushd "${src_dir}" >/dev/null
-    ./bootstrap.sh --prefix="${BOOST_1_86_ROOT}" \
-        --with-libraries=thread,log,program_options,chrono,filesystem,atomic,regex
+    ./bootstrap.sh
     ./b2 headers
     ./b2 -j"${JOBS}" install
     popd >/dev/null
