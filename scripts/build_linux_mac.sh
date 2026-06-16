@@ -315,6 +315,16 @@ build_boost() {
   if [[ ! -f "${src_dir}/bootstrap.sh" ]]; then
     fail "bootstrap.sh not found in ${src_dir} — tarball may be corrupt. Delete ${CACHE_DIR}/${BOOST_TARBALL} and retry."
   fi
+
+  # Check write permission on BOOST_ROOT parent before b2 install attempts mkdir.
+  local boost_parent
+  boost_parent="$(dirname "$BOOST_ROOT")"
+  if [[ ! -w "$boost_parent" ]]; then
+    fail "No write permission for ${BOOST_ROOT}.
+  Option 1: run with sudo:  sudo BOOST_ROOT=${BOOST_ROOT} $0
+  Option 2: writable path:  BOOST_ROOT=\$HOME/boost_${BOOST_VERSION} $0"
+  fi
+
   pushd "$src_dir" >/dev/null
   ./bootstrap.sh
   ./b2 headers
