@@ -98,7 +98,7 @@ CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1 && [[ -d "$(brew --prefix protobuf 2>/dev/null)/lib/cmake" ]]; then
   PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(brew --prefix protobuf)}"
 else
-  PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
+  PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
   PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
 fi
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
@@ -471,8 +471,11 @@ build_sdk() {
       -DCMAKE_BUILD_TYPE="$cfg" \
       -DCMAKE_INSTALL_PREFIX="$install_dir" \
       -DBOOST_ROOT="$BOOST_ROOT" \
+      -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
+      -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_DIR="${protobuf_cmake_dir}" \
       -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT}" \
+      -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
       -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
       ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
     cmake --build "$build_dir" -- -j "$NUM_JOBS"

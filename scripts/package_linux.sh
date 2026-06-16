@@ -14,6 +14,10 @@ BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
 BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
 BOOST_1_86_ROOT="${BOOST_ROOT:-/usr/local/boost_${BOOST_VERSION}}"
 CACHE_DIR="${PROJECT_ROOT}/.cache"
+# Protobuf 5.28.3 must match pb_source generated headers (regenerated with protoc 5.28.3)
+PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
+PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-/usr/local/opt/protobuf-${PROTOBUF_VERSION}}"
+CPPREST_PREFIX="${CPPREST_PREFIX:-/usr/local/opt/cpprestsdk}"
 
 echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - Linux Package"
@@ -95,19 +99,42 @@ ensure_boost
 
 # 1. 创建构建目录（清理旧 cmake cache 确保路径生效）
 echo ""
-echo "==> Step 1/5: Creating build directories..."
+echo "==> Step 1/4: Creating build directories..."
 rm -rf build-debug build-release
 mkdir -p build-debug build-release
+
+# Resolve cmake config directory for protobuf (handles lib64 and share variants).
+_find_protobuf_cmake_dir() {
+    for candidate in \
+        "${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/lib64/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/share/cmake/protobuf"; do
+        if [ -f "${candidate}/protobuf-config.cmake" ]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    echo "${PROTOBUF_PREFIX}/lib/cmake/protobuf"
+}
 
 # Shared cmake configure + build function for Debug and Release variants.
 build_variant() {
     local BUILD_TYPE="$1"
     local BUILD_DIR="$2"
+    local PROTOBUF_CMAKE_DIR
+    PROTOBUF_CMAKE_DIR=$(_find_protobuf_cmake_dir)
     echo ""
-    echo "==> Step 2/5: Building ${BUILD_TYPE}..."
+    echo "==> Step 2/4: Building ${BUILD_TYPE}..."
+    # Remove stale cache to prevent cached Protobuf_ROOT/Protobuf_DIR from a previous
+    # build overriding the values we pass here.
+    rm -f "${BUILD_DIR}/CMakeCache.txt"
     cmake -S . -B "${BUILD_DIR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-        -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v25.1" \
+        -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_1_86_ROOT}" \
+        -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
+        -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
+        -DProtobuf_DIR="${PROTOBUF_CMAKE_DIR}" \
+        -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
         -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
         -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}/include" \
         -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/lib" \
@@ -120,28 +147,22 @@ build_variant() {
 build_variant Debug build-debug
 build_variant Release build-release
 
-# 3. 安装
+# 3. 安装 (installs headers + lib under output/Linux/Debug and output/Linux/Release)
 echo ""
-echo "==> Step 3/5: Installing to output/Linux/sdk..."
-cmake --install build-debug --prefix output/Linux/sdk/Debug
-cmake --install build-release --prefix output/Linux/sdk/Release
+echo "==> Step 3/4: Installing to output/Linux/..."
+mkdir -p output/Linux/Debug output/Linux/Release
+cmake --install build-debug --prefix output/Linux/Debug
+cmake --install build-release --prefix output/Linux/Release
 
-# 4. 复制库到独立目录
+# 4. 打包
 echo ""
-echo "==> Step 4/5: Copying libs to standalone directories..."
-mkdir -p output/Linux/Debug/lib output/Linux/Release/lib
-cp build-debug/libtigerapi.a output/Linux/Debug/lib/libtigerapi.a
-cp build-release/libtigerapi.a output/Linux/Release/lib/libtigerapi.a
-
-# 5. 打包
-echo ""
-echo "==> Step 5/5: Creating zip packages..."
+echo "==> Step 4/4: Creating zip packages..."
 cd output/Linux
 rm -f Debug.zip Release.zip
 echo "    - Creating Debug.zip..."
-zip -r Debug.zip sdk/Debug/ Debug/ > /dev/null
+zip -r Debug.zip Debug/ > /dev/null
 echo "    - Creating Release.zip..."
-zip -r Release.zip sdk/Release/ Release/ > /dev/null
+zip -r Release.zip Release/ > /dev/null
 cd ${PROJECT_ROOT}
 
 echo ""
