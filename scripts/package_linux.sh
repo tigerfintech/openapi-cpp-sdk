@@ -10,8 +10,8 @@ JOBS=${JOBS:-$(nproc)}
 
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
-BOOST_TARBALL="boost_${BOOST_VERSION}.tar.bz2"
-BOOST_URL="https://archives.boost.io/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
+BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
 BOOST_1_86_ROOT="${BOOST_ROOT:-/usr/local/boost_${BOOST_VERSION}}"
 CACHE_DIR="${PROJECT_ROOT}/.cache"
 
@@ -39,7 +39,8 @@ ensure_boost() {
     fi
 
     mkdir -p "${CACHE_DIR}"
-    local src_dir="${CACHE_DIR}/boost_${BOOST_VERSION}"
+    # b2-nodocs tarball extracts to boost-<dotted> (e.g. boost-1.86.0)
+    local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
     if [ ! -d "${src_dir}" ]; then
         if [ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]; then
             echo "    Downloading ${BOOST_URL} ..."
@@ -50,7 +51,11 @@ ensure_boost() {
             fi
         fi
         echo "    Extracting..."
-        tar -C "${CACHE_DIR}" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
+        tar -C "${CACHE_DIR}" -xzf "${CACHE_DIR}/${BOOST_TARBALL}"
+    fi
+    if [ ! -f "${src_dir}/bootstrap.sh" ]; then
+        echo "ERROR: bootstrap.sh not found in ${src_dir} — delete ${CACHE_DIR}/${BOOST_TARBALL} and retry."
+        exit 1
     fi
     pushd "${src_dir}" >/dev/null
     ./bootstrap.sh --prefix="${BOOST_1_86_ROOT}" \

@@ -89,8 +89,8 @@ DEPS_DIR="${DEPS_DIR:-${PROJECT_ROOT}/.deps}"; mkdir -p "$DEPS_DIR"
 NUM_JOBS="${NUM_JOBS:-$(cpu_cores)}"
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
-BOOST_TARBALL="boost_${BOOST_VERSION}.tar.bz2"
-BOOST_URL="https://archives.boost.io/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
+BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
 LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
@@ -260,7 +260,8 @@ build_boost() {
     fi
   fi
   log "Building Boost ${BOOST_VERSION} from source..."
-  local src_dir="${CACHE_DIR}/boost_${BOOST_VERSION}"
+  # b2-nodocs tarball extracts to boost-<dotted> (e.g. boost-1.86.0), not boost_1_86_0.
+  local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
   if [[ ! -d "$src_dir" ]]; then
     if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
       wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
@@ -268,12 +269,12 @@ build_boost() {
         fail "Failed to download Boost from ${BOOST_URL}"
       }
     fi
-    tar -C "$CACHE_DIR" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
+    tar -C "$CACHE_DIR" -xzf "${CACHE_DIR}/${BOOST_TARBALL}"
     # Verify the expected directory was produced by the tarball.
     if [[ ! -d "$src_dir" ]]; then
       # Tarball may have extracted to a differently named directory; detect it.
       local actual_dir
-      actual_dir="$(tar -tjf "${CACHE_DIR}/${BOOST_TARBALL}" 2>/dev/null | head -1 | cut -d/ -f1)"
+      actual_dir="$(tar -tzf "${CACHE_DIR}/${BOOST_TARBALL}" 2>/dev/null | head -1 | cut -d/ -f1)"
       if [[ -n "$actual_dir" && -d "${CACHE_DIR}/${actual_dir}" ]]; then
         mv "${CACHE_DIR}/${actual_dir}" "$src_dir"
       else
