@@ -37,6 +37,21 @@ find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpprestsdk CONFIG QUIET)
 
+# cpprestsdk's find_dependency(OpenSSL) can re-create the OpenSSL::SSL / OpenSSL::Crypto
+# imported targets with a broken INTERFACE_INCLUDE_DIRECTORIES of "/include" (empty prefix)
+# when OPENSSL_INCLUDE_DIR is not cached. Patch the include dirs after the fact.
+foreach(_ssl_target OpenSSL::SSL OpenSSL::Crypto)
+    if(TARGET ${_ssl_target})
+        get_target_property(_ssl_inc ${_ssl_target} INTERFACE_INCLUDE_DIRECTORIES)
+        if(_ssl_inc MATCHES "^/include$" OR _ssl_inc STREQUAL "/include")
+            if(OPENSSL_INCLUDE_DIR AND NOT OPENSSL_INCLUDE_DIR STREQUAL "/include")
+                set_target_properties(${_ssl_target} PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+            endif()
+        endif()
+    endif()
+endforeach()
+
 set(HAVE_CPPREST_TARGET OFF)
 if(TARGET cpprestsdk::cpprest)
     set(HAVE_CPPREST_TARGET ON)

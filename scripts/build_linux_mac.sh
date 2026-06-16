@@ -469,6 +469,20 @@ build_sdk() {
         fi
       done
     fi
+    # Resolve OpenSSL include/lib dirs so the explicit -D flags are always non-empty.
+    # cpprestsdk's find_dependency(OpenSSL) can produce an OpenSSL::SSL target whose
+    # INTERFACE_INCLUDE_DIRECTORIES is "/include" (empty prefix) on Linux; passing the
+    # correct paths explicitly prevents cmake from propagating the broken target.
+    local openssl_root="${OPENSSL_ROOT_DIR:-/usr}"
+    local openssl_include="${OPENSSL_INCLUDE_DIR:-${openssl_root}/include}"
+    local lib_ext="so"; [[ "$OS_NAME" == "Darwin" ]] && lib_ext="dylib"
+    local openssl_crypto="${OPENSSL_CRYPTO_LIBRARY:-${openssl_root}/lib/libcrypto.${lib_ext}}"
+    local openssl_ssl="${OPENSSL_SSL_LIBRARY:-${openssl_root}/lib/libssl.${lib_ext}}"
+    # On some Linux distros OpenSSL libs are under lib64.
+    if [[ "$OS_NAME" == "Linux" ]]; then
+      [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib64/libcrypto.${lib_ext}"
+      [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib64/libssl.${lib_ext}"
+    fi
     cmake -S "$PROJECT_ROOT" -B "$build_dir" \
       -DCMAKE_BUILD_TYPE="$cfg" \
       -DCMAKE_INSTALL_PREFIX="$install_dir" \
@@ -476,10 +490,13 @@ build_sdk() {
       -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_DIR="${protobuf_cmake_dir}" \
-      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT}" \
+      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT};${openssl_root}" \
       -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
-      -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
-      ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
+      -DOPENSSL_ROOT_DIR="${openssl_root}" \
+      -DOPENSSL_INCLUDE_DIR="${openssl_include}" \
+      -DOPENSSL_CRYPTO_LIBRARY="${openssl_crypto}" \
+      -DOPENSSL_SSL_LIBRARY="${openssl_ssl}" \
+      -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED"
     cmake --build "$build_dir" -- -j "$NUM_JOBS"
     ${SUDO_INSTALL:+$SUDO_INSTALL} cmake --install "$build_dir"
     log "SDK (${cfg}) installed to ${install_dir}"
