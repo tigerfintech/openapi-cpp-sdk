@@ -94,9 +94,14 @@ BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOT
 LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
-PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
-PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
-SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-/usr/local/opt/tigerapi}"
+# Protobuf: use Homebrew on macOS (5.x), source-built on Linux
+if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1 && [[ -d "$(brew --prefix protobuf 2>/dev/null)/lib/cmake" ]]; then
+  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(brew --prefix protobuf)}"
+else
+  PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
+  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
+fi
+SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}/sdk}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
 
@@ -369,6 +374,7 @@ build_protobuf() {
     log "Protobuf already installed at ${PROTOBUF_PREFIX}"
     return
   fi
+  [[ -n "${PROTOBUF_VERSION:-}" ]] || fail "PROTOBUF_VERSION is not set; cannot build protobuf from source."
   local repo="${DEPS_DIR}/protobuf"
   if [[ ! -d "$repo/.git" ]]; then
     git clone https://github.com/protocolbuffers/protobuf "$repo"
@@ -442,12 +448,31 @@ build_sdk() {
     local build_dir="${PROJECT_ROOT}/build/${cfg}"
     local install_dir="${SDK_INSTALL_PREFIX}/${cfg}"
     local output_dir="${SDK_OUTPUT_PREFIX}/${cfg}"
+    # Remove stale CMakeCache.txt to prevent cached Protobuf_ROOT/Protobuf_DIR
+    # from a previous build overriding the values we pass here.
+    rm -f "${build_dir}/CMakeCache.txt"
+    # Find the correct cmake config directory for protobuf (layout differs between
+    # source-built installs and Homebrew).
+    local protobuf_cmake_dir="${PROTOBUF_PREFIX}/lib/cmake/protobuf"
+    if [[ ! -f "${protobuf_cmake_dir}/protobuf-config.cmake" ]]; then
+      # Homebrew 5.x places cmake configs directly under lib/cmake/protobuf
+      # but the lib dir itself may be lib64 on some systems; try share/ as fallback.
+      for candidate in \
+        "${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/lib64/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/share/cmake/protobuf"; do
+        if [[ -f "${candidate}/protobuf-config.cmake" ]]; then
+          protobuf_cmake_dir="$candidate"
+          break
+        fi
+      done
+    fi
     cmake -S "$PROJECT_ROOT" -B "$build_dir" \
       -DCMAKE_BUILD_TYPE="$cfg" \
       -DCMAKE_INSTALL_PREFIX="$install_dir" \
       -DBOOST_ROOT="$BOOST_ROOT" \
-      -DProtobuf_DIR="${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
-      -DCMAKE_PREFIX_PATH="${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
+      -DProtobuf_DIR="${protobuf_cmake_dir}" \
+      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT}" \
       -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
       ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
     cmake --build "$build_dir" -- -j "$NUM_JOBS"

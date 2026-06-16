@@ -129,16 +129,13 @@ if(DEFINED ENV{HOMEBREW_PREFIX})
 else()
     set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
 endif()
-# Protobuf first, then project headers, so system protobuf shadows include/google/.
+# Protobuf_INCLUDE_DIRS first so the found protobuf headers shadow include/google/ stubs.
 set(PRIVATE_INCLUDE_DIRS
     ${Protobuf_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIR}
 )
-# System/third-party headers: marked SYSTEM so the compiler searches them AFTER
-# PRIVATE_INCLUDE_DIRS, preventing absl/protobuf INTERFACE_INCLUDE_DIRECTORIES
-# from injecting /opt/homebrew/include before our pinned Boost 1.86 headers.
 set(SYSTEM_INCLUDE_DIRS
     ${HOMEBREW_INCLUDE_DIR}
     ${CPPREST_INCLUDE_DIR}
