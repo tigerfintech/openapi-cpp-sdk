@@ -979,7 +979,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
-        obj[U("contract_id")] = value::number(contract_id);
+        obj[U("contract_id")] = value::number(static_cast<int64_t>(contract_id));
         obj[U("type")] = value::string(type);
         obj[U("quantity")] = value::number(quantity);
         if (!executing_date.empty()) {
@@ -1000,7 +1000,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
-        obj[U("contract_id")] = value::number(contract_id);
+        obj[U("contract_id")] = value::number(static_cast<int64_t>(contract_id));
         obj[U("type")] = value::string(type);
         obj[U("quantity")] = value::number(quantity);
         if (!executing_date.empty()) {
