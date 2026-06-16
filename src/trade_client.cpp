@@ -1054,7 +1054,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
-        obj[U("id")] = value::number(exercise_id);
+        obj[U("id")] = value::number(static_cast<int64_t>(exercise_id));
         return post(OPTION_EXERCISE_CANCEL, obj);
     }
 
