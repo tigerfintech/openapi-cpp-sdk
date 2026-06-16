@@ -25,7 +25,9 @@ param(
 
     [switch]$SkipBuild,
 
-    [switch]$SkipBoostBuild
+    [switch]$SkipBoostBuild,
+
+    [int]$BoostJobs = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -64,9 +66,13 @@ function Ensure-BoostVariant {
     $variant = if ($BuildConfiguration.StartsWith('Debug')) { 'debug' } else { 'release' }
     $runtimeLink = if ($BuildConfiguration.EndsWith('-MT')) { 'static' } else { 'shared' }
     $addressModel = if ($BuildPlatform -eq 'Win32') { 32 } else { 64 }
-    $processorCount = if ($env:NUMBER_OF_PROCESSORS) { $env:NUMBER_OF_PROCESSORS } else { 4 }
+    if ($BoostJobs -lt 0) { throw '-BoostJobs must be 0 or greater.' }
+    if ($BoostJobs -eq 0) {
+        $BoostJobs = if ($env:NUMBER_OF_PROCESSORS) { [int]$env:NUMBER_OF_PROCESSORS } else { 4 }
+    }
 
-    New-Item -ItemType Directory -Force -Path $BoostInstallRoot | Out-Null
+    $boostLibRoot = Join-Path $BoostInstallRoot 'lib'
+    New-Item -ItemType Directory -Force -Path $boostLibRoot | Out-Null
 
     Push-Location $BoostSourceRoot
     try {
@@ -88,9 +94,9 @@ function Ensure-BoostVariant {
             'threading=multi',
             "variant=$variant",
             '--layout=tagged',
-            "--prefix=$BoostInstallRoot",
-            "-j$processorCount"
-        ) + $libraryArgs + 'install'
+            "--stagedir=$BoostInstallRoot",
+            "-j$BoostJobs"
+        ) + $libraryArgs + 'stage'
 
         Write-Host "    Building Boost 1.86.0 for $BuildPlatform $BuildConfiguration..."
         & $b2 @b2Args

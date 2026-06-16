@@ -82,6 +82,15 @@ Windows 输出包位于 `output/Windows/{Win32,x64}`，每个平台包含 `Debug
 .\scripts\package_windows.bat
 ```
 
+Windows 打包经验：
+
+- 优先使用 `scripts/package_windows.bat`，避免用户环境中 PowerShell execution policy 阻止直接运行 `.ps1`。
+- `scripts/package_windows.ps1` 构建 Boost 时使用 `b2 stage`，不要改回 `install`；`install -jN` 在 Windows 上容易因并发复制 Boost 头文件触发文件锁错误，而且本项目只需要 staged libs，头文件来自 `.deps/src/boost_1_86_0`。
+- Boost 缓存位于 `.deps/install/{x86-windows,x64-windows}/boost-1.86.0/lib`，脚本用 stamp 文件跳过已完成的 platform/configuration 组合；失败重跑前可只清理对应变体的半成品库和 Boost `bin.v2` 目标目录。
+- 打包矩阵固定为 `Win32`、`x64` × `Debug-MD`、`Debug-MT`、`Release-MD`、`Release-MT`，成功后应有 8 个 zip。
+- 常见 warning 包括 Protobuf/Abseil/TIGER_API 的 C4251、Boost Spirit 的 C4819、少量 size_t 转换 warning；优先关注非零退出码、link error、缺失 zip 或未出现 `Package Complete!`。
+- `temp/`、`.deps/`、`.vscode/`、vcpkg 安装树和 demo `*.properties` 属于本地/敏感/生成数据，不提交；`output/Windows` 只提交 zip 和 `readme.md`。
+
 ## 文档
 
 - 开发者平台：https://developer.itigerup.com/
