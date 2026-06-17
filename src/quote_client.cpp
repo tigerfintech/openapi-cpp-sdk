@@ -7,9 +7,6 @@
 
 
 namespace TIGER_API {
-    QuoteClient::QuoteClient() {
-        grab_quote_permission();
-    };
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
         grab_quote_permission();
     }
@@ -479,6 +476,11 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_WITH_DETAILS] = with_details;
         return post(KLINE_QUOTA, obj);
+    }
+
+    value QuoteClient::get_addon_entitlements() {
+        value obj = value::object(true);
+        return post(ADDON_ENTITLEMENTS, obj);
     }
 
     // Option new interfaces

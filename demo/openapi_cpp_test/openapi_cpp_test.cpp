@@ -234,6 +234,20 @@ public:
         TestTradeClient::test_place_order(trade_client);
     }
 
+    static void test_option_exercise(const std::shared_ptr<TradeClient>& trade_client) {
+        // Query positions available for exercise
+        value positions = trade_client->get_option_exercise_positions(U("Exercise"));
+        ucout << U("option exercise positions: ") << positions << endl;
+
+        // Query exercise records
+        value records = trade_client->get_option_exercise_records(U("Exercise"), U(""), U(""), U(""), 1, 20);
+        ucout << U("option exercise records: ") << records << endl;
+
+        // Preview exercise effect (replace contract_id with a real one from positions above)
+        // value check = trade_client->check_option_exercise(1684414425LL, U("Exercise"), 1.0, U("2025-06-20"), 0);
+        // ucout << U("option exercise check: ") << check << endl;
+    }
+
 };
 
 /**
@@ -473,7 +487,13 @@ public:
             if (chain.is_array() && chain.size() > 0) {
                 value items = chain[0][U("items")];
                 if (items.is_array() && items.size() > 0) {
-                    identifier = items[0][U("identifier")].as_string();
+                    // items[i] has shape {"call": {..., "identifier": "..."}, "put": {...}}
+                    value first = items[0];
+                    if (first.has_field(U("call")) && first[U("call")].has_field(U("identifier"))) {
+                        identifier = first[U("call")][U("identifier")].as_string();
+                    } else if (first.has_field(U("put")) && first[U("put")].has_field(U("identifier"))) {
+                        identifier = first[U("put")][U("identifier")].as_string();
+                    }
                 }
             }
             tried++;
@@ -564,6 +584,11 @@ public:
 
     static void test_get_kline_quota(std::shared_ptr<QuoteClient> quote_client) {
         value result = quote_client->get_kline_quota();
+        ucout << U("result: ") << result << endl;
+    }
+
+    static void test_get_addon_entitlements(std::shared_ptr<QuoteClient> quote_client) {
+        value result = quote_client->get_addon_entitlements();
         ucout << U("result: ") << result << endl;
     }
 
@@ -1475,6 +1500,12 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("preview_order"), [&]() {
         TestTradeClient::test_preview_order(trade_client);
+    }));
+
+    ucout << U("\n--- Trade: Option Exercise API ---\n") << endl;
+
+    results.push_back(run_test(U("option_exercise_positions"), [&]() {
+        TestTradeClient::test_option_exercise(trade_client);
     }));
 
     // ===================================================================

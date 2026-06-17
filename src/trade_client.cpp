@@ -5,8 +5,6 @@
 #include "tigerapi/trade_client.h"
 
 namespace TIGER_API {
-    TradeClient::TradeClient() {}
-
     TradeClient::TradeClient(const ClientConfig &cf) : TigerClient(cf) {
         this->client_config.check_account();
     }
@@ -973,6 +971,91 @@ namespace TIGER_API {
             obj[P_SYMBOL] = value::string(symbol);
         }
         return post(POSITION_TRANSFER_EXTERNAL_RECORDS, obj);
+    }
+
+    value TradeClient::submit_option_exercise(long long contract_id, utility::string_t type, double quantity,
+                                              utility::string_t executing_date, int is_force,
+                                              int itm_rate, utility::string_t account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        obj[U("contract_id")] = value::number(static_cast<int64_t>(contract_id));
+        obj[U("type")] = value::string(type);
+        obj[U("quantity")] = value::number(quantity);
+        if (!executing_date.empty()) {
+            obj[U("executing_date")] = value::string(executing_date);
+        }
+        if (is_force != PARAM_NOT_SET) {
+            obj[U("is_force")] = value::boolean(is_force != 0);
+        }
+        if (itm_rate != PARAM_NOT_SET) {
+            obj[U("itm_rate")] = value::number(itm_rate);
+        }
+        return post(OPTION_EXERCISE_SUBMIT, obj);
+    }
+
+    value TradeClient::check_option_exercise(long long contract_id, utility::string_t type, double quantity,
+                                             utility::string_t executing_date, int is_force,
+                                             int itm_rate, utility::string_t account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        obj[U("contract_id")] = value::number(static_cast<int64_t>(contract_id));
+        obj[U("type")] = value::string(type);
+        obj[U("quantity")] = value::number(quantity);
+        if (!executing_date.empty()) {
+            obj[U("executing_date")] = value::string(executing_date);
+        }
+        if (is_force != PARAM_NOT_SET) {
+            obj[U("is_force")] = value::boolean(is_force != 0);
+        }
+        if (itm_rate != PARAM_NOT_SET) {
+            obj[U("itm_rate")] = value::number(itm_rate);
+        }
+        return post(OPTION_EXERCISE_CHECK, obj);
+    }
+
+    value TradeClient::get_option_exercise_records(utility::string_t exercise_type, utility::string_t status,
+                                                   utility::string_t symbol, utility::string_t order_by,
+                                                   int page, int size, utility::string_t account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        if (!exercise_type.empty()) {
+            obj[U("type")] = value::string(exercise_type);
+        }
+        if (!status.empty()) {
+            obj[U("status")] = value::string(status);
+        }
+        if (!symbol.empty()) {
+            obj[P_SYMBOL] = value::string(symbol);
+        }
+        if (!order_by.empty()) {
+            obj[U("order_by")] = value::string(order_by);
+        }
+        if (page > 0) {
+            obj[U("page")] = value::number(page);
+        }
+        if (size > 0) {
+            obj[U("size")] = value::number(size);
+        }
+        return post(OPTION_EXERCISE_RECORD, obj);
+    }
+
+    value TradeClient::get_option_exercise_positions(utility::string_t type, utility::string_t account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        obj[U("type")] = value::string(type);
+        return post(OPTION_EXERCISE_POSITION, obj);
+    }
+
+    value TradeClient::cancel_option_exercise(long long exercise_id, utility::string_t account) {
+        value obj = value::object(true);
+        obj[P_ACCOUNT] = get_account_param(account);
+        set_secret_key(obj);
+        obj[U("id")] = value::number(static_cast<int64_t>(exercise_id));
+        return post(OPTION_EXERCISE_CANCEL, obj);
     }
 
 }

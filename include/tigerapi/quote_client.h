@@ -15,8 +15,7 @@
 namespace TIGER_API {
     class OPENAPI_EXPORT QuoteClient : public TigerClient {
     public:
-        QuoteClient();
-        QuoteClient(const ClientConfig &cf, bool is_grab_permission = true);
+        explicit QuoteClient(const ClientConfig &cf, bool is_grab_permission = true);
         value grab_quote_permission();
         value get_quote_permission();
 
@@ -123,6 +122,7 @@ namespace TIGER_API {
 
         // general
         value get_kline_quota(bool with_details = false);
+        value get_addon_entitlements();
 
     };
 }

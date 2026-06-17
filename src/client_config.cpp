@@ -61,7 +61,7 @@ TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_
     LOG(INFO) << U("ClientConfig initialized with props_path: ") << props_path << endl;
 };
 
-void TIGER_API::ClientConfig::check()
+void TIGER_API::ClientConfig::check() const
 {
 	if (this->tiger_id.empty()) {
 		LOG(ERROR) << U("Client Config error: tiger_id can't be empty") << endl;
@@ -73,7 +73,7 @@ void TIGER_API::ClientConfig::check()
 	}
 }
 
-void TIGER_API::ClientConfig::check_account()
+void TIGER_API::ClientConfig::check_account() const
 {
 	if (this->account.empty()) {
 		LOG(ERROR) << U("Client Config error: account can't be empty") << endl;
@@ -106,22 +106,22 @@ void TIGER_API::ClientConfig::set_token(const utility::string_t& token)
 	this->token = token;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_server_url()
+const utility::string_t& TIGER_API::ClientConfig::get_server_url() const
 {
 	return this->server_url;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_server_pub_key()
+const utility::string_t& TIGER_API::ClientConfig::get_server_pub_key() const
 {
 	return this->server_public_key;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_socket_url()
+const utility::string_t& TIGER_API::ClientConfig::get_socket_url() const
 {
 	return this->socket_url;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_socket_port()
+const utility::string_t& TIGER_API::ClientConfig::get_socket_port() const
 {
 	return this->socket_port;
 }

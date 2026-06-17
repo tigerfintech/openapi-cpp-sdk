@@ -89,14 +89,19 @@ DEPS_DIR="${DEPS_DIR:-${PROJECT_ROOT}/.deps}"; mkdir -p "$DEPS_DIR"
 NUM_JOBS="${NUM_JOBS:-$(cpu_cores)}"
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
-BOOST_TARBALL="boost_${BOOST_VERSION}.tar.bz2"
-BOOST_URL="https://archives.boost.io/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
+BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
 LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
-PROTOBUF_VERSION="${PROTOBUF_VERSION:-v3.21.12}"
-PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
-SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-/usr/local/opt/tigerapi}"
+# Protobuf: use Homebrew on macOS (5.x), source-built on Linux
+if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1 && [[ -d "$(brew --prefix protobuf 2>/dev/null)/lib/cmake" ]]; then
+  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(brew --prefix protobuf)}"
+else
+  PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
+  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
+fi
+SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
 
@@ -177,19 +182,33 @@ find_tiger_library() {
 ensure_prereqs() {
   local base=(git cmake tar)
   if [[ "$OS_NAME" == "Linux" ]]; then
-    base+=(wget bzip2 unzip gcc g++ make libtool automake autoconf pkg-config)
-    base+=(libssl-dev zlib1g-dev)
-    if ! dpkg -s build-essential >/dev/null 2>&1; then
-      base+=(build-essential)
-    fi
     local sudo_prefix=(sudo)
     if ! command -v sudo >/dev/null 2>&1; then
-      warn "sudo not detected, attempting apt-get without it (requires root shell)."
+      warn "sudo not detected, attempting package manager without it (requires root shell)."
       sudo_prefix=()
     fi
-    log "Installing base packages via apt."
-    "${sudo_prefix[@]}" apt-get update
-    "${sudo_prefix[@]}" apt-get install -y "${base[@]}"
+    if command -v apt-get >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc g++ make libtool automake autoconf pkg-config)
+      base+=(libssl-dev zlib1g-dev)
+      if ! dpkg -s build-essential >/dev/null 2>&1; then
+        base+=(build-essential)
+      fi
+      log "Installing base packages via apt."
+      "${sudo_prefix[@]}" apt-get update
+      "${sudo_prefix[@]}" apt-get install -y "${base[@]}"
+    elif command -v dnf >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc gcc-c++ make libtool automake autoconf pkgconfig)
+      base+=(openssl-devel zlib-devel)
+      log "Installing base packages via dnf."
+      "${sudo_prefix[@]}" dnf install -y "${base[@]}"
+    elif command -v yum >/dev/null 2>&1; then
+      base+=(wget bzip2 unzip gcc gcc-c++ make libtool automake autoconf pkgconfig)
+      base+=(openssl-devel zlib-devel)
+      log "Installing base packages via yum."
+      "${sudo_prefix[@]}" yum install -y "${base[@]}"
+    else
+      fail "No supported package manager found (apt-get / dnf / yum). Install dependencies manually."
+    fi
   else
     if ! command -v brew >/dev/null 2>&1; then
       fail "Homebrew is required on macOS. Install from https://brew.sh first."
@@ -232,30 +251,88 @@ detect_openssl() {
   log "OpenSSL detected at ${OPENSSL_ROOT_DIR}"
 }
 
+## Check if a system/package-manager Boost meets our version window (>= 1.86, < 1.90).
+## Returns 0 and sets BOOST_ROOT if acceptable, 1 otherwise.
+_check_system_boost() {
+  local include_dir="$1"
+  [[ -f "${include_dir}/boost/version.hpp" ]] || return 1
+  local ver_num
+  ver_num=$(grep -m1 '#define BOOST_VERSION ' "${include_dir}/boost/version.hpp" | awk '{print $3}')
+  [[ -n "$ver_num" ]] || return 1
+  local major=$(( ver_num / 100000 ))
+  local minor=$(( (ver_num / 100) % 1000 ))
+  # Require >= 1.86. cpprestsdk is always built from source against the same BOOST_ROOT,
+  # so any version >= 1.86 is ABI-consistent end-to-end.
+  if (( major > 1 || (major == 1 && minor >= 86) )); then
+    log "Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
+    return 0
+  fi
+  warn "System Boost ${major}.${minor} < 1.86; will build 1.86 from source."
+  return 1
+}
+
 build_boost() {
   if [[ -d "${BOOST_ROOT}/include/boost" ]]; then
     log "Boost already available at ${BOOST_ROOT}"
     return
   fi
-  if [[ "$OS_NAME" == "Darwin" ]]; then
-    if command -v brew >/dev/null 2>&1 && brew list boost >/dev/null 2>&1; then
-      BOOST_ROOT="$(brew --prefix boost)"
+
+  # Probe system/package-manager Boost first (fast path).
+  local candidate_roots=()
+  if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1; then
+    local brew_boost
+    brew_boost="$(brew --prefix boost 2>/dev/null || true)"
+    [[ -n "$brew_boost" ]] && candidate_roots+=("$brew_boost")
+  fi
+  # Common system paths on Linux
+  candidate_roots+=("/usr" "/usr/local")
+
+  for root in "${candidate_roots[@]}"; do
+    if _check_system_boost "${root}/include"; then
+      BOOST_ROOT="$root"
       export BOOST_ROOT
-      log "Using Homebrew boost at ${BOOST_ROOT}"
       return
     fi
-  fi
+  done
+
   log "Building Boost ${BOOST_VERSION} from source..."
-  local src_dir="${CACHE_DIR}/boost_${BOOST_VERSION}"
+  # b2-nodocs tarball extracts to boost-<dotted> (e.g. boost-1.86.0), not boost_1_86_0.
+  local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
   if [[ ! -d "$src_dir" ]]; then
-    [[ -f "${CACHE_DIR}/${BOOST_TARBALL}" ]] || wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL"
-    tar -C "$CACHE_DIR" --bzip2 -xf "${CACHE_DIR}/${BOOST_TARBALL}"
+    if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
+      wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
+        rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
+        fail "Failed to download Boost from ${BOOST_URL}"
+      }
+    fi
+    tar -C "$CACHE_DIR" -xzf "${CACHE_DIR}/${BOOST_TARBALL}"
+    # Verify the expected directory was produced by the tarball.
+    if [[ ! -d "$src_dir" ]]; then
+      # Tarball may have extracted to a differently named directory; detect it.
+      local actual_dir
+      actual_dir="$(tar -tzf "${CACHE_DIR}/${BOOST_TARBALL}" 2>/dev/null | head -1 | cut -d/ -f1)"
+      if [[ -n "$actual_dir" && -d "${CACHE_DIR}/${actual_dir}" ]]; then
+        mv "${CACHE_DIR}/${actual_dir}" "$src_dir"
+      else
+        fail "Boost source directory not found after extraction (expected ${src_dir})"
+      fi
+    fi
   fi
+  if [[ ! -f "${src_dir}/bootstrap.sh" ]]; then
+    fail "bootstrap.sh not found in ${src_dir} — tarball may be corrupt. Delete ${CACHE_DIR}/${BOOST_TARBALL} and retry."
+  fi
+
+  # Check write permission on BOOST_ROOT parent before b2 install attempts mkdir.
+  local boost_parent
+  boost_parent="$(dirname "$BOOST_ROOT")"
+  if [[ ! -w "$boost_parent" ]]; then
+    fail "No write permission for ${BOOST_ROOT}.
+  Option 1: run with sudo:  sudo BOOST_ROOT=${BOOST_ROOT} $0
+  Option 2: writable path:  BOOST_ROOT=\$HOME/boost_${BOOST_VERSION} $0"
+  fi
+
   pushd "$src_dir" >/dev/null
-  if ! ./bootstrap.sh --prefix "$BOOST_ROOT"; then
-    warn "Boost bootstrap.sh does not accept --prefix, falling back to default staging."
-    ./bootstrap.sh
-  fi
+  ./bootstrap.sh
   ./b2 headers
   ./b2 -j "$NUM_JOBS" --prefix="$BOOST_ROOT" install
   popd >/dev/null
@@ -297,6 +374,7 @@ build_protobuf() {
     log "Protobuf already installed at ${PROTOBUF_PREFIX}"
     return
   fi
+  [[ -n "${PROTOBUF_VERSION:-}" ]] || fail "PROTOBUF_VERSION is not set; cannot build protobuf from source."
   local repo="${DEPS_DIR}/protobuf"
   if [[ ! -d "$repo/.git" ]]; then
     git clone https://github.com/protocolbuffers/protobuf "$repo"
@@ -304,6 +382,8 @@ build_protobuf() {
   pushd "$repo" >/dev/null
   git fetch --tags
   git checkout "$PROTOBUF_VERSION"
+  # abseil-cpp is a required submodule for protobuf >= 22 (v5.x series)
+  git submodule update --init --recursive
   mkdir -p cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
@@ -370,25 +450,56 @@ build_sdk() {
     local build_dir="${PROJECT_ROOT}/build/${cfg}"
     local install_dir="${SDK_INSTALL_PREFIX}/${cfg}"
     local output_dir="${SDK_OUTPUT_PREFIX}/${cfg}"
+    # Remove stale CMakeCache.txt to prevent cached Protobuf_ROOT/Protobuf_DIR
+    # from a previous build overriding the values we pass here.
+    rm -f "${build_dir}/CMakeCache.txt"
+    # Find the correct cmake config directory for protobuf (layout differs between
+    # source-built installs and Homebrew).
+    local protobuf_cmake_dir="${PROTOBUF_PREFIX}/lib/cmake/protobuf"
+    if [[ ! -f "${protobuf_cmake_dir}/protobuf-config.cmake" ]]; then
+      # Homebrew 5.x places cmake configs directly under lib/cmake/protobuf
+      # but the lib dir itself may be lib64 on some systems; try share/ as fallback.
+      for candidate in \
+        "${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/lib64/cmake/protobuf" \
+        "${PROTOBUF_PREFIX}/share/cmake/protobuf"; do
+        if [[ -f "${candidate}/protobuf-config.cmake" ]]; then
+          protobuf_cmake_dir="$candidate"
+          break
+        fi
+      done
+    fi
+    # Resolve OpenSSL include/lib dirs so the explicit -D flags are always non-empty.
+    # cpprestsdk's find_dependency(OpenSSL) can produce an OpenSSL::SSL target whose
+    # INTERFACE_INCLUDE_DIRECTORIES is "/include" (empty prefix) on Linux; passing the
+    # correct paths explicitly prevents cmake from propagating the broken target.
+    local openssl_root="${OPENSSL_ROOT_DIR:-/usr}"
+    local openssl_include="${OPENSSL_INCLUDE_DIR:-${openssl_root}/include}"
+    local lib_ext="so"; [[ "$OS_NAME" == "Darwin" ]] && lib_ext="dylib"
+    local openssl_crypto="${OPENSSL_CRYPTO_LIBRARY:-${openssl_root}/lib/libcrypto.${lib_ext}}"
+    local openssl_ssl="${OPENSSL_SSL_LIBRARY:-${openssl_root}/lib/libssl.${lib_ext}}"
+    # On some Linux distros OpenSSL libs are under lib64.
+    if [[ "$OS_NAME" == "Linux" ]]; then
+      [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib64/libcrypto.${lib_ext}"
+      [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib64/libssl.${lib_ext}"
+    fi
     cmake -S "$PROJECT_ROOT" -B "$build_dir" \
       -DCMAKE_BUILD_TYPE="$cfg" \
       -DCMAKE_INSTALL_PREFIX="$install_dir" \
       -DBOOST_ROOT="$BOOST_ROOT" \
-      -DProtobuf_DIR="${PROTOBUF_PREFIX}/lib/cmake/protobuf" \
-      -DCMAKE_PREFIX_PATH="${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}" \
-      -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED" \
-      ${OPENSSL_ROOT_DIR:+-DOPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR"}
+      -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
+      -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
+      -DProtobuf_DIR="${protobuf_cmake_dir}" \
+      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT};${openssl_root}" \
+      -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
+      -DOPENSSL_ROOT_DIR="${openssl_root}" \
+      -DOPENSSL_INCLUDE_DIR="${openssl_include}" \
+      -DOPENSSL_CRYPTO_LIBRARY="${openssl_crypto}" \
+      -DOPENSSL_SSL_LIBRARY="${openssl_ssl}" \
+      -DBUILD_SHARED_LIBS="$SDK_BUILD_SHARED"
     cmake --build "$build_dir" -- -j "$NUM_JOBS"
     ${SUDO_INSTALL:+$SUDO_INSTALL} cmake --install "$build_dir"
     log "SDK (${cfg}) installed to ${install_dir}"
-    if [[ -d "${install_dir}/lib" ]]; then
-      rm -rf "${output_dir}"
-      mkdir -p "${output_dir}/lib"
-      cp -R "${install_dir}/lib/." "${output_dir}/lib/"
-      log "SDK (${cfg}) libraries copied to ${output_dir}/lib"
-    else
-      warn "SDK (${cfg}) install missing lib/ directory; nothing copied to output."
-    fi
   done
 }
 

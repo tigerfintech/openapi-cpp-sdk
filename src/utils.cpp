@@ -46,7 +46,7 @@ namespace TIGER_API {
         return res;
     }
 
-    utility::string_t Utils::get_sign(utility::string_t &private_key, const utility::string_t &content) {
+    utility::string_t Utils::get_sign(const utility::string_t &private_key, const utility::string_t &content) {
         utility::string_t filled_private_key = Utils::fill_private_key_marker(private_key);
 
         utility::string_t encrypted = sha1_sign(content, filled_private_key);
@@ -78,9 +78,10 @@ namespace TIGER_API {
     utility::string_t Utils::json_format(utility::string_t json_str) {
         int level = 0;
         utility::string_t json_format_str;
+        json_format_str.reserve(json_str.length() * 2);
         for (int i = 0; i < json_str.length(); i++) {
             utility::char_t c = json_str.at(i);
-            if (level > 0 && '\n' == json_format_str.at(json_format_str.length() - 1)) {
+            if (level > 0 && !json_format_str.empty() && '\n' == json_format_str.at(json_format_str.length() - 1)) {
                 json_format_str += get_level_str(level);
             }
             switch (c) {
@@ -130,17 +131,18 @@ namespace TIGER_API {
 
 
     utility::string_t
-    Utils::add_start_end(utility::string_t &key, const utility::string_t &start_marker, const utility::string_t end_marker) {
-        if (key.find(start_marker) == std::string::npos) {
-            key = start_marker + key;
+    Utils::add_start_end(const utility::string_t &key, const utility::string_t &start_marker, const utility::string_t &end_marker) {
+        utility::string_t result = key;
+        if (result.find(start_marker) == std::string::npos) {
+            result = start_marker + result;
         }
-        if (key.find(end_marker) == std::string::npos) {
-            key = key + end_marker;
+        if (result.find(end_marker) == std::string::npos) {
+            result = result + end_marker;
         }
-        return key;
+        return result;
     }
 
-    utility::string_t Utils::fill_private_key_marker(utility::string_t &private_key) {
+    utility::string_t Utils::fill_private_key_marker(const utility::string_t &private_key) {
         // If key already has PEM header, return as-is
         if (private_key.find(U("-----BEGIN")) != std::string::npos) {
             return private_key;
@@ -203,7 +205,7 @@ namespace TIGER_API {
         }
     }
 
-    utility::string_t Utils::fill_public_key_marker(utility::string_t &public_key) {
+    utility::string_t Utils::fill_public_key_marker(const utility::string_t &public_key) {
         return add_start_end(public_key, U("-----BEGIN PUBLIC KEY-----\n"), U("\n-----END PUBLIC KEY-----"));
     }
 

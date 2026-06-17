@@ -62,12 +62,12 @@ The script will automatically:
 #### Windows
 
 ```powershell
-# Default build (x64 + x86, Debug + Release, MT + MD = 8 variants)
-powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1
+# Build SDK + demo (x64 Release MD)
+powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 `
+    -Triplet x64-windows -BuildType Release -Runtime MD
 
-# Build x64 Release MD only
-powershell -ExecutionPolicy Bypass -File scripts/install_windows_deps.ps1 `
-    -SingleBuild -Triplet x64-windows -BuildType Release -RuntimeFlavors MD
+# Rebuild all 8 Windows precompiled zip packages
+powershell -ExecutionPolicy Bypass -File scripts\package_windows.ps1
 ```
 
 ### Using Pre-compiled Libraries
@@ -83,9 +83,17 @@ output/
 │   ├── Debug/
 │   └── Release/
 └── Windows/
-    └── x64/
-        ├── Release-MD/  # x64 Release dynamic runtime
-        └── Release-MT/  # x64 Release static runtime
+    ├── readme.md
+    ├── x64/
+    │   ├── Debug-MD.zip
+    │   ├── Debug-MT.zip
+    │   ├── Release-MD.zip
+    │   └── Release-MT.zip
+    └── Win32/
+        ├── Debug-MD.zip
+        ├── Debug-MT.zip
+        ├── Release-MD.zip
+        └── Release-MT.zip
 ```
 
 ## Manual Build
@@ -268,6 +276,15 @@ Windows platform provides two build methods:
    - vcpkg dependencies: `vcpkg_installed/x64-windows/` (automatically managed)
    - SDK headers: `include/`
 
+7. **Package all Windows zips**
+
+    ```powershell
+    .\scripts\package_windows.bat
+
+    # Re-compress existing output directories without rebuilding
+    .\scripts\package_windows.bat -SkipBuild
+    ```
+
 #### Method 2: Using CMake Command Line
 
 1. **Install vcpkg**
@@ -354,14 +371,16 @@ openapi-cpp-sdk/
 ├── include/                    # Header files
 │   ├── tigerapi/              # SDK public headers
 │   ├── cpprest/               # cpprestsdk headers
-│   ├── google/protobuf/       # Protobuf v25.1 headers
+│   ├── google/protobuf/       # Protobuf 5.28.3 headers
 │   └── openapi_pb/            # Protobuf generated message definitions
 ├── src/                       # SDK source implementation
 ├── demo/                      # Example code
 │   └── openapi_cpp_test/
 ├── scripts/                   # Build scripts
 │   ├── build_linux_mac.sh    # macOS/Linux one-click build
-│   └── install_windows_deps.ps1  # Windows one-click build
+│   ├── build_windows.ps1     # Windows CMake build
+│   ├── package_windows.ps1   # Windows zip packaging
+│   └── package_windows.bat   # Execution-policy-safe Windows packaging wrapper
 ├── output/                    # Build artifacts
 │   ├── Mac/
 │   ├── Linux/
@@ -426,7 +445,7 @@ Ensure using Protobuf v25.1 (libprotobuf 4.25.1), requires Abseil and C++17 supp
 
 ## Changelog
 
-See [changlog.md](changlog.md) for version history.
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
@@ -434,8 +453,8 @@ Apache License 2.0
 
 ## Related Links
 
-- [Tiger Brokers Open Platform](https://quant.itigerup.com/)
-- [API Documentation](https://quant.itigerup.com/openapi/en/docs/intro/quickStart)
+- [Tiger Brokers Open Platform](https://developer.itigerup.com/)
+- [API Documentation](https://docs.itigerup.com)
 - [Python SDK](https://github.com/tigerbrokers/openapi-python-sdk)
 - [Java SDK](https://github.com/tigerbrokers/openapi-java-sdk)
 

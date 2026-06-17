@@ -29,33 +29,30 @@ namespace internal {
 // rather than Message.
 class PROTOBUF_EXPORT ZeroFieldsBase : public Message {
  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final { return true; }
-  size_t ByteSizeLong() const final;
-  int GetCachedSize() const { return _cached_size_.Get(); }
-  const char* _InternalParse(const char* ptr,
-                             internal::ParseContext* ctx) final;
-  ::uint8_t* _InternalSerialize(::uint8_t* target,
-                                io::EpsCopyOutputStream* stream) const final;
-
- protected:
-  internal::CachedSize* AccessCachedSize() const final {
-    return &_cached_size_;
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL { Clear(*this); }
+  size_t ByteSizeLong() const PROTOBUF_FINAL { return ByteSizeLong(*this); }
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target, io::EpsCopyOutputStream* stream) const PROTOBUF_FINAL {
+    return _InternalSerialize(*this, target, stream);
   }
 
-  constexpr ZeroFieldsBase() {}
-  explicit ZeroFieldsBase(Arena* arena) : Message(arena) {}
-  ZeroFieldsBase(const ZeroFieldsBase&) = delete;
-  ZeroFieldsBase& operator=(const ZeroFieldsBase&) = delete;
-  ~ZeroFieldsBase() override;
+ protected:
+  using Message::Message;
+  ~ZeroFieldsBase() PROTOBUF_OVERRIDE;
 
-  const ClassData* GetClassData() const final;
-
-  static void MergeImpl(Message& to, const Message& from);
+  static void MergeImpl(MessageLite& to, const MessageLite& from);
   static void CopyImpl(Message& to, const Message& from);
   void InternalSwap(ZeroFieldsBase* other);
+  static void Clear(MessageLite& msg);
+  static size_t ByteSizeLong(const MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(const MessageLite& msg,
+                                       ::uint8_t* target,
+                                       io::EpsCopyOutputStream* stream);
 
-  mutable internal::CachedSize _cached_size_;
+  struct {
+    mutable internal::CachedSize _cached_size_;
+  } _impl_;
 };
 
 }  // namespace internal

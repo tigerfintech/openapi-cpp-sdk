@@ -2,11 +2,12 @@
 #include "tigerapi/version.h"
 #include "tigerapi/contract_util.h"
 #include "tigerapi/logger.h"
+#include <memory>
 
 namespace TIGER_API {
 
-    void TigerClient::set_config(const ClientConfig &cf) {
-        client_config = cf;
+    TigerClient::TigerClient(const ClientConfig &cf)
+        : client_config(cf), http_client_(std::make_unique<http_client>(cf.get_server_url())) {
         client_config.check();
     }
 
@@ -28,7 +29,8 @@ namespace TIGER_API {
             if (!str.empty()) {
                 str += U("&");
             }
-            str += key + U("=") + obj_obj[key].as_string();
+            const auto &val = obj_obj[key];
+            str += key + U("=") + (val.is_string() ? val.as_string() : val.serialize());
         }
         return str;
     }
@@ -91,13 +93,12 @@ namespace TIGER_API {
         value result_data;
         utility::string_t result_str;
         try {
-            http_client client(client_config.get_server_url());
-            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string();
+            LOG(DEBUG) << U("request:\n") << U("Server: ") << http_client_->base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
                LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());
             }
             // Wait for headers
-            response = client.request(request).get();
+            response = http_client_->request(request).get();
 
             // Wait for data
             response.content_ready().wait();
@@ -118,6 +119,10 @@ namespace TIGER_API {
             if (code != 0) {
                 LOG(ERROR) << U("Exception: api code error, response: ") << result.serialize();
                 throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
+            }
+            if (!result.has_field(P_SIGN) || !result[P_SIGN].is_string()) {
+                LOG(ERROR) << U("Exception: response missing sign field, response: ") << result_str;
+                throw std::runtime_error("Exception: response missing sign field");
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = Utils::verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
@@ -140,9 +145,11 @@ namespace TIGER_API {
 
     value TigerClient::identifiers_to_options(value identifiers) {
         value options = value::array();
+        size_t j = 0;
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            utility::string_t  symbol, expiry, right, strike;
+            if (!identifier.is_string()) { continue; }
+            utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = ContractUtil::extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
@@ -152,7 +159,7 @@ namespace TIGER_API {
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);
-            options[i] = obj;
+            options[j++] = obj;
         }
         return options;
     }

@@ -16,8 +16,7 @@
 namespace TIGER_API {
     class OPENAPI_EXPORT TradeClient : public TigerClient {
     public:
-        TradeClient();
-        TradeClient(const ClientConfig &cf);
+        explicit TradeClient(const ClientConfig &cf);
 
         /** Get account list **/
         value get_accounts();
@@ -202,6 +201,67 @@ namespace TIGER_API {
         value get_position_transfer_external_records(utility::string_t since_date = U(""), utility::string_t to_date = U(""),
                                                      utility::string_t status = U(""), utility::string_t market = U(""),
                                                      utility::string_t symbol = U(""), utility::string_t account_id = U(""));
+
+        /** Option early exercise / abandon **/
+
+        // Sentinel value for optional int parameters that are not set.
+        static const int PARAM_NOT_SET = -1;
+
+        /**
+         * Submit an option early exercise or abandon (expire) request.
+         * @param contract_id  Option contract ID
+         * @param type         Exercise type: "Exercise" | "Expire"
+         * @param quantity     Number of contracts (> 0)
+         * @param executing_date  Execution date yyyy-MM-dd. Required when type=Exercise
+         * @param is_force     Whether to force exercise. Required when type=Exercise (PARAM_NOT_SET = omit)
+         * @param itm_rate     In-the-money rate 0-10. Optional, only for Expire type (PARAM_NOT_SET = omit)
+         * @param account      Trading account; defaults to config account
+         */
+        value submit_option_exercise(long long contract_id, utility::string_t type, double quantity,
+                                     utility::string_t executing_date = U(""), int is_force = PARAM_NOT_SET,
+                                     int itm_rate = PARAM_NOT_SET, utility::string_t account = U(""));
+
+        /**
+         * Preview the stock position changes from an exercise/expire request.
+         * @param contract_id      Option contract ID
+         * @param type             Exercise type: "Exercise" | "Expire"
+         * @param quantity         Number of contracts (> 0; required)
+         * @param executing_date   Execution date yyyy-MM-dd. Required when type=Exercise
+         * @param is_force         Whether to force exercise. Required when type=Exercise (PARAM_NOT_SET = omit)
+         * @param itm_rate         In-the-money rate 0-10. Optional, only for Expire type (PARAM_NOT_SET = omit)
+         * @param account          Trading account; defaults to config account
+         */
+        value check_option_exercise(long long contract_id, utility::string_t type, double quantity,
+                                    utility::string_t executing_date = U(""), int is_force = PARAM_NOT_SET,
+                                    int itm_rate = PARAM_NOT_SET, utility::string_t account = U(""));
+
+        /**
+         * Query paginated option exercise/expire records.
+         * @param exercise_type  Filter by type: "Exercise" | "Expire" (empty = all)
+         * @param status         Filter by status: "New" | "Cancel" | "Success" | "Fail"
+         * @param symbol         Filter by underlying symbol
+         * @param order_by       Sort field: "symbol" | "expire_date" | "strike" | "is_call"
+         * @param page           Page number (1-based)
+         * @param size           Page size (1-100)
+         * @param account        Trading account; defaults to config account
+         */
+        value get_option_exercise_records(utility::string_t exercise_type = U(""), utility::string_t status = U(""),
+                                          utility::string_t symbol = U(""), utility::string_t order_by = U(""),
+                                          int page = 1, int size = 20, utility::string_t account = U(""));
+
+        /**
+         * Query option positions available for exercise or abandon.
+         * @param type     Exercise type: "Exercise" | "Expire"
+         * @param account  Trading account; defaults to config account
+         */
+        value get_option_exercise_positions(utility::string_t type, utility::string_t account = U(""));
+
+        /**
+         * Cancel a pending option exercise request.
+         * @param exercise_id  Exercise record ID (from get_option_exercise_records)
+         * @param account      Trading account; defaults to config account
+         */
+        value cancel_option_exercise(long long exercise_id, utility::string_t account = U(""));
 
 
     private:

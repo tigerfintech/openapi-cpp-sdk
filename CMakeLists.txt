@@ -1,5 +1,9 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
+
 
 # Find the source file that contains the version information
 find_file(VERSION_FILE include/tigerapi/version.h PATHS ${CMAKE_SOURCE_DIR})
@@ -19,17 +23,34 @@ if(NOT (UNIX OR WIN32))
     message(FATAL_ERROR "-- Unsupported platform sorry! :( ")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS thread log program_options chrono filesystem)
 if(WIN32)
     # Prevent FindThreads from insisting on pthreads when building with MSVC
     set(CMAKE_USE_WIN32_THREADS_INIT ON)
     set(CMAKE_THREAD_PREFER_PTHREAD OFF)
     set(THREADS_PREFER_PTHREAD_FLAG OFF)
 endif()
+# Requires Boost >= 1.86. cpprestsdk is built from source against the same BOOST_ROOT,
+# so ABI is consistent regardless of version. Pass -DBOOST_ROOT to use a specific copy.
+find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpprestsdk CONFIG QUIET)
+
+# cpprestsdk's find_dependency(OpenSSL) can re-create the OpenSSL::SSL / OpenSSL::Crypto
+# imported targets with a broken INTERFACE_INCLUDE_DIRECTORIES of "/include" (empty prefix)
+# when OPENSSL_INCLUDE_DIR is not cached. Patch the include dirs after the fact.
+foreach(_ssl_target OpenSSL::SSL OpenSSL::Crypto)
+    if(TARGET ${_ssl_target})
+        get_target_property(_ssl_inc ${_ssl_target} INTERFACE_INCLUDE_DIRECTORIES)
+        if(_ssl_inc MATCHES "^/include$" OR _ssl_inc STREQUAL "/include")
+            if(OPENSSL_INCLUDE_DIR AND NOT OPENSSL_INCLUDE_DIR STREQUAL "/include")
+                set_target_properties(${_ssl_target} PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+            endif()
+        endif()
+    endif()
+endforeach()
 
 set(HAVE_CPPREST_TARGET OFF)
 if(TARGET cpprestsdk::cpprest)
@@ -90,14 +111,19 @@ message(STATUS "Protobuf libraries: ${Protobuf_LIBRARIES}")
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     message("-- configuring clang options")
-#    set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++11 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    # -arch only makes sense on Apple; Linux Clang does not need it.
+    if(APPLE)
+        set(_arch_flag "-arch arm64")
+    else()
+        set(_arch_flag "")
+    endif()
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -DBOOST_LOG_DYN_LINK")
+    # protobuf 5.x / absl lts_20240116 require C++17; gnu++17 keeps GNU extensions.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
 
 endif()
 
@@ -114,32 +140,46 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # headers search paths ...
-# ABSL_INCLUDE_DIR and Protobuf_INCLUDE_DIRS must come before CMAKE_SOURCE_DIR/include
-# so that absl headers and the system protobuf stubs are resolved correctly.
-# The vendored include/google/ directory contains legacy stubs that #include absl.
+# Protobuf_INCLUDE_DIRS must come before CMAKE_SOURCE_DIR/include so that the
+# system protobuf headers (5.x) shadow the vendored include/google/ stubs (4.x).
+# The vendored include/google/ directory is kept for Windows/user convenience but
+# must not be resolved first on macOS where pb_source files are generated with 5.x.
 if(DEFINED ENV{HOMEBREW_PREFIX})
     set(HOMEBREW_INCLUDE_DIR "$ENV{HOMEBREW_PREFIX}/include")
 else()
     set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
 endif()
-set(HEADER_SEARCH_PATHS
-    ${HOMEBREW_INCLUDE_DIR}
+# Protobuf_INCLUDE_DIRS first so the found protobuf headers shadow include/google/ stubs.
+set(PRIVATE_INCLUDE_DIRS
     ${Protobuf_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
-    ${CPPREST_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIR}
+)
+set(SYSTEM_INCLUDE_DIRS
+    ${HOMEBREW_INCLUDE_DIR}
+    ${CPPREST_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIRS}
 )
-list(FILTER HEADER_SEARCH_PATHS EXCLUDE REGEX "^$")
-list(REMOVE_DUPLICATES HEADER_SEARCH_PATHS)
+foreach(_dir IN LISTS PRIVATE_INCLUDE_DIRS SYSTEM_INCLUDE_DIRS)
+    if(_dir STREQUAL "")
+        list(REMOVE_ITEM PRIVATE_INCLUDE_DIRS "${_dir}")
+        list(REMOVE_ITEM SYSTEM_INCLUDE_DIRS "${_dir}")
+    endif()
+endforeach()
+list(REMOVE_DUPLICATES PRIVATE_INCLUDE_DIRS)
+list(REMOVE_DUPLICATES SYSTEM_INCLUDE_DIRS)
 
 set(OPENSSL_LIBS "${OPENSSL_LIBRARIES}")
+set(PROTOBUF_LIBS "${Protobuf_LIBRARIES}")
+if(TARGET protobuf::libprotobuf)
+    set(PROTOBUF_LIBS protobuf::libprotobuf)
+endif()
 set(LIBRARIES_SEARCH_PATHS
     ${OPENSSL_LIBS}
     ${Boost_LIBRARIES}
-    ${Protobuf_LIBRARIES}
+    ${PROTOBUF_LIBS}
     OpenSSL::SSL
     OpenSSL::Crypto
 )
@@ -153,7 +193,8 @@ message(BOOST_LIBS " ${Boost_LIBRARIES}")
 message(OPENSSL_LIBS " ${OPENSSL_LIBRARIES}")
 message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
-include_directories(${HEADER_SEARCH_PATHS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PRIVATE_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SYSTEM_INCLUDE_DIRS})
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         "-framework CoreFoundation"

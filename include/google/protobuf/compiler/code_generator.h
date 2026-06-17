@@ -22,10 +22,8 @@
 
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
-#include "google/protobuf/compiler/retention.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
-#include "google/protobuf/port.h"
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
@@ -53,7 +51,7 @@ class GeneratorContext;
 // be registered with CommandLineInterface to support various languages.
 class PROTOC_EXPORT CodeGenerator {
  public:
-  CodeGenerator() {}
+  CodeGenerator() = default;
   CodeGenerator(const CodeGenerator&) = delete;
   CodeGenerator& operator=(const CodeGenerator&) = delete;
   virtual ~CodeGenerator();
@@ -135,9 +133,9 @@ class PROTOC_EXPORT CodeGenerator {
 
  protected:
   // Retrieves the resolved source features for a given descriptor.  All the
-  // features that are imported (from the proto file) and linked in (from the
-  // callers binary) will be fully resolved. These should be used to make any
-  // feature-based decisions during code generation.
+  // global features and language features returned by GetFeatureExtensions will
+  // be fully resolved. These should be used to make any feature-based decisions
+  // during code generation.
   template <typename DescriptorT>
   static const FeatureSet& GetResolvedSourceFeatures(const DescriptorT& desc) {
     return ::google::protobuf::internal::InternalFeatureHelper::GetFeatures(desc);
@@ -155,6 +153,11 @@ class PROTOC_EXPORT CodeGenerator {
           FeatureSet, TypeTraitsT, field_type, is_packed>& extension) {
     return ::google::protobuf::internal::InternalFeatureHelper::GetUnresolvedFeatures(
         descriptor, extension);
+  }
+
+  // Retrieves the edition of a built file descriptor.
+  static Edition GetEdition(const FileDescriptor& file) {
+    return ::google::protobuf::internal::InternalFeatureHelper::GetEdition(file);
   }
 };
 
@@ -232,6 +235,9 @@ PROTOC_EXPORT std::string StripProto(absl::string_view filename);
 
 // Returns true if the proto path corresponds to a known feature file.
 PROTOC_EXPORT bool IsKnownFeatureProto(absl::string_view filename);
+
+// Returns true if the proto path can skip edition check.
+PROTOC_EXPORT bool CanSkipEditionCheck(absl::string_view filename);
 
 }  // namespace compiler
 }  // namespace protobuf
