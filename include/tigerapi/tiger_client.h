@@ -18,15 +18,14 @@ using namespace web::json;
 namespace TIGER_API {
     class OPENAPI_EXPORT TigerClient {
     public:
-        TigerClient() {};
-        TigerClient(const ClientConfig &cf) {
-            set_config(cf);
-        }
-        ~TigerClient() {};
+        explicit TigerClient(const ClientConfig &cf);
+        ~TigerClient() = default;
 
-        ClientConfig client_config;
-
-        void set_config(const ClientConfig &cf);
+        // client_config is read-only after construction; TigerClient is thread-safe
+        // for concurrent send_request() calls once constructed, provided the underlying
+        // cpprestsdk http_client::request() supports concurrent calls (verified on
+        // cpprestsdk >= 2.10 where http_client is documented as thread-safe).
+        const ClientConfig client_config;
 
         value post(const utility::string_t &api_method, value &params);
 
@@ -37,6 +36,7 @@ namespace TIGER_API {
         value identifiers_to_options(value identifiers);
 
     private:
+        std::unique_ptr<http_client> http_client_;
 
         utility::string_t build_sign_content(const value &obj);
 

@@ -39,8 +39,8 @@ namespace TIGER_API {
         utility::string_t token;
         utility::string_t props_path;
 
-        void check();
-        void check_account();
+        void check() const;
+        void check_account() const;
 
         void set_server_url(const utility::string_t& url);
 
@@ -52,13 +52,13 @@ namespace TIGER_API {
 
         void set_token(const utility::string_t& token);
 
-        const utility::string_t& get_server_url();
+        const utility::string_t& get_server_url() const;
 
-        const utility::string_t& get_server_pub_key();
+        const utility::string_t& get_server_pub_key() const;
 
-        const utility::string_t& get_socket_url();
+        const utility::string_t& get_socket_url() const;
 
-        const utility::string_t& get_socket_port();
+        const utility::string_t& get_socket_port() const;
 
         bool is_us();
 

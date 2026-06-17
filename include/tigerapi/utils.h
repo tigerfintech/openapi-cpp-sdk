@@ -28,19 +28,19 @@ namespace TIGER_API {
 
         static utility::string_t get_level_str(int level);
 
-        static utility::string_t get_sign(utility::string_t &key, const utility::string_t &content);
+        static utility::string_t get_sign(const utility::string_t &key, const utility::string_t &content);
 
         static bool
         verify_sign(utility::string_t public_key, const utility::string_t &content,
                     const utility::string_t &encoded_signature);
 
         static utility::string_t
-        add_start_end(utility::string_t &key, const utility::string_t &start_marker,
-                      const utility::string_t end_marker);
+        add_start_end(const utility::string_t &key, const utility::string_t &start_marker,
+                      const utility::string_t &end_marker);
 
-        static utility::string_t fill_private_key_marker(utility::string_t &private_key);
+        static utility::string_t fill_private_key_marker(const utility::string_t &private_key);
 
-        static utility::string_t fill_public_key_marker(utility::string_t &public_key);
+        static utility::string_t fill_public_key_marker(const utility::string_t &public_key);
 
         static utility::string_t double_to_string(double num, int precision = 1);
 

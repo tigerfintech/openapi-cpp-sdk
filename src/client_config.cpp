@@ -1,6 +1,6 @@
-#include "../include/tigerapi/client_config.h"
-#include "../include/tigerapi/properties.h"
-#include "../include/tigerapi/enums.h"
+#include "tigerapi/client_config.h"
+#include "tigerapi/properties.h"
+#include "tigerapi/enums.h"
 
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
@@ -61,7 +61,7 @@ TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_
     LOG(INFO) << U("ClientConfig initialized with props_path: ") << props_path << endl;
 };
 
-void TIGER_API::ClientConfig::check()
+void TIGER_API::ClientConfig::check() const
 {
 	if (this->tiger_id.empty()) {
 		LOG(ERROR) << U("Client Config error: tiger_id can't be empty") << endl;
@@ -73,7 +73,7 @@ void TIGER_API::ClientConfig::check()
 	}
 }
 
-void TIGER_API::ClientConfig::check_account()
+void TIGER_API::ClientConfig::check_account() const
 {
 	if (this->account.empty()) {
 		LOG(ERROR) << U("Client Config error: account can't be empty") << endl;
@@ -106,22 +106,22 @@ void TIGER_API::ClientConfig::set_token(const utility::string_t& token)
 	this->token = token;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_server_url()
+const utility::string_t& TIGER_API::ClientConfig::get_server_url() const
 {
 	return this->server_url;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_server_pub_key()
+const utility::string_t& TIGER_API::ClientConfig::get_server_pub_key() const
 {
 	return this->server_public_key;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_socket_url()
+const utility::string_t& TIGER_API::ClientConfig::get_socket_url() const
 {
 	return this->socket_url;
 }
 
-const utility::string_t& TIGER_API::ClientConfig::get_socket_port()
+const utility::string_t& TIGER_API::ClientConfig::get_socket_port() const
 {
 	return this->socket_port;
 }
@@ -149,7 +149,13 @@ void TIGER_API::ClientConfig::load_props()
 			tiger_id = props.get_property(U("tiger_id"));
 		}
 		if (private_key.empty()) {
-			private_key = props.get_property(U("private_key_pk1"));
+			// prefer pk8 (PKCS#8), fallback to pk1 (PKCS#1)
+			utility::string_t pk8 = props.get_property(U("private_key_pk8"));
+			if (!pk8.empty()) {
+				private_key = pk8;
+			} else {
+				private_key = props.get_property(U("private_key_pk1"));
+			}
 		}
 		if (account.empty()) {
 			account = props.get_property(U("account"));
@@ -178,11 +184,28 @@ void TIGER_API::ClientConfig::load_props()
 
 utility::string_t TIGER_API::ClientConfig::get_props_path(const utility::string_t& filename) const
 {
-	if (!props_path.empty())
-	{
-		if (Utils::is_directory(props_path)) {
-			return props_path + filename;
+	if (props_path.empty()) {
+		return U("");
+	}
+	// If props_path already points to a file (ends with .properties), use it directly
+	// for the config file; for token file, derive from its directory.
+	const utility::string_t suffix = U(".properties");
+	const bool is_props_file = props_path.size() >= suffix.size() &&
+	    props_path.substr(props_path.size() - suffix.size()) == suffix;
+	if (is_props_file) {
+		if (filename == DEFAULT_PROPS_FILE) {
+			return props_path;
 		}
+		// Derive directory from the file path for token file
+		auto sep = props_path.find_last_of(U("/\\"));
+		if (sep != utility::string_t::npos) {
+			return props_path.substr(0, sep + 1) + filename;
+		}
+		return filename;
+	}
+	// Otherwise treat as directory
+	if (Utils::is_directory(props_path)) {
+		return props_path + filename;
 	}
 	return U("");
 }

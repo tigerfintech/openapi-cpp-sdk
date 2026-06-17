@@ -1,15 +1,12 @@
 ﻿//
 // Created by sukai on 2022/12/21.
 //
-#include "../include/tigerapi/quote_client.h"
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/utils.h"
+#include "tigerapi/quote_client.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/utils.h"
 
 
 namespace TIGER_API {
-    QuoteClient::QuoteClient() {
-        grab_quote_permission();
-    };
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
         grab_quote_permission();
     }
@@ -59,9 +56,15 @@ namespace TIGER_API {
         return post(BRIEF, obj);
     }
 
-    value QuoteClient::get_stock_detail(const value &symbols) {
+    value QuoteClient::get_stock_detail(const value &symbols, utility::string_t lang, utility::string_t sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
         return post(STOCK_DETAIL, obj);
     }
 
@@ -69,7 +72,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
-        obj[P_BEGIN_TIME] = (long long) begin_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
         return post(TIMELINE, obj);
     }
 
@@ -78,8 +81,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = (long long) begin_time;
-        obj[P_END_TIME] = (long long) end_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
@@ -137,8 +140,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_TRADE_SESSION] = value::string(trade_session);
-        obj[P_BEGIN_INDEX] = (long long) begin_index;
-        obj[P_END_INDEX] = (long long) end_index;
+        obj[P_BEGIN_INDEX] = value::number(static_cast<int64_t>(begin_index));
+        obj[P_END_INDEX] = value::number(static_cast<int64_t>(end_index));
         obj[P_LIMIT] = limit;
         return post(TRADE_TICK, obj);
     }
@@ -200,29 +203,49 @@ namespace TIGER_API {
         return post(TRADING_CALENDAR, obj);
     }
 
-    value QuoteClient::get_stock_broker(utility::string_t symbol, int limit) {
+    value QuoteClient::get_stock_broker(utility::string_t symbol, int limit, utility::string_t lang, utility::string_t sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOL] = value::string(symbol);
         obj[P_LIMIT] = limit;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
         return post(STOCK_BROKER, obj);
     }
 
-    value QuoteClient::get_capital_flow(utility::string_t symbol, Market market, CapitalPeriod period) {
-        return get_capital_flow(symbol, enum_to_str(market), enum_to_str(period));
+    value QuoteClient::get_capital_flow(utility::string_t symbol, Market market, CapitalPeriod period,
+                                        time_t begin_time, time_t end_time, int limit) {
+        return get_capital_flow(symbol, enum_to_str(market), enum_to_str(period), begin_time, end_time, limit);
     }
 
-    value QuoteClient::get_capital_flow(utility::string_t symbol, utility::string_t market, utility::string_t period) {
+    value QuoteClient::get_capital_flow(utility::string_t symbol, utility::string_t market, utility::string_t period,
+                                        time_t begin_time, time_t end_time, int limit) {
         value obj = value::object(true);
         obj[P_SYMBOL] = value::string(symbol);
         obj[P_MARKET] = value::string(market);
         obj[P_PERIOD] = value::string(period);
+        if (begin_time > 0) {
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        }
+        if (end_time > 0) {
+            obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+        }
+        if (limit > 0) {
+            obj[P_LIMIT] = limit;
+        }
         return post(CAPITAL_FLOW, obj);
     }
 
-    value QuoteClient::get_capital_distribution(utility::string_t symbol, Market market) {
+    value QuoteClient::get_capital_distribution(utility::string_t symbol, Market market, utility::string_t lang) {
         value obj = value::object(true);
         obj[P_SYMBOL] = value::string(symbol);
         obj[P_MARKET] = value::string(enum_to_str(market));
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
         return post(CAPITAL_DISTRIBUTION, obj);
     }
 
@@ -236,7 +259,7 @@ namespace TIGER_API {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
-        basic[P_EXPIRY] = (long long) expiry;
+        basic[P_EXPIRY] = value::number(static_cast<int64_t>(expiry));
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
@@ -269,9 +292,9 @@ namespace TIGER_API {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_BEGIN_TIME] = (long long) begin_time;
-            obj[P_END_TIME] = (long long) end_time;
-            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+            obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
             obj[P_PERIOD] = value::string(U("day"));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
@@ -352,8 +375,8 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_CONTRACT_CODES] = contract_codes;
         obj[P_PERIOD] = value::string(period);
-        obj[P_BEGIN_TIME] = (long long) begin_time;
-        obj[P_END_TIME] = (long long) end_time;
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
         return post(FUTURE_KLINE, obj);
@@ -405,8 +428,8 @@ namespace TIGER_API {
     value QuoteClient::get_future_tick(utility::string_t contract_code, long begin_index, long end_index, int limit) {
         value obj = value::object(true);
         obj[P_CONTRACT_CODE] = value::string(contract_code);
-        obj[P_BEGIN_INDEX] = (int64_t) begin_index;
-        obj[P_END_INDEX] = (int64_t) end_index;
+        obj[P_BEGIN_INDEX] = value::number(static_cast<int64_t>(begin_index));
+        obj[P_END_INDEX] = value::number(static_cast<int64_t>(end_index));
         obj[P_LIMIT] = limit;
         return post(FUTURE_TICK, obj);
     }
@@ -453,6 +476,271 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_WITH_DETAILS] = with_details;
         return post(KLINE_QUOTA, obj);
+    }
+
+    value QuoteClient::get_addon_entitlements() {
+        value obj = value::object(true);
+        return post(ADDON_ENTITLEMENTS, obj);
+    }
+
+    // Option new interfaces
+
+    value QuoteClient::get_option_symbols(utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(ALL_HK_OPTION_SYMBOLS, obj);
+    }
+
+    value QuoteClient::get_option_depth(const value &symbols, utility::string_t market) {
+        value obj = value::object(true);
+        obj[U("option_basic")] = symbols;
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        return post(OPTION_DEPTH, obj);
+    }
+
+    value QuoteClient::get_option_timeline(const value &symbols, utility::string_t market, time_t begin_time) {
+        value obj = value::object(true);
+        obj[U("option_query")] = symbols;
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (begin_time > 0) {
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        }
+        return post(OPTION_TIMELINE, obj);
+    }
+
+    value QuoteClient::get_option_analysis(const value &symbols, utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(OPTION_ANALYSIS, obj);
+    }
+
+    // Future new interfaces
+
+    value QuoteClient::get_future_depth(value contract_codes, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_CONTRACT_CODES] = contract_codes;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FUTURE_DEPTH, obj);
+    }
+
+    value QuoteClient::get_future_history_main_contract(value contract_codes, time_t begin_time, time_t end_time) {
+        value obj = value::object(true);
+        obj[P_CONTRACT_CODES] = contract_codes;
+        if (begin_time > 0) {
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        }
+        if (end_time > 0) {
+            obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+        }
+        return post(FUTURE_HISTORY_MAIN_CONTRACT, obj);
+    }
+
+    // Fund interfaces
+
+    value QuoteClient::get_fund_symbols(utility::string_t lang) {
+        value obj = value::object(true);
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FUND_ALL_SYMBOLS, obj);
+    }
+
+    value QuoteClient::get_fund_contracts(const value &symbols, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FUND_CONTRACTS, obj);
+    }
+
+    value QuoteClient::get_fund_quote(const value &symbols, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FUND_QUOTE, obj);
+    }
+
+    value QuoteClient::get_fund_history_quote(const value &symbols, time_t begin_time, time_t end_time, int limit, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (begin_time > 0) {
+            obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        }
+        if (end_time > 0) {
+            obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+        }
+        if (limit > 0) {
+            obj[P_LIMIT] = limit;
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FUND_HISTORY_QUOTE, obj);
+    }
+
+    // Financial new interfaces
+
+    value QuoteClient::get_financial_currency(const value &symbols, utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FINANCIAL_CURRENCY, obj);
+    }
+
+    value QuoteClient::get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date, utility::string_t end_date,
+                                                   utility::string_t timezone, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[U("currency_list")] = currency_list;
+        if (!begin_date.empty()) {
+            obj[P_BEGIN_DATE] = value::string(begin_date);
+        }
+        if (!end_date.empty()) {
+            obj[P_END_DATE] = value::string(end_date);
+        }
+        if (!timezone.empty()) {
+            obj[U("timezone")] = value::string(timezone);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FINANCIAL_EXCHANGE_RATE, obj);
+    }
+
+    // Other quote new interfaces
+
+    value QuoteClient::get_stock_fundamental(const value &symbols, utility::string_t market, utility::string_t sec_type, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(STOCK_FUNDAMENTAL, obj);
+    }
+
+    value QuoteClient::get_trade_rank(utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(TRADE_RANK, obj);
+    }
+
+    value QuoteClient::get_quote_overnight(const value &symbols, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(QUOTE_OVERNIGHT, obj);
+    }
+
+    value QuoteClient::get_broker_hold(utility::string_t market, utility::string_t order_by, utility::string_t direction,
+                                       int limit, int page, utility::string_t lang) {
+        value obj = value::object(true);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!order_by.empty()) {
+            obj[U("order_by")] = value::string(order_by);
+        }
+        if (!direction.empty()) {
+            obj[U("direction")] = value::string(direction);
+        }
+        if (limit > 0) {
+            obj[P_LIMIT] = limit;
+        }
+        if (page > 0) {
+            obj[P_PAGE] = page;
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(BROKER_HOLD, obj);
+    }
+
+    value QuoteClient::get_market_scanner_tags(utility::string_t market, const value &multi_tags_fields) {
+        value obj = value::object(true);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!multi_tags_fields.is_null()) {
+            obj[U("multi_tag_field_list")] = multi_tags_fields;
+        }
+        return post(MARKET_SCANNER_TAGS, obj);
+    }
+
+    // Industry related interfaces
+
+    value QuoteClient::get_industry_list(utility::string_t industry_level, utility::string_t lang) {
+        value obj = value::object(true);
+        if (!industry_level.empty()) {
+            obj[U("industry_level")] = value::string(industry_level);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(INDUSTRY_LIST, obj);
+    }
+
+    value QuoteClient::get_industry_stocks(utility::string_t industry_id, utility::string_t market, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[U("industry_id")] = value::string(industry_id);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(INDUSTRY_STOCKS, obj);
+    }
+
+    value QuoteClient::get_stock_industry(utility::string_t symbol, utility::string_t market, utility::string_t sec_type, utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOL] = value::string(symbol);
+        if (!market.empty()) {
+            obj[P_MARKET] = value::string(market);
+        }
+        if (!sec_type.empty()) {
+            obj[P_SEC_TYPE] = value::string(sec_type);
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(STOCK_INDUSTRY, obj);
     }
 
 

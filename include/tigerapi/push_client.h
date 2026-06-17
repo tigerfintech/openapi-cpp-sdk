@@ -2,27 +2,27 @@
 #define PUSH_CLIENT_H
 #include <memory>
 #include <functional>
-#include "../include/tigerapi/win32.h"
-#include "../include/tigerapi/model.h"
-#include "../include/tigerapi/client_config.h"
-#include "../include/tigerapi/enums.h"
-#include "../include/openapi_pb/pb_source/Request.pb.h"
-#include "../include/openapi_pb/pb_source/Response.pb.h"
-#include "../include/openapi_pb/pb_source/SocketCommon.pb.h"
-#include "../include/openapi_pb/pb_source/PushData.pb.h"
-#include "../include/openapi_pb/pb_source/AssetData.pb.h"
-#include "../include/openapi_pb/pb_source/PositionData.pb.h"
-#include "../include/openapi_pb/pb_source/OrderStatusData.pb.h"
-#include "../include/openapi_pb/pb_source/OrderTransactionData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteBasicData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteBBOData.pb.h"
-#include "../include/openapi_pb/pb_source/KlineData.pb.h"
-#include "../include/openapi_pb/pb_source/TickData.pb.h"
-#include "../include/openapi_pb/pb_source/TradeTickData.pb.h"
-#include "../include/openapi_pb/pb_source/StockTopData.pb.h"
-#include "../include/openapi_pb/pb_source/OptionTopData.pb.h"
-#include "../include/openapi_pb/pb_source/QuoteDepthData.pb.h"
+#include "tigerapi/win32.h"
+#include "tigerapi/model.h"
+#include "tigerapi/client_config.h"
+#include "tigerapi/enums.h"
+#include "openapi_pb/pb_source/Request.pb.h"
+#include "openapi_pb/pb_source/Response.pb.h"
+#include "openapi_pb/pb_source/SocketCommon.pb.h"
+#include "openapi_pb/pb_source/PushData.pb.h"
+#include "openapi_pb/pb_source/AssetData.pb.h"
+#include "openapi_pb/pb_source/PositionData.pb.h"
+#include "openapi_pb/pb_source/OrderStatusData.pb.h"
+#include "openapi_pb/pb_source/OrderTransactionData.pb.h"
+#include "openapi_pb/pb_source/QuoteData.pb.h"
+#include "openapi_pb/pb_source/QuoteBasicData.pb.h"
+#include "openapi_pb/pb_source/QuoteBBOData.pb.h"
+#include "openapi_pb/pb_source/KlineData.pb.h"
+#include "openapi_pb/pb_source/TickData.pb.h"
+#include "openapi_pb/pb_source/TradeTickData.pb.h"
+#include "openapi_pb/pb_source/StockTopData.pb.h"
+#include "openapi_pb/pb_source/OptionTopData.pb.h"
+#include "openapi_pb/pb_source/QuoteDepthData.pb.h"
 
 namespace TIGER_API
 {
@@ -88,12 +88,17 @@ namespace TIGER_API
 		virtual unsigned int unsubscribe_market(const std::string& market) = 0;
 
 		virtual void set_stock_top_changed_callback(const std::function<void(const tigeropen::push::pb::StockTopData&)>& cb) = 0;
-		virtual unsigned int subscribe_stock_top(const std::string& market) = 0;
-		virtual unsigned int unsubscribe_stock_top(const std::string& market) = 0;
+		virtual unsigned int subscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+		virtual unsigned int unsubscribe_stock_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
 
 		virtual void set_option_top_changed_callback(const std::function<void(const tigeropen::push::pb::OptionTopData&)>& cb) = 0;
-		virtual unsigned int subscribe_option_top(const std::string& market) = 0;
-		virtual unsigned int unsubscribe_option_top(const std::string& market) = 0;
+		virtual unsigned int subscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+		virtual unsigned int unsubscribe_option_top(const std::string& market, const std::vector<std::string>& indicators = {}) = 0;
+
+		virtual unsigned int subscribe_cc(const std::vector<std::string>& symbols) = 0;
+		virtual unsigned int unsubscribe_cc(const std::vector<std::string>& symbols) = 0;
+
+		virtual void set_heartbeat_callback(const std::function<void()>& cb) = 0;
 
 	};
 }
