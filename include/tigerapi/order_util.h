@@ -39,6 +39,20 @@ namespace TIGER_API {
         static Order
         trail_order(const utility::string_t account, Contract &contract, const utility::string_t action, long quantity,
                     double aux_price = 0, double trailing_percent = 0);
+
+        /** Iceberg order (basic) — only display_size required. */
+        static Order
+        iceberg_order(const utility::string_t account, Contract &contract, const utility::string_t action,
+                      long long quantity, double limit_price, long long display_size);
+
+        /** Iceberg order (full params). Pass 0 for optional numeric fields to omit them. */
+        static Order
+        iceberg_order(const utility::string_t account, Contract &contract, const utility::string_t action,
+                      long long quantity, double limit_price,
+                      long long display_size, long long min_display_size,
+                      long long check_intervals,
+                      const utility::string_t price_type,
+                      long long start_time, long long end_time);
     };
 }
 #endif //TIGERAPI_ORDER_UTIL_H
