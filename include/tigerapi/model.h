@@ -101,7 +101,7 @@ namespace TIGER_API {
             * price adjustment range (default 0 means no adjustment, positive means upward adjustment, negative means downward adjustment), automatically adjust the input price to a legal price.
             * For example: 0.001 means upward adjustment and the adjustment range is not more than 0.1%; -0.001 means downward adjustment and the adjustment range is not more than 0.1%. Default 0 means no adjustment
          */
-        double adjust_limit;
+        double adjust_limit = 0.0;
         utility::string_t user_mark;
         time_t expire_time = 0;
 
@@ -130,6 +130,13 @@ namespace TIGER_API {
         utility::string_t algo_strategy;
         double commission;
         double gst;
+        // iceberg order fields
+        long long display_size = 0;
+        long long min_display_size = 0;
+        long long check_intervals = 0;
+        utility::string_t price_type;
+        long long start_time = 0;
+        long long end_time = 0;
 
         utility::string_t to_string() {
             utility::stringstream_t ss;
@@ -228,6 +235,24 @@ namespace TIGER_API {
             }
             if (json.has_field(U("algoStrategy"))) {
                 algo_strategy = json.at(U("algoStrategy")).as_string();
+            }
+            if (json.has_field(U("displaySize"))) {
+                display_size = json.at(U("displaySize")).as_number().to_int64();
+            }
+            if (json.has_field(U("minDisplaySize"))) {
+                min_display_size = json.at(U("minDisplaySize")).as_number().to_int64();
+            }
+            if (json.has_field(U("checkIntervals"))) {
+                check_intervals = json.at(U("checkIntervals")).as_number().to_int64();
+            }
+            if (json.has_field(U("priceType"))) {
+                price_type = json.at(U("priceType")).as_string();
+            }
+            if (json.has_field(U("startTime"))) {
+                start_time = json.at(U("startTime")).as_number().to_int64();
+            }
+            if (json.has_field(U("endTime"))) {
+                end_time = json.at(U("endTime")).as_number().to_int64();
             }
             if (json.has_field(U("total_quantity_scale"))) {
                 total_quantity_scale = json.at(U("total_quantity_scale")).as_number().to_int64();

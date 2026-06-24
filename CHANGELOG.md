@@ -1,3 +1,8 @@
+## 1.2.4 (2026-06-24)
+### New
+- **冰山单支持**：新增 `OrderUtil::iceberg_order()` 两个重载（基础参数 / 完整参数），支持 `display_size`、`min_display_size`、`check_intervals`、`price_type`（`LIMIT_PRICE` / `OPPONENT_PRICE`）、`start_time`、`end_time` 字段。`Order` 结构体同步新增上述字段。
+- **单元测试**：`openapi_cpp_test --unit` 运行 26 项冰山单构造断言（无网络依赖），覆盖基础构造、完整参数及零值省略。
+
 ## 1.2.3 (2026-06-15)
 ### New
 - 新增期权提前行权接口：`submit_option_exercise` 提交行权/放弃申请、`cancel_option_exercise` 撤销申请、`check_option_exercise` 行权检验（预估持仓变化）、`get_option_exercise_records` 分页查询行权记录、`get_option_exercise_positions` 查询可行权持仓

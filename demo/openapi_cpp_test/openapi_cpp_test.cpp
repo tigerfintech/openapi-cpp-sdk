@@ -1119,8 +1119,161 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     }
 }
 
+// ===================================================================
+// ===== ICEBERG ORDER UNIT TESTS (no network required) =====
+// ===================================================================
+static int iceberg_unit_pass = 0, iceberg_unit_fail = 0;
+
+static void iceberg_assert(const utility::string_t& name, bool cond) {
+    if (cond) {
+        ucout << U("  [OK] ") << name << endl;
+        iceberg_unit_pass++;
+    } else {
+        ucout << U("  [FAIL] ") << name << endl;
+        iceberg_unit_fail++;
+    }
+}
+
+static int run_iceberg_unit_tests() {
+    ucout << U("=== C++ SDK Iceberg Order Unit Tests ===") << endl;
+
+    Contract contract;
+    contract.symbol = U("AAPL");
+    contract.sec_type = U("STK");
+    contract.currency = U("USD");
+
+    // Test 1: basic iceberg
+    {
+        Order o = OrderUtil::iceberg_order(U("ACC1"), contract, U("BUY"), 100, 1.5, 10);
+        iceberg_assert(U("basic: order_type == ICEBERG"), o.order_type == U("ICEBERG"));
+        iceberg_assert(U("basic: display_size == 10"), o.display_size == 10);
+        iceberg_assert(U("basic: limit_price == 1.5"), o.limit_price == 1.5);
+        iceberg_assert(U("basic: total_quantity == 100"), o.total_quantity == 100);
+        iceberg_assert(U("basic: action == BUY"), o.action == U("BUY"));
+        iceberg_assert(U("basic: symbol == AAPL"), o.contract.symbol == U("AAPL"));
+        iceberg_assert(U("basic: time_in_force == DAY"), o.time_in_force == U("DAY"));
+        iceberg_assert(U("basic: min_display_size == 0 (omitted)"), o.min_display_size == 0);
+        iceberg_assert(U("basic: check_intervals == 0 (omitted)"), o.check_intervals == 0);
+        iceberg_assert(U("basic: price_type empty (omitted)"), o.price_type.empty());
+        iceberg_assert(U("basic: start_time == 0 (omitted)"), o.start_time == 0);
+        iceberg_assert(U("basic: end_time == 0 (omitted)"), o.end_time == 0);
+    }
+
+    // Test 2: full iceberg
+    {
+        long long start = 1700000000000LL;
+        long long end   = 1700000000000LL + 4LL * 3600 * 1000;
+        Order o = OrderUtil::iceberg_order(
+            U("ACC1"), contract, U("SELL"), 200, 2.0,
+            20, 5, 30, U("LIMIT_PRICE"), start, end);
+        iceberg_assert(U("full: order_type == ICEBERG"), o.order_type == U("ICEBERG"));
+        iceberg_assert(U("full: display_size == 20"), o.display_size == 20);
+        iceberg_assert(U("full: min_display_size == 5"), o.min_display_size == 5);
+        iceberg_assert(U("full: check_intervals == 30"), o.check_intervals == 30);
+        iceberg_assert(U("full: price_type == LIMIT_PRICE"), o.price_type == U("LIMIT_PRICE"));
+        iceberg_assert(U("full: start_time set"), o.start_time == start);
+        iceberg_assert(U("full: end_time set"), o.end_time == end);
+        iceberg_assert(U("full: action == SELL"), o.action == U("SELL"));
+        iceberg_assert(U("full: total_quantity == 200"), o.total_quantity == 200);
+    }
+
+    // Test 3: zeros in optional fields are omitted
+    {
+        Order o = OrderUtil::iceberg_order(
+            U("ACC1"), contract, U("BUY"), 50, 1.0,
+            5, 0, 0, U(""), 0, 0);
+        iceberg_assert(U("zero-omit: min_display_size == 0"), o.min_display_size == 0);
+        iceberg_assert(U("zero-omit: check_intervals == 0"), o.check_intervals == 0);
+        iceberg_assert(U("zero-omit: price_type empty"), o.price_type.empty());
+        iceberg_assert(U("zero-omit: start_time == 0"), o.start_time == 0);
+        iceberg_assert(U("zero-omit: end_time == 0"), o.end_time == 0);
+    }
+
+    ucout << endl;
+    ucout << U("=== Result: ") << iceberg_unit_pass << U(" passed, ")
+          << iceberg_unit_fail << U(" failed ===") << endl;
+    return iceberg_unit_fail;
+}
+
+static void test_iceberg_prod() {
+    utility::string_t config_path;
+    const char* cfg_env = std::getenv("TIGER_CONFIG_PATH");
+    const char* home_env = std::getenv("HOME");
+    if (cfg_env && *cfg_env) {
+        config_path = Utils::str8to16(std::string(cfg_env));
+    } else if (home_env && *home_env) {
+        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
+    } else {
+        config_path = U("demo/openapi_cpp_test/");
+    }
+
+    ClientConfig config = ClientConfig(false, config_path);
+    std::shared_ptr<TradeClient> tc = std::make_shared<TradeClient>(config);
+
+    utility::string_t account = config.account;
+    ucout << U("account=") << account << U(" tiger_id=") << config.tiger_id << endl;
+
+    Contract contract;
+    contract.symbol = U("AAPL");
+    contract.currency = U("USD");
+    contract.sec_type = U("STK");
+
+    // place
+    Order order = OrderUtil::iceberg_order(account, contract, U("BUY"), 100, 1.0, 20, 10, 0, U("LIMIT_PRICE"), 0, 0);
+    value place_res = tc->place_order(order);
+    unsigned long long order_id = order.id;
+    ucout << U("[place] order_id=") << order_id << U(" res=") << place_res.serialize() << endl;
+
+    if (order_id == 0) {
+        ucout << U("[place] FAILED - no order_id returned") << endl;
+        return;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    // query
+    Order queried = tc->get_order(order_id, false);
+    ucout << U("[query] status=") << queried.status
+          << U(" order_type=") << queried.order_type
+          << U(" display_size=") << queried.display_size
+          << U(" min_display_size=") << queried.min_display_size << endl;
+
+    // modify: update display_size=30, min_display_size=15, limit_price=1.01
+    Order mod_order;
+    mod_order.id = order_id;
+    mod_order.account = account;
+    mod_order.order_type = U("ICEBERG");
+    mod_order.limit_price = 1.01;
+    mod_order.total_quantity = 100;
+    mod_order.display_size = 30;
+    mod_order.min_display_size = 15;
+    mod_order.price_type = U("LIMIT_PRICE");
+    // cast to resolve ambiguity between the two modify_order overloads
+    value (TradeClient::*modify_fn)(Order&) = &TradeClient::modify_order;
+    value modify_res = (tc.get()->*modify_fn)(mod_order);
+    ucout << U("[modify] res=") << modify_res.serialize() << endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    // cancel
+    value cancel_res = tc->cancel_order(order_id);
+    ucout << U("[cancel] res=") << cancel_res.serialize() << endl;
+}
+
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
+
+    // --unit: run iceberg unit tests only (no network required)
+    if (argc > 1 && std::string(argv[1]) == "--unit") {
+        int rc = run_iceberg_unit_tests();
+        return rc;
+    }
+
+    // --iceberg-prod: PROD iceberg place/modify/cancel test
+    if (argc > 1 && std::string(argv[1]) == "--iceberg-prod") {
+        test_iceberg_prod();
+        return 0;
+    }
     // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
     utility::string_t config_path;
     const char* home_env = std::getenv("HOME");
@@ -1134,6 +1287,7 @@ int main(int argc, char* argv[]) {
     }
     ClientConfig config = ClientConfig(false, config_path);
     config.use_full_tick = true;
+    
 
     std::vector<TestResult> results;
 
