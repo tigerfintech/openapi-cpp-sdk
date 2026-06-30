@@ -609,8 +609,17 @@ namespace TIGER_API {
         if (order.min_display_size != 0) {
             obj[U("min_display_size")] = value::number(static_cast<int64_t>(order.min_display_size));
         }
+        if (order.check_intervals != 0) {
+            obj[U("check_intervals")] = value::number(static_cast<int64_t>(order.check_intervals));
+        }
         if (!order.price_type.empty()) {
             obj[U("price_type")] = value::string(order.price_type);
+        }
+        if (order.start_time != 0) {
+            obj[U("start_time")] = value::number(static_cast<int64_t>(order.start_time));
+        }
+        if (order.end_time != 0) {
+            obj[U("end_time")] = value::number(static_cast<int64_t>(order.end_time));
         }
         value res = post(MODIFY_ORDER, obj);
         return res;
