@@ -103,7 +103,8 @@ void TIGER_API::ClientConfig::set_server_public_key(const utility::string_t& key
 
 void TIGER_API::ClientConfig::set_token(const utility::string_t& token)
 {
-	this->token = token;
+    std::lock_guard<std::mutex> lock(token_mutex_);
+    this->token = token;
 }
 
 const utility::string_t& TIGER_API::ClientConfig::get_server_url() const
@@ -242,30 +243,93 @@ void TIGER_API::ClientConfig::load_token()
 
 void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
 {
-	utility::string_t full_path = get_token_path();
-	if (full_path.empty()) {
-		return;
-	}
-	try {
-		Properties props;
-		props.set_property(U("token"), new_token);
+    utility::string_t full_path = get_token_path();
 
-		std::ofstream file(Utils::str16to8(full_path));
-		if (!file.is_open()) {
-			LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
-			return;
-		}
+    // Always update in-memory token under lock.
+    {
+        std::lock_guard<std::mutex> lock(token_mutex_);
+        token = new_token;
+    }
 
-		props.store(file);
-		token = new_token;
-		LOG(INFO) << U("Saved token successfully, token: ") << token << endl;
-	}
-	catch (const std::exception& e) {
-		LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
-	}
+    if (full_path.empty()) {
+        LOG(INFO) << U("No token file path configured; token updated in memory only") << endl;
+        return;
+    }
+    try {
+        Properties props;
+        props.set_property(U("token"), new_token);
+
+        std::ofstream file(Utils::str16to8(full_path));
+        if (!file.is_open()) {
+            LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
+            return;
+        }
+
+        props.store(file);
+        LOG(INFO) << U("Saved token successfully, token: ") << new_token << endl;
+    }
+    catch (const std::exception& e) {
+        LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
+    }
 }
 
 bool TIGER_API::ClientConfig::is_us()
 {
     return !license.empty() && license == enum_to_str(License::TBUS);
+}
+
+utility::string_t TIGER_API::ClientConfig::get_token() const
+{
+    std::lock_guard<std::mutex> lock(token_mutex_);
+    return token;
+}
+
+bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
+                                                    std::function<utility::string_t()> fetch_fn)
+{
+    if (refresh_running_.exchange(true)) {
+        LOG(WARNING) << U("Token refresh thread is already running") << endl;
+        return false;
+    }
+
+    refresh_thread_ = std::thread([this, interval_seconds, fetch_fn = std::move(fetch_fn)]() {
+        LOG(INFO) << U("Token refresh thread started, interval=") << interval_seconds << U("s") << endl;
+        while (refresh_running_) {
+            std::unique_lock<std::mutex> cv_lock(refresh_cv_mutex_);
+            refresh_cv_.wait_for(cv_lock, std::chrono::seconds(interval_seconds),
+                                 [this] { return !refresh_running_.load(); });
+            if (!refresh_running_) break;
+
+            try {
+                utility::string_t new_token = fetch_fn();
+                if (!new_token.empty()) {
+                    save_token(new_token);
+                    LOG(INFO) << U("Token refreshed successfully") << endl;
+                } else {
+                    LOG(WARNING) << U("Token refresh returned empty token, keeping current") << endl;
+                }
+            } catch (const std::exception& e) {
+                LOG(ERROR) << U("Token refresh failed: ") << Utils::str8to16(e.what()) << endl;
+            }
+        }
+        LOG(INFO) << U("Token refresh thread stopped") << endl;
+    });
+
+    return true;
+}
+
+void TIGER_API::ClientConfig::stop_token_refresh()
+{
+    if (!refresh_running_.exchange(false)) {
+        return;
+    }
+    refresh_cv_.notify_all();
+    if (refresh_thread_.joinable()) {
+        refresh_thread_.join();
+    }
+}
+
+TIGER_API::ClientConfig::~ClientConfig()
+{
+    stop_token_refresh();
 }

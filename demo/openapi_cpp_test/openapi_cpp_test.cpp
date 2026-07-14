@@ -1119,6 +1119,96 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     }
 }
 
+// ===================================================================
+// Token auto-refresh unit tests (no network required)
+// ===================================================================
+class TestTokenRefresh {
+public:
+    // Verify that start_token_refresh drives the fetch_fn at least once within
+    // the specified interval and that the token is updated thread-safely.
+    static void test_callback_is_called() {
+        ClientConfig cfg(false);
+        cfg.token = U("old_token");
+        std::atomic<int> call_count{0};
+
+        bool started = cfg.start_token_refresh(1, [&]() -> utility::string_t {
+            call_count++;
+            return U("new_token");
+        });
+        if (!started) {
+            throw std::runtime_error("start_token_refresh returned false unexpectedly");
+        }
+
+        // Wait up to 3s for at least one refresh call.
+        for (int i = 0; i < 30 && call_count == 0; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        cfg.stop_token_refresh();
+
+        if (call_count == 0) {
+            throw std::runtime_error("fetch_fn was never called within timeout");
+        }
+        utility::string_t tok = cfg.get_token();
+        if (tok != U("new_token")) {
+            throw std::runtime_error("token was not updated after refresh");
+        }
+        ucout << U("  call_count=") << call_count.load() << U(", token=") << tok << endl;
+    }
+
+    // Verify that a second start_token_refresh call is rejected while one is running.
+    static void test_double_start_rejected() {
+        ClientConfig cfg(false);
+        std::atomic<bool> keep_running{true};
+
+        bool first = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            while (keep_running) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+            return U("token");
+        });
+        bool second = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            return U("should_not_run");
+        });
+        keep_running = false;
+        cfg.stop_token_refresh();
+
+        if (!first) throw std::runtime_error("first start should succeed");
+        if (second) throw std::runtime_error("second start should be rejected");
+    }
+
+    // Verify that stop_token_refresh is safe to call multiple times.
+    static void test_stop_idempotent() {
+        ClientConfig cfg(false);
+        cfg.start_token_refresh(3600, [&]() { return U("tok"); });
+        cfg.stop_token_refresh();
+        cfg.stop_token_refresh(); // must not hang or throw
+    }
+
+    // Verify that get_token() returns the current token under lock.
+    static void test_get_token_thread_safe() {
+        ClientConfig cfg(false);
+        cfg.token = U("initial");
+        int errors = 0;
+        std::vector<std::thread> readers;
+        for (int i = 0; i < 4; ++i) {
+            readers.emplace_back([&cfg, &errors]() {
+                for (int j = 0; j < 100; ++j) {
+                    utility::string_t t = cfg.get_token();
+                    if (t.empty()) {
+                        // empty is fine only if token was just cleared; here token is set
+                        errors++;
+                    }
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+            });
+        }
+        for (auto& t : readers) t.join();
+        if (errors > 0) {
+            throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors) + " times");
+        }
+    }
+};
+
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
     // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
@@ -1138,10 +1228,59 @@ int main(int argc, char* argv[]) {
     std::vector<TestResult> results;
 
     // ===================================================================
-    // ===== QUOTE CLIENT TESTS =====
+    // ===== TOKEN AUTO-REFRESH UNIT TESTS (no network) =====
+    // ===================================================================
+    ucout << U("\n===== Token Auto-Refresh Unit Tests =====\n") << endl;
+
+    results.push_back(run_test(U("token_refresh::callback_is_called"), []() {
+        TestTokenRefresh::test_callback_is_called();
+    }));
+
+    results.push_back(run_test(U("token_refresh::double_start_rejected"), []() {
+        TestTokenRefresh::test_double_start_rejected();
+    }));
+
+    results.push_back(run_test(U("token_refresh::stop_idempotent"), []() {
+        TestTokenRefresh::test_stop_idempotent();
+    }));
+
+    results.push_back(run_test(U("token_refresh::get_token_thread_safe"), []() {
+        TestTokenRefresh::test_get_token_thread_safe();
+    }));
+
+    // ===================================================================
+    // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
     // ===================================================================
     ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+
+    // Token refresh integration test (real network).
+    results.push_back(run_test(U("token_refresh::query_token (real)"), [&]() {
+        TigerClient base_client(config);
+        if (config.token.empty()) {
+            ucout << U("  SKIP: no token loaded from file; query_token requires a valid token") << endl;
+            return;
+        }
+        utility::string_t new_tok = base_client.query_token();
+        if (new_tok.empty()) {
+            throw std::runtime_error("query_token returned empty string");
+        }
+        ucout << U("  new token length=") << new_tok.size() << endl;
+    }));
+
+    results.push_back(run_test(U("token_refresh::start_and_stop (real, 2s interval)"), [&]() {
+        TigerClient base_client(config);
+        std::atomic<int> call_count{0};
+        // Wrap query_token to count calls.
+        bool started = base_client.start_token_refresh(2);
+        if (!started) {
+            throw std::runtime_error("start_token_refresh failed");
+        }
+        // Wait 5s to verify it runs without crashing.
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        base_client.stop_token_refresh();
+        ucout << U("  start/stop completed without error") << endl;
+    }));
 
     // --- 1. Basic/Stock Quote APIs ---
     ucout << U("\n--- Quote: Basic/Stock APIs ---\n") << endl;

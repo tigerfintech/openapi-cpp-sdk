@@ -45,11 +45,11 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 }
 
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
+    : client_config_(client_config)
 {
     socket_ = PushSocket::create_push_socket(&io_context_, client_config);
     socket_->set_on_message_callback(
         [this](const std::shared_ptr<tigeropen::push::pb::Response>& message) { on_message(message); });
-    client_config_ = client_config;
 }
 
 void TIGER_API::PushClientImpl::connect()

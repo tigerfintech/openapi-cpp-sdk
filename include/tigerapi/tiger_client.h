@@ -35,6 +35,16 @@ namespace TIGER_API {
 
         value identifiers_to_options(value identifiers);
 
+        // Fetch a new token from the server via user_token_refresh.
+        // Returns empty string on failure.
+        utility::string_t query_token();
+
+        // Convenience: start background token auto-refresh.
+        // interval_seconds: how often to refresh (e.g. 3600 = 1 hour).
+        // Returns false if a refresh thread is already running.
+        bool start_token_refresh(int interval_seconds);
+        void stop_token_refresh();
+
     private:
         std::unique_ptr<http_client> http_client_;
 
