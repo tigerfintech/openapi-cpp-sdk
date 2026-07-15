@@ -1211,18 +1211,32 @@ public:
 
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
-    // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
+    // Load config: TIGER_CONFIG_PATH env > argv[1] > ~/.tigeropen/
     utility::string_t config_path;
-    const char* home_env = std::getenv("HOME");
-    const char* userprofile_env = std::getenv("USERPROFILE");
-    if (home_env && *home_env) {
-        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
-    } else if (userprofile_env && *userprofile_env) {
-        config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+    const char* config_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (config_path_env && *config_path_env) {
+        config_path = Utils::str8to16(std::string(config_path_env));
+    } else if (argc >= 2) {
+        config_path = Utils::str8to16(std::string(argv[1]));
     } else {
-        config_path = U("demo/openapi_cpp_test/");
+        const char* home_env = std::getenv("HOME");
+        const char* userprofile_env = std::getenv("USERPROFILE");
+        if (home_env && *home_env) {
+            config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
+        } else if (userprofile_env && *userprofile_env) {
+            config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+        } else {
+            config_path = U("demo/openapi_cpp_test/");
+        }
     }
     ClientConfig config = ClientConfig(false, config_path);
+
+    // Allow overriding server URL via env var (useful for QA environments).
+    const char* server_url_env = std::getenv("TIGER_SERVER_URL");
+    if (server_url_env && *server_url_env) {
+        config.set_server_url(Utils::str8to16(std::string(server_url_env)));
+    }
+
     config.use_full_tick = true;
 
     std::vector<TestResult> results;
@@ -1249,10 +1263,9 @@ int main(int argc, char* argv[]) {
     }));
 
     // ===================================================================
-    // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
+    // ===== REAL NETWORK TOKEN TESTS (before QuoteClient, may run standalone) =====
     // ===================================================================
-    ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    ucout << U("\n===== Token Refresh Integration Tests =====\n") << endl;
 
     // Token refresh integration test (real network).
     results.push_back(run_test(U("token_refresh::query_token (real)"), [&]() {
@@ -1270,8 +1283,6 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("token_refresh::start_and_stop (real, 2s interval)"), [&]() {
         TigerClient base_client(config);
-        std::atomic<int> call_count{0};
-        // Wrap query_token to count calls.
         bool started = base_client.start_token_refresh(2);
         if (!started) {
             throw std::runtime_error("start_token_refresh failed");
@@ -1281,6 +1292,25 @@ int main(int argc, char* argv[]) {
         base_client.stop_token_refresh();
         ucout << U("  start/stop completed without error") << endl;
     }));
+
+    // If TOKEN_ONLY env is set, skip the rest of the tests.
+    if (std::getenv("TOKEN_ONLY")) {
+        ucout << U("\n===== TOKEN_ONLY mode: skipping remaining tests =====\n") << endl;
+        int pass = 0, fail = 0, skip = 0;
+        for (const auto& r : results) {
+            if (r.skipped) ++skip;
+            else if (r.passed) ++pass;
+            else ++fail;
+        }
+        ucout << U("\nSummary: ") << pass << U(" passed, ") << fail << U(" failed, ") << skip << U(" skipped") << endl;
+        return fail > 0 ? 1 : 0;
+    }
+
+    // ===================================================================
+    // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
+    // ===================================================================
+    ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
+    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
 
     // --- 1. Basic/Stock Quote APIs ---
     ucout << U("\n--- Quote: Basic/Stock APIs ---\n") << endl;

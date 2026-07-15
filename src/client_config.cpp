@@ -310,6 +310,8 @@ bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
                 }
             } catch (const std::exception& e) {
                 LOG(ERROR) << U("Token refresh failed: ") << Utils::str8to16(e.what()) << endl;
+            } catch (...) {
+                LOG(ERROR) << U("Token refresh failed with unknown exception") << endl;
             }
         }
         LOG(INFO) << U("Token refresh thread stopped") << endl;
