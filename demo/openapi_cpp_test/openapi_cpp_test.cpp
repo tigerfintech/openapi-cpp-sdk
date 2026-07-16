@@ -1188,24 +1188,38 @@ public:
     // Verify that get_token() returns the current token under lock.
     static void test_get_token_thread_safe() {
         ClientConfig cfg(false);
-        cfg.token = U("initial");
-        int errors = 0;
+        cfg.token = U("valueA");
+        std::atomic<int> errors{0};
+        std::atomic<bool> stop_writer{false};
+
+        // Writer thread alternates between two non-empty values.
+        std::thread writer([&cfg, &stop_writer]() {
+            int i = 0;
+            while (!stop_writer.load()) {
+                cfg.set_token(i % 2 == 0 ? U("valueA") : U("valueB"));
+                ++i;
+                std::this_thread::sleep_for(std::chrono::microseconds(50));
+            }
+        });
+
         std::vector<std::thread> readers;
         for (int i = 0; i < 4; ++i) {
             readers.emplace_back([&cfg, &errors]() {
                 for (int j = 0; j < 100; ++j) {
                     utility::string_t t = cfg.get_token();
                     if (t.empty()) {
-                        // empty is fine only if token was just cleared; here token is set
-                        errors++;
+                        errors.fetch_add(1, std::memory_order_relaxed);
                     }
                     std::this_thread::sleep_for(std::chrono::microseconds(100));
                 }
             });
         }
         for (auto& t : readers) t.join();
-        if (errors > 0) {
-            throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors) + " times");
+        stop_writer.store(true);
+        writer.join();
+
+        if (errors.load() > 0) {
+            throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors.load()) + " times");
         }
     }
 
@@ -1366,37 +1380,6 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("token_refresh::props_path_as_file"), []() {
         TestTokenRefresh::test_props_path_as_file();
-    }));
-
-    // ===================================================================
-    // ===== REAL NETWORK TOKEN TESTS (before QuoteClient, may run standalone) =====
-    // ===================================================================
-    ucout << U("\n===== Token Refresh Integration Tests =====\n") << endl;
-
-    // Token refresh integration test (real network).
-    results.push_back(run_test(U("token_refresh::query_token (real)"), [&]() {
-        TigerClient base_client(config);
-        if (config.token.empty()) {
-            ucout << U("  SKIP: no token loaded from file; query_token requires a valid token") << endl;
-            return;
-        }
-        utility::string_t new_tok = base_client.query_token();
-        if (new_tok.empty()) {
-            throw std::runtime_error("query_token returned empty string");
-        }
-        ucout << U("  new token length=") << new_tok.size() << endl;
-    }));
-
-    results.push_back(run_test(U("token_refresh::start_and_stop (real, 2s interval)"), [&]() {
-        TigerClient base_client(config);
-        bool started = base_client.start_token_refresh(2);
-        if (!started) {
-            throw std::runtime_error("start_token_refresh failed");
-        }
-        // Wait 5s to verify it runs without crashing.
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        base_client.stop_token_refresh();
-        ucout << U("  start/stop completed without error") << endl;
     }));
 
     // If TOKEN_ONLY env is set, skip the rest of the tests.

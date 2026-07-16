@@ -93,12 +93,13 @@ namespace TIGER_API {
         // Thread-safe token accessor for use inside send_request.
         utility::string_t get_token() const;
 
-        // Persist a newly-obtained token to memory and file.
-        void save_token(const utility::string_t& new_token);
-
         ~ClientConfig();
 
     private:
+        friend class TigerClient;
+
+        // Persist a newly-obtained token to file (on success) then to memory.
+        void save_token(const utility::string_t& new_token);
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;
         utility::string_t server_public_key = TIGER_PUBLIC_KEY;

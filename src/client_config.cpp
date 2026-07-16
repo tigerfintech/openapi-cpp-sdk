@@ -235,7 +235,11 @@ void TIGER_API::ClientConfig::load_token()
 		props.load(file);
 
 		// get token value
-		token = props.get_property(U("token"));
+		utility::string_t loaded_token = props.get_property(U("token"));
+		{
+			std::lock_guard<std::mutex> lock(token_mutex_);
+			token = loaded_token;
+		}
 		LOG(INFO) << U("Loaded token successfully, token: ") << token << endl;
 	}
 	catch (const std::exception& e) {
@@ -247,16 +251,15 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
 {
     utility::string_t full_path = get_token_path();
 
-    // Always update in-memory token under lock.
-    {
+    if (full_path.empty()) {
+        // No file path: just update memory.
         std::lock_guard<std::mutex> lock(token_mutex_);
         token = new_token;
-    }
-
-    if (full_path.empty()) {
         LOG(INFO) << U("No token file path configured; token updated in memory only") << endl;
         return;
     }
+
+    // Write file first; only update memory on success.
     try {
         Properties props;
         props.set_property(U("token"), new_token);
@@ -269,10 +272,17 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
         }
 
         props.store(file);
-        LOG(INFO) << U("Saved token successfully, token: ") << new_token << endl;
+        LOG(INFO) << U("Saved token successfully") << endl;
     }
     catch (const std::exception& e) {
         LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
+        return;
+    }
+
+    // File write succeeded; now update in-memory token under lock.
+    {
+        std::lock_guard<std::mutex> lock(token_mutex_);
+        token = new_token;
     }
 }
 
@@ -290,11 +300,21 @@ utility::string_t TIGER_API::ClientConfig::get_token() const
 bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
                                                     std::function<utility::string_t()> fetch_fn)
 {
-    if (refresh_running_.exchange(true)) {
+    // Guard against re-entry: take cv_mutex to serialize start/stop calls,
+    // so stop_token_refresh() cannot race between flag-set and thread-create.
+    std::lock_guard<std::mutex> start_lock(refresh_cv_mutex_);
+
+    if (refresh_running_.load()) {
         LOG(WARNING) << U("Token refresh thread is already running") << endl;
         return false;
     }
 
+    // Join any previously stopped thread before replacing it.
+    if (refresh_thread_.joinable()) {
+        refresh_thread_.join();
+    }
+
+    refresh_running_.store(true);
     refresh_thread_ = std::thread([this, interval_seconds, fetch_fn = std::move(fetch_fn)]() {
         LOG(INFO) << U("Token refresh thread started, interval=") << interval_seconds << U("s") << endl;
         while (refresh_running_) {
@@ -325,8 +345,12 @@ bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
 
 void TIGER_API::ClientConfig::stop_token_refresh()
 {
-    if (!refresh_running_.exchange(false)) {
-        return;
+    {
+        std::lock_guard<std::mutex> start_lock(refresh_cv_mutex_);
+        if (!refresh_running_.load()) {
+            return;
+        }
+        refresh_running_.store(false);
     }
     refresh_cv_.notify_all();
     if (refresh_thread_.joinable()) {

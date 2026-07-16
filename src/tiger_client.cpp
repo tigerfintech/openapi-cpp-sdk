@@ -62,8 +62,11 @@ namespace TIGER_API {
         request.headers().add(U("Accept"), U("application/json"));
         request.headers().set_content_type(U("application/json; charset=UTF-8"));
         request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + U(PROJECT_VERSION));
-        if (!client_config.token.empty()) {
-            request.headers().add(U("Authorization"), client_config.get_token());
+        {
+            utility::string_t tok = client_config.get_token();
+            if (!tok.empty()) {
+                request.headers().add(U("Authorization"), tok);
+            }
         }
 
         /************************** set request body ***************************/
@@ -170,9 +173,7 @@ namespace TIGER_API {
             value params = value::object();
             value result = post(U("user_token_refresh"), params);
             if (!result.is_null() && result.is_object() && result.has_field(U("token"))) {
-                utility::string_t new_token = result[U("token")].as_string();
-                client_config.save_token(new_token);
-                return new_token;
+                return result[U("token")].as_string();
             }
         } catch (const std::exception& e) {
             LOG(ERROR) << U("query_token failed: ") << Utils::str8to16(e.what()) << endl;

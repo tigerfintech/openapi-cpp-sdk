@@ -21,6 +21,12 @@ namespace TIGER_API {
         explicit TigerClient(const ClientConfig &cf);
         ~TigerClient() = default;
 
+        // Prevent silent copy/move that would lose the refresh thread state.
+        TigerClient(const TigerClient&) = delete;
+        TigerClient& operator=(const TigerClient&) = delete;
+        TigerClient(TigerClient&&) = delete;
+        TigerClient& operator=(TigerClient&&) = delete;
+
         // client_config holds connection params and token state; mutable for token refresh.
         ClientConfig client_config;
 
