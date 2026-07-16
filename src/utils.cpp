@@ -260,6 +260,10 @@ namespace TIGER_API {
 		if (path.empty()) {
 			return false;
 		}
-		return std::filesystem::is_directory(std::filesystem::path(path));
+		try {
+			return std::filesystem::is_directory(std::filesystem::path(path));
+		} catch (const std::filesystem::filesystem_error&) {
+			return false;
+		}
 	}
 }

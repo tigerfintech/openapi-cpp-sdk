@@ -272,7 +272,7 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
         }
 
         props.store(file);
-        LOG(INFO) << U("Saved token successfully") << endl;
+        LOG(INFO) << U("Saved token successfully, length=") << new_token.size() << endl;
     }
     catch (const std::exception& e) {
         LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;

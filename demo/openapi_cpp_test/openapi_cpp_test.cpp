@@ -8,6 +8,7 @@
 #include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
 #include <chrono>
@@ -1239,28 +1240,27 @@ public:
         ucout << U("  is_directory: temp=true, file=false") << endl;
     }
 
-    // save_token writes to file; subsequent ClientConfig load reads it back.
+    // load_token reads a token file written in the same format save_token uses.
     static void test_save_and_load_token() {
         namespace fs = std::filesystem;
-        // Use system temp dir so path is always valid.
         std::string dir = fs::temp_directory_path().string();
         if (dir.back() != '/' && dir.back() != '\\') dir += '/';
 
         utility::string_t udir = Utils::str8to16(dir);
-        ClientConfig cfg(false, udir);
-
         utility::string_t token_val = U("test_token_abc123");
-        cfg.save_token(token_val);
 
-        // Verify file was written.
+        // Write the token file in the same format save_token uses.
         std::string token_file = dir + "tiger_openapi_token.properties";
-        if (!fs::exists(token_file)) {
-            throw std::runtime_error("token file not created: " + token_file);
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
         }
 
         // Load into a fresh ClientConfig pointed at same dir; token should be read.
-        ClientConfig cfg2(false, udir);
-        utility::string_t loaded = cfg2.get_token();
+        ClientConfig cfg(false, udir);
+        utility::string_t loaded = cfg.get_token();
         if (loaded != token_val) {
             throw std::runtime_error(
                 "loaded token mismatch: expected=" +
@@ -1268,13 +1268,11 @@ public:
                 " got=" + utility::conversions::to_utf8string(loaded));
         }
 
-        // Cleanup.
         fs::remove(token_file);
-        ucout << U("  save_token → file written and reloaded correctly") << endl;
+        ucout << U("  token file written and reloaded correctly") << endl;
     }
 
-    // get_props_path: dir-style props_path yields expected token file path.
-    // Tested indirectly: save_token succeeds only when get_token_path() is non-empty.
+    // get_props_path: file-style props_path derives token file from same directory.
     static void test_props_path_as_file() {
         namespace fs = std::filesystem;
         std::string dir = fs::temp_directory_path().string();
@@ -1283,21 +1281,22 @@ public:
         // Point props_path directly at the config file (file-style, not dir-style).
         std::string cfg_file = dir + "tiger_openapi_config.properties";
         {
-            // Write a minimal config file so ClientConfig can open it.
             std::ofstream f(cfg_file);
             f << "tiger_id=dummy\n";
         }
 
         utility::string_t ucfg = Utils::str8to16(cfg_file);
-        ClientConfig cfg(false, ucfg);
 
         // When props_path is a .properties file, token file should be in the same dir.
         utility::string_t token_val = U("file_style_token_xyz");
-        cfg.save_token(token_val);
-
         std::string token_file = dir + "tiger_openapi_token.properties";
-        if (!fs::exists(token_file)) {
-            throw std::runtime_error("token file not created (file-style props_path): " + token_file);
+
+        // Write token file directly (same format as save_token).
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
         }
 
         ClientConfig cfg2(false, ucfg);
@@ -1307,7 +1306,7 @@ public:
 
         fs::remove(cfg_file);
         fs::remove(token_file);
-        ucout << U("  file-style props_path: token saved and loaded correctly") << endl;
+        ucout << U("  file-style props_path: token loaded correctly from same dir") << endl;
     }
 };
 

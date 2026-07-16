@@ -172,7 +172,11 @@ namespace TIGER_API {
         try {
             value params = value::object();
             value result = post(U("user_token_refresh"), params);
-            if (!result.is_null() && result.is_object() && result.has_field(U("token"))) {
+            if (!result.is_null() && result.is_object()) {
+                if (!result.has_field(U("token"))) {
+                    LOG(WARNING) << U("query_token: response missing token field") << endl;
+                    return U("");
+                }
                 return result[U("token")].as_string();
             }
         } catch (const std::exception& e) {

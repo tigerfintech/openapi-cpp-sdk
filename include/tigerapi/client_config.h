@@ -29,6 +29,7 @@ namespace TIGER_API {
         ClientConfig(bool sandbox_debug, const utility::string_t props_path);
 
         // Copy constructor: copies configuration data only; refresh thread is NOT transferred.
+        // Do not copy a ClientConfig while its refresh thread is running.
         ClientConfig(const ClientConfig& other)
             : tiger_id(other.tiger_id), private_key(other.private_key),
               account(other.account), charset(other.charset), sign_type(other.sign_type),
@@ -43,6 +44,12 @@ namespace TIGER_API {
             std::lock_guard<std::mutex> lock(other.token_mutex_);
             token = other.token;
         }
+
+        // Rule of Five: explicitly delete the remaining special members to avoid
+        // accidental shallow copies of the refresh thread or mutex.
+        ClientConfig& operator=(const ClientConfig&) = delete;
+        ClientConfig(ClientConfig&&) = delete;
+        ClientConfig& operator=(ClientConfig&&) = delete;
 
         utility::string_t tiger_id;
         utility::string_t private_key;
