@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <regex>
 #include "tigerapi/sign_util.h"
+#include <filesystem>
 
 using namespace std;
 using namespace web;
@@ -259,11 +260,6 @@ namespace TIGER_API {
 		if (path.empty()) {
 			return false;
 		}
-
-#ifdef _WIN32
-		return path.back() == U('\\') || path.back() == U('/');
-#else
-		return path.back() == U('/');
-#endif
+		return std::filesystem::is_directory(std::filesystem::path(path));
 	}
 }

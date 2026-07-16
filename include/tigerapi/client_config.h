@@ -93,6 +93,9 @@ namespace TIGER_API {
         // Thread-safe token accessor for use inside send_request.
         utility::string_t get_token() const;
 
+        // Persist a newly-obtained token to memory and file.
+        void save_token(const utility::string_t& new_token);
+
         ~ClientConfig();
 
     private:
@@ -109,8 +112,6 @@ namespace TIGER_API {
         utility::string_t get_token_path() const;
 
         void load_token();
-
-        void save_token(const utility::string_t& new_token);
 
         // Token refresh background thread members.
         mutable std::mutex token_mutex_;

@@ -169,9 +169,10 @@ namespace TIGER_API {
         try {
             value params = value::object();
             value result = post(U("user_token_refresh"), params);
-            // post() returns result_data (the "data" field), which is the token map directly.
             if (!result.is_null() && result.is_object() && result.has_field(U("token"))) {
-                return result[U("token")].as_string();
+                utility::string_t new_token = result[U("token")].as_string();
+                client_config.save_token(new_token);
+                return new_token;
             }
         } catch (const std::exception& e) {
             LOG(ERROR) << U("query_token failed: ") << Utils::str8to16(e.what()) << endl;
@@ -181,17 +182,13 @@ namespace TIGER_API {
 
     bool TigerClient::start_token_refresh(int interval_seconds)
     {
-        // const_cast is safe here: client_config owns its own refresh thread state
-        // and token mutex; TigerClient usage is single-owner (not shared).
-        auto& cfg = const_cast<ClientConfig&>(client_config);
-        return cfg.start_token_refresh(interval_seconds, [this]() {
+        return client_config.start_token_refresh(interval_seconds, [this]() {
             return query_token();
         });
     }
 
     void TigerClient::stop_token_refresh()
     {
-        auto& cfg = const_cast<ClientConfig&>(client_config);
-        cfg.stop_token_refresh();
+        client_config.stop_token_refresh();
     }
 }

@@ -1,6 +1,7 @@
 #include "tigerapi/client_config.h"
 #include "tigerapi/properties.h"
 #include "tigerapi/enums.h"
+#include <filesystem>
 
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
@@ -136,8 +137,8 @@ void TIGER_API::ClientConfig::load_props()
 	LOG(INFO) << U("Loading properties file from: ") << full_path << endl;
 
 	try {
-		auto u8_path = Utils::str16to8(full_path);
-		std::ifstream file(u8_path);
+		std::filesystem::path fspath(full_path);
+		std::ifstream file(fspath);
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open properties file: ") << full_path << endl;
 			return;
@@ -223,7 +224,8 @@ void TIGER_API::ClientConfig::load_token()
 		return;
 	}
 	try {
-		std::ifstream file(Utils::str16to8(full_path));
+		std::filesystem::path fspath(full_path);
+		std::ifstream file(fspath);
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open token file: ") << full_path << endl;
 			return;
@@ -259,7 +261,8 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
         Properties props;
         props.set_property(U("token"), new_token);
 
-        std::ofstream file(Utils::str16to8(full_path));
+        std::filesystem::path fspath(full_path);
+        std::ofstream file(fspath);
         if (!file.is_open()) {
             LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
             return;

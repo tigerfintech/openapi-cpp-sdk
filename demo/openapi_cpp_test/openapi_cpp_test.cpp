@@ -13,6 +13,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 #include "tigerapi/logger.h"
 
@@ -1207,6 +1208,93 @@ public:
             throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors) + " times");
         }
     }
+
+    // is_directory: real dir → true, file path → false, missing path → false.
+    static void test_is_directory() {
+        namespace fs = std::filesystem;
+        // Use a temp dir we know exists.
+        std::string tmp = std::filesystem::temp_directory_path().string();
+        if (!Utils::is_directory(Utils::str8to16(tmp))) {
+            throw std::runtime_error("expected temp dir to be a directory: " + tmp);
+        }
+        // A path ending in a filename (even nonexistent) is not a directory.
+        std::string non_dir = tmp + "/nonexistent_file.txt";
+        if (Utils::is_directory(Utils::str8to16(non_dir))) {
+            throw std::runtime_error("expected non-dir path to return false: " + non_dir);
+        }
+        ucout << U("  is_directory: temp=true, file=false") << endl;
+    }
+
+    // save_token writes to file; subsequent ClientConfig load reads it back.
+    static void test_save_and_load_token() {
+        namespace fs = std::filesystem;
+        // Use system temp dir so path is always valid.
+        std::string dir = fs::temp_directory_path().string();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
+
+        utility::string_t udir = Utils::str8to16(dir);
+        ClientConfig cfg(false, udir);
+
+        utility::string_t token_val = U("test_token_abc123");
+        cfg.save_token(token_val);
+
+        // Verify file was written.
+        std::string token_file = dir + "tiger_openapi_token.properties";
+        if (!fs::exists(token_file)) {
+            throw std::runtime_error("token file not created: " + token_file);
+        }
+
+        // Load into a fresh ClientConfig pointed at same dir; token should be read.
+        ClientConfig cfg2(false, udir);
+        utility::string_t loaded = cfg2.get_token();
+        if (loaded != token_val) {
+            throw std::runtime_error(
+                "loaded token mismatch: expected=" +
+                utility::conversions::to_utf8string(token_val) +
+                " got=" + utility::conversions::to_utf8string(loaded));
+        }
+
+        // Cleanup.
+        fs::remove(token_file);
+        ucout << U("  save_token → file written and reloaded correctly") << endl;
+    }
+
+    // get_props_path: dir-style props_path yields expected token file path.
+    // Tested indirectly: save_token succeeds only when get_token_path() is non-empty.
+    static void test_props_path_as_file() {
+        namespace fs = std::filesystem;
+        std::string dir = fs::temp_directory_path().string();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
+
+        // Point props_path directly at the config file (file-style, not dir-style).
+        std::string cfg_file = dir + "tiger_openapi_config.properties";
+        {
+            // Write a minimal config file so ClientConfig can open it.
+            std::ofstream f(cfg_file);
+            f << "tiger_id=dummy\n";
+        }
+
+        utility::string_t ucfg = Utils::str8to16(cfg_file);
+        ClientConfig cfg(false, ucfg);
+
+        // When props_path is a .properties file, token file should be in the same dir.
+        utility::string_t token_val = U("file_style_token_xyz");
+        cfg.save_token(token_val);
+
+        std::string token_file = dir + "tiger_openapi_token.properties";
+        if (!fs::exists(token_file)) {
+            throw std::runtime_error("token file not created (file-style props_path): " + token_file);
+        }
+
+        ClientConfig cfg2(false, ucfg);
+        if (cfg2.get_token() != token_val) {
+            throw std::runtime_error("token mismatch for file-style props_path");
+        }
+
+        fs::remove(cfg_file);
+        fs::remove(token_file);
+        ucout << U("  file-style props_path: token saved and loaded correctly") << endl;
+    }
 };
 
 int main(int argc, char* argv[]) {
@@ -1237,6 +1325,12 @@ int main(int argc, char* argv[]) {
         config.set_server_url(Utils::str8to16(std::string(server_url_env)));
     }
 
+    // Allow overriding server public key via env var (needed for QA/sandbox servers).
+    const char* server_pub_key_env = std::getenv("TIGER_SERVER_PUB_KEY");
+    if (server_pub_key_env && *server_pub_key_env) {
+        config.set_server_public_key(Utils::str8to16(std::string(server_pub_key_env)));
+    }
+
     config.use_full_tick = true;
 
     std::vector<TestResult> results;
@@ -1260,6 +1354,18 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("token_refresh::get_token_thread_safe"), []() {
         TestTokenRefresh::test_get_token_thread_safe();
+    }));
+
+    results.push_back(run_test(U("token_refresh::is_directory"), []() {
+        TestTokenRefresh::test_is_directory();
+    }));
+
+    results.push_back(run_test(U("token_refresh::save_and_load_token"), []() {
+        TestTokenRefresh::test_save_and_load_token();
+    }));
+
+    results.push_back(run_test(U("token_refresh::props_path_as_file"), []() {
+        TestTokenRefresh::test_props_path_as_file();
     }));
 
     // ===================================================================
