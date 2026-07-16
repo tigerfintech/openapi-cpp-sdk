@@ -167,6 +167,15 @@ namespace TIGER_API {
         return options;
     }
 
+    utility::string_t TigerClient::refresh_token()
+    {
+        utility::string_t new_token = query_token();
+        if (!new_token.empty()) {
+            client_config.save_token(new_token);
+        }
+        return new_token;
+    }
+
     utility::string_t TigerClient::query_token()
     {
         try {
@@ -181,6 +190,8 @@ namespace TIGER_API {
             }
         } catch (const std::exception& e) {
             LOG(ERROR) << U("query_token failed: ") << Utils::str8to16(e.what()) << endl;
+        } catch (...) {
+            LOG(ERROR) << U("query_token failed: network or platform exception") << endl;
         }
         return U("");
     }

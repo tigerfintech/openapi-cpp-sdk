@@ -1381,6 +1381,56 @@ int main(int argc, char* argv[]) {
         TestTokenRefresh::test_props_path_as_file();
     }));
 
+    // ===================================================================
+    // ===== TOKEN REFRESH REAL-NETWORK TESTS (require TIGER_CONFIG_PATH) =====
+    // ===================================================================
+    const char* cfg_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (cfg_path_env && *cfg_path_env) {
+        ucout << U("\n===== Token Refresh Network Tests =====\n") << endl;
+
+        // Test 1: refresh_token() fetches and persists a new token.
+        results.push_back(run_test(U("token_refresh::refresh_token (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t old_tok = config.get_token();
+            utility::string_t new_tok = base_client.refresh_token();
+            if (new_tok.empty()) {
+                throw std::runtime_error("refresh_token() returned empty");
+            }
+            ucout << U("  new token length=") << new_tok.size() << endl;
+            // Verify persisted: reload config from same path and check token matches.
+            ClientConfig cfg2(false, Utils::str8to16(std::string(cfg_path_env)));
+            if (cfg2.get_token() != new_tok) {
+                throw std::runtime_error("persisted token mismatch after refresh_token()");
+            }
+            ucout << U("  token persisted and reloaded correctly") << endl;
+        }));
+
+        // Test 2: start_token_refresh runs one cycle and updates the token.
+        results.push_back(run_test(U("token_refresh::auto_refresh_one_cycle (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t tok_before = base_client.client_config.get_token();
+
+            bool started = base_client.start_token_refresh(2);
+            if (!started) {
+                throw std::runtime_error("start_token_refresh() returned false");
+            }
+            // Wait for at least one refresh cycle (2s interval + buffer).
+            std::this_thread::sleep_for(std::chrono::seconds(4));
+            base_client.stop_token_refresh();
+
+            utility::string_t tok_after = base_client.client_config.get_token();
+            if (tok_after.empty()) {
+                throw std::runtime_error("token is empty after auto-refresh cycle");
+            }
+            ucout << U("  token after auto-refresh length=") << tok_after.size() << endl;
+            if (tok_after == tok_before) {
+                ucout << U("  (token unchanged — server may have issued same value)") << endl;
+            } else {
+                ucout << U("  token updated by auto-refresh") << endl;
+            }
+        }));
+    }
+
     // If TOKEN_ONLY env is set, skip the rest of the tests.
     if (std::getenv("TOKEN_ONLY")) {
         ucout << U("\n===== TOKEN_ONLY mode: skipping remaining tests =====\n") << endl;

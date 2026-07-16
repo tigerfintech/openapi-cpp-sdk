@@ -38,9 +38,11 @@ namespace TIGER_API {
 
         value identifiers_to_options(value identifiers);
 
-        // Fetch a new token from the server via user_token_refresh.
-        // Returns empty string on failure.
-        utility::string_t query_token();
+        // Fetch a new token from the server and persist it.
+        // Returns the new token, or empty string on failure.
+        // Alias: refresh_token() is the user-facing name; query_token() is kept for backward compat.
+        utility::string_t refresh_token();
+        utility::string_t query_token();  // deprecated: use refresh_token()
 
         // Convenience: start background token auto-refresh.
         // interval_seconds: how often to refresh (e.g. 3600 = 1 hour).
