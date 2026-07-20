@@ -74,3 +74,6 @@ output/**
 !output/**/
 !output/**/*.zip
 !output/Windows/readme.md
+
+# local memory / ephemeral data (not for version control)
+.data/
