@@ -43,6 +43,10 @@ namespace TIGER_API {
         {
             std::lock_guard<std::mutex> lock(other.token_mutex_);
             token = other.token;
+            // NOTE: Do not copy while the refresh thread on `other` is running.
+            // The copy captures the token at this instant but does not transfer
+            // the refresh thread; call start_token_refresh() on the new instance
+            // separately if needed.
         }
 
         // Rule of Five: explicitly delete the remaining special members to avoid
