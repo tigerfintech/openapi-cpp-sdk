@@ -57,6 +57,9 @@ namespace TIGER_API {
     Order
     OrderUtil::iceberg_order(const utility::string_t account, Contract &contract, const utility::string_t action,
                              long long quantity, double limit_price, long long display_size) {
+        if (display_size <= 0) {
+            throw std::invalid_argument("iceberg_order: display_size must be a positive integer");
+        }
         Order order(U("ICEBERG"), account, contract, action, quantity, limit_price);
         order.time_in_force = U("DAY");
         order.display_size = display_size;
@@ -71,12 +74,16 @@ namespace TIGER_API {
                              long long check_intervals,
                              const utility::string_t price_type,
                              long long start_time, long long end_time) {
+        if (display_size <= 0) {
+            throw std::invalid_argument("iceberg_order: display_size must be a positive integer");
+        }
         Order order(U("ICEBERG"), account, contract, action, quantity, limit_price);
         order.time_in_force = U("DAY");
         order.display_size = display_size;
         if (min_display_size > 0) order.min_display_size = min_display_size;
         if (check_intervals > 0) order.check_intervals = check_intervals;
-        if (!price_type.empty()) order.price_type = price_type;
+        // Default to LIMIT_PRICE when not specified, consistent with the basic overload.
+        order.price_type = price_type.empty() ? U("LIMIT_PRICE") : price_type;
         if (start_time > 0) order.start_time = start_time;
         if (end_time > 0) order.end_time = end_time;
         return order;
