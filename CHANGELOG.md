@@ -1,7 +1,20 @@
-## 1.2.4 (2026-06-24)
+## 1.2.4 (2026-07-20)
 ### New
-- **冰山单支持**：新增 `OrderUtil::iceberg_order()` 两个重载（基础参数 / 完整参数），支持 `display_size`、`min_display_size`、`check_intervals`、`price_type`（`LIMIT_PRICE` / `OPPONENT_PRICE`）、`start_time`、`end_time` 字段。`Order` 结构体同步新增上述字段。
-- **单元测试**：`openapi_cpp_test --unit` 运行 26 项冰山单构造断言（无网络依赖），覆盖基础构造、完整参数及零值省略。
+- `get_corporate_symbol_change(symbols, market, begin_date, end_date)` — 股票代码变更查询
+- `get_corporate_delisting(symbols, market, begin_date, end_date)` — 退市事件查询
+- `get_corporate_ipo(symbols, market, begin_date, end_date)` — 新股上市查询
+
+### Breaking
+- `get_corporate_action()` 签名变更：原接口无参数，现在需要传入 `symbols`（`value`）、`market`、`action_type`、`begin_date`、`end_date`。
+  现有调用方需更新为：
+  ```cpp
+  // before
+  client.get_corporate_action();
+  // after
+  value symbols = value::array();
+  symbols[0] = value::string(U("AAPL"));
+  client.get_corporate_action(symbols, U("US"), U("dividend"), U("2024-01-01"), U("2024-12-31"));
+  ```
 
 ## 1.2.3 (2026-06-15)
 ### New

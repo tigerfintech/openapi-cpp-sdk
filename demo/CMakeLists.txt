@@ -89,8 +89,11 @@ if(UNIX) # Darwing or Linux
         # Find Abseil (required by Protobuf 5.x)
         find_package(absl QUIET)
         if(NOT absl_FOUND)
-            set(ABSL_PREFIX "/opt/homebrew/Cellar/abseil/20240722.0")
-            if(EXISTS "${ABSL_PREFIX}")
+            # Dynamic fallback: pick the newest installed Abseil version from Homebrew Cellar
+            file(GLOB _absl_versions "/opt/homebrew/Cellar/abseil/*")
+            if(_absl_versions)
+                list(SORT _absl_versions ORDER DESCENDING)
+                list(GET _absl_versions 0 ABSL_PREFIX)
                 set(CMAKE_PREFIX_PATH "${ABSL_PREFIX};${CMAKE_PREFIX_PATH}")
                 find_package(absl REQUIRED)
             endif()

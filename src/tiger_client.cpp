@@ -62,8 +62,11 @@ namespace TIGER_API {
         request.headers().add(U("Accept"), U("application/json"));
         request.headers().set_content_type(U("application/json; charset=UTF-8"));
         request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + U(PROJECT_VERSION));
-        if (!client_config.token.empty()) {
-            request.headers().add(U("Authorization"), client_config.token);
+        {
+            utility::string_t tok = client_config.get_token();
+            if (!tok.empty()) {
+                request.headers().add(U("Authorization"), tok);
+            }
         }
 
         /************************** set request body ***************************/
@@ -162,5 +165,46 @@ namespace TIGER_API {
             options[j++] = obj;
         }
         return options;
+    }
+
+    utility::string_t TigerClient::refresh_token()
+    {
+        utility::string_t new_token = query_token();
+        if (!new_token.empty()) {
+            client_config.save_token(new_token);
+        }
+        return new_token;
+    }
+
+    utility::string_t TigerClient::query_token()
+    {
+        try {
+            value params = value::object();
+            value result = post(U("user_token_refresh"), params);
+            if (!result.is_null() && result.is_object()) {
+                if (!result.has_field(U("token"))) {
+                    LOG(WARNING) << U("query_token: response missing token field") << endl;
+                    return U("");
+                }
+                return result[U("token")].as_string();
+            }
+        } catch (const std::exception& e) {
+            LOG(ERROR) << U("query_token failed: ") << Utils::str8to16(e.what()) << endl;
+        } catch (...) {
+            LOG(ERROR) << U("query_token failed: network or platform exception") << endl;
+        }
+        return U("");
+    }
+
+    bool TigerClient::start_token_refresh(int interval_seconds)
+    {
+        return client_config.start_token_refresh(interval_seconds, [this]() {
+            return query_token();
+        });
+    }
+
+    void TigerClient::stop_token_refresh()
+    {
+        client_config.stop_token_refresh();
     }
 }

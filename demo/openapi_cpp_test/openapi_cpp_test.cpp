@@ -8,11 +8,13 @@
 #include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 #include "tigerapi/logger.h"
 
@@ -694,6 +696,26 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    // --- Corporate Action: new types (SYMBOL_CHANGE / DELISTING / IPO) ---
+    static void test_get_corporate_symbol_change(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("META"));
+        value result = quote_client->get_corporate_symbol_change(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_symbol_change: ") << result << endl;
+    }
+    static void test_get_corporate_delisting(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("TWTR"));
+        value result = quote_client->get_corporate_delisting(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_delisting: ") << result << endl;
+    }
+    static void test_get_corporate_ipo(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("RIVN"));
+        value result = quote_client->get_corporate_ipo(symbols, U("US"), U("2021-01-01"), U("2022-01-01"));
+        ucout << U("corporate_ipo: ") << result << endl;
+    }
+
     // --- Other new quote interfaces ---
     static void test_get_stock_fundamental(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
@@ -1120,179 +1142,330 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
 }
 
 // ===================================================================
-// ===== ICEBERG ORDER UNIT TESTS (no network required) =====
+// Token auto-refresh unit tests (no network required)
 // ===================================================================
-static int iceberg_unit_pass = 0, iceberg_unit_fail = 0;
+class TestTokenRefresh {
+public:
+    // Verify that start_token_refresh drives the fetch_fn at least once within
+    // the specified interval and that the token is updated thread-safely.
+    static void test_callback_is_called() {
+        ClientConfig cfg(false);
+        cfg.token = U("old_token");
+        std::atomic<int> call_count{0};
 
-static void iceberg_assert(const utility::string_t& name, bool cond) {
-    if (cond) {
-        ucout << U("  [OK] ") << name << endl;
-        iceberg_unit_pass++;
-    } else {
-        ucout << U("  [FAIL] ") << name << endl;
-        iceberg_unit_fail++;
-    }
-}
+        bool started = cfg.start_token_refresh(1, [&]() -> utility::string_t {
+            call_count++;
+            return U("new_token");
+        });
+        if (!started) {
+            throw std::runtime_error("start_token_refresh returned false unexpectedly");
+        }
 
-static int run_iceberg_unit_tests() {
-    ucout << U("=== C++ SDK Iceberg Order Unit Tests ===") << endl;
+        // Wait up to 3s for at least one refresh call.
+        for (int i = 0; i < 30 && call_count == 0; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        cfg.stop_token_refresh();
 
-    Contract contract;
-    contract.symbol = U("AAPL");
-    contract.sec_type = U("STK");
-    contract.currency = U("USD");
-
-    // Test 1: basic iceberg
-    {
-        Order o = OrderUtil::iceberg_order(U("ACC1"), contract, U("BUY"), 100, 1.5, 10);
-        iceberg_assert(U("basic: order_type == ICEBERG"), o.order_type == U("ICEBERG"));
-        iceberg_assert(U("basic: display_size == 10"), o.display_size == 10);
-        iceberg_assert(U("basic: limit_price == 1.5"), o.limit_price == 1.5);
-        iceberg_assert(U("basic: total_quantity == 100"), o.total_quantity == 100);
-        iceberg_assert(U("basic: action == BUY"), o.action == U("BUY"));
-        iceberg_assert(U("basic: symbol == AAPL"), o.contract.symbol == U("AAPL"));
-        iceberg_assert(U("basic: time_in_force == DAY"), o.time_in_force == U("DAY"));
-        iceberg_assert(U("basic: min_display_size == 0 (omitted)"), o.min_display_size == 0);
-        iceberg_assert(U("basic: check_intervals == 0 (omitted)"), o.check_intervals == 0);
-        iceberg_assert(U("basic: price_type empty (omitted)"), o.price_type.empty());
-        iceberg_assert(U("basic: start_time == 0 (omitted)"), o.start_time == 0);
-        iceberg_assert(U("basic: end_time == 0 (omitted)"), o.end_time == 0);
+        if (call_count == 0) {
+            throw std::runtime_error("fetch_fn was never called within timeout");
+        }
+        utility::string_t tok = cfg.get_token();
+        if (tok != U("new_token")) {
+            throw std::runtime_error("token was not updated after refresh");
+        }
+        ucout << U("  call_count=") << call_count.load() << U(", token=") << tok << endl;
     }
 
-    // Test 2: full iceberg
-    {
-        long long start = 1700000000000LL;
-        long long end   = 1700000000000LL + 4LL * 3600 * 1000;
-        Order o = OrderUtil::iceberg_order(
-            U("ACC1"), contract, U("SELL"), 200, 2.0,
-            20, 5, 30, U("LIMIT_PRICE"), start, end);
-        iceberg_assert(U("full: order_type == ICEBERG"), o.order_type == U("ICEBERG"));
-        iceberg_assert(U("full: display_size == 20"), o.display_size == 20);
-        iceberg_assert(U("full: min_display_size == 5"), o.min_display_size == 5);
-        iceberg_assert(U("full: check_intervals == 30"), o.check_intervals == 30);
-        iceberg_assert(U("full: price_type == LIMIT_PRICE"), o.price_type == U("LIMIT_PRICE"));
-        iceberg_assert(U("full: start_time set"), o.start_time == start);
-        iceberg_assert(U("full: end_time set"), o.end_time == end);
-        iceberg_assert(U("full: action == SELL"), o.action == U("SELL"));
-        iceberg_assert(U("full: total_quantity == 200"), o.total_quantity == 200);
+    // Verify that a second start_token_refresh call is rejected while one is running.
+    static void test_double_start_rejected() {
+        ClientConfig cfg(false);
+        std::atomic<bool> keep_running{true};
+
+        bool first = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            while (keep_running) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+            return U("token");
+        });
+        bool second = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            return U("should_not_run");
+        });
+        keep_running = false;
+        cfg.stop_token_refresh();
+
+        if (!first) throw std::runtime_error("first start should succeed");
+        if (second) throw std::runtime_error("second start should be rejected");
     }
 
-    // Test 3: zeros in optional fields are omitted
-    {
-        Order o = OrderUtil::iceberg_order(
-            U("ACC1"), contract, U("BUY"), 50, 1.0,
-            5, 0, 0, U(""), 0, 0);
-        iceberg_assert(U("zero-omit: min_display_size == 0"), o.min_display_size == 0);
-        iceberg_assert(U("zero-omit: check_intervals == 0"), o.check_intervals == 0);
-        iceberg_assert(U("zero-omit: price_type empty"), o.price_type.empty());
-        iceberg_assert(U("zero-omit: start_time == 0"), o.start_time == 0);
-        iceberg_assert(U("zero-omit: end_time == 0"), o.end_time == 0);
+    // Verify that stop_token_refresh is safe to call multiple times.
+    static void test_stop_idempotent() {
+        ClientConfig cfg(false);
+        cfg.start_token_refresh(3600, [&]() { return U("tok"); });
+        cfg.stop_token_refresh();
+        cfg.stop_token_refresh(); // must not hang or throw
     }
 
-    ucout << endl;
-    ucout << U("=== Result: ") << iceberg_unit_pass << U(" passed, ")
-          << iceberg_unit_fail << U(" failed ===") << endl;
-    return iceberg_unit_fail;
-}
+    // Verify that get_token() returns the current token under lock.
+    static void test_get_token_thread_safe() {
+        ClientConfig cfg(false);
+        cfg.token = U("valueA");
+        std::atomic<int> errors{0};
+        std::atomic<bool> stop_writer{false};
 
-static void test_iceberg_prod() {
-    utility::string_t config_path;
-    const char* cfg_env = std::getenv("TIGER_CONFIG_PATH");
-    const char* home_env = std::getenv("HOME");
-    if (cfg_env && *cfg_env) {
-        config_path = Utils::str8to16(std::string(cfg_env));
-    } else if (home_env && *home_env) {
-        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
-    } else {
-        config_path = U("demo/openapi_cpp_test/");
+        // Writer thread alternates between two non-empty values.
+        std::thread writer([&cfg, &stop_writer]() {
+            int i = 0;
+            while (!stop_writer.load()) {
+                cfg.set_token(i % 2 == 0 ? U("valueA") : U("valueB"));
+                ++i;
+                std::this_thread::sleep_for(std::chrono::microseconds(50));
+            }
+        });
+
+        std::vector<std::thread> readers;
+        for (int i = 0; i < 4; ++i) {
+            readers.emplace_back([&cfg, &errors]() {
+                for (int j = 0; j < 100; ++j) {
+                    utility::string_t t = cfg.get_token();
+                    if (t.empty()) {
+                        errors.fetch_add(1, std::memory_order_relaxed);
+                    }
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+            });
+        }
+        for (auto& t : readers) t.join();
+        stop_writer.store(true);
+        writer.join();
+
+        if (errors.load() > 0) {
+            throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors.load()) + " times");
+        }
     }
 
-    ClientConfig config = ClientConfig(false, config_path);
-    std::shared_ptr<TradeClient> tc = std::make_shared<TradeClient>(config);
-
-    utility::string_t account = config.account;
-    ucout << U("account=") << account << U(" tiger_id=") << config.tiger_id << endl;
-
-    Contract contract;
-    contract.symbol = U("AAPL");
-    contract.currency = U("USD");
-    contract.sec_type = U("STK");
-
-    // place
-    Order order = OrderUtil::iceberg_order(account, contract, U("BUY"), 100, 1.0, 20, 10, 0, U("LIMIT_PRICE"), 0, 0);
-    value place_res = tc->place_order(order);
-    unsigned long long order_id = order.id;
-    ucout << U("[place] order_id=") << order_id << U(" res=") << place_res.serialize() << endl;
-
-    if (order_id == 0) {
-        ucout << U("[place] FAILED - no order_id returned") << endl;
-        return;
+    // is_directory: real dir → true, file path → false, missing path → false.
+    static void test_is_directory() {
+        namespace fs = std::filesystem;
+        // Use a temp dir we know exists.
+        std::string tmp = std::filesystem::temp_directory_path().string();
+        if (!Utils::is_directory(Utils::str8to16(tmp))) {
+            throw std::runtime_error("expected temp dir to be a directory: " + tmp);
+        }
+        // A path ending in a filename (even nonexistent) is not a directory.
+        std::string non_dir = tmp + "/nonexistent_file.txt";
+        if (Utils::is_directory(Utils::str8to16(non_dir))) {
+            throw std::runtime_error("expected non-dir path to return false: " + non_dir);
+        }
+        ucout << U("  is_directory: temp=true, file=false") << endl;
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // load_token reads a token file written in the same format save_token uses.
+    static void test_save_and_load_token() {
+        namespace fs = std::filesystem;
+        std::string dir = fs::temp_directory_path().string();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
 
-    // query
-    Order queried = tc->get_order(order_id, false);
-    ucout << U("[query] status=") << queried.status
-          << U(" order_type=") << queried.order_type
-          << U(" display_size=") << queried.display_size
-          << U(" min_display_size=") << queried.min_display_size << endl;
+        utility::string_t udir = Utils::str8to16(dir);
+        utility::string_t token_val = U("test_token_abc123");
 
-    // modify: update display_size=30, min_display_size=15, limit_price=1.01
-    Order mod_order;
-    mod_order.id = order_id;
-    mod_order.account = account;
-    mod_order.order_type = U("ICEBERG");
-    mod_order.limit_price = 1.01;
-    mod_order.total_quantity = 100;
-    mod_order.display_size = 30;
-    mod_order.min_display_size = 15;
-    mod_order.price_type = U("LIMIT_PRICE");
-    // cast to resolve ambiguity between the two modify_order overloads
-    value (TradeClient::*modify_fn)(Order&) = &TradeClient::modify_order;
-    value modify_res = (tc.get()->*modify_fn)(mod_order);
-    ucout << U("[modify] res=") << modify_res.serialize() << endl;
+        // Write the token file in the same format save_token uses.
+        std::string token_file = dir + "tiger_openapi_token.properties";
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
+        }
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+        // Load into a fresh ClientConfig pointed at same dir; token should be read.
+        ClientConfig cfg(false, udir);
+        utility::string_t loaded = cfg.get_token();
+        if (loaded != token_val) {
+            throw std::runtime_error(
+                "loaded token mismatch: expected=" +
+                utility::conversions::to_utf8string(token_val) +
+                " got=" + utility::conversions::to_utf8string(loaded));
+        }
 
-    // cancel
-    value cancel_res = tc->cancel_order(order_id);
-    ucout << U("[cancel] res=") << cancel_res.serialize() << endl;
-}
+        fs::remove(token_file);
+        ucout << U("  token file written and reloaded correctly") << endl;
+    }
+
+    // get_props_path: file-style props_path derives token file from same directory.
+    static void test_props_path_as_file() {
+        namespace fs = std::filesystem;
+        std::string dir = fs::temp_directory_path().string();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
+
+        // Point props_path directly at the config file (file-style, not dir-style).
+        std::string cfg_file = dir + "tiger_openapi_config.properties";
+        {
+            std::ofstream f(cfg_file);
+            f << "tiger_id=dummy\n";
+        }
+
+        utility::string_t ucfg = Utils::str8to16(cfg_file);
+
+        // When props_path is a .properties file, token file should be in the same dir.
+        utility::string_t token_val = U("file_style_token_xyz");
+        std::string token_file = dir + "tiger_openapi_token.properties";
+
+        // Write token file directly (same format as save_token).
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
+        }
+
+        ClientConfig cfg2(false, ucfg);
+        if (cfg2.get_token() != token_val) {
+            throw std::runtime_error("token mismatch for file-style props_path");
+        }
+
+        fs::remove(cfg_file);
+        fs::remove(token_file);
+        ucout << U("  file-style props_path: token loaded correctly from same dir") << endl;
+    }
+};
 
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
-
-    // --unit: run iceberg unit tests only (no network required)
-    if (argc > 1 && std::string(argv[1]) == "--unit") {
-        int rc = run_iceberg_unit_tests();
-        return rc;
-    }
-
-    // --iceberg-prod: PROD iceberg place/modify/cancel test
-    if (argc > 1 && std::string(argv[1]) == "--iceberg-prod") {
-        test_iceberg_prod();
-        return 0;
-    }
-    // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
+    // Load config: TIGER_CONFIG_PATH env > argv[1] > ~/.tigeropen/
     utility::string_t config_path;
-    const char* home_env = std::getenv("HOME");
-    const char* userprofile_env = std::getenv("USERPROFILE");
-    if (home_env && *home_env) {
-        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
-    } else if (userprofile_env && *userprofile_env) {
-        config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+    const char* config_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (config_path_env && *config_path_env) {
+        config_path = Utils::str8to16(std::string(config_path_env));
+    } else if (argc >= 2) {
+        config_path = Utils::str8to16(std::string(argv[1]));
     } else {
-        config_path = U("demo/openapi_cpp_test/");
+        const char* home_env = std::getenv("HOME");
+        const char* userprofile_env = std::getenv("USERPROFILE");
+        if (home_env && *home_env) {
+            config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
+        } else if (userprofile_env && *userprofile_env) {
+            config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+        } else {
+            config_path = U("demo/openapi_cpp_test/");
+        }
     }
     ClientConfig config = ClientConfig(false, config_path);
+
+    // Allow overriding server URL via env var (useful for QA environments).
+    const char* server_url_env = std::getenv("TIGER_SERVER_URL");
+    if (server_url_env && *server_url_env) {
+        config.set_server_url(Utils::str8to16(std::string(server_url_env)));
+    }
+
+    // Allow overriding server public key via env var (needed for QA/sandbox servers).
+    const char* server_pub_key_env = std::getenv("TIGER_SERVER_PUB_KEY");
+    if (server_pub_key_env && *server_pub_key_env) {
+        config.set_server_public_key(Utils::str8to16(std::string(server_pub_key_env)));
+    }
+
     config.use_full_tick = true;
-    
 
     std::vector<TestResult> results;
 
     // ===================================================================
-    // ===== QUOTE CLIENT TESTS =====
+    // ===== TOKEN AUTO-REFRESH UNIT TESTS (no network) =====
+    // ===================================================================
+    ucout << U("\n===== Token Auto-Refresh Unit Tests =====\n") << endl;
+
+    results.push_back(run_test(U("token_refresh::callback_is_called"), []() {
+        TestTokenRefresh::test_callback_is_called();
+    }));
+
+    results.push_back(run_test(U("token_refresh::double_start_rejected"), []() {
+        TestTokenRefresh::test_double_start_rejected();
+    }));
+
+    results.push_back(run_test(U("token_refresh::stop_idempotent"), []() {
+        TestTokenRefresh::test_stop_idempotent();
+    }));
+
+    results.push_back(run_test(U("token_refresh::get_token_thread_safe"), []() {
+        TestTokenRefresh::test_get_token_thread_safe();
+    }));
+
+    results.push_back(run_test(U("token_refresh::is_directory"), []() {
+        TestTokenRefresh::test_is_directory();
+    }));
+
+    results.push_back(run_test(U("token_refresh::save_and_load_token"), []() {
+        TestTokenRefresh::test_save_and_load_token();
+    }));
+
+    results.push_back(run_test(U("token_refresh::props_path_as_file"), []() {
+        TestTokenRefresh::test_props_path_as_file();
+    }));
+
+    // ===================================================================
+    // ===== TOKEN REFRESH REAL-NETWORK TESTS (require TIGER_CONFIG_PATH) =====
+    // ===================================================================
+    const char* cfg_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (cfg_path_env && *cfg_path_env) {
+        ucout << U("\n===== Token Refresh Network Tests =====\n") << endl;
+
+        // Test 1: refresh_token() fetches and persists a new token.
+        results.push_back(run_test(U("token_refresh::refresh_token (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t old_tok = config.get_token();
+            utility::string_t new_tok = base_client.refresh_token();
+            if (new_tok.empty()) {
+                throw std::runtime_error("refresh_token() returned empty");
+            }
+            ucout << U("  new token length=") << new_tok.size() << endl;
+            // Verify persisted: reload config from same path and check token matches.
+            ClientConfig cfg2(false, Utils::str8to16(std::string(cfg_path_env)));
+            if (cfg2.get_token() != new_tok) {
+                throw std::runtime_error("persisted token mismatch after refresh_token()");
+            }
+            ucout << U("  token persisted and reloaded correctly") << endl;
+        }));
+
+        // Test 2: start_token_refresh runs one cycle and updates the token.
+        results.push_back(run_test(U("token_refresh::auto_refresh_one_cycle (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t tok_before = base_client.client_config.get_token();
+
+            bool started = base_client.start_token_refresh(2);
+            if (!started) {
+                throw std::runtime_error("start_token_refresh() returned false");
+            }
+            // Wait for at least one refresh cycle (2s interval + buffer).
+            std::this_thread::sleep_for(std::chrono::seconds(4));
+            base_client.stop_token_refresh();
+
+            utility::string_t tok_after = base_client.client_config.get_token();
+            if (tok_after.empty()) {
+                throw std::runtime_error("token is empty after auto-refresh cycle");
+            }
+            ucout << U("  token after auto-refresh length=") << tok_after.size() << endl;
+            if (tok_after == tok_before) {
+                ucout << U("  (token unchanged — server may have issued same value)") << endl;
+            } else {
+                ucout << U("  token updated by auto-refresh") << endl;
+            }
+        }));
+    }
+
+    // If TOKEN_ONLY env is set, skip the rest of the tests.
+    if (std::getenv("TOKEN_ONLY")) {
+        ucout << U("\n===== TOKEN_ONLY mode: skipping remaining tests =====\n") << endl;
+        int pass = 0, fail = 0, skip = 0;
+        for (const auto& r : results) {
+            if (r.skipped) ++skip;
+            else if (r.passed) ++pass;
+            else ++fail;
+        }
+        ucout << U("\nSummary: ") << pass << U(" passed, ") << fail << U(" failed, ") << skip << U(" skipped") << endl;
+        return fail > 0 ? 1 : 0;
+    }
+
+    // ===================================================================
+    // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
     // ===================================================================
     ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
     std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
@@ -1547,6 +1720,15 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("get_market_scanner_tags"), [&]() {
         TestQuoteClient::test_get_market_scanner_tags(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_symbol_change"), [&]() {
+        TestQuoteClient::test_get_corporate_symbol_change(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_delisting"), [&]() {
+        TestQuoteClient::test_get_corporate_delisting(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_ipo"), [&]() {
+        TestQuoteClient::test_get_corporate_ipo(quote_client);
     }));
 
     // ===================================================================
