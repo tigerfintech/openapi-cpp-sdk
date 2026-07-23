@@ -696,6 +696,26 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    // --- Corporate Action: new types (SYMBOL_CHANGE / DELISTING / IPO) ---
+    static void test_get_corporate_symbol_change(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("META"));
+        value result = quote_client->get_corporate_symbol_change(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_symbol_change: ") << result << endl;
+    }
+    static void test_get_corporate_delisting(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("TWTR"));
+        value result = quote_client->get_corporate_delisting(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_delisting: ") << result << endl;
+    }
+    static void test_get_corporate_ipo(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("RIVN"));
+        value result = quote_client->get_corporate_ipo(symbols, U("US"), U("2021-01-01"), U("2022-01-01"));
+        ucout << U("corporate_ipo: ") << result << endl;
+    }
+
     // --- Other new quote interfaces ---
     static void test_get_stock_fundamental(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
@@ -1700,6 +1720,15 @@ int main(int argc, char* argv[]) {
 
     results.push_back(run_test(U("get_market_scanner_tags"), [&]() {
         TestQuoteClient::test_get_market_scanner_tags(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_symbol_change"), [&]() {
+        TestQuoteClient::test_get_corporate_symbol_change(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_delisting"), [&]() {
+        TestQuoteClient::test_get_corporate_delisting(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_ipo"), [&]() {
+        TestQuoteClient::test_get_corporate_ipo(quote_client);
     }));
 
     // ===================================================================

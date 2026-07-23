@@ -1,3 +1,21 @@
+## 1.2.4 (2026-07-20)
+### New
+- `get_corporate_symbol_change(symbols, market, begin_date, end_date)` — 股票代码变更查询
+- `get_corporate_delisting(symbols, market, begin_date, end_date)` — 退市事件查询
+- `get_corporate_ipo(symbols, market, begin_date, end_date)` — 新股上市查询
+
+### Breaking
+- `get_corporate_action()` 签名变更：原接口无参数，现在需要传入 `symbols`（`value`）、`market`、`action_type`、`begin_date`、`end_date`。
+  现有调用方需更新为：
+  ```cpp
+  // before
+  client.get_corporate_action();
+  // after
+  value symbols = value::array();
+  symbols[0] = value::string(U("AAPL"));
+  client.get_corporate_action(symbols, U("US"), U("dividend"), U("2024-01-01"), U("2024-12-31"));
+  ```
+
 ## 1.2.3 (2026-06-15)
 ### New
 - 新增期权提前行权接口：`submit_option_exercise` 提交行权/放弃申请、`cancel_option_exercise` 撤销申请、`check_option_exercise` 行权检验（预估持仓变化）、`get_option_exercise_records` 分页查询行权记录、`get_option_exercise_positions` 查询可行权持仓
