@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-MD|Win32">
@@ -39,58 +39,70 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0d37c07c-17ec-4826-9907-c27b3b9b3edf}</ProjectGuid>
     <RootNamespace>openapicppsdk</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OPENAPI_BOOST_ROOT>$(ProjectDir).deps\src\boost_1_86_0</OPENAPI_BOOST_ROOT>
+    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgAutoLink>false</VcpkgAutoLink>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgManifestRoot>$(ProjectDir)</VcpkgManifestRoot>
+    <VcpkgInstalledDir Condition="'$(Platform)'=='Win32'">$(ProjectDir)vcpkg_installed_x86\</VcpkgInstalledDir>
+    <VcpkgInstalledDir Condition="'$(Platform)'!='Win32'">$(ProjectDir)vcpkg_installed\</VcpkgInstalledDir>
+    <VcpkgConfigDir Condition="'$(Configuration)'=='Debug-MD' Or '$(Configuration)'=='Debug-MT'">debug\</VcpkgConfigDir>
+    <VcpkgConfigDir Condition="'$(Configuration)'=='Release-MD' Or '$(Configuration)'=='Release-MT'">
+    </VcpkgConfigDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -127,34 +139,58 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
+  </PropertyGroup>
+  <ItemGroup>
+    <AbslLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\absl_*.lib" />
+    <Utf8Libs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\utf8_*.lib" />
+  </ItemGroup>
+  <PropertyGroup>
+    <AbslLibsList>@(AbslLibs)</AbslLibsList>
+    <Utf8LibsList>@(Utf8Libs)</Utf8LibsList>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|x64'">
     <OutDir>.\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\temp\sdk\$(Platform)\$(Configuration)\</IntDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTripletFallback>x64-windows</VcpkgTripletFallback>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
     <ClCompile>
@@ -164,7 +200,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -172,8 +209,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libprotobuf.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'">
@@ -184,7 +222,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -192,8 +231,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -204,7 +243,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -212,8 +252,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libprotobuf.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MT|x64'">
@@ -224,7 +265,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -232,8 +274,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlibd.lib;cpprest_2_10d.lib;libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10d.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobufd.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -246,8 +288,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -256,8 +299,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libprotobufd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
@@ -270,8 +314,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x86-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -281,8 +326,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -295,8 +340,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -305,8 +351,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libprotobufd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'">
@@ -319,8 +366,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\vcpkg\installed\x64-windows\include;.\;.\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(OPENAPI_BOOST_ROOT);$(OPENAPI_BOOST_ROOT)\boost;$(OPENAPI_BOOST_ROOT)\libs\asio\include;$(VcpkgInstalledDir)$(VcpkgTriplet)\include;$(VcpkgInstalledDir)$(VcpkgTripletFallback)\include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
+      <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -330,8 +378,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>libssl.lib;libcrypto.lib;zlib.lib;cpprest_2_10.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libssl.lib;libcrypto.lib;cpprest_2_10.lib;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib;libprotobuf.lib;winhttp.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\output\Windows\$(Platform)\$(Configuration)\;$(VcpkgInstalledDir)$(VcpkgTriplet)\$(VcpkgConfigDir)lib;$(OPENAPI_BOOST_ROOT)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -551,6 +599,26 @@
     <ClInclude Include="include\zconf.h" />
     <ClInclude Include="include\zlib.h" />
   </ItemGroup>
+  <Target Name="CopyVcpkgLibsToOutput" BeforeTargets="Link">
+    <ItemGroup>
+      <!-- Copy essential dependency import libraries -->
+      <VcpkgLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\abseil_dll.lib" />
+      <VcpkgLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\cpprest*.lib" />
+      <VcpkgLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\libcrypto.lib" />
+      <VcpkgLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\libssl.lib" />
+      <VcpkgLibs Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)lib\libprotobuf*.lib" />
+      <VcpkgBins Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)bin\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(VcpkgLibs)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(VcpkgBins)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="Exists('$(VcpkgInstalledDir)\$(VcpkgTriplet)\$(VcpkgConfigDir)bin')" />
+  </Target>
+  <Target Name="CleanStaleVcpkgLibs" BeforeTargets="Build">
+    <ItemGroup>
+      <StaleProtoLibs Include="$(OutDir)libprotobuf*.lib" />
+      <StaleProtoLibs Include="$(OutDir)libprotobufd*.lib" />
+    </ItemGroup>
+    <Delete Files="@(StaleProtoLibs)" />
+  </Target>
   <ItemGroup>
     <ClCompile Include="include\openapi_pb\pb_source\AssetData.pb.cc" />
     <ClCompile Include="include\openapi_pb\pb_source\KlineData.pb.cc" />
@@ -591,3 +659,4 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
+

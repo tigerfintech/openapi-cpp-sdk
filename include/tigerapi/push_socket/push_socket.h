@@ -3,17 +3,30 @@
 
 #include <memory>
 #include <string>
+#include <atomic>
+
+#ifdef U
+#pragma push_macro("U")
+#undef U
+#define BOOST_RESTORE_U_MACRO
+#endif
 
 #include "boost/asio.hpp"
 #include "boost/asio/ssl.hpp"
 #include "boost/bind.hpp"
 #include "boost/pool/pool.hpp"
 #include "boost/optional.hpp"
+#include "boost/shared_ptr.hpp"
 
-#include "../include/tigerapi/client_config.h"
-#include "../include/tigerapi/push_socket/push_frame_serialize.h"
-#include "../include/openapi_pb/pb_source/Request.pb.h"
-#include "../include/openapi_pb/pb_source/Response.pb.h"
+#ifdef BOOST_RESTORE_U_MACRO
+#pragma pop_macro("U")
+#undef BOOST_RESTORE_U_MACRO
+#endif
+
+#include "tigerapi/client_config.h"
+#include "tigerapi/push_socket/push_frame_serialize.h"
+#include "openapi_pb/pb_source/Request.pb.h"
+#include "openapi_pb/pb_source/Response.pb.h"
 
 namespace TIGER_API
 {
@@ -27,7 +40,7 @@ namespace TIGER_API
 	class PushSocket : public std::enable_shared_from_this<PushSocket>
 	{
 	public:
-		static std::shared_ptr<PushSocket> create_push_socket(boost::asio::io_service* io_service,
+		static std::shared_ptr<PushSocket> create_push_socket(boost::asio::io_context* io_context,
 			const TIGER_API::ClientConfig& client_config);
 		
 		~PushSocket();
@@ -36,7 +49,7 @@ namespace TIGER_API
 
 	private:
 		PushSocket() = delete;
-		PushSocket(boost::asio::io_service* io_service,
+		PushSocket(boost::asio::io_context* io_context,
 			const TIGER_API::ClientConfig& client_config);
 	public:
 		void set_connected_callback(const std::function<void()>& cb);
@@ -89,13 +102,13 @@ namespace TIGER_API
 	private:
 		TIGER_API::ClientConfig client_config_;
 		
-		boost::asio::io_service* io_service_ = nullptr;
+		boost::asio::io_context* io_context_ = nullptr;
 		boost::optional<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket_;
-		std::shared_ptr<boost::asio::deadline_timer> keep_alive_timer_;
-		std::shared_ptr<boost::asio::deadline_timer> reconnect_timer_;
-		std::atomic<SocketState> socket_state_ = SocketState::DISCONNECTED;
+		std::shared_ptr<boost::asio::steady_timer> keep_alive_timer_;
+		std::shared_ptr<boost::asio::steady_timer> reconnect_timer_;
+		std::atomic<SocketState> socket_state_{SocketState::DISCONNECTED};
 
-		std::atomic<unsigned int> id_counter_ = 0;
+		std::atomic<unsigned int> id_counter_{0};
 
 		char head_buff_[1024];
 		boost::shared_ptr<boost::pool<>> recv_buff_pool_;
