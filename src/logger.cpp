@@ -1,4 +1,4 @@
-#include "../include/tigerapi/logger.h"
+#include "tigerapi/logger.h"
 
 INITIALIZE_EASYLOGGINGPP
 

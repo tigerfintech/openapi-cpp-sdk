@@ -1,5 +1,5 @@
-﻿#include "../include/tigerapi/tick_util.h"
-#include "../include/tigerapi/enums.h"
+﻿#include "tigerapi/tick_util.h"
+#include "tigerapi/enums.h"
 #include <algorithm>
 #include <cctype>
 

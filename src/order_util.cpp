@@ -2,7 +2,7 @@
 // Created by sukai on 2022/12/27.
 //
 
-#include "../include/tigerapi/order_util.h"
+#include "tigerapi/order_util.h"
 namespace TIGER_API {
 
     Order
@@ -52,5 +52,32 @@ namespace TIGER_API {
                 double aux_price, double trailing_percent) {
         // trailing stop order
         return Order(U("TRAIL"), account, contract, action, quantity, 0, aux_price, trailing_percent);
+    }
+
+    Order
+    OrderUtil::iceberg_order(const utility::string_t account, Contract &contract, const utility::string_t action,
+                             long long quantity, double limit_price, long long display_size) {
+        Order order(U("ICEBERG"), account, contract, action, quantity, limit_price);
+        order.time_in_force = U("DAY");
+        order.display_size = display_size;
+        return order;
+    }
+
+    Order
+    OrderUtil::iceberg_order(const utility::string_t account, Contract &contract, const utility::string_t action,
+                             long long quantity, double limit_price,
+                             long long display_size, long long min_display_size,
+                             long long check_intervals,
+                             const utility::string_t price_type,
+                             long long start_time, long long end_time) {
+        Order order(U("ICEBERG"), account, contract, action, quantity, limit_price);
+        order.time_in_force = U("DAY");
+        order.display_size = display_size;
+        if (min_display_size > 0) order.min_display_size = min_display_size;
+        if (check_intervals > 0) order.check_intervals = check_intervals;
+        if (!price_type.empty()) order.price_type = price_type;
+        if (start_time > 0) order.start_time = start_time;
+        if (end_time > 0) order.end_time = end_time;
+        return order;
     }
 }

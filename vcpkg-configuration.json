@@ -1,0 +1,15 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/Microsoft/vcpkg",
+    "baseline": "054637a2ae63c6c647b3169251759910cc4c984a"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "https://github.com/Microsoft/vcpkg",
+      "baseline": "44819aa2a6c10e56065e2b0330e7d6c89d1d2574",
+      "packages": [ "protobuf", "utf8-range" ]
+    }
+  ]
+}

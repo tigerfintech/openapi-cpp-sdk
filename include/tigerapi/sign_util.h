@@ -43,7 +43,17 @@ namespace TIGER_API {
 #endif
         if (keybio != nullptr) {
             if (is_private) {
+                // Try PKCS#1 first
                 rsa = PEM_read_bio_RSAPrivateKey(keybio, nullptr, 0, 0);
+                if (rsa == nullptr) {
+                    // Try PKCS#8 (BEGIN PRIVATE KEY)
+                    BIO_reset(keybio);
+                    EVP_PKEY *pkey = PEM_read_bio_PrivateKey(keybio, nullptr, 0, 0);
+                    if (pkey != nullptr) {
+                        rsa = EVP_PKEY_get1_RSA(pkey);
+                        EVP_PKEY_free(pkey);
+                    }
+                }
             } else {
                 rsa = PEM_read_bio_RSA_PUBKEY(keybio, nullptr, 0, 0);
             }

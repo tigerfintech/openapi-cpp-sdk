@@ -1,12 +1,13 @@
-﻿#include "../include/tigerapi/tiger_client.h"
-#include "../include/tigerapi/version.h"
-#include "../include/tigerapi/contract_util.h"
-#include "../include/tigerapi/logger.h"
+﻿#include "tigerapi/tiger_client.h"
+#include "tigerapi/version.h"
+#include "tigerapi/contract_util.h"
+#include "tigerapi/logger.h"
+#include <memory>
 
 namespace TIGER_API {
 
-    void TigerClient::set_config(const ClientConfig &cf) {
-        client_config = cf;
+    TigerClient::TigerClient(const ClientConfig &cf)
+        : client_config(cf), http_client_(std::make_unique<http_client>(cf.get_server_url())) {
         client_config.check();
     }
 
@@ -28,7 +29,8 @@ namespace TIGER_API {
             if (!str.empty()) {
                 str += U("&");
             }
-            str += key + U("=") + obj_obj[key].as_string();
+            const auto &val = obj_obj[key];
+            str += key + U("=") + (val.is_string() ? val.as_string() : val.serialize());
         }
         return str;
     }
@@ -60,8 +62,11 @@ namespace TIGER_API {
         request.headers().add(U("Accept"), U("application/json"));
         request.headers().set_content_type(U("application/json; charset=UTF-8"));
         request.headers().add(P_USER_AGENT, P_SDK_VERSION_PREFIX + U(PROJECT_VERSION));
-        if (!client_config.token.empty()) {
-            request.headers().add(U("Authorization"), client_config.token);
+        {
+            utility::string_t tok = client_config.get_token();
+            if (!tok.empty()) {
+                request.headers().add(U("Authorization"), tok);
+            }
         }
 
         /************************** set request body ***************************/
@@ -91,13 +96,12 @@ namespace TIGER_API {
         value result_data;
         utility::string_t result_str;
         try {
-            http_client client(client_config.get_server_url());
-            LOG(DEBUG) << U("request:\n") << U("Server: ") << client.base_uri().to_string() << U("\n") << request.to_string();
+            LOG(DEBUG) << U("request:\n") << U("Server: ") << http_client_->base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
                LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());
             }
             // Wait for headers
-            response = client.request(request).get();
+            response = http_client_->request(request).get();
 
             // Wait for data
             response.content_ready().wait();
@@ -118,6 +122,10 @@ namespace TIGER_API {
             if (code != 0) {
                 LOG(ERROR) << U("Exception: api code error, response: ") << result.serialize();
                 throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
+            }
+            if (!result.has_field(P_SIGN) || !result[P_SIGN].is_string()) {
+                LOG(ERROR) << U("Exception: response missing sign field, response: ") << result_str;
+                throw std::runtime_error("Exception: response missing sign field");
             }
             utility::string_t res_sign = result[P_SIGN].as_string();
             bool is_sign_ok = Utils::verify_sign(client_config.get_server_pub_key(), params[P_TIMESTAMP].as_string(), res_sign);
@@ -140,20 +148,63 @@ namespace TIGER_API {
 
     value TigerClient::identifiers_to_options(value identifiers) {
         value options = value::array();
+        size_t j = 0;
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
-            utility::string_t  symbol, expiry, right, strike;
+            if (!identifier.is_string()) { continue; }
+            utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = ContractUtil::extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
                 continue;
             }
             value obj = value::object(true);
-            obj[P_EXPIRY] = (long long) Utils::date_string_to_timestamp(expiry);
+            obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);
-            options[i] = obj;
+            options[j++] = obj;
         }
         return options;
+    }
+
+    utility::string_t TigerClient::refresh_token()
+    {
+        utility::string_t new_token = query_token();
+        if (!new_token.empty()) {
+            client_config.save_token(new_token);
+        }
+        return new_token;
+    }
+
+    utility::string_t TigerClient::query_token()
+    {
+        try {
+            value params = value::object();
+            value result = post(U("user_token_refresh"), params);
+            if (!result.is_null() && result.is_object()) {
+                if (!result.has_field(U("token"))) {
+                    LOG(WARNING) << U("query_token: response missing token field") << endl;
+                    return U("");
+                }
+                return result[U("token")].as_string();
+            }
+        } catch (const std::exception& e) {
+            LOG(ERROR) << U("query_token failed: ") << Utils::str8to16(e.what()) << endl;
+        } catch (...) {
+            LOG(ERROR) << U("query_token failed: network or platform exception") << endl;
+        }
+        return U("");
+    }
+
+    bool TigerClient::start_token_refresh(int interval_seconds)
+    {
+        return client_config.start_token_refresh(interval_seconds, [this]() {
+            return query_token();
+        });
+    }
+
+    void TigerClient::stop_token_refresh()
+    {
+        client_config.stop_token_refresh();
     }
 }
