@@ -609,7 +609,7 @@ namespace TIGER_API {
             obj[P_MARKET] = value::string(market);
         }
         if (!action_type.empty()) {
-            obj[U("action_type")] = value::string(action_type);
+            obj[P_ACTION_TYPE] = value::string(action_type);
         }
         if (!begin_date.empty()) {
             obj[P_BEGIN_DATE] = value::string(begin_date);

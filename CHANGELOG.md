@@ -1,3 +1,12 @@
+## 1.2.5 (2026-07-23)
+### New
+- Token 自动刷新：`ClientConfig::start_token_refresh` / `stop_token_refresh`，支持自定义刷新间隔和本地文件持久化
+- `tiger_openapi_config.properties` 新增 `server_url` / `server_public_key` 字段，用于指定自定义网关地址和响应签名校验公钥
+
+### Fixed
+- 修复多线程并发写日志时的崩溃（`el::LogMessage::logger()` 空指针解引用）：easyloggingpp 的线程安全开关 `ELPP_THREAD_SAFE` 此前从未启用，token 自动刷新的后台线程与主线程同时写日志会触发该竞态
+- 修复请求异常被重新抛出为通用 `std::exception`、丢失原始错误信息的问题
+
 ## 1.2.4 (2026-07-20)
 ### New
 - `get_corporate_symbol_change(symbols, market, begin_date, end_date)` — 股票代码变更查询
