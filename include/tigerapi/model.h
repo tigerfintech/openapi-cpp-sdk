@@ -101,7 +101,7 @@ namespace TIGER_API {
             * price adjustment range (default 0 means no adjustment, positive means upward adjustment, negative means downward adjustment), automatically adjust the input price to a legal price.
             * For example: 0.001 means upward adjustment and the adjustment range is not more than 0.1%; -0.001 means downward adjustment and the adjustment range is not more than 0.1%. Default 0 means no adjustment
          */
-        double adjust_limit;
+        double adjust_limit = 0.0;
         utility::string_t user_mark;
         time_t expire_time = 0;
 

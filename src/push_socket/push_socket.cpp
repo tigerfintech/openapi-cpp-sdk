@@ -28,7 +28,7 @@ TIGER_API::PushSocket::PushSocket(boost::asio::io_context* io_context,
 	io_context_ = io_context;
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
-
+	
 	recv_buff_pool_.reset(new boost::pool<>(MEMORY_POOL_PAGE_SIZE, MEMORY_POOL_BLOCK_NUM));
 	keep_alive_timer_ = std::make_shared<boost::asio::steady_timer>(*io_context_);
 	reconnect_timer_ = std::make_shared<boost::asio::steady_timer>(*io_context_);
