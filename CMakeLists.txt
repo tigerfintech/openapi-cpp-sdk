@@ -17,6 +17,9 @@ message(PROJECT_VERSION " ${PROJECT_VERSION}")
 
 project(tigerapi VERSION ${PROJECT_VERSION})
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 # Configure required libraries ...
 if(NOT (UNIX OR WIN32))
@@ -117,13 +120,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     else()
         set(_arch_flag "")
     endif()
-    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++14 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-    # protobuf 5.x / absl lts_20240116 require C++17; gnu++17 keeps GNU extensions.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -DBOOST_LOG_DYN_LINK")
 
 endif()
 

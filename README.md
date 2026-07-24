@@ -31,7 +31,7 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 - **cpprestsdk** 最新版（HTTP 客户端）
 - **Protobuf** 5.28.3
 - **Abseil** 20240722+（Protobuf 运行时依赖）
-- **C++ 标准**: C++17
+- **C++ 标准**: C++14
 
 ## 快速开始
 
@@ -150,7 +150,7 @@ cd protobuf-28.3
 cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v28.3 \
-    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_CXX_STANDARD=14 \
     -Dprotobuf_BUILD_TESTS=OFF \
     -Dprotobuf_ABSL_PROVIDER=package \
     -DCMAKE_PREFIX_PATH=$(brew --prefix)
@@ -422,10 +422,10 @@ openapi-cpp-sdk/
 修改 `CMakeLists.txt` 和 `demo/CMakeLists.txt` 中的架构参数：
 ```cmake
 # ARM Mac（默认）
-set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++14 ...")
 
 # Intel Mac
-set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++14 ...")
 ```
 
 **Q: 运行时找不到动态库**
@@ -454,7 +454,7 @@ export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v2
 
 **Q: Protobuf 版本冲突**
 
-确保使用 Protobuf 5.28.3，需要 Abseil 和 C++17 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
+确保使用 Protobuf 5.28.3，需要 Abseil 20240722+ 和 C++14 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
 
 **Q: 编译警告被当作错误**
 ```bash

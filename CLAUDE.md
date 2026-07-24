@@ -6,7 +6,7 @@
 
 ## 技术栈
 
-- C++17
+- C++14
 - CMake 3.15+
 - WebSocket（实时推送）
 - HTTP REST API

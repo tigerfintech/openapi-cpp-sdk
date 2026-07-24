@@ -5,7 +5,12 @@
 #include <algorithm>
 #include <regex>
 #include "tigerapi/sign_util.h"
-#include <filesystem>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#else
+#include <sys/stat.h>
+#endif
 
 using namespace std;
 using namespace web;
@@ -260,10 +265,13 @@ namespace TIGER_API {
 		if (path.empty()) {
 			return false;
 		}
-		try {
-			return std::filesystem::is_directory(std::filesystem::path(path));
-		} catch (const std::filesystem::filesystem_error&) {
-			return false;
-		}
+#if defined(_WIN32)
+        const DWORD attributes = GetFileAttributesW(path.c_str());
+        return attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+#else
+        struct stat path_info = {};
+        return stat(path.c_str(), &path_info) == 0 && S_ISDIR(path_info.st_mode);
+#endif
 	}
 }

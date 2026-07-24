@@ -68,7 +68,7 @@ build_variant() {
         -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
         -DBoost_NO_BOOST_CMAKE=ON \
         -DBoost_NO_SYSTEM_PATHS=ON \
-        -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
+        -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++14 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
     fix_boost_include_order "${BUILD_DIR}"
     cmake --build "${BUILD_DIR}" -j${JOBS}
 }

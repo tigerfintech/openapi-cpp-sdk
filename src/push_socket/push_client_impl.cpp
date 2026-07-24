@@ -1,4 +1,9 @@
-﻿#include "tigerapi/push_socket/push_client_impl.h"
+﻿#if defined(_MSC_VER) && _MSC_VER == 1932
+// Work around MSVC 14.32 parsing Boost.Move's copy-constructor probe.
+#define BOOST_NO_CXX11_DELETED_FUNCTIONS
+#endif
+
+#include "tigerapi/push_socket/push_client_impl.h"
 #include "tigerapi/client_config.h"
 #include "tigerapi/push_socket/push_socket.h"
 #include "tigerapi/tick_util.h"

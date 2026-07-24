@@ -14,7 +14,8 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
-#include <filesystem>
+#include <cstdio>
+#include <cstdlib>
 #include <sstream>
 #include "tigerapi/logger.h"
 
@@ -22,6 +23,19 @@ using namespace std;
 using namespace web;
 using namespace web::json;
 using namespace TIGER_API;
+
+namespace {
+    std::string get_temp_directory() {
+        const char* variables[] = {"TMPDIR", "TEMP", "TMP"};
+        for (const char* variable : variables) {
+            const char* value = std::getenv(variable);
+            if (value && *value) {
+                return value;
+            }
+        }
+        return ".";
+    }
+}
 
 /**
  * Test Trade Client
@@ -1246,9 +1260,8 @@ public:
 
     // is_directory: real dir → true, file path → false, missing path → false.
     static void test_is_directory() {
-        namespace fs = std::filesystem;
         // Use a temp dir we know exists.
-        std::string tmp = std::filesystem::temp_directory_path().string();
+        std::string tmp = get_temp_directory();
         if (!Utils::is_directory(Utils::str8to16(tmp))) {
             throw std::runtime_error("expected temp dir to be a directory: " + tmp);
         }
@@ -1262,8 +1275,7 @@ public:
 
     // load_token reads a token file written in the same format save_token uses.
     static void test_save_and_load_token() {
-        namespace fs = std::filesystem;
-        std::string dir = fs::temp_directory_path().string();
+        std::string dir = get_temp_directory();
         if (dir.back() != '/' && dir.back() != '\\') dir += '/';
 
         utility::string_t udir = Utils::str8to16(dir);
@@ -1288,14 +1300,13 @@ public:
                 " got=" + utility::conversions::to_utf8string(loaded));
         }
 
-        fs::remove(token_file);
+        std::remove(token_file.c_str());
         ucout << U("  token file written and reloaded correctly") << endl;
     }
 
     // get_props_path: file-style props_path derives token file from same directory.
     static void test_props_path_as_file() {
-        namespace fs = std::filesystem;
-        std::string dir = fs::temp_directory_path().string();
+        std::string dir = get_temp_directory();
         if (dir.back() != '/' && dir.back() != '\\') dir += '/';
 
         // Point props_path directly at the config file (file-style, not dir-style).
@@ -1324,8 +1335,8 @@ public:
             throw std::runtime_error("token mismatch for file-style props_path");
         }
 
-        fs::remove(cfg_file);
-        fs::remove(token_file);
+        std::remove(cfg_file.c_str());
+        std::remove(token_file.c_str());
         ucout << U("  file-style props_path: token loaded correctly from same dir") << endl;
     }
 };
@@ -1350,7 +1361,7 @@ int main(int argc, char* argv[]) {
             config_path = U("demo/openapi_cpp_test/");
         }
     }
-    ClientConfig config = ClientConfig(false, config_path);
+    ClientConfig config(false, config_path);
 
     // Allow overriding server URL via env var (useful for QA environments).
     const char* server_url_env = std::getenv("TIGER_SERVER_URL");

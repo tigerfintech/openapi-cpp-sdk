@@ -1,7 +1,6 @@
 #include "tigerapi/client_config.h"
 #include "tigerapi/properties.h"
 #include "tigerapi/enums.h"
-#include <filesystem>
 
 
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
@@ -59,7 +58,7 @@ TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_
         socket_url = US_TIGER_SOCKET_HOST;
         socket_port = US_TIGER_SOCKET_PORT;
     }
-    LOG(INFO) << U("ClientConfig initialized with props_path: ") << props_path << endl;
+	LOG(DEBUG) << U("ClientConfig initialized") << endl;
 };
 
 void TIGER_API::ClientConfig::check() const
@@ -134,11 +133,10 @@ void TIGER_API::ClientConfig::load_props()
 	if (full_path.empty()) {
 		return;
 	}
-	LOG(INFO) << U("Loading properties file from: ") << full_path << endl;
+	LOG(DEBUG) << U("Loading properties file") << endl;
 
 	try {
-		std::filesystem::path fspath(full_path);
-		std::ifstream file(fspath);
+		std::ifstream file(full_path.c_str());
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open properties file: ") << full_path << endl;
 			return;
@@ -195,8 +193,7 @@ void TIGER_API::ClientConfig::load_props()
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load properties file: ") << Utils::str8to16(e.what()) << endl;
 	}
-	LOG(INFO) << U("Loaded properties file successfully, tiger_id: ") << tiger_id << " account: " << account
-		<< endl;
+	LOG(DEBUG) << U("Loaded properties file successfully") << endl;
 }
 
 utility::string_t TIGER_API::ClientConfig::get_props_path(const utility::string_t& filename) const
@@ -239,8 +236,7 @@ void TIGER_API::ClientConfig::load_token()
 		return;
 	}
 	try {
-		std::filesystem::path fspath(full_path);
-		std::ifstream file(fspath);
+		std::ifstream file(full_path.c_str());
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open token file: ") << full_path << endl;
 			return;
@@ -255,7 +251,7 @@ void TIGER_API::ClientConfig::load_token()
 			std::lock_guard<std::mutex> lock(token_mutex_);
 			token = loaded_token;
 		}
-		LOG(INFO) << U("Loaded token successfully, token: ") << token << endl;
+		LOG(INFO) << U("Loaded token successfully, length=") << token.size() << endl;
 	}
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load token file: ") << Utils::str8to16(e.what()) << endl;
@@ -279,8 +275,7 @@ void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
         Properties props;
         props.set_property(U("token"), new_token);
 
-        std::filesystem::path fspath(full_path);
-        std::ofstream file(fspath);
+		std::ofstream file(full_path.c_str());
         if (!file.is_open()) {
             LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
             return;

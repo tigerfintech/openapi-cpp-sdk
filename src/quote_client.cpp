@@ -8,7 +8,9 @@
 
 namespace TIGER_API {
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
-        grab_quote_permission();
+        if (is_grab_permission) {
+            grab_quote_permission();
+        }
     }
 
     value QuoteClient::grab_quote_permission() {
