@@ -1468,7 +1468,28 @@ int main(int argc, char* argv[]) {
     // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
     // ===================================================================
     ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    std::shared_ptr<QuoteClient> quote_client;
+    try {
+        quote_client = std::make_shared<QuoteClient>(config);
+    } catch (const std::exception& e) {
+        TestResult init_result;
+        init_result.name = U("QuoteClient::init (grab_quote_permission)");
+        init_result.skipped = false;
+        init_result.passed = false;
+        init_result.error_msg = utility::conversions::to_string_t(e.what());
+        ucout << U("[FAIL] ") << init_result.name << U(" - ") << init_result.error_msg << endl;
+        results.push_back(init_result);
+    }
+
+    if (!quote_client) {
+        // Same ClientConfig (server_url/server_public_key) is used for QuoteClient,
+        // TradeClient and PushClient below, so if signature verification or auth
+        // failed here, every subsequent real-network test would fail identically.
+        // Stop here instead of dereferencing a null client.
+        ucout << U("\n===== Aborting remaining real-config tests: QuoteClient failed to initialize =====\n") << endl;
+        print_report(results, "test_report.txt");
+        return 1;
+    }
 
     // --- 1. Basic/Stock Quote APIs ---
     ucout << U("\n--- Quote: Basic/Stock APIs ---\n") << endl;
@@ -1735,7 +1756,21 @@ int main(int argc, char* argv[]) {
     // ===== TRADE CLIENT TESTS =====
     // ===================================================================
     ucout << U("\n===== Initializing TradeClient =====\n") << endl;
-    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    std::shared_ptr<TradeClient> trade_client;
+    try {
+        trade_client = std::make_shared<TradeClient>(config);
+    } catch (const std::exception& e) {
+        TestResult init_result;
+        init_result.name = U("TradeClient::init");
+        init_result.skipped = false;
+        init_result.passed = false;
+        init_result.error_msg = utility::conversions::to_string_t(e.what());
+        ucout << U("[FAIL] ") << init_result.name << U(" - ") << init_result.error_msg << endl;
+        results.push_back(init_result);
+        ucout << U("\n===== Aborting remaining real-config tests: TradeClient failed to initialize =====\n") << endl;
+        print_report(results, "test_report.txt");
+        return 1;
+    }
 
     // --- 9. Account Query APIs ---
     ucout << U("\n--- Trade: Account Query APIs ---\n") << endl;

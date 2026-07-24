@@ -107,9 +107,9 @@ namespace TIGER_API {
             response.content_ready().wait();
 
         }
-        catch (std::exception &ex) {
+        catch (const std::exception &ex) {
             LOG(ERROR) << U("Exception: ") << ex.what() << endl;
-            throw ex;
+            throw;
         }
         try {
             result = response.extract_json().get();
@@ -137,7 +137,7 @@ namespace TIGER_API {
         }
         catch (const std::exception &e) {
             LOG(ERROR) << U("get response error :") << e.what() << endl;
-            throw e;
+            throw;
         }
         LOG(DEBUG) << U("response:\n") << result.serialize();
         // json format

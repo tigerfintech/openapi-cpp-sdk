@@ -176,6 +176,21 @@ void TIGER_API::ClientConfig::load_props()
 			socket_port = SANDBOX_TIGER_SOCKET_PORT;
 		}
 
+		// Explicit server_url/server_public_key in the properties file take
+		// precedence over any default set above, so callers can point the
+		// client at a different gateway endpoint and signature-verification
+		// key without changing code.
+		utility::string_t custom_server_url = props.get_property(U("server_url"));
+		if (!custom_server_url.empty()) {
+			server_url = custom_server_url;
+			LOG(INFO) << U("Overriding server_url from properties file: ") << server_url << endl;
+		}
+		utility::string_t custom_server_pub_key = props.get_property(U("server_public_key"));
+		if (!custom_server_pub_key.empty()) {
+			server_public_key = custom_server_pub_key;
+			LOG(INFO) << U("Overriding server_public_key from properties file") << endl;
+		}
+
 	}
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load properties file: ") << Utils::str8to16(e.what()) << endl;
