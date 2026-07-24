@@ -254,11 +254,11 @@ namespace TIGER_API {
             if (json.has_field(U("endTime"))) {
                 end_time = json.at(U("endTime")).as_number().to_int64();
             }
-            if (json.has_field(U("total_quantity_scale"))) {
-                total_quantity_scale = json.at(U("total_quantity_scale")).as_number().to_int64();
+            if (json.has_field(U("totalQuantityScale"))) {
+                total_quantity_scale = json.at(U("totalQuantityScale")).as_number().to_int64();
             }
-            if (json.has_field(U("filled_quantity_scale"))) {
-                filled_quantity_scale = json.at(U("filled_quantity_scale")).as_number().to_int64();
+            if (json.has_field(U("filledQuantityScale"))) {
+                filled_quantity_scale = json.at(U("filledQuantityScale")).as_number().to_int64();
             }
             if (json.has_field(U("secret_key"))) {
                 secret_key = json.at(U("secret_key")).as_string();
