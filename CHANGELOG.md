@@ -3,6 +3,9 @@
 - `OrderUtil::iceberg_order` — 冰山单构造，支持基础参数（display_size）和完整参数（min_display_size、check_intervals、price_type、start_time、end_time）两种重载
 - `TradeClient::place_order` / `modify_order` 支持冰山单字段的下单与改单
 
+### Fixed
+- 修复订单响应解析中 `totalQuantityScale` / `filledQuantityScale` 字段名大小写错误，导致碎股等场景下数量精度字段（`total_quantity_scale`/`filled_quantity_scale`）始终解析为默认值 0
+
 ## 1.2.5 (2026-07-23)
 ### New
 - Token 自动刷新：`ClientConfig::start_token_refresh` / `stop_token_refresh`，支持自定义刷新间隔和本地文件持久化
