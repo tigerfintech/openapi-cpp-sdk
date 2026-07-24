@@ -1,3 +1,18 @@
+## 1.3.0 (2026-07-24)
+### New
+- `OrderUtil::amount_order` — 按金额下市价单（如基金申购），不指定股数
+- `OrderUtil::multi_leg_order` — 多腿组合单（期权价差等），支持 `ContractLeg` 描述每条腿
+- `OrderUtil::twap_order` / `vwap_order` — TWAP/VWAP 算法单，按时间区间拆单执行
+- `OrderUtil::oca_brackets_order` — OCA 止盈止损组合单，任一单成交后自动取消另一单
+- `OrderUtil::add_profit_taker_order` / `add_stop_loss_order` / `add_stop_loss_limit_order` / `add_stop_loss_trail_order` / `add_brackets_order` — 给已有订单挂载附加止盈/止损单
+- `Order` 新增 `cash_amount`、`combo_type`、`contract_legs`、`algo_params`、`oca_orders`、`attach_type` 及止盈/止损相关字段，`place_order`/`modify_order`/`preview_order` 均支持序列化这些字段
+
+### Fixed
+- `oca_brackets_order` 序列化时子订单（`oca_orders` 数组内的止盈单/止损单）缺少 `account` 字段，导致服务端返回 `biz param error(field 'account' cannot be empty)`；现在每个子订单都携带与外层订单一致的已解析账号（参考 Java SDK `buildOCABracketsOrder` 对每个子订单调用 `buildTradeOrderModel(account, ...)` 的方式），已用真实账号验证下单成功
+
+### Notes
+- OCA 组合单与附加止盈/止损单（`add_profit_taker_order` 等）不支持 `preview_order` 预览，服务端会返回 `OCA/ATTACHED order preview not supported`（已用真实账号验证），请直接使用 `place_order`
+
 ## 1.2.6 (2026-07-24)
 ### New
 - `OrderUtil::iceberg_order` — 冰山单构造，支持基础参数（display_size）和完整参数（min_display_size、check_intervals、price_type、start_time、end_time）两种重载

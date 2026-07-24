@@ -420,6 +420,111 @@ namespace TIGER_API {
         return res;
     }
 
+    void TradeClient::serialize_advanced_order_fields(value &obj, const Order &order, const utility::string_t &resolved_account) {
+        // Amount order (order by cash amount instead of quantity, e.g. fund subscription).
+        if (order.cash_amount != 0) {
+            obj[U("cash_amount")] = order.cash_amount;
+        }
+
+        // Multi-leg (combo) order.
+        if (!order.combo_type.empty()) {
+            obj[U("combo_type")] = value::string(order.combo_type);
+        }
+        if (!order.contract_legs.empty()) {
+            value legs = value::array();
+            size_t i = 0;
+            for (const auto &leg : order.contract_legs) {
+                legs[i++] = leg.to_json();
+            }
+            obj[U("contract_legs")] = legs;
+        }
+
+        // Algo order (TWAP/VWAP/WAP): algo_strategy carries the order type via
+        // OrderUtil helpers; algo_params carries tag/value pairs (start_time, end_time,
+        // participation_rate, etc).
+        if (!order.algo_strategy.empty()) {
+            obj[U("algo_strategy")] = value::string(order.algo_strategy);
+        }
+        if (!order.algo_params.empty()) {
+            value params = value::array();
+            size_t i = 0;
+            for (const auto &param : order.algo_params) {
+                params[i++] = param.to_json();
+            }
+            obj[U("algo_params")] = params;
+        }
+
+        // OCA (one-cancels-all) bracket order: sibling orders, each serialized with
+        // the same field set (recursive, but oca_orders on the nested Order objects
+        // is expected to stay empty to avoid runaway nesting).
+        if (!order.oca_orders.empty()) {
+            value oca = value::array();
+            size_t i = 0;
+            for (const auto &oca_order : order.oca_orders) {
+                value oca_obj = value::object(true);
+                // Each sub-order carries the same resolved account as the outer
+                // order (matches Java SDK's buildOCABracketsOrder, which calls
+                // buildTradeOrderModel(account, ...) — the already-resolved account
+                // string — for both profitTakerOrder and stopLossOrder). Verified
+                // against production: omitting it returns "field 'account' cannot
+                // be empty".
+                oca_obj[U("account")] = value::string(resolved_account);
+                const Contract &oca_contract = oca_order.contract;
+                if (!oca_contract.symbol.empty()) oca_obj[U("symbol")] = value::string(oca_contract.symbol);
+                if (!oca_contract.currency.empty()) oca_obj[U("currency")] = value::string(oca_contract.currency);
+                if (!oca_contract.sec_type.empty()) oca_obj[U("sec_type")] = value::string(oca_contract.sec_type);
+                if (!oca_contract.exchange.empty()) oca_obj[U("exchange")] = value::string(oca_contract.exchange);
+                if (!oca_order.order_type.empty()) oca_obj[U("order_type")] = value::string(oca_order.order_type);
+                if (!oca_order.action.empty()) oca_obj[U("action")] = value::string(oca_order.action);
+                if (oca_order.total_quantity) oca_obj[U("total_quantity")] = value::number(static_cast<int64_t>(oca_order.total_quantity));
+                if (oca_order.limit_price != 0) oca_obj[U("limit_price")] = oca_order.limit_price;
+                if (oca_order.aux_price != 0) oca_obj[U("aux_price")] = oca_order.aux_price;
+                if (!oca_order.time_in_force.empty()) oca_obj[U("time_in_force")] = value::string(oca_order.time_in_force);
+                if (oca_order.outside_rth) oca_obj[U("outside_rth")] = oca_order.outside_rth;
+                oca[i++] = oca_obj;
+            }
+            obj[U("oca_orders")] = oca;
+        }
+
+        // Attached order (profit-taker / stop-loss / brackets).
+        if (!order.attach_type.empty()) {
+            obj[U("attach_type")] = value::string(order.attach_type);
+        }
+        if (order.profit_taker_order_id != 0) {
+            obj[U("profit_taker_orderId")] = value::number(static_cast<int64_t>(order.profit_taker_order_id));
+        }
+        if (order.profit_taker_price != 0) {
+            obj[U("profit_taker_price")] = order.profit_taker_price;
+        }
+        if (!order.profit_taker_tif.empty()) {
+            obj[U("profit_taker_tif")] = value::string(order.profit_taker_tif);
+        }
+        if (order.profit_taker_rth) {
+            obj[U("profit_taker_rth")] = order.profit_taker_rth;
+        }
+        if (!order.stop_loss_order_type.empty()) {
+            obj[U("stop_loss_order_type")] = value::string(order.stop_loss_order_type);
+        }
+        if (order.stop_loss_order_id != 0) {
+            obj[U("stop_loss_orderId")] = value::number(static_cast<int64_t>(order.stop_loss_order_id));
+        }
+        if (order.stop_loss_price != 0) {
+            obj[U("stop_loss_price")] = order.stop_loss_price;
+        }
+        if (order.stop_loss_limit_price != 0) {
+            obj[U("stop_loss_limit_price")] = order.stop_loss_limit_price;
+        }
+        if (!order.stop_loss_tif.empty()) {
+            obj[U("stop_loss_tif")] = value::string(order.stop_loss_tif);
+        }
+        if (order.stop_loss_trailing_percent != 0) {
+            obj[U("stop_loss_trailing_percent")] = order.stop_loss_trailing_percent;
+        }
+        if (order.stop_loss_trailing_amount != 0) {
+            obj[U("stop_loss_trailing_amount")] = order.stop_loss_trailing_amount;
+        }
+    }
+
     value TradeClient::place_order(Order &order) {
         value obj = value::object(true);
         Contract contract = order.contract;
@@ -521,6 +626,7 @@ namespace TIGER_API {
         if (order.end_time != 0) {
             obj[U("end_time")] = value::number(static_cast<int64_t>(order.end_time));
         }
+        serialize_advanced_order_fields(obj, order, obj[P_ACCOUNT].as_string());
         value res = post(PLACE_ORDER, obj);
         try {
             order.id = res[U("id")].as_number().to_uint64();
@@ -621,6 +727,7 @@ namespace TIGER_API {
         if (order.end_time != 0) {
             obj[U("end_time")] = value::number(static_cast<int64_t>(order.end_time));
         }
+        serialize_advanced_order_fields(obj, order, obj[P_ACCOUNT].as_string());
         value res = post(MODIFY_ORDER, obj);
         return res;
     }
@@ -867,6 +974,15 @@ namespace TIGER_API {
         if (order.expire_time) {
             obj[U("expire_time")] = value::number(static_cast<int64_t>(order.expire_time));
         }
+        // Note: iceberg fields (display_size etc.) are intentionally NOT sent here —
+        // confirmed cross-SDK behavior (Java/Python also omit them from preview_order).
+        // Amount/multi-leg/algo fields ARE sent and the server accepts them (verified
+        // against a real production account). OCA and attached (profit-taker/stop-loss)
+        // orders ARE also serialized here for consistency with place_order/modify_order,
+        // but the server currently rejects preview for these two types with
+        // "OCA/ATTACHED order preview not supported" (code 1010) — this is a server-side
+        // business rule, not a client bug. place_order (not preview_order) is unaffected.
+        serialize_advanced_order_fields(obj, order, obj[P_ACCOUNT].as_string());
         return post(PREVIEW_ORDER, obj);
     }
 
