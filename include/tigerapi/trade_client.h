@@ -268,6 +268,16 @@ namespace TIGER_API {
         value get_account_param(const utility::string_t &account=U(""));
 
         void set_secret_key(value &obj);
+
+        // Serializes fields shared by amount/multi-leg/algo/OCA-bracket/attach orders
+        // into obj. Used by place_order, modify_order, and preview_order so all three
+        // stay in sync (preview_order previously diverged from place_order on iceberg
+        // fields, which is why this is centralized in one place).
+        // resolved_account: the already-resolved account string (via get_account_param()),
+        // passed through to each oca_orders sub-order so it carries the same account as
+        // the outer order — matches Java SDK's buildOCABracketsOrder, which resolves the
+        // account once and passes it into buildTradeOrderModel() for every sub-order.
+        static void serialize_advanced_order_fields(value &obj, const Order &order, const utility::string_t &resolved_account);
     };
 }
 
