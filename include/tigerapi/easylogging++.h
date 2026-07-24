@@ -16,6 +16,16 @@
 
 #ifndef EASYLOGGINGPP_H
 #define EASYLOGGINGPP_H
+// TIGER_API: enable easyloggingpp's internal mutex protection around log
+// dispatch. Without this, concurrent LOG(...) calls from different threads
+// race on shared dispatcher state (DefaultLogDispatchCallback::m_data) —
+// reproduced as EXC_BAD_ACCESS in el::LogMessage::logger() when the
+// token-refresh background thread and the main thread log at the same time.
+// Must be defined before any ELPP_THREAD_SAFE check below, and before any
+// other translation unit includes this header, so keep this at the very top.
+#ifndef ELPP_THREAD_SAFE
+#define ELPP_THREAD_SAFE
+#endif
 // Compilers and C++0x/C++11 Evaluation
 #if __cplusplus >= 201103L
 #  define ELPP_CXX11 1
