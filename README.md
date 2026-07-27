@@ -55,7 +55,7 @@ SKIP_DEMO=1 ./scripts/build_linux_mac.sh
 
 脚本会自动完成：
 1. 安装系统依赖（Homebrew/apt）
-2. 编译 Boost、cpprestsdk、Protobuf
+2. 编译 Boost、cpprestsdk、Abseil 20240722.0、Protobuf
 3. 构建 SDK（Debug + Release）
 4. 构建并运行 demo
 
@@ -107,8 +107,8 @@ output/
 ```bash
 brew install cmake wget automake libtool pkg-config openssl@3
 
-# 单独安装 Abseil 20240722.0；若安装前缀不是 Homebrew Cellar 默认路径，
-# 构建时设置 ABSL_PREFIX=/path/to/abseil-20240722.0
+# 一键构建脚本会从源码构建 Protobuf v5.28.3 和固定的 Abseil 20240722.0，
+# 不要另外安装或使用 Homebrew 最新版 Abseil。
 ```
 
 #### 2. 安装 Boost
@@ -143,7 +143,24 @@ cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 4. 编译 Protobuf
+#### 4. 编译 Abseil
+
+```bash
+cd /tmp
+git clone --depth 1 --branch 20240722.0 https://github.com/abseil/abseil-cpp.git
+cd abseil-cpp
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/abseil-20240722.0 \
+    -DABSL_BUILD_TESTING=OFF \
+    -DABSL_PROPAGATE_CXX_STD=ON \
+    -DBUILD_SHARED_LIBS=ON
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build
+```
+
+#### 5. 编译 Protobuf
 
 ```bash
 cd /tmp
@@ -152,32 +169,32 @@ tar xzf protobuf-28.3.tar.gz
 cd protobuf-28.3
 cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v28.3 \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v5.28.3 \
     -DCMAKE_CXX_STANDARD=14 \
     -Dprotobuf_BUILD_TESTS=OFF \
     -Dprotobuf_ABSL_PROVIDER=package \
-    -DCMAKE_PREFIX_PATH=$(brew --prefix)
+    -Dabsl_DIR=/usr/local/opt/abseil-20240722.0/lib/cmake/absl \
+    -DCMAKE_PREFIX_PATH=/usr/local/opt/abseil-20240722.0
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 5. 构建 SDK
+#### 6. 构建 SDK
 
 ```bash
 cd <project_root>
-export CPATH="$(brew --prefix abseil)/include:$CPATH"
 
 cmake -S . -B build/Debug \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/tigerapi/Debug \
     -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v28.3" \
+    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/abseil-20240722.0;/usr/local/opt/protobuf-v5.28.3" \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build/Debug -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build/Debug
 ```
 
-#### 6. 构建 Demo
+#### 7. 构建 Demo
 
 ```bash
 cd demo
@@ -188,13 +205,13 @@ cmake -S . -B build \
     -DTIGERAPI_LIBRARY=/usr/local/opt/tigerapi/Debug/lib/libtigerapi.a \
     -DCPPREST_INCLUDE_DIR=/usr/local/opt/cpprestsdk/include \
     -DCPPREST_LIBRARY=/usr/local/opt/cpprestsdk/lib/libcpprest.dylib \
-    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v28.3/include \
-    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v28.3/lib/libprotobuf.dylib \
+    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v5.28.3/include \
+    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v5.28.3/lib/libprotobuf.dylib \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 
 # 运行 demo（需要设置动态库路径）
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ./build/openapi_cpp_test
 ```
 
@@ -215,7 +232,7 @@ sudo apt-get install -y git wget bzip2 unzip gcc g++ libtool automake autoconf \
 - 使用 `LD_LIBRARY_PATH` 代替 `DYLD_LIBRARY_PATH`
 
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
@@ -433,14 +450,14 @@ set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++14 ...")
 
 **Q: 运行时找不到动态库**
 ```bash
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ```
 
 ### Linux
 
 **Q: 运行时找不到 .so 文件**
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows

@@ -92,16 +92,6 @@ if(UNIX) # Darwing or Linux
         
         # Newer Abseil releases may require C++17, so only use the pinned C++14 build.
         if(NOT ABSL_PREFIX)
-            foreach(_absl_prefix
-                    "/opt/homebrew/Cellar/abseil/${ABSEIL_VERSION}"
-                    "/usr/local/Cellar/abseil/${ABSEIL_VERSION}")
-                if(IS_DIRECTORY "${_absl_prefix}")
-                    set(ABSL_PREFIX "${_absl_prefix}")
-                    break()
-                endif()
-            endforeach()
-        endif()
-        if(NOT ABSL_PREFIX)
             message(FATAL_ERROR "Abseil ${ABSEIL_VERSION} not found. Set ABSL_PREFIX to its installation prefix.")
         endif()
         find_package(absl CONFIG REQUIRED

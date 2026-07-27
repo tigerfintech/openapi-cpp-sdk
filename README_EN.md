@@ -29,7 +29,7 @@ English | [中文](README.md)
 - **Boost** 1.86.0 (system, thread, log, program_options, chrono, filesystem)
 - **OpenSSL** 1.0.1+ (3.x recommended)
 - **cpprestsdk** Latest (HTTP client)
-- **Protobuf** v25.1 (libprotobuf 4.25.1)
+- **Protobuf** 5.28.3
 - **Abseil** 20240722.0 (pinned C++14-compatible Protobuf runtime dependency)
 - **C++ Standard**: C++14
 
@@ -55,7 +55,7 @@ SKIP_DEMO=1 ./scripts/build_linux_mac.sh
 
 The script will automatically:
 1. Install system dependencies (Homebrew/apt)
-2. Compile Boost, cpprestsdk, Protobuf
+2. Compile Boost, cpprestsdk, Abseil 20240722.0, and Protobuf
 3. Build SDK (Debug + Release)
 4. Build and run demo
 
@@ -105,8 +105,8 @@ output/
 ```bash
 brew install cmake wget automake libtool pkg-config openssl@3
 
-# Install Abseil 20240722.0 separately. If it is not under the default
-# Homebrew Cellar path, build with ABSL_PREFIX=/path/to/abseil-20240722.0.
+# The one-click script builds Protobuf v5.28.3 and pinned Abseil 20240722.0
+# from source. Do not install or use the latest Homebrew Abseil separately.
 ```
 
 #### 2. Install Boost
@@ -141,41 +141,58 @@ cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 4. Build Protobuf
+#### 4. Build Abseil
 
 ```bash
 cd /tmp
-curl -sL https://github.com/protocolbuffers/protobuf/releases/download/v25.1/protobuf-25.1.tar.gz -o protobuf-25.1.tar.gz
-tar xzf protobuf-25.1.tar.gz
-cd protobuf-25.1
+git clone --depth 1 --branch 20240722.0 https://github.com/abseil/abseil-cpp.git
+cd abseil-cpp
 cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v25.1 \
     -DCMAKE_CXX_STANDARD=14 \
-    -Dprotobuf_BUILD_TESTS=OFF \
-    -Dprotobuf_ABSL_PROVIDER=package \
-    -DCMAKE_PREFIX_PATH=$(brew --prefix)
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/abseil-20240722.0 \
+    -DABSL_BUILD_TESTING=OFF \
+    -DABSL_PROPAGATE_CXX_STD=ON \
+    -DBUILD_SHARED_LIBS=ON
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 5. Build SDK
+#### 5. Build Protobuf
+
+```bash
+cd /tmp
+curl -sL https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protobuf-28.3.tar.gz -o protobuf-28.3.tar.gz
+tar xzf protobuf-28.3.tar.gz
+cd protobuf-28.3
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v5.28.3 \
+    -DCMAKE_CXX_STANDARD=14 \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -Dprotobuf_ABSL_PROVIDER=package \
+    -Dabsl_DIR=/usr/local/opt/abseil-20240722.0/lib/cmake/absl \
+    -DCMAKE_PREFIX_PATH=/usr/local/opt/abseil-20240722.0
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build
+```
+
+#### 6. Build SDK
 
 ```bash
 cd <project_root>
-export CPATH="$(brew --prefix abseil)/include:$CPATH"
 
 cmake -S . -B build/Debug \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/tigerapi/Debug \
     -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v25.1" \
+    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/abseil-20240722.0;/usr/local/opt/protobuf-v5.28.3" \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build/Debug -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build/Debug
 ```
 
-#### 6. Build Demo
+#### 7. Build Demo
 
 ```bash
 cd demo
@@ -186,13 +203,13 @@ cmake -S . -B build \
     -DTIGERAPI_LIBRARY=/usr/local/opt/tigerapi/Debug/lib/libtigerapi.a \
     -DCPPREST_INCLUDE_DIR=/usr/local/opt/cpprestsdk/include \
     -DCPPREST_LIBRARY=/usr/local/opt/cpprestsdk/lib/libcpprest.dylib \
-    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v25.1/include \
-    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v25.1/lib/libprotobuf.dylib \
+    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v5.28.3/include \
+    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v5.28.3/lib/libprotobuf.dylib \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 
 # Run demo (set dynamic library path)
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ./build/openapi_cpp_test
 ```
 
@@ -213,7 +230,7 @@ Similar to macOS, main differences:
 - Use `LD_LIBRARY_PATH` instead of `DYLD_LIBRARY_PATH`
 
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
@@ -414,14 +431,14 @@ set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++14 ...")
 
 **Q: Dynamic library not found at runtime**
 ```bash
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ```
 
 ### Linux
 
 **Q: .so file not found at runtime**
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v25.1/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
@@ -438,7 +455,7 @@ Ensure SDK and demo use the same `-DCMAKE_MSVC_RUNTIME_LIBRARY` setting.
 
 **Q: Protobuf version conflict**
 
-Use Protobuf v25.1 (libprotobuf 4.25.1) with pinned Abseil 20240722.0 to retain C++14 support.
+Use Protobuf 5.28.3 with pinned Abseil 20240722.0 to retain C++14 support.
 
 **Q: Warnings treated as errors**
 ```bash

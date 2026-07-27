@@ -44,13 +44,14 @@ Environment variables / options:
   CACHE_DIR=<path>                  (default: <repo>/.cache)
   DEPS_DIR=<path>                   (default: <repo>/.deps)
   BOOST_VERSION=1_86_0              Boost version to build if needed
-  PROTOBUF_VERSION=v3.21.12         Protobuf tag to checkout
+  ABSEIL_VERSION=20240722.0         Abseil tag to checkout
+  PROTOBUF_VERSION=v5.28.3          Protobuf tag to checkout
   NUM_JOBS=<n>                      Parallel jobs (default: detected cores)
   SKIP_DEPS=1                       Skip dependency builds (assumes env vars set)
   SKIP_DEMO=1                       Skip demo build + run
   DEMO_ONLY=1                       Skip SDK build and only build/run demo (also via --demo-only)
 
-You may also override BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX, SDK_INSTALL_PREFIX, OPENSSL_ROOT_DIR.
+You may also override BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX, SDK_INSTALL_PREFIX, OPENSSL_ROOT_DIR.
 EOF
 }
 
@@ -94,13 +95,10 @@ BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOT
 LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
-# Protobuf: use Homebrew on macOS (5.x), source-built on Linux
-if [[ "$OS_NAME" == "Darwin" ]] && command -v brew >/dev/null 2>&1 && [[ -d "$(brew --prefix protobuf 2>/dev/null)/lib/cmake" ]]; then
-  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(brew --prefix protobuf)}"
-else
-  PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
-  PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
-fi
+ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
+ABSL_PREFIX="${ABSL_PREFIX:-${LOCAL_OPT_PREFIX}/abseil-${ABSEIL_VERSION}}"
+PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
+PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
@@ -159,7 +157,7 @@ case "$SDK_LIBRARY_TYPE" in
     ;;
 esac
 
-export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
+export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX ABSL_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
 
 find_tiger_library() {
   local sdk_root="$1"
@@ -369,8 +367,46 @@ build_cpprestsdk() {
   popd >/dev/null
 }
 
+verify_abseil_version() {
+  local config="${ABSL_PREFIX}/include/absl/base/config.h"
+  local expected_date="${ABSEIL_VERSION%%.*}"
+  local expected_patch="${ABSEIL_VERSION#*.}"
+  [[ -f "$config" ]] || return 1
+  grep -Eq "^#define[[:space:]]+ABSL_LTS_RELEASE_VERSION[[:space:]]+${expected_date}$" "$config" &&
+    grep -Eq "^#define[[:space:]]+ABSL_LTS_RELEASE_PATCH_LEVEL[[:space:]]+${expected_patch}$" "$config"
+}
+
+build_abseil() {
+  if [[ -f "${ABSL_PREFIX}/lib/cmake/absl/abslConfig.cmake" ]]; then
+    verify_abseil_version || fail "Abseil at ${ABSL_PREFIX} is not ${ABSEIL_VERSION}. Remove it or set ABSL_PREFIX."
+    log "Abseil already installed at ${ABSL_PREFIX}"
+    return
+  fi
+  local repo="${DEPS_DIR}/abseil-cpp"
+  if [[ ! -d "$repo/.git" ]]; then
+    git clone https://github.com/abseil/abseil-cpp.git "$repo"
+  fi
+  pushd "$repo" >/dev/null
+  git fetch --tags
+  git checkout "$ABSEIL_VERSION"
+  rm -rf cmake_build
+  cmake -S . -B cmake_build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+    -DCMAKE_INSTALL_PREFIX="$ABSL_PREFIX" \
+    -DABSL_BUILD_TESTING=OFF \
+    -DABSL_PROPAGATE_CXX_STD=ON \
+    -DBUILD_SHARED_LIBS=ON
+  cmake --build cmake_build -- -j "$NUM_JOBS"
+  cmake --install cmake_build
+  verify_abseil_version || fail "Installed Abseil does not report version ${ABSEIL_VERSION}."
+  popd >/dev/null
+}
+
 build_protobuf() {
-  if [[ -f "${PROTOBUF_PREFIX}/lib/libprotobuf.so" || -f "${PROTOBUF_PREFIX}/lib/libprotobuf.dylib" ]]; then
+  local abseil_stamp="${PROTOBUF_PREFIX}/.tiger-abseil-${ABSEIL_VERSION}"
+  if [[ ( -f "${PROTOBUF_PREFIX}/lib/libprotobuf.so" || -f "${PROTOBUF_PREFIX}/lib/libprotobuf.dylib" ) && -f "$abseil_stamp" ]]; then
     log "Protobuf already installed at ${PROTOBUF_PREFIX}"
     return
   fi
@@ -382,16 +418,20 @@ build_protobuf() {
   pushd "$repo" >/dev/null
   git fetch --tags
   git checkout "$PROTOBUF_VERSION"
-  # abseil-cpp is a required submodule for protobuf >= 22 (v5.x series)
-  git submodule update --init --recursive
-  mkdir -p cmake_build
+  rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_CXX_STANDARD_REQUIRED=ON \
     -DCMAKE_INSTALL_PREFIX="$PROTOBUF_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$ABSL_PREFIX" \
+    -Dabsl_DIR="${ABSL_PREFIX}/lib/cmake/absl" \
     -Dprotobuf_BUILD_TESTS=OFF \
-    -Dprotobuf_BUILD_SHARED_LIBS=ON
+    -Dprotobuf_BUILD_SHARED_LIBS=ON \
+    -Dprotobuf_ABSL_PROVIDER=package
   cmake --build cmake_build -- -j "$NUM_JOBS"
   cmake --install cmake_build
+  touch "$abseil_stamp"
   popd >/dev/null
 }
 
@@ -490,7 +530,8 @@ build_sdk() {
       -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_DIR="${protobuf_cmake_dir}" \
-      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT};${openssl_root}" \
+      -Dabsl_DIR="${ABSL_PREFIX}/lib/cmake/absl" \
+      -DCMAKE_PREFIX_PATH="${PROTOBUF_PREFIX};${ABSL_PREFIX};${CPPREST_PREFIX};${BOOST_ROOT};${openssl_root}" \
       -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
       -DOPENSSL_ROOT_DIR="${openssl_root}" \
       -DOPENSSL_INCLUDE_DIR="${openssl_include}" \
@@ -545,7 +586,8 @@ build_demo() {
     -B "$build_dir"
     -DCMAKE_BUILD_TYPE="$active_cfg"
     -DBOOST_ROOT="$BOOST_ROOT"
-    -DCMAKE_PREFIX_PATH="${demo_sdk_root};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${BOOST_ROOT}"
+    -DCMAKE_PREFIX_PATH="${demo_sdk_root};${CPPREST_PREFIX};${PROTOBUF_PREFIX};${ABSL_PREFIX};${BOOST_ROOT}"
+    -DABSL_PREFIX="${ABSL_PREFIX}"
     -DTIGERAPI_INCLUDE_DIR="${demo_sdk_root}/include"
     -DTIGERAPI_LIBRARY="$tigerapi_library"
   )
@@ -564,7 +606,7 @@ build_demo() {
     runtime_value="${DYLD_LIBRARY_PATH:-}"
   fi
   local runtime_paths=()
-  for candidate in "${demo_sdk_root}/lib" "${CPPREST_PREFIX}/lib" "${PROTOBUF_PREFIX}/lib"; do
+  for candidate in "${demo_sdk_root}/lib" "${CPPREST_PREFIX}/lib" "${PROTOBUF_PREFIX}/lib" "${ABSL_PREFIX}/lib"; do
     [[ -d "$candidate" ]] && runtime_paths+=("$candidate")
   done
   if [[ ${#runtime_paths[@]} -gt 0 ]]; then
@@ -635,9 +677,10 @@ main() {
       detect_openssl
       build_boost
       build_cpprestsdk
+      build_abseil
       build_protobuf
     else
-      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, PROTOBUF_PREFIX are set."
+      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX are set."
     fi
     regenerate_protos
     build_sdk
@@ -679,12 +722,13 @@ Tiger OpenAPI SDK build finished.
   Headers copied to: $header_dir (skip copy: $SKIP_INCLUDE_COPY)
   Boost root      : $BOOST_ROOT
   cpprestsdk      : $CPPREST_PREFIX
+  Abseil         : $ABSL_PREFIX
   Protobuf        : $PROTOBUF_PREFIX
 
 To use the SDK, add the following to your environment:
-  export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$PROTOBUF_PREFIX/include:\$CPATH"
-  export LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LIBRARY_PATH"
-  export LD_LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LD_LIBRARY_PATH"
+  export CPATH="$header_dir:$BOOST_ROOT/include:$CPPREST_PREFIX/include:$ABSL_PREFIX/include:$PROTOBUF_PREFIX/include:\$CPATH"
+  export LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$ABSL_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LIBRARY_PATH"
+  export LD_LIBRARY_PATH="$sample_lib_dir:$CPPREST_PREFIX/lib:$ABSL_PREFIX/lib:$PROTOBUF_PREFIX/lib:\$LD_LIBRARY_PATH"
 (For macOS, replace LD_LIBRARY_PATH with DYLD_LIBRARY_PATH.)
 ============================================
 EOF

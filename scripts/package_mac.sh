@@ -12,8 +12,10 @@ JOBS=${JOBS:-8}
 # separately at /usr/local/boost_1_86_0. Do NOT replace this with $(brew --prefix)/include.
 BOOST_1_86_ROOT="${BOOST_1_86_ROOT:-/usr/local/boost_1_86_0}"
 HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(brew --prefix)}"
+PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
+PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-/usr/local/opt/protobuf-${PROTOBUF_VERSION}}"
 ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
-ABSL_PREFIX="${ABSL_PREFIX:-${HOMEBREW_PREFIX}/Cellar/abseil/${ABSEIL_VERSION}}"
+ABSL_PREFIX="${ABSL_PREFIX:-/usr/local/opt/abseil-${ABSEIL_VERSION}}"
 
 echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - macOS Package"
@@ -27,9 +29,17 @@ if [ ! -d "$BOOST_1_86_ROOT" ]; then
     echo "  Or override: BOOST_1_86_ROOT=/path/to/boost_1_86_0 $0"
     exit 1
 fi
-if [ ! -d "$ABSL_PREFIX" ]; then
+ABSL_CONFIG="$ABSL_PREFIX/include/absl/base/config.h"
+if [ ! -f "$ABSL_PREFIX/lib/cmake/absl/abslConfig.cmake" ] ||
+   ! grep -Eq '^#define[[:space:]]+ABSL_LTS_RELEASE_VERSION[[:space:]]+20240722$' "$ABSL_CONFIG" ||
+   ! grep -Eq '^#define[[:space:]]+ABSL_LTS_RELEASE_PATCH_LEVEL[[:space:]]+0$' "$ABSL_CONFIG"; then
     echo "ERROR: C++14-compatible Abseil ${ABSEIL_VERSION} not found at $ABSL_PREFIX"
-    echo "  Install Abseil ${ABSEIL_VERSION}, or override: ABSL_PREFIX=/path/to/abseil $0"
+    echo "  Run scripts/build_linux_mac.sh first, or override PROTOBUF_PREFIX and ABSL_PREFIX."
+    exit 1
+fi
+if [ ! -f "$PROTOBUF_PREFIX/lib/cmake/protobuf/protobuf-config.cmake" ]; then
+    echo "ERROR: Protobuf ${PROTOBUF_VERSION} not found at $PROTOBUF_PREFIX"
+    echo "  Run scripts/build_linux_mac.sh first, or override PROTOBUF_PREFIX."
     exit 1
 fi
 
@@ -66,8 +76,8 @@ build_variant() {
     echo "==> Step 2/5: Building ${BUILD_TYPE}..."
     cmake -S . -B "${BUILD_DIR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-        -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf;${ABSL_PREFIX}" \
-        -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
+        -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${PROTOBUF_PREFIX};${ABSL_PREFIX}" \
+        -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
         -DABSL_PREFIX="${ABSL_PREFIX}" \
         -Dabsl_DIR="${ABSL_PREFIX}/lib/cmake/absl" \
         -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
