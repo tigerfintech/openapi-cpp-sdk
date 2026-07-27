@@ -11,6 +11,7 @@
 #include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
+#include <atomic>
 #include <chrono>
 #include <thread>
 #include <fstream>
@@ -837,37 +838,63 @@ class TestPushClient {
 private:
     std::shared_ptr<IPushClient> push_client;
     std::vector<std::string> symbols;
+    std::atomic<bool> connected_{false};
+    std::atomic<bool> failed_{false};
+    std::atomic<bool> quote_received_{false};
+    bool quotes_only_;
+    bool require_quote_data_;
 
 public:
-    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {
+    TestPushClient(std::shared_ptr<IPushClient> client)
+        : push_client(client),
+          quotes_only_(std::getenv("PUSH_QUOTES_ONLY") != nullptr),
+          require_quote_data_(std::getenv("PUSH_REQUIRE_DATA") != nullptr) {
         std::vector<std::string> hk_option_symbols = {"TCH.HK 20241230 410.00 CALL"};
         std::vector<std::string> future_symbols = {"CL2412"};
         std::vector<std::string> stock_symbols = {"AAPL", "TSLA"};
         symbols = stock_symbols;
+        const char* symbols_env = std::getenv("PUSH_SYMBOLS");
+        if (symbols_env && *symbols_env) {
+            symbols.clear();
+            std::stringstream stream(symbols_env);
+            std::string symbol;
+            while (std::getline(stream, symbol, ',')) {
+                if (!symbol.empty()) {
+                    symbols.push_back(symbol);
+                }
+            }
+        }
     }
 
     void connected_callback() {
+        connected_.store(true);
         ucout << "Connected to push server" << std::endl;
-        push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        unsigned int asset_sub_id = push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        ucout << "Subscribe asset result: " << asset_sub_id << std::endl;
+        if (!quotes_only_) {
+            push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            unsigned int asset_sub_id = push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            ucout << "Subscribe asset result: " << asset_sub_id << std::endl;
+        }
         // push_client->query_subscribed_symbols();
         unsigned int res = push_client->subscribe_quote(symbols);
         ucout << "Subscribe quote result: " << res << std::endl;
         // push_client->subscribe_kline(symbols);
         // push_client->subscribe_quote_depth(symbols);
-        unsigned int res1 = push_client->subscribe_tick(symbols);
-        ucout << "Subscribe tick result: " << res1 << std::endl;
+        if (!quotes_only_) {
+            unsigned int res1 = push_client->subscribe_tick(symbols);
+            ucout << "Subscribe tick result: " << res1 << std::endl;
+        }
     }
 
     void error_callback(const tigeropen::push::pb::Response& data) {
+        failed_.store(true);
         ucout << "Error callback: " << std::endl;
         ucout << "- code: " << data.code() << std::endl;
         ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
     }
 
     void kickout_callback(const tigeropen::push::pb::Response& data) {
+        failed_.store(true);
         ucout << "Kickout callback: " << std::endl;
         ucout << "- code: " << data.code() << std::endl;
         ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
@@ -916,6 +943,7 @@ public:
     }
 
     void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
+        quote_received_.store(true);
         ucout << "BasicQuote changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- latestPrice: " << data.latestprice() << std::endl;
@@ -923,6 +951,7 @@ public:
     }
 
     void quote_bbo_changed_callback(const tigeropen::push::pb::QuoteBBOData& data) {
+        quote_received_.store(true);
         ucout << "BBOQuote changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- bidPrice: " << data.bidprice() << std::endl;
@@ -932,8 +961,8 @@ public:
     void quote_depth_changed_callback(const tigeropen::push::pb::QuoteDepthData& data) {
         ucout << "QuoteDepth changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
-        ucout << "- ask price size: " << data.ask().price_size() << std::endl;
-        ucout << "- bid price size: " << data.bid().price_size() << std::endl;
+        ucout << "- has ask prices: " << data.has_ask() << std::endl;
+        ucout << "- has bid prices: " << data.has_bid() << std::endl;
     }
 
     void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
@@ -1005,12 +1034,23 @@ public:
 
         ucout << "PushClient: unsubscribing and disconnecting..." << std::endl;
         push_client->unsubscribe_quote(symbols);
-        push_client->unsubscribe_tick(symbols);
-        push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
-        push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
-        push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
+        if (!quotes_only_) {
+            push_client->unsubscribe_tick(symbols);
+            push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
+            push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
+            push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
+        }
         push_client->disconnect();
         ucout << "PushClient: disconnected." << std::endl;
+        if (!connected_.load()) {
+            throw std::runtime_error("push connection was not established within the timeout");
+        }
+        if (failed_.load()) {
+            throw std::runtime_error("push connection received an error or kickout callback");
+        }
+        if (require_quote_data_ && !quote_received_.load()) {
+            throw std::runtime_error("no real-time quote data was received within the timeout");
+        }
     }
 
     static void test_push_client(std::shared_ptr<IPushClient> push_client, ClientConfig config) {
@@ -1378,6 +1418,16 @@ int main(int argc, char* argv[]) {
     config.use_full_tick = true;
 
     std::vector<TestResult> results;
+
+    if (std::getenv("PUSH_ONLY")) {
+        ucout << U("\n===== PushClient Only Test =====\n") << endl;
+        results.push_back(run_test(U("push_client (connect/subscribe/receive 10s)"), [&]() {
+            std::shared_ptr<IPushClient> push_client = IPushClient::create_push_client(config);
+            TestPushClient::test_push_client_timed(push_client, config, 10);
+        }));
+        print_report(results, "test_report.txt");
+        return results.front().passed ? 0 : 1;
+    }
 
     // ===================================================================
     // ===== TOKEN AUTO-REFRESH UNIT TESTS (no network) =====

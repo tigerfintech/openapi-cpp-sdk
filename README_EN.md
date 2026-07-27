@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK is the official C++ client for Tiger Brokers Open Platform, providing trading, market data, and WebSocket push functionalities.
@@ -12,6 +12,7 @@ English | [中文](README.md)
 - 🚀 Complete trading API support (place orders, cancel orders, query positions, etc.)
 - 📊 Real-time market data (K-line, quotes, tick-by-tick trades, etc.)
 - 🔌 WebSocket push notifications (positions, orders, real-time quotes)
+- ♻️ Persistent HTTP client reuses its built-in connection pool
 - 🌐 Cross-platform support (macOS, Linux, Windows)
 - 🛡️ Type-safe C++ API design
 - 📦 Static and dynamic library compilation support
@@ -31,7 +32,7 @@ English | [中文](README.md)
 - **cpprestsdk** Latest (HTTP client)
 - **Protobuf** 5.28.3
 - **Abseil** 20240722.0 (pinned C++14-compatible Protobuf runtime dependency)
-- **C++ Standard**: C++14
+- **C++ Standard**: C++14 minimum build baseline; C++17 consumer projects are supported
 
 ## Quick Start
 

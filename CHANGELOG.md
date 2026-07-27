@@ -10,6 +10,10 @@
 ### Fixed
 - `oca_brackets_order` 序列化时子订单（`oca_orders` 数组内的止盈单/止损单）缺少 `account` 字段，导致服务端返回 `biz param error(field 'account' cannot be empty)`；现在每个子订单都携带与外层订单一致的已解析账号（参考 Java SDK `buildOCABracketsOrder` 对每个子订单调用 `buildTradeOrderModel(account, ...)` 的方式），已用真实账号验证下单成功
 
+### Changed
+- `TigerClient` 复用持久化的 `cpprestsdk::http_client` 及其内置连接池，减少重复建连开销
+- 全平台以 C++14 为最低构建基线，支持 C++17 用户工程直接编译和链接；依赖固定为 Boost 1.86.0、Protobuf 5.28.3 和 Abseil 20240722.0
+
 ### Notes
 - OCA 组合单与附加止盈/止损单（`add_profit_taker_order` 等）不支持 `preview_order` 预览，服务端会返回 `OCA/ATTACHED order preview not supported`（已用真实账号验证），请直接使用 `place_order`
 

@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
@@ -31,7 +31,7 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 - **cpprestsdk** 最新版（HTTP 客户端）
 - **Protobuf** 5.28.3
 - **Abseil** 20240722.0（固定的 C++14 兼容版本，Protobuf 运行时依赖）
-- **C++ 标准**: C++14
+- **C++ 标准**: C++14（最低构建基线，支持 C++17 用户项目直接编译和链接）
 
 ## 快速开始
 

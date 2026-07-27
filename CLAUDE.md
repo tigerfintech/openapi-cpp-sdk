@@ -6,10 +6,10 @@
 
 ## 技术栈
 
-- C++14
+- C++14（最低构建基线，兼容 C++17 用户工程）
 - CMake 3.15+
 - WebSocket（实时推送）
-- HTTP REST API
+- HTTP REST API（持久化客户端复用内置连接池）
 
 ## 核心依赖
 
