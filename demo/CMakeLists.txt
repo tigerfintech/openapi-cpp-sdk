@@ -7,6 +7,10 @@ endif()
 
 project(openapi_cpp_test)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(ABSEIL_VERSION "20240722.0" CACHE STRING "Required C++14-compatible Abseil version")
+
 
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
@@ -86,18 +90,23 @@ if(UNIX) # Darwing or Linux
         message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
         message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
         
-        # Find Abseil (required by Protobuf 5.x)
-        find_package(absl QUIET)
-        if(NOT absl_FOUND)
-            # Dynamic fallback: pick the newest installed Abseil version from Homebrew Cellar
-            file(GLOB _absl_versions "/opt/homebrew/Cellar/abseil/*")
-            if(_absl_versions)
-                list(SORT _absl_versions ORDER DESCENDING)
-                list(GET _absl_versions 0 ABSL_PREFIX)
-                set(CMAKE_PREFIX_PATH "${ABSL_PREFIX};${CMAKE_PREFIX_PATH}")
-                find_package(absl REQUIRED)
-            endif()
+        # Newer Abseil releases may require C++17, so only use the pinned C++14 build.
+        if(NOT ABSL_PREFIX)
+            foreach(_absl_prefix
+                    "/opt/homebrew/Cellar/abseil/${ABSEIL_VERSION}"
+                    "/usr/local/Cellar/abseil/${ABSEIL_VERSION}")
+                if(IS_DIRECTORY "${_absl_prefix}")
+                    set(ABSL_PREFIX "${_absl_prefix}")
+                    break()
+                endif()
+            endforeach()
         endif()
+        if(NOT ABSL_PREFIX)
+            message(FATAL_ERROR "Abseil ${ABSEIL_VERSION} not found. Set ABSL_PREFIX to its installation prefix.")
+        endif()
+        find_package(absl CONFIG REQUIRED
+                     PATHS "${ABSL_PREFIX}/lib/cmake/absl"
+                     NO_DEFAULT_PATH)
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -154,12 +163,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     else()
         set(_arch_flag "")
     endif()
-    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-    # protobuf 5.x / absl lts_20240116 require C++17
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 endif()
 
 # Project construction ...

@@ -30,8 +30,8 @@ English | [中文](README.md)
 - **OpenSSL** 1.0.1+ (3.x recommended)
 - **cpprestsdk** Latest (HTTP client)
 - **Protobuf** v25.1 (libprotobuf 4.25.1)
-- **Abseil** 20240722+ (Protobuf v25 runtime dependency)
-- **C++ Standard**: C++17
+- **Abseil** 20240722.0 (pinned C++14-compatible Protobuf runtime dependency)
+- **C++ Standard**: C++14
 
 ## Quick Start
 
@@ -103,7 +103,10 @@ output/
 #### 1. Install Basic Tools
 
 ```bash
-brew install cmake wget automake libtool pkg-config openssl@3 abseil
+brew install cmake wget automake libtool pkg-config openssl@3
+
+# Install Abseil 20240722.0 separately. If it is not under the default
+# Homebrew Cellar path, build with ABSL_PREFIX=/path/to/abseil-20240722.0.
 ```
 
 #### 2. Install Boost
@@ -148,7 +151,7 @@ cd protobuf-25.1
 cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v25.1 \
-    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_CXX_STANDARD=14 \
     -Dprotobuf_BUILD_TESTS=OFF \
     -Dprotobuf_ABSL_PROVIDER=package \
     -DCMAKE_PREFIX_PATH=$(brew --prefix)
@@ -403,10 +406,10 @@ openapi-cpp-sdk/
 Modify architecture parameter in `CMakeLists.txt` and `demo/CMakeLists.txt`:
 ```cmake
 # ARM Mac (default)
-set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++14 ...")
 
 # Intel Mac
-set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++14 ...")
 ```
 
 **Q: Dynamic library not found at runtime**
@@ -435,7 +438,7 @@ Ensure SDK and demo use the same `-DCMAKE_MSVC_RUNTIME_LIBRARY` setting.
 
 **Q: Protobuf version conflict**
 
-Ensure using Protobuf v25.1 (libprotobuf 4.25.1), requires Abseil and C++17 support.
+Use Protobuf v25.1 (libprotobuf 4.25.1) with pinned Abseil 20240722.0 to retain C++14 support.
 
 **Q: Warnings treated as errors**
 ```bash

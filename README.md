@@ -30,7 +30,7 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 - **OpenSSL** 1.0.1+（推荐 3.x）
 - **cpprestsdk** 最新版（HTTP 客户端）
 - **Protobuf** 5.28.3
-- **Abseil** 20240722+（Protobuf 运行时依赖）
+- **Abseil** 20240722.0（固定的 C++14 兼容版本，Protobuf 运行时依赖）
 - **C++ 标准**: C++14
 
 ## 快速开始
@@ -105,7 +105,10 @@ output/
 #### 1. 安装基础工具
 
 ```bash
-brew install cmake wget automake libtool pkg-config openssl@3 abseil
+brew install cmake wget automake libtool pkg-config openssl@3
+
+# 单独安装 Abseil 20240722.0；若安装前缀不是 Homebrew Cellar 默认路径，
+# 构建时设置 ABSL_PREFIX=/path/to/abseil-20240722.0
 ```
 
 #### 2. 安装 Boost
@@ -454,7 +457,7 @@ export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v2
 
 **Q: Protobuf 版本冲突**
 
-确保使用 Protobuf 5.28.3，需要 Abseil 20240722+ 和 C++14 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
+确保使用 Protobuf 5.28.3 和固定的 Abseil 20240722.0，以保持 C++14 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
 
 **Q: 编译警告被当作错误**
 ```bash
