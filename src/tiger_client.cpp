@@ -11,6 +11,10 @@ namespace TIGER_API {
         client_config.check();
     }
 
+    TigerClient::~TigerClient() {
+        stop_token_refresh();  // Stop refresh thread before any member is destroyed
+    }
+
     utility::string_t TigerClient::build_sign_content(const value &obj) {
         json::object obj_obj = obj.as_object();
 

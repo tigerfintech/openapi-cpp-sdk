@@ -1204,7 +1204,7 @@ public:
     // the specified interval and that the token is updated thread-safely.
     static void test_callback_is_called() {
         ClientConfig cfg(false);
-        cfg.token = U("old_token");
+        cfg.set_token(U("old_token"));
         std::atomic<int> call_count{0};
 
         bool started = cfg.start_token_refresh(1, [&]() -> utility::string_t {
@@ -1263,7 +1263,7 @@ public:
     // Verify that get_token() returns the current token under lock.
     static void test_get_token_thread_safe() {
         ClientConfig cfg(false);
-        cfg.token = U("valueA");
+        cfg.set_token(U("valueA"));
         std::atomic<int> errors{0};
         std::atomic<bool> stop_writer{false};
 

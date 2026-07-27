@@ -62,15 +62,17 @@ namespace TIGER_API {
     public:
         ContractLeg() {};
 
-        ContractLeg(const utility::string_t sec_type, const utility::string_t symbol,
-                    const utility::string_t action, int ratio) :
-                sec_type(sec_type), symbol(symbol), action(action), ratio(ratio) {};
+        ContractLeg(utility::string_t sec_type, utility::string_t symbol,
+                    utility::string_t action, int ratio) :
+                sec_type(std::move(sec_type)), symbol(std::move(symbol)),
+                action(std::move(action)), ratio(ratio) {};
 
-        ContractLeg(const utility::string_t sec_type, const utility::string_t symbol,
-                    const utility::string_t strike, const utility::string_t expiry, const utility::string_t right,
-                    const utility::string_t action, int ratio) :
-                sec_type(sec_type), symbol(symbol), strike(strike), expiry(expiry), right(right),
-                action(action), ratio(ratio) {};
+        ContractLeg(utility::string_t sec_type, utility::string_t symbol,
+                    utility::string_t strike, utility::string_t expiry, utility::string_t right,
+                    utility::string_t action, int ratio) :
+                sec_type(std::move(sec_type)), symbol(std::move(symbol)),
+                strike(std::move(strike)), expiry(std::move(expiry)), right(std::move(right)),
+                action(std::move(action)), ratio(ratio) {};
 
         utility::string_t symbol;
         utility::string_t sec_type;
@@ -100,7 +102,7 @@ namespace TIGER_API {
     public:
         AlgoParam() {};
 
-        AlgoParam(const utility::string_t tag, const utility::string_t value) : tag(tag), value(value) {};
+        AlgoParam(utility::string_t tag, utility::string_t value) : tag(std::move(tag)), value(std::move(value)) {};
 
         utility::string_t tag;
         utility::string_t value;
@@ -215,13 +217,13 @@ namespace TIGER_API {
         // attached order fields (profit-taker / stop-loss / brackets)
         /** attached order type: 'PROFIT' / 'LOSS' / 'BRACKETS' **/
         utility::string_t attach_type;
-        long profit_taker_order_id = 0;
+        int64_t profit_taker_order_id = 0;
         double profit_taker_price = 0;
         utility::string_t profit_taker_tif;
         bool profit_taker_rth = false;
         /** stop-loss order type, e.g. 'STP' / 'STP_LMT' / 'TRAIL' **/
         utility::string_t stop_loss_order_type;
-        long stop_loss_order_id = 0;
+        int64_t stop_loss_order_id = 0;
         double stop_loss_price = 0;
         double stop_loss_limit_price = 0;
         utility::string_t stop_loss_tif;
@@ -389,7 +391,7 @@ namespace TIGER_API {
                 attach_type = json.at(U("attachType")).as_string();
             }
             if (json.has_field(U("profitTakerOrderId"))) {
-                profit_taker_order_id = (long) json.at(U("profitTakerOrderId")).as_number().to_int64();
+                profit_taker_order_id = json.at(U("profitTakerOrderId")).as_number().to_int64();
             }
             if (json.has_field(U("profitTakerPrice"))) {
                 profit_taker_price = json.at(U("profitTakerPrice")).as_double();
@@ -404,7 +406,7 @@ namespace TIGER_API {
                 stop_loss_order_type = json.at(U("stopLossOrderType")).as_string();
             }
             if (json.has_field(U("stopLossOrderId"))) {
-                stop_loss_order_id = (long) json.at(U("stopLossOrderId")).as_number().to_int64();
+                stop_loss_order_id = json.at(U("stopLossOrderId")).as_number().to_int64();
             }
             if (json.has_field(U("stopLossPrice"))) {
                 stop_loss_price = json.at(U("stopLossPrice")).as_double();

@@ -251,7 +251,7 @@ void TIGER_API::ClientConfig::load_token()
 			std::lock_guard<std::mutex> lock(token_mutex_);
 			token = loaded_token;
 		}
-		LOG(INFO) << U("Loaded token successfully, length=") << token.size() << endl;
+		LOG(INFO) << U("Loaded token successfully, length=") << loaded_token.size() << endl;
 	}
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load token file: ") << Utils::str8to16(e.what()) << endl;
@@ -310,6 +310,11 @@ utility::string_t TIGER_API::ClientConfig::get_token() const
 bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
                                                     std::function<utility::string_t()> fetch_fn)
 {
+    if (interval_seconds <= 0) {
+        LOG(ERROR) << U("interval_seconds must be positive, got ") << interval_seconds << endl;
+        return false;
+    }
+
     // Guard against re-entry: take cv_mutex to serialize start/stop calls,
     // so stop_token_refresh() cannot race between flag-set and thread-create.
     std::lock_guard<std::mutex> start_lock(refresh_cv_mutex_);

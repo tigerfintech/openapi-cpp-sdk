@@ -602,9 +602,9 @@ namespace TIGER_API {
 
     // Financial new interfaces
 
-    value QuoteClient::get_corporate_action(const value &symbols, utility::string_t market,
-                                            utility::string_t action_type, utility::string_t begin_date,
-                                            utility::string_t end_date) {
+    value QuoteClient::get_corporate_action(const value &symbols, const utility::string_t &market,
+                                            const utility::string_t &action_type, const utility::string_t &begin_date,
+                                            const utility::string_t &end_date) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         if (!market.empty()) {
@@ -622,18 +622,18 @@ namespace TIGER_API {
         return post(CORPORATE_ACTION, obj);
     }
 
-    value QuoteClient::get_corporate_symbol_change(const value &symbols, utility::string_t market,
-                                                   utility::string_t begin_date, utility::string_t end_date) {
+    value QuoteClient::get_corporate_symbol_change(const value &symbols, const utility::string_t &market,
+                                                   const utility::string_t &begin_date, const utility::string_t &end_date) {
         return get_corporate_action(symbols, market, U("symbol_change"), begin_date, end_date);
     }
 
-    value QuoteClient::get_corporate_delisting(const value &symbols, utility::string_t market,
-                                               utility::string_t begin_date, utility::string_t end_date) {
+    value QuoteClient::get_corporate_delisting(const value &symbols, const utility::string_t &market,
+                                               const utility::string_t &begin_date, const utility::string_t &end_date) {
         return get_corporate_action(symbols, market, U("delisting"), begin_date, end_date);
     }
 
-    value QuoteClient::get_corporate_ipo(const value &symbols, utility::string_t market,
-                                         utility::string_t begin_date, utility::string_t end_date) {
+    value QuoteClient::get_corporate_ipo(const value &symbols, const utility::string_t &market,
+                                         const utility::string_t &begin_date, const utility::string_t &end_date) {
         return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
     }
 

@@ -19,7 +19,7 @@ namespace TIGER_API {
     class OPENAPI_EXPORT TigerClient {
     public:
         explicit TigerClient(const ClientConfig &cf);
-        ~TigerClient() = default;
+        ~TigerClient();
 
         // Prevent silent copy/move that would lose the refresh thread state.
         TigerClient(const TigerClient&) = delete;

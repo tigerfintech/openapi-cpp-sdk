@@ -166,6 +166,7 @@ add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN PROTOBUF_USE_DLLS)
 endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE ELPP_THREAD_SAFE)
 
 # headers search paths ...
 # Protobuf_INCLUDE_DIR must come before TIGERAPI_INCLUDE_DIR so the system protobuf

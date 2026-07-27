@@ -232,6 +232,7 @@ message(LIBRARIES_SEARCH_PATHS " ${LIBRARIES_SEARCH_PATHS}")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PRIVATE_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SYSTEM_INCLUDE_DIRS})
+target_compile_definitions(${PROJECT_NAME} PUBLIC ELPP_THREAD_SAFE)
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         "-framework CoreFoundation"

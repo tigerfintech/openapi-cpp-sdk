@@ -100,15 +100,15 @@ namespace TIGER_API {
         /** Financial related api **/
         value get_financial_daily();
         value get_financial_report();
-        value get_corporate_action(const value &symbols, utility::string_t market=U(""),
-                                   utility::string_t action_type=U(""), utility::string_t begin_date=U(""),
-                                   utility::string_t end_date=U(""));
-        value get_corporate_symbol_change(const value &symbols, utility::string_t market=U(""),
-                                          utility::string_t begin_date=U(""), utility::string_t end_date=U(""));
-        value get_corporate_delisting(const value &symbols, utility::string_t market=U(""),
-                                      utility::string_t begin_date=U(""), utility::string_t end_date=U(""));
-        value get_corporate_ipo(const value &symbols, utility::string_t market=U(""),
-                                utility::string_t begin_date=U(""), utility::string_t end_date=U(""));
+        value get_corporate_action(const value &symbols, const utility::string_t &market=U(""),
+                                   const utility::string_t &action_type=U(""), const utility::string_t &begin_date=U(""),
+                                   const utility::string_t &end_date=U(""));
+        value get_corporate_symbol_change(const value &symbols, const utility::string_t &market=U(""),
+                                          const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+        value get_corporate_delisting(const value &symbols, const utility::string_t &market=U(""),
+                                      const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+        value get_corporate_ipo(const value &symbols, const utility::string_t &market=U(""),
+                                const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
         value get_financial_currency(const value &symbols, utility::string_t market=U(""), utility::string_t lang=U(""));
         value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                          utility::string_t timezone=U(""), utility::string_t lang=U(""));

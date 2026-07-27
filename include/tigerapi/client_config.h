@@ -68,7 +68,6 @@ namespace TIGER_API {
         unsigned int send_interval = 10 * 1000;
         unsigned int receive_interval = 10 * 1000;
         utility::string_t license;
-        utility::string_t token;
         utility::string_t props_path;
 
         void check() const;
@@ -126,6 +125,7 @@ namespace TIGER_API {
         void load_token();
 
         // Token refresh background thread members.
+        utility::string_t token;
         mutable std::mutex token_mutex_;
         std::atomic<bool> refresh_running_{false};
         std::thread refresh_thread_;
