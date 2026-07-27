@@ -178,11 +178,11 @@ function New-ZipPackage {
 
     function Copy-SinglePackageMatch {
         param([string]$Directory, [string]$Filter)
-        $matches = @(Get-ChildItem -Path $Directory -Filter $Filter -File)
-        if ($matches.Count -ne 1) {
-            throw "Expected exactly one '$Filter' in $Directory, found $($matches.Count)."
+        $matchingFiles = @(Get-ChildItem -Path $Directory -Filter $Filter -File)
+        if ($matchingFiles.Count -ne 1) {
+            throw "Expected exactly one '$Filter' in $Directory, found $($matchingFiles.Count)."
         }
-        Copy-Item $matches[0].FullName -Destination $stagingDir
+        Copy-Item $matchingFiles[0].FullName -Destination $stagingDir
     }
 
     try {
@@ -194,6 +194,10 @@ function New-ZipPackage {
 
         # Runtime dependencies. Exclude test executables, symbols, linker
         # intermediates, protoc, and protobuf-lite from SDK packages.
+        # Debug suffix convention:
+        #   cpprest / libprotobuf → filename carries 'd' suffix in Debug (e.g. cpprest_2_10d.dll)
+        #   abseil_dll / legacy / libcrypto / libssl → same filename for Debug and Release
+        #     (differentiated only by vcpkg's debug/bin vs bin directory path)
         Copy-PackageFile (Join-Path $vcpkgBinDir 'abseil_dll.dll')
         Copy-PackageFile (Join-Path $vcpkgBinDir "cpprest_2_10${debugSuffix}.dll")
         Copy-PackageFile (Join-Path $vcpkgBinDir 'legacy.dll')
