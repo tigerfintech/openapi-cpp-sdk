@@ -171,7 +171,15 @@ endif()
 # Protobuf_INCLUDE_DIR must come before TIGERAPI_INCLUDE_DIR so the system protobuf
 # headers (5.x) shadow the vendored include/google/ stubs (4.x) in the SDK tree.
 # pb_source/*.pb.h are now generated with protobuf 5.x and require 5.x headers.
-set(HEADER_SEARCH_PATHS ${Protobuf_INCLUDE_DIR} ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
+# ABSL_OWN_INCLUDE_DIR must come first so #include "absl/..." resolves to the
+# pinned C++14 build rather than any Abseil that happens to sit on the default
+# system/Homebrew include path (which is typically built requiring C++17 and
+# is ABI-incompatible with the pinned one).
+set(ABSL_OWN_INCLUDE_DIR "")
+if(TARGET absl::base)
+    get_target_property(ABSL_OWN_INCLUDE_DIR absl::base INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+set(HEADER_SEARCH_PATHS ${ABSL_OWN_INCLUDE_DIR} ${Protobuf_INCLUDE_DIR} ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
 message(HEADER_SEARCH_PATHS " ${HEADER_SEARCH_PATHS}")
 
 
@@ -194,9 +202,14 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework Security")
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
     if(absl_FOUND)
-        target_link_libraries(${PROJECT_NAME} 
-            absl::base absl::log_internal_check_op absl::status absl::strings
-            absl::synchronization absl::time absl::cord absl::log_internal_message
+        # absl::log is an INTERFACE target that pulls in the full log_internal_*
+        # dependency chain (log_internal_message, log_internal_format, etc.) —
+        # linking individual log_internal_* targets by hand is fragile and can
+        # silently drop a transitive dependency, causing undefined symbols like
+        # LogMessage::CopyToEncodedBuffer at link time.
+        target_link_libraries(${PROJECT_NAME}
+            absl::base absl::log absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord
         )
     endif()
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
@@ -205,8 +218,8 @@ else()
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
     if(absl_FOUND)
         target_link_libraries(${PROJECT_NAME}
-            absl::base absl::log_internal_check_op absl::status absl::strings
-            absl::synchronization absl::time absl::cord absl::log_internal_message
+            absl::base absl::log absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord
         )
     endif()
 endif()

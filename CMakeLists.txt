@@ -36,6 +36,16 @@ endif()
 # so ABI is consistent regardless of version. Pass -DBOOST_ROOT to use a specific copy.
 find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
 find_package(Threads REQUIRED)
+# Protobuf 5.x's public headers (coded_stream.h etc.) directly include Abseil
+# headers, so a matching Abseil must be resolvable wherever Protobuf headers
+# are used — even though this library's own code never calls into absl::*
+# directly. absl_DIR / ABSL_PREFIX must point at a build that is ABI/ODR
+# consistent with the Protobuf being used (see scripts/build_linux_mac.sh
+# build_abseil()/build_protobuf(), which build both from source against each
+# other). Passing a Homebrew Protobuf here without a matching Abseil will
+# either fail to compile (Homebrew's Abseil bottle requires C++17 headers) or,
+# worse, link against the wrong absl::string_view/std::string_view ABI.
+find_package(absl CONFIG QUIET)
 find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpprestsdk CONFIG QUIET)
@@ -151,8 +161,21 @@ if(DEFINED ENV{HOMEBREW_PREFIX})
 else()
     set(HOMEBREW_INCLUDE_DIR "/opt/homebrew/include")
 endif()
+# Resolve the pinned Abseil's own include dir (if found via absl_DIR/ABSL_PREFIX)
+# so it is listed *before* HOMEBREW_INCLUDE_DIR below. Otherwise "-isystem
+# /opt/homebrew/include" (added for other Homebrew headers) would let the
+# compiler resolve #include "absl/..." to Homebrew's own Abseil bottle instead
+# of the pinned one, even though the correct absl_DIR was passed to
+# find_package(absl). Homebrew's Abseil bottle is built with
+# ABSL_OPTION_USE_STD_STRING_VIEW=1 / ABSL_OPTION_USE_STD_OPTIONAL=1 (requires
+# C++17 and is ABI-incompatible with a from-source C++14 Abseil build).
+set(ABSL_OWN_INCLUDE_DIR "")
+if(TARGET absl::base)
+    get_target_property(ABSL_OWN_INCLUDE_DIR absl::base INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 # Protobuf_INCLUDE_DIRS first so the found protobuf headers shadow include/google/ stubs.
 set(PRIVATE_INCLUDE_DIRS
+    ${ABSL_OWN_INCLUDE_DIR}
     ${Protobuf_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
@@ -189,6 +212,18 @@ if(HAVE_CPPREST_TARGET)
     list(APPEND LIBRARIES_SEARCH_PATHS cpprestsdk::cpprest)
 elseif(CPPREST_LIBRARY)
     list(APPEND LIBRARIES_SEARCH_PATHS ${CPPREST_LIBRARY})
+endif()
+# The generated pb_source/*.pb.cc files call into Abseil's logging macros
+# (CHECK/ABSL_DCHECK) for protobuf-internal invariants, so the library must
+# link the same absl::log_internal_* chain as demo/CMakeLists.txt. absl::log
+# is an INTERFACE target that pulls in the full chain (log_internal_message,
+# log_internal_format, etc.) — linking individual log_internal_* targets by
+# hand is fragile and can silently drop a transitive dependency.
+if(TARGET absl::base)
+    list(APPEND LIBRARIES_SEARCH_PATHS
+        absl::base absl::log absl::log_internal_check_op absl::status
+        absl::strings absl::synchronization absl::time absl::cord
+    )
 endif()
 
 message(BOOST_LIBS " ${Boost_LIBRARIES}")
