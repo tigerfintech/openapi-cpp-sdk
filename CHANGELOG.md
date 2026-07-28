@@ -1,3 +1,57 @@
+## 1.3.0 (2026-07-24)
+### New
+- `OrderUtil::amount_order` — 按金额下市价单（如基金申购），不指定股数
+- `OrderUtil::multi_leg_order` — 多腿组合单（期权价差等），支持 `ContractLeg` 描述每条腿
+- `OrderUtil::twap_order` / `vwap_order` — TWAP/VWAP 算法单，按时间区间拆单执行
+- `OrderUtil::oca_brackets_order` — OCA 止盈止损组合单，任一单成交后自动取消另一单
+- `OrderUtil::add_profit_taker_order` / `add_stop_loss_order` / `add_stop_loss_limit_order` / `add_stop_loss_trail_order` / `add_brackets_order` — 给已有订单挂载附加止盈/止损单
+- `Order` 新增 `cash_amount`、`combo_type`、`contract_legs`、`algo_params`、`oca_orders`、`attach_type` 及止盈/止损相关字段，`place_order`/`modify_order`/`preview_order` 均支持序列化这些字段
+
+### Fixed
+- `oca_brackets_order` 序列化时子订单（`oca_orders` 数组内的止盈单/止损单）缺少 `account` 字段，导致服务端返回 `biz param error(field 'account' cannot be empty)`；现在每个子订单都携带与外层订单一致的已解析账号（参考 Java SDK `buildOCABracketsOrder` 对每个子订单调用 `buildTradeOrderModel(account, ...)` 的方式），已用真实账号验证下单成功
+
+### Changed
+- `TigerClient` 复用持久化的 `cpprestsdk::http_client` 及其内置连接池，减少重复建连开销
+- 全平台以 C++14 为最低构建基线，支持 C++17 用户工程直接编译和链接；依赖固定为 Boost 1.86.0、Protobuf 5.28.3 和 Abseil 20240722.0
+
+### Notes
+- OCA 组合单与附加止盈/止损单（`add_profit_taker_order` 等）不支持 `preview_order` 预览，服务端会返回 `OCA/ATTACHED order preview not supported`（已用真实账号验证），请直接使用 `place_order`
+
+## 1.2.6 (2026-07-24)
+### New
+- `OrderUtil::iceberg_order` — 冰山单构造，支持基础参数（display_size）和完整参数（min_display_size、check_intervals、price_type、start_time、end_time）两种重载
+- `TradeClient::place_order` / `modify_order` 支持冰山单字段的下单与改单
+
+### Fixed
+- 修复订单响应解析中 `totalQuantityScale` / `filledQuantityScale` 字段名大小写错误，导致碎股等场景下数量精度字段（`total_quantity_scale`/`filled_quantity_scale`）始终解析为默认值 0
+
+## 1.2.5 (2026-07-23)
+### New
+- Token 自动刷新：`ClientConfig::start_token_refresh` / `stop_token_refresh`，支持自定义刷新间隔和本地文件持久化
+- `tiger_openapi_config.properties` 新增 `server_url` / `server_public_key` 字段，用于指定自定义网关地址和响应签名校验公钥
+
+### Fixed
+- 修复多线程并发写日志时的崩溃（`el::LogMessage::logger()` 空指针解引用）：easyloggingpp 的线程安全开关 `ELPP_THREAD_SAFE` 此前从未启用，token 自动刷新的后台线程与主线程同时写日志会触发该竞态
+- 修复请求异常被重新抛出为通用 `std::exception`、丢失原始错误信息的问题
+
+## 1.2.4 (2026-07-20)
+### New
+- `get_corporate_symbol_change(symbols, market, begin_date, end_date)` — 股票代码变更查询
+- `get_corporate_delisting(symbols, market, begin_date, end_date)` — 退市事件查询
+- `get_corporate_ipo(symbols, market, begin_date, end_date)` — 新股上市查询
+
+### Breaking
+- `get_corporate_action()` 签名变更：原接口无参数，现在需要传入 `symbols`（`value`）、`market`、`action_type`、`begin_date`、`end_date`。
+  现有调用方需更新为：
+  ```cpp
+  // before
+  client.get_corporate_action();
+  // after
+  value symbols = value::array();
+  symbols[0] = value::string(U("AAPL"));
+  client.get_corporate_action(symbols, U("US"), U("dividend"), U("2024-01-01"), U("2024-12-31"));
+  ```
+
 ## 1.2.3 (2026-06-15)
 ### New
 - 新增期权提前行权接口：`submit_option_exercise` 提交行权/放弃申请、`cancel_option_exercise` 撤销申请、`check_option_exercise` 行权检验（预估持仓变化）、`get_option_exercise_records` 分页查询行权记录、`get_option_exercise_positions` 查询可行权持仓

@@ -6,10 +6,10 @@
 
 ## 技术栈
 
-- C++17
+- C++14（最低构建基线，兼容 C++17 用户工程）
 - CMake 3.15+
 - WebSocket（实时推送）
-- HTTP REST API
+- HTTP REST API（持久化客户端复用内置连接池）
 
 ## 核心依赖
 
@@ -19,7 +19,7 @@
 | OpenSSL | 3.x | 加密通信 |
 | cpprestsdk | latest | HTTP 客户端 |
 | Protobuf | 5.28.3 | 数据序列化 |
-| Abseil | 20240722+ | Protobuf 运行时依赖 |
+| Abseil | 20240722.0 | Protobuf 运行时依赖（固定以兼容 C++14） |
 
 ## 目录结构
 
@@ -56,7 +56,7 @@ BUILD_TYPE=Release ./scripts/build_linux_mac.sh  # 仅 Release
 ```
 
 构建策略：优先使用系统已安装的 Boost（>= 1.86）；不满足则自动从源码编译 1.86.0。
-macOS 使用 Homebrew protobuf 5.28.3；Linux 从源码编译 protobuf v5.28.3（含 abseil-cpp 子模块）。
+macOS/Linux 均从源码编译 Abseil 20240722.0 和 Protobuf v5.28.3，Protobuf 通过 package provider 使用固定 Abseil。
 
 **输出路径**：`output/{Mac,Linux}/{Debug,Release}/`（lib + include），无额外 `sdk/` 子目录。
 

@@ -37,6 +37,7 @@ static utility::string_t P_END_TIME = U("end_time");
 static utility::string_t P_START_DATE = U("start_date");
 static utility::string_t P_BEGIN_DATE = U("begin_date");
 static utility::string_t P_END_DATE = U("end_date");
+static utility::string_t P_ACTION_TYPE = U("action_type");
 static utility::string_t P_BEGIN_INDEX = U("begin_index");
 static utility::string_t P_END_INDEX = U("end_index");
 static utility::string_t P_TRADE_SESSION = U("trade_session");

@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
@@ -30,8 +30,8 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 - **OpenSSL** 1.0.1+（推荐 3.x）
 - **cpprestsdk** 最新版（HTTP 客户端）
 - **Protobuf** 5.28.3
-- **Abseil** 20240722+（Protobuf 运行时依赖）
-- **C++ 标准**: C++17
+- **Abseil** 20240722.0（固定的 C++14 兼容版本，Protobuf 运行时依赖）
+- **C++ 标准**: C++14（最低构建基线，支持 C++17 用户项目直接编译和链接）
 
 ## 快速开始
 
@@ -55,7 +55,7 @@ SKIP_DEMO=1 ./scripts/build_linux_mac.sh
 
 脚本会自动完成：
 1. 安装系统依赖（Homebrew/apt）
-2. 编译 Boost、cpprestsdk、Protobuf
+2. 编译 Boost、cpprestsdk、Abseil 20240722.0、Protobuf
 3. 构建 SDK（Debug + Release）
 4. 构建并运行 demo
 
@@ -105,7 +105,10 @@ output/
 #### 1. 安装基础工具
 
 ```bash
-brew install cmake wget automake libtool pkg-config openssl@3 abseil
+brew install cmake wget automake libtool pkg-config openssl@3
+
+# 一键构建脚本会从源码构建 Protobuf v5.28.3 和固定的 Abseil 20240722.0，
+# 不要另外安装或使用 Homebrew 最新版 Abseil。
 ```
 
 #### 2. 安装 Boost
@@ -140,7 +143,24 @@ cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 4. 编译 Protobuf
+#### 4. 编译 Abseil
+
+```bash
+cd /tmp
+git clone --depth 1 --branch 20240722.0 https://github.com/abseil/abseil-cpp.git
+cd abseil-cpp
+cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=14 \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/abseil-20240722.0 \
+    -DABSL_BUILD_TESTING=OFF \
+    -DABSL_PROPAGATE_CXX_STD=ON \
+    -DBUILD_SHARED_LIBS=ON
+cmake --build build -- -j $(sysctl -n hw.ncpu)
+sudo cmake --install build
+```
+
+#### 5. 编译 Protobuf
 
 ```bash
 cd /tmp
@@ -149,32 +169,32 @@ tar xzf protobuf-28.3.tar.gz
 cd protobuf-28.3
 cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v28.3 \
-    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/opt/protobuf-v5.28.3 \
+    -DCMAKE_CXX_STANDARD=14 \
     -Dprotobuf_BUILD_TESTS=OFF \
     -Dprotobuf_ABSL_PROVIDER=package \
-    -DCMAKE_PREFIX_PATH=$(brew --prefix)
+    -Dabsl_DIR=/usr/local/opt/abseil-20240722.0/lib/cmake/absl \
+    -DCMAKE_PREFIX_PATH=/usr/local/opt/abseil-20240722.0
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build
 ```
 
-#### 5. 构建 SDK
+#### 6. 构建 SDK
 
 ```bash
 cd <project_root>
-export CPATH="$(brew --prefix abseil)/include:$CPATH"
 
 cmake -S . -B build/Debug \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=/usr/local/opt/tigerapi/Debug \
     -DBOOST_ROOT=/usr/local/boost_1_86_0 \
-    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/protobuf-v28.3" \
+    -DCMAKE_PREFIX_PATH="/usr/local/opt/cpprestsdk;/usr/local/opt/abseil-20240722.0;/usr/local/opt/protobuf-v5.28.3" \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build/Debug -- -j $(sysctl -n hw.ncpu)
 sudo cmake --install build/Debug
 ```
 
-#### 6. 构建 Demo
+#### 7. 构建 Demo
 
 ```bash
 cd demo
@@ -185,13 +205,13 @@ cmake -S . -B build \
     -DTIGERAPI_LIBRARY=/usr/local/opt/tigerapi/Debug/lib/libtigerapi.a \
     -DCPPREST_INCLUDE_DIR=/usr/local/opt/cpprestsdk/include \
     -DCPPREST_LIBRARY=/usr/local/opt/cpprestsdk/lib/libcpprest.dylib \
-    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v28.3/include \
-    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v28.3/lib/libprotobuf.dylib \
+    -DProtobuf_INCLUDE_DIR=/usr/local/opt/protobuf-v5.28.3/include \
+    -DProtobuf_LIBRARY=/usr/local/opt/protobuf-v5.28.3/lib/libprotobuf.dylib \
     -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
 cmake --build build -- -j $(sysctl -n hw.ncpu)
 
 # 运行 demo（需要设置动态库路径）
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ./build/openapi_cpp_test
 ```
 
@@ -212,7 +232,7 @@ sudo apt-get install -y git wget bzip2 unzip gcc g++ libtool automake autoconf \
 - 使用 `LD_LIBRARY_PATH` 代替 `DYLD_LIBRARY_PATH`
 
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
@@ -422,22 +442,22 @@ openapi-cpp-sdk/
 修改 `CMakeLists.txt` 和 `demo/CMakeLists.txt` 中的架构参数：
 ```cmake
 # ARM Mac（默认）
-set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch arm64 -std=c++14 ...")
 
 # Intel Mac
-set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++17 ...")
+set(CMAKE_CXX_FLAGS "-arch x86_64 -std=c++14 ...")
 ```
 
 **Q: 运行时找不到动态库**
 ```bash
-export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$DYLD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$DYLD_LIBRARY_PATH"
 ```
 
 ### Linux
 
 **Q: 运行时找不到 .so 文件**
 ```bash
-export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v28.3/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v5.28.3/lib:$LD_LIBRARY_PATH"
 ```
 
 ### Windows
@@ -454,7 +474,7 @@ export LD_LIBRARY_PATH="/usr/local/opt/cpprestsdk/lib:/usr/local/opt/protobuf-v2
 
 **Q: Protobuf 版本冲突**
 
-确保使用 Protobuf 5.28.3，需要 Abseil 和 C++17 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
+确保使用 Protobuf 5.28.3 和固定的 Abseil 20240722.0，以保持 C++14 支持。Windows 工程已通过 `PROTOBUF_USE_DLLS` 与 vcpkg DLL 版本保持一致。
 
 **Q: 编译警告被当作错误**
 ```bash

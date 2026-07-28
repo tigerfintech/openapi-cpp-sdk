@@ -1,4 +1,9 @@
-﻿#include "tigerapi/push_socket/push_client_impl.h"
+﻿#if defined(_MSC_VER) && _MSC_VER == 1932
+// Work around MSVC 14.32 parsing Boost.Move's copy-constructor probe.
+#define BOOST_NO_CXX11_DELETED_FUNCTIONS
+#endif
+
+#include "tigerapi/push_socket/push_client_impl.h"
 #include "tigerapi/client_config.h"
 #include "tigerapi/push_socket/push_socket.h"
 #include "tigerapi/tick_util.h"
@@ -45,11 +50,11 @@ TIGER_API::PushClientImpl::~PushClientImpl()
 }
 
 TIGER_API::PushClientImpl::PushClientImpl(const TIGER_API::ClientConfig& client_config)
+    : client_config_(client_config)
 {
     socket_ = PushSocket::create_push_socket(&io_context_, client_config);
     socket_->set_on_message_callback(
         [this](const std::shared_ptr<tigeropen::push::pb::Response>& message) { on_message(message); });
-    client_config_ = client_config;
 }
 
 void TIGER_API::PushClientImpl::connect()

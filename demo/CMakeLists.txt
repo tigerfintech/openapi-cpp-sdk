@@ -7,6 +7,10 @@ endif()
 
 project(openapi_cpp_test)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(ABSEIL_VERSION "20240722.0" CACHE STRING "Required C++14-compatible Abseil version")
+
 
 # Configure required libraries ...
 if(UNIX) # Darwing or Linux
@@ -86,15 +90,13 @@ if(UNIX) # Darwing or Linux
         message(OPENSSL_ROOT_DIR " ${OPENSSL_ROOT_DIR}")
         message(OPENSSL_LIBRARIES " ${OPENSSL_LIBRARIES}")
         
-        # Find Abseil (required by Protobuf 5.x)
-        find_package(absl QUIET)
-        if(NOT absl_FOUND)
-            set(ABSL_PREFIX "/opt/homebrew/Cellar/abseil/20240722.0")
-            if(EXISTS "${ABSL_PREFIX}")
-                set(CMAKE_PREFIX_PATH "${ABSL_PREFIX};${CMAKE_PREFIX_PATH}")
-                find_package(absl REQUIRED)
-            endif()
+        # Newer Abseil releases may require C++17, so only use the pinned C++14 build.
+        if(NOT ABSL_PREFIX)
+            message(FATAL_ERROR "Abseil ${ABSEIL_VERSION} not found. Set ABSL_PREFIX to its installation prefix.")
         endif()
+        find_package(absl CONFIG REQUIRED
+                     PATHS "${ABSL_PREFIX}/lib/cmake/absl"
+                     NO_DEFAULT_PATH)
     else()
         find_package(OpenSSL 1.0.1 REQUIRED)
         set(OPENSSL_VERSION "1.0.1")
@@ -151,12 +153,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     else()
         set(_arch_flag "")
     endif()
-    set(CMAKE_CXX_FLAGS "${_arch_flag} -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS "${_arch_flag} -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     message("-- configuring gcc options")
-    # protobuf 5.x / absl lts_20240116 require C++17
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -DBOOST_LOG_DYN_LINK")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 endif()
 
 # Project construction ...
@@ -165,12 +166,21 @@ add_executable(${PROJECT_NAME} openapi_cpp_test/openapi_cpp_test.cpp)
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN PROTOBUF_USE_DLLS)
 endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE ELPP_THREAD_SAFE)
 
 # headers search paths ...
 # Protobuf_INCLUDE_DIR must come before TIGERAPI_INCLUDE_DIR so the system protobuf
 # headers (5.x) shadow the vendored include/google/ stubs (4.x) in the SDK tree.
 # pb_source/*.pb.h are now generated with protobuf 5.x and require 5.x headers.
-set(HEADER_SEARCH_PATHS ${Protobuf_INCLUDE_DIR} ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
+# ABSL_OWN_INCLUDE_DIR must come first so #include "absl/..." resolves to the
+# pinned C++14 build rather than any Abseil that happens to sit on the default
+# system/Homebrew include path (which is typically built requiring C++17 and
+# is ABI-incompatible with the pinned one).
+set(ABSL_OWN_INCLUDE_DIR "")
+if(TARGET absl::base)
+    get_target_property(ABSL_OWN_INCLUDE_DIR absl::base INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+set(HEADER_SEARCH_PATHS ${ABSL_OWN_INCLUDE_DIR} ${Protobuf_INCLUDE_DIR} ${CPPREST_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${TIGERAPI_INCLUDE_DIR})
 message(HEADER_SEARCH_PATHS " ${HEADER_SEARCH_PATHS}")
 
 
@@ -193,9 +203,14 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework Security")
     target_link_libraries(${PROJECT_NAME} ${LIBRARIES_SEARCH_PATHS})
     if(absl_FOUND)
-        target_link_libraries(${PROJECT_NAME} 
-            absl::base absl::log_internal_check_op absl::status absl::strings
-            absl::synchronization absl::time absl::cord absl::log_internal_message
+        # absl::log is an INTERFACE target that pulls in the full log_internal_*
+        # dependency chain (log_internal_message, log_internal_format, etc.) —
+        # linking individual log_internal_* targets by hand is fragile and can
+        # silently drop a transitive dependency, causing undefined symbols like
+        # LogMessage::CopyToEncodedBuffer at link time.
+        target_link_libraries(${PROJECT_NAME}
+            absl::base absl::log absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord
         )
     endif()
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-W1, -F/Library/Frameworks ")
@@ -204,8 +219,8 @@ else()
     target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
     if(absl_FOUND)
         target_link_libraries(${PROJECT_NAME}
-            absl::base absl::log_internal_check_op absl::status absl::strings
-            absl::synchronization absl::time absl::cord absl::log_internal_message
+            absl::base absl::log absl::log_internal_check_op absl::status absl::strings
+            absl::synchronization absl::time absl::cord
         )
     endif()
 endif()

@@ -57,6 +57,64 @@ namespace TIGER_API {
         utility::string_t market;
     };
 
+    /** One leg of a multi-leg (combo) order, e.g. an option spread. **/
+    class OPENAPI_EXPORT ContractLeg {
+    public:
+        ContractLeg() {};
+
+        ContractLeg(utility::string_t sec_type, utility::string_t symbol,
+                    utility::string_t action, int ratio) :
+                sec_type(std::move(sec_type)), symbol(std::move(symbol)),
+                action(std::move(action)), ratio(ratio) {};
+
+        ContractLeg(utility::string_t sec_type, utility::string_t symbol,
+                    utility::string_t strike, utility::string_t expiry, utility::string_t right,
+                    utility::string_t action, int ratio) :
+                sec_type(std::move(sec_type)), symbol(std::move(symbol)),
+                strike(std::move(strike)), expiry(std::move(expiry)), right(std::move(right)),
+                action(std::move(action)), ratio(ratio) {};
+
+        utility::string_t symbol;
+        utility::string_t sec_type;
+        utility::string_t expiry;
+        utility::string_t strike;
+        utility::string_t right;
+        /** trade direction for this leg, 'BUY' / 'SELL' **/
+        utility::string_t action;
+        /** relative weight of this leg in the combo, must be greater than 0 **/
+        int ratio = 0;
+
+        web::json::value to_json() const {
+            web::json::value obj = web::json::value::object(true);
+            if (!symbol.empty()) obj[U("symbol")] = web::json::value::string(symbol);
+            if (!sec_type.empty()) obj[U("sec_type")] = web::json::value::string(sec_type);
+            if (!expiry.empty()) obj[U("expiry")] = web::json::value::string(expiry);
+            if (!strike.empty()) obj[U("strike")] = web::json::value::string(strike);
+            if (!right.empty()) obj[U("right")] = web::json::value::string(right);
+            if (!action.empty()) obj[U("action")] = web::json::value::string(action);
+            if (ratio != 0) obj[U("ratio")] = web::json::value::number(ratio);
+            return obj;
+        }
+    };
+
+    /** A single tag/value pair used for algo order parameters (e.g. TWAP/VWAP start_time). **/
+    class OPENAPI_EXPORT AlgoParam {
+    public:
+        AlgoParam() {};
+
+        AlgoParam(utility::string_t tag, utility::string_t value) : tag(std::move(tag)), value(std::move(value)) {};
+
+        utility::string_t tag;
+        utility::string_t value;
+
+        web::json::value to_json() const {
+            web::json::value obj = web::json::value::object(true);
+            obj[U("tag")] = web::json::value::string(tag);
+            obj[U("value")] = web::json::value::string(value);
+            return obj;
+        }
+    };
+
     class OPENAPI_EXPORT Order {
     public:
         Order() {};
@@ -101,7 +159,7 @@ namespace TIGER_API {
             * price adjustment range (default 0 means no adjustment, positive means upward adjustment, negative means downward adjustment), automatically adjust the input price to a legal price.
             * For example: 0.001 means upward adjustment and the adjustment range is not more than 0.1%; -0.001 means downward adjustment and the adjustment range is not more than 0.1%. Default 0 means no adjustment
          */
-        double adjust_limit;
+        double adjust_limit = 0.0;
         utility::string_t user_mark;
         time_t expire_time = 0;
 
@@ -130,6 +188,47 @@ namespace TIGER_API {
         utility::string_t algo_strategy;
         double commission;
         double gst;
+        // iceberg order fields
+        long long display_size = 0;
+        long long min_display_size = 0;
+        long long check_intervals = 0;
+        utility::string_t price_type;
+        long long start_time = 0;
+        long long end_time = 0;
+
+        // algo order fields (TWAP/VWAP/WAP); algo_strategy (e.g. "TWAP"/"VWAP") is declared above
+        vector<AlgoParam> algo_params;
+        void add_algo_param(const utility::string_t& tag, const utility::string_t& value) {
+            if (tag.empty() || value.empty()) return;
+            algo_params.push_back(AlgoParam(tag, value));
+        }
+
+        // amount order: order by cash amount instead of quantity (e.g. fund subscription)
+        double cash_amount = 0;
+
+        // multi-leg (combo) order fields
+        /** combo strategy type: COVERED/PROTECTIVE/VERTICAL/STRADDLE/STRANGLE/CALENDAR/DIAGONAL/SYNTHETIC/CUSTOM **/
+        utility::string_t combo_type;
+        vector<ContractLeg> contract_legs;
+
+        // OCA (one-cancels-all) bracket order: a set of sibling orders where one fill cancels the rest
+        vector<Order> oca_orders;
+
+        // attached order fields (profit-taker / stop-loss / brackets)
+        /** attached order type: 'PROFIT' / 'LOSS' / 'BRACKETS' **/
+        utility::string_t attach_type;
+        int64_t profit_taker_order_id = 0;
+        double profit_taker_price = 0;
+        utility::string_t profit_taker_tif;
+        bool profit_taker_rth = false;
+        /** stop-loss order type, e.g. 'STP' / 'STP_LMT' / 'TRAIL' **/
+        utility::string_t stop_loss_order_type;
+        int64_t stop_loss_order_id = 0;
+        double stop_loss_price = 0;
+        double stop_loss_limit_price = 0;
+        utility::string_t stop_loss_tif;
+        double stop_loss_trailing_percent = 0;
+        double stop_loss_trailing_amount = 0;
 
         utility::string_t to_string() {
             utility::stringstream_t ss;
@@ -229,14 +328,100 @@ namespace TIGER_API {
             if (json.has_field(U("algoStrategy"))) {
                 algo_strategy = json.at(U("algoStrategy")).as_string();
             }
-            if (json.has_field(U("total_quantity_scale"))) {
-                total_quantity_scale = json.at(U("total_quantity_scale")).as_number().to_int64();
+            if (json.has_field(U("algoParams")) && json.at(U("algoParams")).is_array()) {
+                for (const auto& param_json : json.at(U("algoParams")).as_array()) {
+                    AlgoParam param;
+                    if (param_json.has_field(U("tag"))) param.tag = param_json.at(U("tag")).as_string();
+                    if (param_json.has_field(U("value"))) param.value = param_json.at(U("value")).as_string();
+                    algo_params.push_back(param);
+                }
             }
-            if (json.has_field(U("filled_quantity_scale"))) {
-                filled_quantity_scale = json.at(U("filled_quantity_scale")).as_number().to_int64();
+            if (json.has_field(U("displaySize"))) {
+                display_size = json.at(U("displaySize")).as_number().to_int64();
+            }
+            if (json.has_field(U("minDisplaySize"))) {
+                min_display_size = json.at(U("minDisplaySize")).as_number().to_int64();
+            }
+            if (json.has_field(U("checkIntervals"))) {
+                check_intervals = json.at(U("checkIntervals")).as_number().to_int64();
+            }
+            if (json.has_field(U("priceType"))) {
+                price_type = json.at(U("priceType")).as_string();
+            }
+            if (json.has_field(U("startTime"))) {
+                start_time = json.at(U("startTime")).as_number().to_int64();
+            }
+            if (json.has_field(U("endTime"))) {
+                end_time = json.at(U("endTime")).as_number().to_int64();
+            }
+            if (json.has_field(U("totalQuantityScale"))) {
+                total_quantity_scale = json.at(U("totalQuantityScale")).as_number().to_int64();
+            }
+            if (json.has_field(U("filledQuantityScale"))) {
+                filled_quantity_scale = json.at(U("filledQuantityScale")).as_number().to_int64();
             }
             if (json.has_field(U("secret_key"))) {
                 secret_key = json.at(U("secret_key")).as_string();
+            }
+            if (json.has_field(U("cashAmount"))) {
+                cash_amount = json.at(U("cashAmount")).as_double();
+            }
+            if (json.has_field(U("comboType"))) {
+                combo_type = json.at(U("comboType")).as_string();
+            }
+            if (json.has_field(U("contractLegs")) && json.at(U("contractLegs")).is_array()) {
+                for (const auto& leg_json : json.at(U("contractLegs")).as_array()) {
+                    ContractLeg leg;
+                    if (leg_json.has_field(U("symbol"))) leg.symbol = leg_json.at(U("symbol")).as_string();
+                    if (leg_json.has_field(U("secType"))) leg.sec_type = leg_json.at(U("secType")).as_string();
+                    if (leg_json.has_field(U("expiry"))) leg.expiry = leg_json.at(U("expiry")).as_string();
+                    if (leg_json.has_field(U("strike"))) leg.strike = leg_json.at(U("strike")).as_string();
+                    if (leg_json.has_field(U("right"))) leg.right = leg_json.at(U("right")).as_string();
+                    if (leg_json.has_field(U("action"))) leg.action = leg_json.at(U("action")).as_string();
+                    if (leg_json.has_field(U("ratio"))) leg.ratio = leg_json.at(U("ratio")).as_integer();
+                    contract_legs.push_back(leg);
+                }
+            }
+            if (json.has_field(U("ocaOrders")) && json.at(U("ocaOrders")).is_array()) {
+                for (const auto& oca_json : json.at(U("ocaOrders")).as_array()) {
+                    oca_orders.push_back(Order(oca_json));
+                }
+            }
+            if (json.has_field(U("attachType"))) {
+                attach_type = json.at(U("attachType")).as_string();
+            }
+            if (json.has_field(U("profitTakerOrderId"))) {
+                profit_taker_order_id = json.at(U("profitTakerOrderId")).as_number().to_int64();
+            }
+            if (json.has_field(U("profitTakerPrice"))) {
+                profit_taker_price = json.at(U("profitTakerPrice")).as_double();
+            }
+            if (json.has_field(U("profitTakerTif"))) {
+                profit_taker_tif = json.at(U("profitTakerTif")).as_string();
+            }
+            if (json.has_field(U("profitTakerRth"))) {
+                profit_taker_rth = json.at(U("profitTakerRth")).as_bool();
+            }
+            if (json.has_field(U("stopLossOrderType"))) {
+                stop_loss_order_type = json.at(U("stopLossOrderType")).as_string();
+            }
+            if (json.has_field(U("stopLossOrderId"))) {
+                stop_loss_order_id = json.at(U("stopLossOrderId")).as_number().to_int64();
+            }
+            if (json.has_field(U("stopLossPrice"))) {
+                stop_loss_price = json.at(U("stopLossPrice")).as_double();
+            }
+            if (json.has_field(U("stopLossLimitPrice"))) {
+                stop_loss_limit_price = json.at(U("stopLossLimitPrice")).as_double();
+            }
+            if (json.has_field(U("stopLossTif"))) {
+                stop_loss_tif = json.at(U("stopLossTif")).as_string();
+            }
+            if (json.has_field(U("stopLossTrailingPercent"))) {
+                stop_loss_trailing_percent = json.at(U("stopLossTrailingPercent")).as_double();
+            }
+            if (json.has_field(U("stopLossTrailingAmount"))) {
+                stop_loss_trailing_amount = json.at(U("stopLossTrailingAmount")).as_double();
             }
 
         };

@@ -268,6 +268,10 @@ namespace TIGER_API {
         value get_account_param(const utility::string_t &account=U(""));
 
         void set_secret_key(value &obj);
+
+        // Serialize advanced order fields (iceberg, amount, combo, algo, OCA, attached)
+        // into obj. resolved_account is passed to OCA sub-orders.
+        static void serialize_advanced_order_fields(value &obj, const Order &order, const utility::string_t &resolved_account);
     };
 }
 

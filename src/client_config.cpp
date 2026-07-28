@@ -58,7 +58,7 @@ TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_
         socket_url = US_TIGER_SOCKET_HOST;
         socket_port = US_TIGER_SOCKET_PORT;
     }
-    LOG(INFO) << U("ClientConfig initialized with props_path: ") << props_path << endl;
+	LOG(DEBUG) << U("ClientConfig initialized") << endl;
 };
 
 void TIGER_API::ClientConfig::check() const
@@ -103,7 +103,8 @@ void TIGER_API::ClientConfig::set_server_public_key(const utility::string_t& key
 
 void TIGER_API::ClientConfig::set_token(const utility::string_t& token)
 {
-	this->token = token;
+    std::lock_guard<std::mutex> lock(token_mutex_);
+    this->token = token;
 }
 
 const utility::string_t& TIGER_API::ClientConfig::get_server_url() const
@@ -132,11 +133,10 @@ void TIGER_API::ClientConfig::load_props()
 	if (full_path.empty()) {
 		return;
 	}
-	LOG(INFO) << U("Loading properties file from: ") << full_path << endl;
+	LOG(DEBUG) << U("Loading properties file") << endl;
 
 	try {
-		auto u8_path = Utils::str16to8(full_path);
-		std::ifstream file(u8_path);
+		std::ifstream file(full_path.c_str());
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open properties file: ") << full_path << endl;
 			return;
@@ -174,12 +174,26 @@ void TIGER_API::ClientConfig::load_props()
 			socket_port = SANDBOX_TIGER_SOCKET_PORT;
 		}
 
+		// Explicit server_url/server_public_key in the properties file take
+		// precedence over any default set above, so callers can point the
+		// client at a different gateway endpoint and signature-verification
+		// key without changing code.
+		utility::string_t custom_server_url = props.get_property(U("server_url"));
+		if (!custom_server_url.empty()) {
+			server_url = custom_server_url;
+			LOG(INFO) << U("Overriding server_url from properties file: ") << server_url << endl;
+		}
+		utility::string_t custom_server_pub_key = props.get_property(U("server_public_key"));
+		if (!custom_server_pub_key.empty()) {
+			server_public_key = custom_server_pub_key;
+			LOG(INFO) << U("Overriding server_public_key from properties file") << endl;
+		}
+
 	}
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load properties file: ") << Utils::str8to16(e.what()) << endl;
 	}
-	LOG(INFO) << U("Loaded properties file successfully, tiger_id: ") << tiger_id << " account: " << account
-		<< endl;
+	LOG(DEBUG) << U("Loaded properties file successfully") << endl;
 }
 
 utility::string_t TIGER_API::ClientConfig::get_props_path(const utility::string_t& filename) const
@@ -222,7 +236,7 @@ void TIGER_API::ClientConfig::load_token()
 		return;
 	}
 	try {
-		std::ifstream file(Utils::str16to8(full_path));
+		std::ifstream file(full_path.c_str());
 		if (!file.is_open()) {
 			LOG(ERROR) << U("Failed to open token file: ") << full_path << endl;
 			return;
@@ -232,8 +246,12 @@ void TIGER_API::ClientConfig::load_token()
 		props.load(file);
 
 		// get token value
-		token = props.get_property(U("token"));
-		LOG(INFO) << U("Loaded token successfully, token: ") << token << endl;
+		utility::string_t loaded_token = props.get_property(U("token"));
+		{
+			std::lock_guard<std::mutex> lock(token_mutex_);
+			token = loaded_token;
+		}
+		LOG(INFO) << U("Loaded token successfully, length=") << loaded_token.size() << endl;
 	}
 	catch (const std::exception& e) {
 		LOG(ERROR) << U("Failed to load token file: ") << Utils::str8to16(e.what()) << endl;
@@ -242,30 +260,120 @@ void TIGER_API::ClientConfig::load_token()
 
 void TIGER_API::ClientConfig::save_token(const utility::string_t& new_token)
 {
-	utility::string_t full_path = get_token_path();
-	if (full_path.empty()) {
-		return;
-	}
-	try {
-		Properties props;
-		props.set_property(U("token"), new_token);
+    utility::string_t full_path = get_token_path();
 
-		std::ofstream file(Utils::str16to8(full_path));
-		if (!file.is_open()) {
-			LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
-			return;
-		}
+    if (full_path.empty()) {
+        // No file path: just update memory.
+        std::lock_guard<std::mutex> lock(token_mutex_);
+        token = new_token;
+        LOG(INFO) << U("No token file path configured; token updated in memory only") << endl;
+        return;
+    }
 
-		props.store(file);
-		token = new_token;
-		LOG(INFO) << U("Saved token successfully, token: ") << token << endl;
-	}
-	catch (const std::exception& e) {
-		LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
-	}
+    // Write file first; only update memory on success.
+    try {
+        Properties props;
+        props.set_property(U("token"), new_token);
+
+		std::ofstream file(full_path.c_str());
+        if (!file.is_open()) {
+            LOG(ERROR) << U("Failed to open token file for writing: ") << full_path << endl;
+            return;
+        }
+
+        props.store(file);
+        LOG(INFO) << U("Saved token successfully, length=") << new_token.size() << endl;
+    }
+    catch (const std::exception& e) {
+        LOG(ERROR) << U("Failed to save token file: ") << Utils::str8to16(e.what()) << endl;
+        return;
+    }
+
+    // File write succeeded; now update in-memory token under lock.
+    {
+        std::lock_guard<std::mutex> lock(token_mutex_);
+        token = new_token;
+    }
 }
 
 bool TIGER_API::ClientConfig::is_us()
 {
     return !license.empty() && license == enum_to_str(License::TBUS);
+}
+
+utility::string_t TIGER_API::ClientConfig::get_token() const
+{
+    std::lock_guard<std::mutex> lock(token_mutex_);
+    return token;
+}
+
+bool TIGER_API::ClientConfig::start_token_refresh(int interval_seconds,
+                                                    std::function<utility::string_t()> fetch_fn)
+{
+    if (interval_seconds <= 0) {
+        LOG(ERROR) << U("interval_seconds must be positive, got ") << interval_seconds << endl;
+        return false;
+    }
+
+    // Guard against re-entry: take cv_mutex to serialize start/stop calls,
+    // so stop_token_refresh() cannot race between flag-set and thread-create.
+    std::lock_guard<std::mutex> start_lock(refresh_cv_mutex_);
+
+    if (refresh_running_.load()) {
+        LOG(WARNING) << U("Token refresh thread is already running") << endl;
+        return false;
+    }
+
+    // Join any previously stopped thread before replacing it.
+    if (refresh_thread_.joinable()) {
+        refresh_thread_.join();
+    }
+
+    refresh_running_.store(true);
+    refresh_thread_ = std::thread([this, interval_seconds, fetch_fn = std::move(fetch_fn)]() {
+        LOG(INFO) << U("Token refresh thread started, interval=") << interval_seconds << U("s") << endl;
+        while (refresh_running_) {
+            std::unique_lock<std::mutex> cv_lock(refresh_cv_mutex_);
+            refresh_cv_.wait_for(cv_lock, std::chrono::seconds(interval_seconds),
+                                 [this] { return !refresh_running_.load(); });
+            if (!refresh_running_) break;
+
+            try {
+                utility::string_t new_token = fetch_fn();
+                if (!new_token.empty()) {
+                    save_token(new_token);
+                    LOG(INFO) << U("Token refreshed successfully") << endl;
+                } else {
+                    LOG(WARNING) << U("Token refresh returned empty token, keeping current") << endl;
+                }
+            } catch (const std::exception& e) {
+                LOG(ERROR) << U("Token refresh failed: ") << Utils::str8to16(e.what()) << endl;
+            } catch (...) {
+                LOG(ERROR) << U("Token refresh failed with unknown exception") << endl;
+            }
+        }
+        LOG(INFO) << U("Token refresh thread stopped") << endl;
+    });
+
+    return true;
+}
+
+void TIGER_API::ClientConfig::stop_token_refresh()
+{
+    {
+        std::lock_guard<std::mutex> start_lock(refresh_cv_mutex_);
+        if (!refresh_running_.load()) {
+            return;
+        }
+        refresh_running_.store(false);
+    }
+    refresh_cv_.notify_all();
+    if (refresh_thread_.joinable()) {
+        refresh_thread_.join();
+    }
+}
+
+TIGER_API::ClientConfig::~ClientConfig()
+{
+    stop_token_refresh();
 }

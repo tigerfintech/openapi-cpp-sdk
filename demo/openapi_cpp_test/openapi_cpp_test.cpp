@@ -8,11 +8,15 @@
 #include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
+#include <atomic>
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <cstdio>
+#include <cstdlib>
 #include <sstream>
 #include "tigerapi/logger.h"
 
@@ -20,6 +24,19 @@ using namespace std;
 using namespace web;
 using namespace web::json;
 using namespace TIGER_API;
+
+namespace {
+    std::string get_temp_directory() {
+        const char* variables[] = {"TMPDIR", "TEMP", "TMP"};
+        for (const char* variable : variables) {
+            const char* value = std::getenv(variable);
+            if (value && *value) {
+                return value;
+            }
+        }
+        return ".";
+    }
+}
 
 /**
  * Test Trade Client
@@ -694,6 +711,26 @@ public:
         ucout << U("result: ") << result << endl;
     }
 
+    // --- Corporate Action: new types (SYMBOL_CHANGE / DELISTING / IPO) ---
+    static void test_get_corporate_symbol_change(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("META"));
+        value result = quote_client->get_corporate_symbol_change(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_symbol_change: ") << result << endl;
+    }
+    static void test_get_corporate_delisting(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("TWTR"));
+        value result = quote_client->get_corporate_delisting(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        ucout << U("corporate_delisting: ") << result << endl;
+    }
+    static void test_get_corporate_ipo(std::shared_ptr<QuoteClient> quote_client) {
+        value symbols = value::array();
+        symbols[0] = value::string(U("RIVN"));
+        value result = quote_client->get_corporate_ipo(symbols, U("US"), U("2021-01-01"), U("2022-01-01"));
+        ucout << U("corporate_ipo: ") << result << endl;
+    }
+
     // --- Other new quote interfaces ---
     static void test_get_stock_fundamental(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
@@ -801,37 +838,63 @@ class TestPushClient {
 private:
     std::shared_ptr<IPushClient> push_client;
     std::vector<std::string> symbols;
+    std::atomic<bool> connected_{false};
+    std::atomic<bool> failed_{false};
+    std::atomic<bool> quote_received_{false};
+    bool quotes_only_;
+    bool require_quote_data_;
 
 public:
-    TestPushClient(std::shared_ptr<IPushClient> client) : push_client(client) {
+    TestPushClient(std::shared_ptr<IPushClient> client)
+        : push_client(client),
+          quotes_only_(std::getenv("PUSH_QUOTES_ONLY") != nullptr),
+          require_quote_data_(std::getenv("PUSH_REQUIRE_DATA") != nullptr) {
         std::vector<std::string> hk_option_symbols = {"TCH.HK 20241230 410.00 CALL"};
         std::vector<std::string> future_symbols = {"CL2412"};
         std::vector<std::string> stock_symbols = {"AAPL", "TSLA"};
         symbols = stock_symbols;
+        const char* symbols_env = std::getenv("PUSH_SYMBOLS");
+        if (symbols_env && *symbols_env) {
+            symbols.clear();
+            std::stringstream stream(symbols_env);
+            std::string symbol;
+            while (std::getline(stream, symbol, ',')) {
+                if (!symbol.empty()) {
+                    symbols.push_back(symbol);
+                }
+            }
+        }
     }
 
     void connected_callback() {
+        connected_.store(true);
         ucout << "Connected to push server" << std::endl;
-        push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        unsigned int asset_sub_id = push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
-        ucout << "Subscribe asset result: " << asset_sub_id << std::endl;
+        if (!quotes_only_) {
+            push_client->subscribe_position(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            push_client->subscribe_order(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            unsigned int asset_sub_id = push_client->subscribe_asset(utility::conversions::to_utf8string(push_client->get_client_config().account));
+            ucout << "Subscribe asset result: " << asset_sub_id << std::endl;
+        }
         // push_client->query_subscribed_symbols();
         unsigned int res = push_client->subscribe_quote(symbols);
         ucout << "Subscribe quote result: " << res << std::endl;
         // push_client->subscribe_kline(symbols);
         // push_client->subscribe_quote_depth(symbols);
-        unsigned int res1 = push_client->subscribe_tick(symbols);
-        ucout << "Subscribe tick result: " << res1 << std::endl;
+        if (!quotes_only_) {
+            unsigned int res1 = push_client->subscribe_tick(symbols);
+            ucout << "Subscribe tick result: " << res1 << std::endl;
+        }
     }
 
     void error_callback(const tigeropen::push::pb::Response& data) {
+        failed_.store(true);
         ucout << "Error callback: " << std::endl;
         ucout << "- code: " << data.code() << std::endl;
         ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
     }
 
     void kickout_callback(const tigeropen::push::pb::Response& data) {
+        failed_.store(true);
         ucout << "Kickout callback: " << std::endl;
         ucout << "- code: " << data.code() << std::endl;
         ucout << "- msg: " << utility::conversions::to_string_t(data.msg()) << std::endl;
@@ -880,6 +943,7 @@ public:
     }
 
     void quote_changed_callback(const tigeropen::push::pb::QuoteBasicData& data) {
+        quote_received_.store(true);
         ucout << "BasicQuote changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- latestPrice: " << data.latestprice() << std::endl;
@@ -887,6 +951,7 @@ public:
     }
 
     void quote_bbo_changed_callback(const tigeropen::push::pb::QuoteBBOData& data) {
+        quote_received_.store(true);
         ucout << "BBOQuote changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
         ucout << "- bidPrice: " << data.bidprice() << std::endl;
@@ -896,8 +961,8 @@ public:
     void quote_depth_changed_callback(const tigeropen::push::pb::QuoteDepthData& data) {
         ucout << "QuoteDepth changed: " << std::endl;
         ucout << "- symbol: " << utility::conversions::to_string_t(data.symbol()) << std::endl;
-        ucout << "- ask price size: " << data.ask().price_size() << std::endl;
-        ucout << "- bid price size: " << data.bid().price_size() << std::endl;
+        ucout << "- has ask prices: " << data.has_ask() << std::endl;
+        ucout << "- has bid prices: " << data.has_bid() << std::endl;
     }
 
     void kline_changed_callback(const tigeropen::push::pb::KlineData& data) {
@@ -969,12 +1034,23 @@ public:
 
         ucout << "PushClient: unsubscribing and disconnecting..." << std::endl;
         push_client->unsubscribe_quote(symbols);
-        push_client->unsubscribe_tick(symbols);
-        push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
-        push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
-        push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
+        if (!quotes_only_) {
+            push_client->unsubscribe_tick(symbols);
+            push_client->unsubscribe_asset(utility::conversions::to_utf8string(config.account));
+            push_client->unsubscribe_position(utility::conversions::to_utf8string(config.account));
+            push_client->unsubscribe_order(utility::conversions::to_utf8string(config.account));
+        }
         push_client->disconnect();
         ucout << "PushClient: disconnected." << std::endl;
+        if (!connected_.load()) {
+            throw std::runtime_error("push connection was not established within the timeout");
+        }
+        if (failed_.load()) {
+            throw std::runtime_error("push connection received an error or kickout callback");
+        }
+        if (require_quote_data_ && !quote_received_.load()) {
+            throw std::runtime_error("no real-time quote data was received within the timeout");
+        }
     }
 
     static void test_push_client(std::shared_ptr<IPushClient> push_client, ClientConfig config) {
@@ -1119,29 +1195,362 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     }
 }
 
+// ===================================================================
+// Token auto-refresh unit tests (no network required)
+// ===================================================================
+class TestTokenRefresh {
+public:
+    // Verify that start_token_refresh drives the fetch_fn at least once within
+    // the specified interval and that the token is updated thread-safely.
+    static void test_callback_is_called() {
+        ClientConfig cfg(false);
+        cfg.set_token(U("old_token"));
+        std::atomic<int> call_count{0};
+
+        bool started = cfg.start_token_refresh(1, [&]() -> utility::string_t {
+            call_count++;
+            return U("new_token");
+        });
+        if (!started) {
+            throw std::runtime_error("start_token_refresh returned false unexpectedly");
+        }
+
+        // Wait up to 3s for at least one refresh call.
+        for (int i = 0; i < 30 && call_count == 0; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        cfg.stop_token_refresh();
+
+        if (call_count == 0) {
+            throw std::runtime_error("fetch_fn was never called within timeout");
+        }
+        utility::string_t tok = cfg.get_token();
+        if (tok != U("new_token")) {
+            throw std::runtime_error("token was not updated after refresh");
+        }
+        ucout << U("  call_count=") << call_count.load() << U(", token=") << tok << endl;
+    }
+
+    // Verify that a second start_token_refresh call is rejected while one is running.
+    static void test_double_start_rejected() {
+        ClientConfig cfg(false);
+        std::atomic<bool> keep_running{true};
+
+        bool first = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            while (keep_running) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+            return U("token");
+        });
+        bool second = cfg.start_token_refresh(3600, [&]() -> utility::string_t {
+            return U("should_not_run");
+        });
+        keep_running = false;
+        cfg.stop_token_refresh();
+
+        if (!first) throw std::runtime_error("first start should succeed");
+        if (second) throw std::runtime_error("second start should be rejected");
+    }
+
+    // Verify that stop_token_refresh is safe to call multiple times.
+    static void test_stop_idempotent() {
+        ClientConfig cfg(false);
+        cfg.start_token_refresh(3600, [&]() { return U("tok"); });
+        cfg.stop_token_refresh();
+        cfg.stop_token_refresh(); // must not hang or throw
+    }
+
+    // Verify that get_token() returns the current token under lock.
+    static void test_get_token_thread_safe() {
+        ClientConfig cfg(false);
+        cfg.set_token(U("valueA"));
+        std::atomic<int> errors{0};
+        std::atomic<bool> stop_writer{false};
+
+        // Writer thread alternates between two non-empty values.
+        std::thread writer([&cfg, &stop_writer]() {
+            int i = 0;
+            while (!stop_writer.load()) {
+                cfg.set_token(i % 2 == 0 ? U("valueA") : U("valueB"));
+                ++i;
+                std::this_thread::sleep_for(std::chrono::microseconds(50));
+            }
+        });
+
+        std::vector<std::thread> readers;
+        for (int i = 0; i < 4; ++i) {
+            readers.emplace_back([&cfg, &errors]() {
+                for (int j = 0; j < 100; ++j) {
+                    utility::string_t t = cfg.get_token();
+                    if (t.empty()) {
+                        errors.fetch_add(1, std::memory_order_relaxed);
+                    }
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+            });
+        }
+        for (auto& t : readers) t.join();
+        stop_writer.store(true);
+        writer.join();
+
+        if (errors.load() > 0) {
+            throw std::runtime_error("get_token returned empty unexpectedly " + std::to_string(errors.load()) + " times");
+        }
+    }
+
+    // is_directory: real dir → true, file path → false, missing path → false.
+    static void test_is_directory() {
+        // Use a temp dir we know exists.
+        std::string tmp = get_temp_directory();
+        if (!Utils::is_directory(Utils::str8to16(tmp))) {
+            throw std::runtime_error("expected temp dir to be a directory: " + tmp);
+        }
+        // A path ending in a filename (even nonexistent) is not a directory.
+        std::string non_dir = tmp + "/nonexistent_file.txt";
+        if (Utils::is_directory(Utils::str8to16(non_dir))) {
+            throw std::runtime_error("expected non-dir path to return false: " + non_dir);
+        }
+        ucout << U("  is_directory: temp=true, file=false") << endl;
+    }
+
+    // load_token reads a token file written in the same format save_token uses.
+    static void test_save_and_load_token() {
+        std::string dir = get_temp_directory();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
+
+        utility::string_t udir = Utils::str8to16(dir);
+        utility::string_t token_val = U("test_token_abc123");
+
+        // Write the token file in the same format save_token uses.
+        std::string token_file = dir + "tiger_openapi_token.properties";
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
+        }
+
+        // Load into a fresh ClientConfig pointed at same dir; token should be read.
+        ClientConfig cfg(false, udir);
+        utility::string_t loaded = cfg.get_token();
+        if (loaded != token_val) {
+            throw std::runtime_error(
+                "loaded token mismatch: expected=" +
+                utility::conversions::to_utf8string(token_val) +
+                " got=" + utility::conversions::to_utf8string(loaded));
+        }
+
+        std::remove(token_file.c_str());
+        ucout << U("  token file written and reloaded correctly") << endl;
+    }
+
+    // get_props_path: file-style props_path derives token file from same directory.
+    static void test_props_path_as_file() {
+        std::string dir = get_temp_directory();
+        if (dir.back() != '/' && dir.back() != '\\') dir += '/';
+
+        // Point props_path directly at the config file (file-style, not dir-style).
+        std::string cfg_file = dir + "tiger_openapi_config.properties";
+        {
+            std::ofstream f(cfg_file);
+            f << "tiger_id=dummy\n";
+        }
+
+        utility::string_t ucfg = Utils::str8to16(cfg_file);
+
+        // When props_path is a .properties file, token file should be in the same dir.
+        utility::string_t token_val = U("file_style_token_xyz");
+        std::string token_file = dir + "tiger_openapi_token.properties";
+
+        // Write token file directly (same format as save_token).
+        {
+            Properties props;
+            props.set_property(U("token"), token_val);
+            std::ofstream f(token_file);
+            props.store(f);
+        }
+
+        ClientConfig cfg2(false, ucfg);
+        if (cfg2.get_token() != token_val) {
+            throw std::runtime_error("token mismatch for file-style props_path");
+        }
+
+        std::remove(cfg_file.c_str());
+        std::remove(token_file.c_str());
+        ucout << U("  file-style props_path: token loaded correctly from same dir") << endl;
+    }
+};
+
 int main(int argc, char* argv[]) {
     LoggerConfig::set_log_level(el::Level::Debug);
-    // Load config from ~/.tigeropen/ (tiger_openapi_config.properties)
+    // Load config: TIGER_CONFIG_PATH env > argv[1] > ~/.tigeropen/
     utility::string_t config_path;
-    const char* home_env = std::getenv("HOME");
-    const char* userprofile_env = std::getenv("USERPROFILE");
-    if (home_env && *home_env) {
-        config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
-    } else if (userprofile_env && *userprofile_env) {
-        config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+    const char* config_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (config_path_env && *config_path_env) {
+        config_path = Utils::str8to16(std::string(config_path_env));
+    } else if (argc >= 2) {
+        config_path = Utils::str8to16(std::string(argv[1]));
     } else {
-        config_path = U("demo/openapi_cpp_test/");
+        const char* home_env = std::getenv("HOME");
+        const char* userprofile_env = std::getenv("USERPROFILE");
+        if (home_env && *home_env) {
+            config_path = Utils::str8to16(std::string(home_env)) + U("/.tigeropen/");
+        } else if (userprofile_env && *userprofile_env) {
+            config_path = Utils::str8to16(std::string(userprofile_env)) + U("/.tigeropen/");
+        } else {
+            config_path = U("demo/openapi_cpp_test/");
+        }
     }
-    ClientConfig config = ClientConfig(false, config_path);
+    ClientConfig config(false, config_path);
+
+    // Allow overriding server URL via env var (useful for QA environments).
+    const char* server_url_env = std::getenv("TIGER_SERVER_URL");
+    if (server_url_env && *server_url_env) {
+        config.set_server_url(Utils::str8to16(std::string(server_url_env)));
+    }
+
+    // Allow overriding server public key via env var (needed for QA/sandbox servers).
+    const char* server_pub_key_env = std::getenv("TIGER_SERVER_PUB_KEY");
+    if (server_pub_key_env && *server_pub_key_env) {
+        config.set_server_public_key(Utils::str8to16(std::string(server_pub_key_env)));
+    }
+
     config.use_full_tick = true;
 
     std::vector<TestResult> results;
 
+    if (std::getenv("PUSH_ONLY")) {
+        ucout << U("\n===== PushClient Only Test =====\n") << endl;
+        results.push_back(run_test(U("push_client (connect/subscribe/receive 10s)"), [&]() {
+            std::shared_ptr<IPushClient> push_client = IPushClient::create_push_client(config);
+            TestPushClient::test_push_client_timed(push_client, config, 10);
+        }));
+        print_report(results, "test_report.txt");
+        return results.front().passed ? 0 : 1;
+    }
+
     // ===================================================================
-    // ===== QUOTE CLIENT TESTS =====
+    // ===== TOKEN AUTO-REFRESH UNIT TESTS (no network) =====
+    // ===================================================================
+    ucout << U("\n===== Token Auto-Refresh Unit Tests =====\n") << endl;
+
+    results.push_back(run_test(U("token_refresh::callback_is_called"), []() {
+        TestTokenRefresh::test_callback_is_called();
+    }));
+
+    results.push_back(run_test(U("token_refresh::double_start_rejected"), []() {
+        TestTokenRefresh::test_double_start_rejected();
+    }));
+
+    results.push_back(run_test(U("token_refresh::stop_idempotent"), []() {
+        TestTokenRefresh::test_stop_idempotent();
+    }));
+
+    results.push_back(run_test(U("token_refresh::get_token_thread_safe"), []() {
+        TestTokenRefresh::test_get_token_thread_safe();
+    }));
+
+    results.push_back(run_test(U("token_refresh::is_directory"), []() {
+        TestTokenRefresh::test_is_directory();
+    }));
+
+    results.push_back(run_test(U("token_refresh::save_and_load_token"), []() {
+        TestTokenRefresh::test_save_and_load_token();
+    }));
+
+    results.push_back(run_test(U("token_refresh::props_path_as_file"), []() {
+        TestTokenRefresh::test_props_path_as_file();
+    }));
+
+    // ===================================================================
+    // ===== TOKEN REFRESH REAL-NETWORK TESTS (require TIGER_CONFIG_PATH) =====
+    // ===================================================================
+    const char* cfg_path_env = std::getenv("TIGER_CONFIG_PATH");
+    if (cfg_path_env && *cfg_path_env) {
+        ucout << U("\n===== Token Refresh Network Tests =====\n") << endl;
+
+        // Test 1: refresh_token() fetches and persists a new token.
+        results.push_back(run_test(U("token_refresh::refresh_token (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t old_tok = config.get_token();
+            utility::string_t new_tok = base_client.refresh_token();
+            if (new_tok.empty()) {
+                throw std::runtime_error("refresh_token() returned empty");
+            }
+            ucout << U("  new token length=") << new_tok.size() << endl;
+            // Verify persisted: reload config from same path and check token matches.
+            ClientConfig cfg2(false, Utils::str8to16(std::string(cfg_path_env)));
+            if (cfg2.get_token() != new_tok) {
+                throw std::runtime_error("persisted token mismatch after refresh_token()");
+            }
+            ucout << U("  token persisted and reloaded correctly") << endl;
+        }));
+
+        // Test 2: start_token_refresh runs one cycle and updates the token.
+        results.push_back(run_test(U("token_refresh::auto_refresh_one_cycle (real)"), [&]() {
+            TigerClient base_client(config);
+            utility::string_t tok_before = base_client.client_config.get_token();
+
+            bool started = base_client.start_token_refresh(2);
+            if (!started) {
+                throw std::runtime_error("start_token_refresh() returned false");
+            }
+            // Wait for at least one refresh cycle (2s interval + buffer).
+            std::this_thread::sleep_for(std::chrono::seconds(4));
+            base_client.stop_token_refresh();
+
+            utility::string_t tok_after = base_client.client_config.get_token();
+            if (tok_after.empty()) {
+                throw std::runtime_error("token is empty after auto-refresh cycle");
+            }
+            ucout << U("  token after auto-refresh length=") << tok_after.size() << endl;
+            if (tok_after == tok_before) {
+                ucout << U("  (token unchanged — server may have issued same value)") << endl;
+            } else {
+                ucout << U("  token updated by auto-refresh") << endl;
+            }
+        }));
+    }
+
+    // If TOKEN_ONLY env is set, skip the rest of the tests.
+    if (std::getenv("TOKEN_ONLY")) {
+        ucout << U("\n===== TOKEN_ONLY mode: skipping remaining tests =====\n") << endl;
+        int pass = 0, fail = 0, skip = 0;
+        for (const auto& r : results) {
+            if (r.skipped) ++skip;
+            else if (r.passed) ++pass;
+            else ++fail;
+        }
+        ucout << U("\nSummary: ") << pass << U(" passed, ") << fail << U(" failed, ") << skip << U(" skipped") << endl;
+        return fail > 0 ? 1 : 0;
+    }
+
+    // ===================================================================
+    // ===== REAL CONFIG TESTS (require tiger_openapi_config.properties) =====
     // ===================================================================
     ucout << U("\n===== Initializing QuoteClient =====\n") << endl;
-    std::shared_ptr<QuoteClient> quote_client = std::make_shared<QuoteClient>(config);
+    std::shared_ptr<QuoteClient> quote_client;
+    try {
+        quote_client = std::make_shared<QuoteClient>(config);
+    } catch (const std::exception& e) {
+        TestResult init_result;
+        init_result.name = U("QuoteClient::init (grab_quote_permission)");
+        init_result.skipped = false;
+        init_result.passed = false;
+        init_result.error_msg = utility::conversions::to_string_t(e.what());
+        ucout << U("[FAIL] ") << init_result.name << U(" - ") << init_result.error_msg << endl;
+        results.push_back(init_result);
+    }
+
+    if (!quote_client) {
+        // Same ClientConfig (server_url/server_public_key) is used for QuoteClient,
+        // TradeClient and PushClient below, so if signature verification or auth
+        // failed here, every subsequent real-network test would fail identically.
+        // Stop here instead of dereferencing a null client.
+        ucout << U("\n===== Aborting remaining real-config tests: QuoteClient failed to initialize =====\n") << endl;
+        print_report(results, "test_report.txt");
+        return 1;
+    }
 
     // --- 1. Basic/Stock Quote APIs ---
     ucout << U("\n--- Quote: Basic/Stock APIs ---\n") << endl;
@@ -1394,12 +1803,35 @@ int main(int argc, char* argv[]) {
     results.push_back(run_test(U("get_market_scanner_tags"), [&]() {
         TestQuoteClient::test_get_market_scanner_tags(quote_client);
     }));
+    results.push_back(run_test(U("get_corporate_symbol_change"), [&]() {
+        TestQuoteClient::test_get_corporate_symbol_change(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_delisting"), [&]() {
+        TestQuoteClient::test_get_corporate_delisting(quote_client);
+    }));
+    results.push_back(run_test(U("get_corporate_ipo"), [&]() {
+        TestQuoteClient::test_get_corporate_ipo(quote_client);
+    }));
 
     // ===================================================================
     // ===== TRADE CLIENT TESTS =====
     // ===================================================================
     ucout << U("\n===== Initializing TradeClient =====\n") << endl;
-    std::shared_ptr<TradeClient> trade_client = std::make_shared<TradeClient>(config);
+    std::shared_ptr<TradeClient> trade_client;
+    try {
+        trade_client = std::make_shared<TradeClient>(config);
+    } catch (const std::exception& e) {
+        TestResult init_result;
+        init_result.name = U("TradeClient::init");
+        init_result.skipped = false;
+        init_result.passed = false;
+        init_result.error_msg = utility::conversions::to_string_t(e.what());
+        ucout << U("[FAIL] ") << init_result.name << U(" - ") << init_result.error_msg << endl;
+        results.push_back(init_result);
+        ucout << U("\n===== Aborting remaining real-config tests: TradeClient failed to initialize =====\n") << endl;
+        print_report(results, "test_report.txt");
+        return 1;
+    }
 
     // --- 9. Account Query APIs ---
     ucout << U("\n--- Trade: Account Query APIs ---\n") << endl;

@@ -7,6 +7,11 @@
 
 #include <string>
 #include <utility>
+#include <functional>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 #include "constants.h"
 #include "logger.h"
 #include "utils.h"
@@ -23,6 +28,33 @@ namespace TIGER_API {
             bool sandbox_debug = false, utility::string_t lang = U("en_US"));
         ClientConfig(bool sandbox_debug, const utility::string_t props_path);
 
+        // Copy constructor: copies configuration data only; refresh thread is NOT transferred.
+        // Do not copy a ClientConfig while its refresh thread is running.
+        ClientConfig(const ClientConfig& other)
+            : tiger_id(other.tiger_id), private_key(other.private_key),
+              account(other.account), charset(other.charset), sign_type(other.sign_type),
+              lang(other.lang), device_id(other.device_id), secret_key(other.secret_key),
+              use_full_tick(other.use_full_tick), socket_ca_certs(other.socket_ca_certs),
+              send_interval(other.send_interval), receive_interval(other.receive_interval),
+              license(other.license), props_path(other.props_path),
+              sandbox_debug(other.sandbox_debug), server_url(other.server_url),
+              server_public_key(other.server_public_key), socket_url(other.socket_url),
+              socket_port(other.socket_port)
+        {
+            std::lock_guard<std::mutex> lock(other.token_mutex_);
+            token = other.token;
+            // NOTE: Do not copy while the refresh thread on `other` is running.
+            // The copy captures the token at this instant but does not transfer
+            // the refresh thread; call start_token_refresh() on the new instance
+            // separately if needed.
+        }
+
+        // Rule of Five: explicitly delete the remaining special members to avoid
+        // accidental shallow copies of the refresh thread or mutex.
+        ClientConfig& operator=(const ClientConfig&) = delete;
+        ClientConfig(ClientConfig&&) = delete;
+        ClientConfig& operator=(ClientConfig&&) = delete;
+
         utility::string_t tiger_id;
         utility::string_t private_key;
         utility::string_t account;
@@ -36,7 +68,6 @@ namespace TIGER_API {
         unsigned int send_interval = 10 * 1000;
         unsigned int receive_interval = 10 * 1000;
         utility::string_t license;
-        utility::string_t token;
         utility::string_t props_path;
 
         void check() const;
@@ -62,7 +93,23 @@ namespace TIGER_API {
 
         bool is_us();
 
+        // Token auto-refresh.
+        // fetch_fn: called every interval_seconds to obtain a new token string.
+        // Returns false if a refresh thread is already running.
+        bool start_token_refresh(int interval_seconds,
+                                 std::function<utility::string_t()> fetch_fn);
+        void stop_token_refresh();
+
+        // Thread-safe token accessor for use inside send_request.
+        utility::string_t get_token() const;
+
+        ~ClientConfig();
+
     private:
+        friend class TigerClient;
+
+        // Persist a newly-obtained token to file (on success) then to memory.
+        void save_token(const utility::string_t& new_token);
         bool sandbox_debug = false;
         utility::string_t server_url = TIGER_SERVER_URL;
         utility::string_t server_public_key = TIGER_PUBLIC_KEY;
@@ -77,7 +124,13 @@ namespace TIGER_API {
 
         void load_token();
 
-        void save_token(const utility::string_t& new_token);
+        // Token refresh background thread members.
+        utility::string_t token;
+        mutable std::mutex token_mutex_;
+        std::atomic<bool> refresh_running_{false};
+        std::thread refresh_thread_;
+        std::condition_variable refresh_cv_;
+        std::mutex refresh_cv_mutex_;
     };
 }
 #endif //TIGERAPI_CLIENT_CONFIG_H

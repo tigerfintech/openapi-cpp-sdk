@@ -48,7 +48,7 @@ function Get-BoostTriplet {
     return 'x64-windows'
 }
 
-function Ensure-BoostVariant {
+function Initialize-BoostVariant {
     param(
         [string]$BuildPlatform,
         [string]$BuildConfiguration,
@@ -142,7 +142,8 @@ function New-ZipPackage {
     param(
         [string]$BuildPlatform,
         [string]$BuildConfiguration,
-        [string]$OutputRoot
+        [string]$OutputRoot,
+        [string]$RepositoryRoot
     )
 
     $packageDir = Join-Path $OutputRoot "$BuildPlatform\$BuildConfiguration"
@@ -152,8 +153,71 @@ function New-ZipPackage {
         throw "Output directory not found: $packageDir"
     }
 
-    Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
-    Compress-Archive -Path (Join-Path $packageDir '*') -DestinationPath $zipPath -Force
+    $installedRoot = if ($BuildPlatform -eq 'Win32') {
+        Join-Path $RepositoryRoot 'vcpkg_installed_x86'
+    }
+    else {
+        Join-Path $RepositoryRoot 'vcpkg_installed'
+    }
+    $triplet = Get-BoostTriplet -BuildPlatform $BuildPlatform
+    $configurationDir = if ($BuildConfiguration.StartsWith('Debug')) { 'debug' } else { '' }
+    $vcpkgRoot = Join-Path $installedRoot $triplet
+    $vcpkgConfigRoot = if ($configurationDir) { Join-Path $vcpkgRoot $configurationDir } else { $vcpkgRoot }
+    $vcpkgLibDir = Join-Path $vcpkgConfigRoot 'lib'
+    $vcpkgBinDir = Join-Path $vcpkgConfigRoot 'bin'
+    $debugSuffix = if ($BuildConfiguration.StartsWith('Debug')) { 'd' } else { '' }
+    $stagingDir = Join-Path ([System.IO.Path]::GetTempPath()) ("tiger-openapi-windows-" + [guid]::NewGuid())
+
+    function Copy-PackageFile {
+        param([string]$Path)
+        if (-not (Test-Path $Path -PathType Leaf)) {
+            throw "Required package file not found: $Path"
+        }
+        Copy-Item $Path -Destination $stagingDir
+    }
+
+    function Copy-SinglePackageMatch {
+        param([string]$Directory, [string]$Filter)
+        $matchingFiles = @(Get-ChildItem -Path $Directory -Filter $Filter -File)
+        if ($matchingFiles.Count -ne 1) {
+            throw "Expected exactly one '$Filter' in $Directory, found $($matchingFiles.Count)."
+        }
+        Copy-Item $matchingFiles[0].FullName -Destination $stagingDir
+    }
+
+    try {
+        New-Item -ItemType Directory -Force -Path $stagingDir | Out-Null
+
+        # SDK binaries required by consumers.
+        Copy-PackageFile (Join-Path $packageDir 'openapi-cpp-sdk.dll')
+        Copy-PackageFile (Join-Path $packageDir 'openapi-cpp-sdk.lib')
+
+        # Runtime dependencies. Exclude test executables, symbols, linker
+        # intermediates, protoc, and protobuf-lite from SDK packages.
+        # Debug suffix convention:
+        #   cpprest / libprotobuf → filename carries 'd' suffix in Debug (e.g. cpprest_2_10d.dll)
+        #   abseil_dll / legacy / libcrypto / libssl → same filename for Debug and Release
+        #     (differentiated only by vcpkg's debug/bin vs bin directory path)
+        Copy-PackageFile (Join-Path $vcpkgBinDir 'abseil_dll.dll')
+        Copy-PackageFile (Join-Path $vcpkgBinDir "cpprest_2_10${debugSuffix}.dll")
+        Copy-PackageFile (Join-Path $vcpkgBinDir 'legacy.dll')
+        Copy-SinglePackageMatch -Directory $vcpkgBinDir -Filter 'libcrypto-3*.dll'
+        Copy-PackageFile (Join-Path $vcpkgBinDir "libprotobuf${debugSuffix}.dll")
+        Copy-SinglePackageMatch -Directory $vcpkgBinDir -Filter 'libssl-3*.dll'
+
+        # Import libraries needed to compile and link a consumer application.
+        Copy-PackageFile (Join-Path $vcpkgLibDir 'abseil_dll.lib')
+        Copy-PackageFile (Join-Path $vcpkgLibDir "cpprest_2_10${debugSuffix}.lib")
+        Copy-PackageFile (Join-Path $vcpkgLibDir 'libcrypto.lib')
+        Copy-PackageFile (Join-Path $vcpkgLibDir "libprotobuf${debugSuffix}.lib")
+        Copy-PackageFile (Join-Path $vcpkgLibDir 'libssl.lib')
+
+        Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
+        Compress-Archive -Path (Join-Path $stagingDir '*') -DestinationPath $zipPath -Force
+    }
+    finally {
+        Remove-Item $stagingDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
 
     $zipItem = Get-Item $zipPath
     Write-Host ("    {0}\{1}.zip  {2:N0} bytes" -f $BuildPlatform, $BuildConfiguration, $zipItem.Length)
@@ -186,7 +250,7 @@ if (-not $SkipBuild) {
 
         foreach ($buildConfiguration in $Configuration) {
             Write-Host "  - $buildPlatform $buildConfiguration"
-            Ensure-BoostVariant `
+            Initialize-BoostVariant `
                 -BuildPlatform $buildPlatform `
                 -BuildConfiguration $buildConfiguration `
                 -BoostSourceRoot $boostSourceRoot `
@@ -208,7 +272,8 @@ foreach ($buildPlatform in $Platform) {
         New-ZipPackage `
             -BuildPlatform $buildPlatform `
             -BuildConfiguration $buildConfiguration `
-            -OutputRoot $outputRoot
+            -OutputRoot $outputRoot `
+            -RepositoryRoot $RepoRoot
     }
 }
 

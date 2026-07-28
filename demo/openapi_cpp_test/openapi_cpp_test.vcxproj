@@ -139,6 +139,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <!-- Intentionally unconditional: C++14 and ELPP_THREAD_SAFE apply to all configurations. -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <PreprocessorDefinitions>ELPP_THREAD_SAFE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
     <OutDir>..\..\output\Windows\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\temp\demo\$(Platform)\$(Configuration)\</IntDir>
@@ -312,23 +319,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\AssetData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\KlineData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\OptionTopData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderStatusData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\OrderTransactionData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\PositionData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\PushData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBasicData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteBBOData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\QuoteDepthData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\Request.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\Response.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\SocketCommon.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\StockTopData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\TickData.pb.cc" />
-    <ClCompile Include="..\..\include\openapi_pb\pb_source\TradeTickData.pb.cc" />
     <ClCompile Include="openapi_cpp_test.cpp" />
   </ItemGroup>
   <ItemGroup>

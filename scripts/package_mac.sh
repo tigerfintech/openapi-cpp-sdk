@@ -12,6 +12,10 @@ JOBS=${JOBS:-8}
 # separately at /usr/local/boost_1_86_0. Do NOT replace this with $(brew --prefix)/include.
 BOOST_1_86_ROOT="${BOOST_1_86_ROOT:-/usr/local/boost_1_86_0}"
 HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-$(brew --prefix)}"
+PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
+PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-/usr/local/opt/protobuf-${PROTOBUF_VERSION}}"
+ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
+ABSL_PREFIX="${ABSL_PREFIX:-/usr/local/opt/abseil-${ABSEIL_VERSION}}"
 
 echo "=========================================="
 echo "  Tiger OpenAPI C++ SDK - macOS Package"
@@ -23,6 +27,19 @@ if [ ! -d "$BOOST_1_86_ROOT" ]; then
     echo "ERROR: Boost 1.86 not found at $BOOST_1_86_ROOT"
     echo "  Install with: cd /usr/local && wget .../boost_1_86_0.tar.gz && tar xf ... && cd boost_1_86_0 && ./bootstrap.sh && ./b2"
     echo "  Or override: BOOST_1_86_ROOT=/path/to/boost_1_86_0 $0"
+    exit 1
+fi
+ABSL_CONFIG="$ABSL_PREFIX/include/absl/base/config.h"
+if [ ! -f "$ABSL_PREFIX/lib/cmake/absl/abslConfig.cmake" ] ||
+   ! grep -Eq '^#define[[:space:]]+ABSL_LTS_RELEASE_VERSION[[:space:]]+20240722$' "$ABSL_CONFIG" ||
+   ! grep -Eq '^#define[[:space:]]+ABSL_LTS_RELEASE_PATCH_LEVEL[[:space:]]+0$' "$ABSL_CONFIG"; then
+    echo "ERROR: C++14-compatible Abseil ${ABSEIL_VERSION} not found at $ABSL_PREFIX"
+    echo "  Run scripts/build_linux_mac.sh first, or override PROTOBUF_PREFIX and ABSL_PREFIX."
+    exit 1
+fi
+if [ ! -f "$PROTOBUF_PREFIX/lib/cmake/protobuf/protobuf-config.cmake" ]; then
+    echo "ERROR: Protobuf ${PROTOBUF_VERSION} not found at $PROTOBUF_PREFIX"
+    echo "  Run scripts/build_linux_mac.sh first, or override PROTOBUF_PREFIX."
     exit 1
 fi
 
@@ -45,10 +62,8 @@ fix_boost_include_order() {
     if ! grep -q "\-I/opt/homebrew/include.*\-I${BOOST_1_86_ROOT}" "$flags_file" 2>/dev/null; then
         return
     fi
-    ABSL_VER=$(ls "${HOMEBREW_PREFIX}/Cellar/abseil/" 2>/dev/null | head -1)
-    if [ -z "$ABSL_VER" ]; then ABSL_VER="20240722.0"; fi
     sed -i '' \
-        "s|-I/opt/homebrew/include \(.*\)-I${BOOST_1_86_ROOT}|-I${BOOST_1_86_ROOT} \1-I${HOMEBREW_PREFIX}/Cellar/abseil/${ABSL_VER}/include|" \
+        "s|-I/opt/homebrew/include \(.*\)-I${BOOST_1_86_ROOT}|-I${BOOST_1_86_ROOT} \1-I${ABSL_PREFIX}/include|" \
         "$flags_file"
     echo "    [boost ABI fix applied: $(grep 'CXX_INCLUDES' "$flags_file" | cut -c1-120)...)"
 }
@@ -61,14 +76,16 @@ build_variant() {
     echo "==> Step 2/5: Building ${BUILD_TYPE}..."
     cmake -S . -B "${BUILD_DIR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-        -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${HOMEBREW_PREFIX}/opt/protobuf" \
-        -DProtobuf_ROOT="${HOMEBREW_PREFIX}/opt/protobuf" \
+        -DCMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/cpprestsdk;${PROTOBUF_PREFIX};${ABSL_PREFIX}" \
+        -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
+        -DABSL_PREFIX="${ABSL_PREFIX}" \
+        -Dabsl_DIR="${ABSL_PREFIX}/lib/cmake/absl" \
         -DBOOST_ROOT="${BOOST_1_86_ROOT}" \
         -DBoost_INCLUDE_DIR="${BOOST_1_86_ROOT}" \
         -DBoost_LIBRARY_DIR="${BOOST_1_86_ROOT}/stage/lib" \
         -DBoost_NO_BOOST_CMAKE=ON \
         -DBoost_NO_SYSTEM_PATHS=ON \
-        -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++17 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
+        -DCMAKE_CXX_FLAGS="-arch arm64 -std=c++14 -stdlib=libc++ -DBOOST_LOG_DYN_LINK -Wno-deprecated-declarations"
     fix_boost_include_order "${BUILD_DIR}"
     cmake --build "${BUILD_DIR}" -j${JOBS}
 }

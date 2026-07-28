@@ -1,6 +1,21 @@
-重新生成output的步骤：
+重新生成全部 Windows SDK 包：
 
-1. 进入 openapi-cpp-sdk\output\Windows\x64，解压Debug-MD, Debug-MT, Release-MD, Release-MT 四个压缩包到同名目录
-2. 进入 openapi-cpp-sdk\output\Windows\Win32,  解压Debug-MD, Debug-MT, Release-MD, Release-MT 四个压缩包到同名目录
-3. 解决方案配置里选择平台后，vs右侧资源管理器，右键 openapi-cpp-sdk,重新生成, 依次生成以上8个目录的内容
-4. 依次重新压缩，git只提交压缩包
+```bat
+scripts\package_windows.bat
+```
+
+如果 8 个配置已经完成构建，只重新生成 zip：
+
+```bat
+scripts\package_windows.bat -SkipBuild
+```
+
+每个 zip 仅包含 SDK 运行与用户工程链接所需文件：
+
+- `openapi-cpp-sdk.dll` / `openapi-cpp-sdk.lib`
+- cpprestsdk、OpenSSL、Protobuf、Abseil 的运行时 DLL 和必要 import library
+- OpenSSL `legacy.dll` provider
+
+明确排除 demo/test `*.exe`、调试符号 `*.pdb`、链接中间文件 `*.exp`、
+`libprotoc*` 和 `libprotobuf-lite*`。请始终使用打包脚本生成包，不要直接
+压缩整个配置输出目录。Git 只提交 8 个 zip、此说明文件和打包脚本。

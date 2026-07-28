@@ -6,6 +6,12 @@
 #include <regex>
 #include "tigerapi/sign_util.h"
 
+#if defined(_WIN32)
+#include <Windows.h>
+#else
+#include <sys/stat.h>
+#endif
+
 using namespace std;
 using namespace web;
 
@@ -259,11 +265,13 @@ namespace TIGER_API {
 		if (path.empty()) {
 			return false;
 		}
-
-#ifdef _WIN32
-		return path.back() == U('\\') || path.back() == U('/');
+#if defined(_WIN32)
+        const DWORD attributes = GetFileAttributesW(path.c_str());
+        return attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 #else
-		return path.back() == U('/');
+        struct stat path_info = {};
+        return stat(path.c_str(), &path_info) == 0 && S_ISDIR(path_info.st_mode);
 #endif
 	}
 }

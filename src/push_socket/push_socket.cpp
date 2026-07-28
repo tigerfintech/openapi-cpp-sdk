@@ -23,9 +23,9 @@ TIGER_API::PushSocket::~PushSocket()
 
 TIGER_API::PushSocket::PushSocket(boost::asio::io_context* io_context,
 	const TIGER_API::ClientConfig& client_config)
+    : client_config_(client_config)
 {
 	io_context_ = io_context;
-	client_config_ = client_config;
 	send_interval_ = client_config_.send_interval;
 	recv_interval_ = client_config_.receive_interval;
 	
