@@ -1,3 +1,26 @@
+## 1.3.1 (2026-08-04)
+### Fixed
+- `QuoteClient::get_option_chain` 的 `option_filter` 参数此前被完全忽略：函数签名接收该参数，
+  但请求体只用 `symbol` + `expiry` 构造，从不写入 `option_filter`。按 Greeks / 隐含波动率 /
+  持仓量筛选时会**静默返回未筛选的全量期权链**，调用方无法察觉。现已正确透传。
+
+### New
+- `get_option_chain` 新增可选参数 `return_greek_value`，置为 `true` 时响应包含 Greeks
+  （与 Java `OptionChainV3Model.return_greek_value`、Python/TS SDK 行为对齐）。
+
+  `option_filter` 的 wire 结构（各成员均可选，键名为 snake_case）：
+
+  ```
+  {
+    "in_the_money": bool,
+    "implied_volatility": {"min": num, "max": num},
+    "open_interest":      {"min": num, "max": num},
+    "greeks": { "delta"|"gamma"|"vega"|"theta"|"rho": {"min": num, "max": num} }
+  }
+  ```
+
+  不传 `option_filter` 时请求体与修复前完全一致，向后兼容。
+
 ## 1.3.0 (2026-07-24)
 ### New
 - `OrderUtil::amount_order` — 按金额下市价单（如基金申购），不指定股数

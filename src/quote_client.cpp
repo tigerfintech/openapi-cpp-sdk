@@ -257,7 +257,8 @@ namespace TIGER_API {
         return post(OPTION_EXPIRATION, obj);
     }
 
-    value QuoteClient::get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter) {
+    value QuoteClient::get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter,
+                                        value return_greek_value) {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
@@ -265,12 +266,19 @@ namespace TIGER_API {
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
+        if (!option_filter.is_null()) {
+            obj[U("option_filter")] = option_filter;
+        }
+        if (!return_greek_value.is_null()) {
+            obj[U("return_greek_value")] = return_greek_value;
+        }
         return post(OPTION_CHAIN, obj);
     }
 
-    value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter) {
+    value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter,
+                                        value return_greek_value) {
         time_t expiry_ts = Utils::date_string_to_timestamp(expiry);
-        return get_option_chain(symbol, expiry_ts, option_filter);
+        return get_option_chain(symbol, expiry_ts, option_filter, return_greek_value);
     }
 
     value QuoteClient::get_option_brief(const utility::string_t identifier) {
