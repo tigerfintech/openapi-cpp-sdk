@@ -18,7 +18,20 @@ namespace TIGER_API {
 
         static utility::string_t get_timestamp();
 
-        static time_t date_string_to_timestamp(const utility::string_t &date_string);
+        /**
+         * Convert a "yyyy-MM-dd" date to an epoch-ms timestamp.
+         *
+         * The date is interpreted in `timezone` (default US/Eastern, matching the
+         * Python/Java SDKs), NOT in the host's local timezone — an option expiry
+         * names a market calendar day, so using local time would shift the
+         * instant onto the wrong day on any machine outside that timezone and the
+         * server would return an empty result.
+         *
+         * @param timezone tz database name, e.g. U("US/Eastern"), U("Asia/Hong_Kong").
+         * @return epoch milliseconds, or 0 if the string cannot be parsed.
+         */
+        static time_t date_string_to_timestamp(const utility::string_t &date_string,
+                                              const utility::string_t &timezone = U("US/Eastern"));
 
         static utility::string_t get_device_id();
 
