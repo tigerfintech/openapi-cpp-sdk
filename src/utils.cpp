@@ -1,5 +1,6 @@
 ﻿#include "tigerapi/utils.h"
 #include <ctime>
+#include <cstdlib>
 #include <iomanip>
 #include <random>
 #include <algorithm>
@@ -41,15 +42,55 @@ namespace TIGER_API {
         return str8to16(result);
     }
 
-    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string) {
-        struct tm tm;
+    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string, const utility::string_t &timezone) {
+        struct tm tm = {};
         utility::istringstream_t ss(date_string);
         ss >> std::get_time(&tm, U("%Y-%m-%d"));
+        if (ss.fail()) {
+            return 0;
+        }
         tm.tm_hour = 0;
         tm.tm_min = 0;
         tm.tm_sec = 0;
-        time_t res = mktime(&tm) * 1000;
-        return res;
+        tm.tm_isdst = -1;
+
+        // The date names a calendar day in the *market's* timezone, not the
+        // machine's. mktime() interprets tm as local time, so on any host that
+        // is not in the target timezone the resulting instant lands on the wrong
+        // day and the server returns an empty result. Temporarily pin TZ so the
+        // conversion matches the reference SDKs (Python parses the date in
+        // US/Eastern by default; see common_utils.date_str_to_timestamp).
+        std::string tz = str16to8(timezone);
+        if (tz.empty()) {
+            tz = "US/Eastern";
+        }
+
+        const char *prev_tz = std::getenv("TZ");
+        std::string saved = prev_tz ? std::string(prev_tz) : std::string();
+        bool had_tz = (prev_tz != nullptr);
+
+#if defined(_WIN32)
+        _putenv_s("TZ", tz.c_str());
+        _tzset();
+        time_t secs = mktime(&tm);
+        _putenv_s("TZ", had_tz ? saved.c_str() : "");
+        _tzset();
+#else
+        setenv("TZ", tz.c_str(), 1);
+        tzset();
+        time_t secs = mktime(&tm);
+        if (had_tz) {
+            setenv("TZ", saved.c_str(), 1);
+        } else {
+            unsetenv("TZ");
+        }
+        tzset();
+#endif
+
+        if (secs == static_cast<time_t>(-1)) {
+            return 0;
+        }
+        return secs * 1000;
     }
 
     utility::string_t Utils::get_sign(const utility::string_t &private_key, const utility::string_t &content) {
