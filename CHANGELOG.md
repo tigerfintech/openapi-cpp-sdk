@@ -1,34 +1,10 @@
 ## 1.3.1 (2026-08-04)
-### Fixed
-- `QuoteClient::get_option_chain` 的 `option_filter` 参数此前被完全忽略：函数签名接收该参数，
-  但请求体只用 `symbol` + `expiry` 构造，从不写入 `option_filter`。按 Greeks / 隐含波动率 /
-  持仓量筛选时会**静默返回未筛选的全量期权链**，调用方无法察觉。现已正确透传。
-
-- `Utils::date_string_to_timestamp` 用 `mktime()` 按**本机时区**解析日期，导致 `"yyyy-MM-dd"`
-  形式的期权到期日在非美东时区的机器上被换算到错误的日期，服务端返回**空期权链**。
-  实测同一个 `2026-08-21`：`Asia/Shanghai` → `1787238000000`（偏差 13 小时，落到 8/20）、
-  `UTC` → `1787270400000`、`America/New_York` → `1787284800000`（正确）。
-  现固定按到期日所属市场时区解析，新增可选参数 `timezone`（默认 `US/Eastern`，与
-  Python/Java SDK 一致），四个时区实测均得到正确值 `1787284800000`。
-  受影响的还有 `identifiers_to_options`（期权 identifier → 请求体）与
-  `get_option_kline_value`，均一并修正。
-
 ### New
-- `get_option_chain` 新增可选参数 `return_greek_value`，置为 `true` 时响应包含 Greeks
-  （与 Java `OptionChainV3Model.return_greek_value`、Python/TS SDK 行为对齐）。
+- `get_option_chain` 新增可选参数 `return_greek_value`，置为 `true` 时响应包含 Greeks。
 
-  `option_filter` 的 wire 结构（各成员均可选，键名为 snake_case）：
-
-  ```
-  {
-    "in_the_money": bool,
-    "implied_volatility": {"min": num, "max": num},
-    "open_interest":      {"min": num, "max": num},
-    "greeks": { "delta"|"gamma"|"vega"|"theta"|"rho": {"min": num, "max": num} }
-  }
-  ```
-
-  不传 `option_filter` 时请求体与修复前完全一致，向后兼容。
+### Fixed
+- `get_option_chain` 的 `option_filter` 参数此前被忽略，按 Greeks / 隐含波动率 / 持仓量筛选时会静默返回未筛选的全量期权链。
+- 期权到期日按本机时区解析，非美东时区的机器查询期权链或期权 K 线会返回空；现固定按美东时区解析，新增可选参数 `timezone`（默认 `US/Eastern`）。
 
 ## 1.3.0 (2026-07-24)
 ### New
