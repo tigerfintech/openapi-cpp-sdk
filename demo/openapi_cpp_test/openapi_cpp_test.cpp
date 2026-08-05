@@ -8,6 +8,7 @@
 #include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/version.h"
 #include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
@@ -1120,7 +1121,7 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     oss << std::endl;
     oss << "========================================" << std::endl;
     oss << "     OpenAPI C++ SDK Test Report         " << std::endl;
-    oss << "     SDK Version: openapi-cpp-sdk-1.2.0  " << std::endl;
+    oss << "     SDK Version: openapi-cpp-sdk-" << PROJECT_VERSION << "  " << std::endl;
     oss << "========================================" << std::endl;
     oss << "Total: " << total << "  Passed: " << passed << "  Failed: " << failed << "  Skipped: " << skipped << std::endl;
     oss << "Pass Rate: " << (total > 0 ? (passed * 100 / total) : 0) << "% (" << passed << "/" << total << ")" << std::endl;
