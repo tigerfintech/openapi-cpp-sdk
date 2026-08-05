@@ -7,7 +7,8 @@
 		"abseil",
 		{ "name": "protobuf", "version>=": "5.28.3" },
 		"openssl",
-		{ "name": "cpprestsdk", "default-features": false }
+		{ "name": "cpprestsdk", "default-features": false },
+		"gtest"
 	],
 	"overrides": [
 		{ "name": "abseil", "version": "20240722.0" },

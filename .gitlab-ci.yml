@@ -1,0 +1,63 @@
+# TigerOpen C++ SDK — CI pipeline
+#
+# unit-test: builds tigerapi + tests, runs unit tests (no credentials needed)
+# integration-test: runs against live sandbox (manual; needs real credentials)
+#
+# Prerequisites for the CI runner:
+#   apt: cmake git build-essential libssl-dev libboost-all-dev
+#   The build script (scripts/build_linux_mac.sh) handles Protobuf + Abseil from source.
+#   vcpkg provides googletest via VCPKG_ROOT.
+#
+# Environment variables for integration-test stage:
+#   TIGER_TEST_ID, TIGER_TEST_PRIVATE_KEY, TIGER_TEST_ACCOUNT
+
+stages:
+  - unit-test
+  - integration-test
+
+variables:
+  BUILD_DIR: build_ci
+  CTEST_OUTPUT_ON_FAILURE: "1"
+
+unit-test:
+  stage: unit-test
+  script:
+    - chmod +x scripts/build_linux_mac.sh
+    # Build tigerapi (handles Boost / Protobuf / Abseil) ─────────────────────
+    - ./scripts/build_linux_mac.sh
+    # Build tests ─────────────────────────────────────────────────────────────
+    - |
+      cmake -S . -B "$BUILD_DIR" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTS=ON \
+        -DBOOST_ROOT="${BOOST_ROOT:-/usr/local}" \
+        -DPROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(pwd)/build/protobuf}" \
+        -DABSL_PREFIX="${ABSL_PREFIX:-$(pwd)/build/abseil}"
+    - cmake --build "$BUILD_DIR" --target unit_tests -j$(nproc)
+    # Run unit tests ──────────────────────────────────────────────────────────
+    - ctest --test-dir "$BUILD_DIR" -R UnitTests -V
+  artifacts:
+    reports:
+      junit: "$BUILD_DIR/unit_test_results.xml"
+    when: always
+    expire_in: 1 week
+
+integration-test:
+  stage: integration-test
+  when: manual
+  script:
+    - chmod +x scripts/build_linux_mac.sh
+    - ./scripts/build_linux_mac.sh
+    - |
+      cmake -S . -B "$BUILD_DIR" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTS=ON \
+        -DBOOST_ROOT="${BOOST_ROOT:-/usr/local}" \
+        -DPROTOBUF_PREFIX="${PROTOBUF_PREFIX:-$(pwd)/build/protobuf}" \
+        -DABSL_PREFIX="${ABSL_PREFIX:-$(pwd)/build/abseil}"
+    - cmake --build "$BUILD_DIR" --target integ_tests -j$(nproc)
+    - TIGER_RUN_INTEG=true ctest --test-dir "$BUILD_DIR" -R IntegTests -V
+  environment:
+    name: sandbox
+  variables:
+    TIGER_RUN_INTEG: "true"
