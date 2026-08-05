@@ -98,7 +98,10 @@ namespace TIGER_API {
         value get_fund_history_quote(const value &symbols, time_t begin_time=-1, time_t end_time=-1, int limit=200, utility::string_t lang=U(""));
 
         /** Financial related api **/
-        value get_financial_daily();
+        value get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
+                                  time_t begin_date, time_t end_date, utility::string_t lang=U(""));
+        value get_financial_daily(const value &symbols, const value &fields,
+                                  time_t begin_date, time_t end_date, utility::string_t lang=U(""));
         value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
                                    utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
                                    time_t end_date=-1, utility::string_t lang=U(""));
