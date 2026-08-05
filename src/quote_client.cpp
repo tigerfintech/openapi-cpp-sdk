@@ -637,6 +637,32 @@ namespace TIGER_API {
         return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
     }
 
+    value QuoteClient::get_financial_report(const value &symbols, utility::string_t market, const value &fields,
+                                            utility::string_t period_type, time_t begin_date, time_t end_date,
+                                            utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        obj[P_MARKET] = value::string(market);
+        obj[P_FIELDS] = fields;
+        obj[P_PERIOD_TYPE] = value::string(period_type);
+        if (begin_date > 0) {
+            obj[P_BEGIN_DATE] = value::number(static_cast<int64_t>(begin_date));
+        }
+        if (end_date > 0) {
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FINANCIAL_REPORT, obj);
+    }
+
+    value QuoteClient::get_financial_report(const value &symbols, const value &fields,
+                                            utility::string_t period_type, time_t begin_date, time_t end_date,
+                                            utility::string_t lang) {
+        return get_financial_report(symbols, U("US"), fields, period_type, begin_date, end_date, lang);
+    }
+
     value QuoteClient::get_financial_currency(const value &symbols, utility::string_t market, utility::string_t lang) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;

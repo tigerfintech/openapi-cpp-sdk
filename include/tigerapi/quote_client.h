@@ -99,7 +99,12 @@ namespace TIGER_API {
 
         /** Financial related api **/
         value get_financial_daily();
-        value get_financial_report();
+        value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
+                                   utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
+                                   time_t end_date=-1, utility::string_t lang=U(""));
+        value get_financial_report(const value &symbols, const value &fields,
+                                   utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
+                                   time_t end_date=-1, utility::string_t lang=U(""));
         value get_corporate_action(const value &symbols, const utility::string_t &market=U(""),
                                    const utility::string_t &action_type=U(""), const utility::string_t &begin_date=U(""),
                                    const utility::string_t &end_date=U(""));
