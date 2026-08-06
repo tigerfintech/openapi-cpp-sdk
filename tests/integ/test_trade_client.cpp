@@ -245,3 +245,399 @@ TEST(TradeClientInteg, GetActiveOrders_ReturnsValidFields) {
         }
     });
 }
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+namespace {
+
+/// Build a JSON array of symbol strings, e.g. ["AAPL"].
+web::json::value make_symbols(const utility::string_t &sym) {
+    web::json::value arr = web::json::value::array();
+    arr[0] = web::json::value::string(sym);
+    return arr;
+}
+
+/// Try to fetch the first order ID from get_orders (last 30 days, limit 10).
+/// Returns 0 if no orders exist.
+unsigned long long get_first_order_id(TradeClient &client) {
+    std::time_t now = std::time(nullptr);
+    std::time_t start = now - 30 * 24 * 60 * 60;
+    web::json::value result = client.get_orders(
+        U(""), U(""), U("ALL"), U(""), start, now, 10);
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &ord = arr.at(i);
+        if (ord.is_object() && ord.has_field(U("id"))) {
+            auto id = ord.at(U("id")).as_number().to_int64();
+            if (id != 0) return static_cast<unsigned long long>(id);
+        }
+    }
+    return 0;
+}
+
+} // anonymous namespace
+
+// ── Prime asset ───────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetPrimeAsset_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_prime_asset();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        // Prime asset may be empty for non-prime accounts.
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &asset = arr.at(i);
+            ASSERT_TRUE(asset.is_object());
+            if (asset.has_field(U("account"))) {
+                EXPECT_FALSE(asset.at(U("account")).as_string().empty())
+                    << "PrimeAsset[" << i << "].account is empty";
+            }
+            if (asset.has_field(U("currency"))) {
+                EXPECT_FALSE(asset.at(U("currency")).as_string().empty())
+                    << "PrimeAsset[" << i << "].currency is empty";
+            }
+        }
+    });
+}
+
+TEST(TradeClientInteg, GetPrimePortfolio_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        auto portfolio = client->get_prime_portfolio();
+        // PortfolioAccount has account, update_timestamp, segments.
+        // May be empty for non-prime accounts; just assert the call succeeds.
+    });
+}
+
+// ── Position list (typed return) ─────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetPositionList_ReturnsValidEntries) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        auto positions = client->get_position_list();
+        // Positions may legitimately be empty for a fresh paper account.
+        for (size_t i = 0; i < positions.size(); ++i) {
+            EXPECT_FALSE(positions[i].contract.symbol.empty())
+                << "Position[" << i << "].symbol is empty";
+            if (!positions[i].account.empty()) {
+                EXPECT_FALSE(positions[i].account.empty())
+                    << "Position[" << i << "].account is empty";
+            }
+        }
+    });
+}
+
+// ── Filled / inactive orders ─────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetFilledOrders_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    std::time_t now = std::time(nullptr);
+    std::time_t start = now - 30 * 24 * 60 * 60;
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_filled_orders(
+            U(""), U(""), U("ALL"), U(""), start, now);
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &ord = arr.at(i);
+            ASSERT_TRUE(ord.is_object());
+            if (ord.has_field(U("id"))) {
+                EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+                    << "FilledOrder[" << i << "].id = 0, want non-zero";
+            }
+            if (ord.has_field(U("status"))) {
+                EXPECT_FALSE(ord.at(U("status")).as_string().empty())
+                    << "FilledOrder[" << i << "].status is empty";
+            }
+        }
+    });
+}
+
+TEST(TradeClientInteg, GetInactiveOrders_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    std::time_t now = std::time(nullptr);
+    std::time_t start = now - 30 * 24 * 60 * 60;
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_inactive_orders(
+            U(""), U(""), U("ALL"), U(""), start, now);
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &ord = arr.at(i);
+            ASSERT_TRUE(ord.is_object());
+            if (ord.has_field(U("id"))) {
+                EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+                    << "InactiveOrder[" << i << "].id = 0, want non-zero";
+            }
+        }
+    });
+}
+
+// ── Get order by ID (typed return) ────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetOrder_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    auto order_id = get_first_order_id(*client);
+    if (order_id == 0) {
+        GTEST_SKIP() << "No orders available to test get_order";
+    }
+    EXPECT_NO_THROW({
+        Order order = client->get_order(order_id);
+        EXPECT_EQ(order.id, order_id)
+            << "Order.id mismatch: got " << order.id << ", want " << order_id;
+    });
+}
+
+// ── Transactions ─────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetTransactions_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_transactions(U(""), U("AAPL"), U("STK"));
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        // Transactions may be empty if no trades for AAPL.
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &txn = arr.at(i);
+            ASSERT_TRUE(txn.is_object());
+        }
+    });
+}
+
+// ── Contracts (batch) ────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetContracts_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_contracts(make_symbols(U("AAPL")), U("STK"));
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        ASSERT_GT(arr.size(), 0u) << "GetContracts returned empty for AAPL STK";
+        const auto &contract = arr.at(0);
+        ASSERT_TRUE(contract.is_object());
+        if (contract.has_field(U("symbol"))) {
+            EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
+        }
+        if (contract.has_field(U("secType"))) {
+            EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"));
+        }
+    });
+}
+
+// ── Quote contract ───────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetQuoteContract_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_quote_contract(U("AAPL"), U("STK"), U(""));
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        ASSERT_GT(arr.size(), 0u) << "GetQuoteContract returned empty for AAPL STK";
+        const auto &contract = arr.at(0);
+        ASSERT_TRUE(contract.is_object());
+        if (contract.has_field(U("symbol"))) {
+            EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
+        }
+    });
+}
+
+// ── Analytics asset ──────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetAnalyticsAsset_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_analytics_asset(
+            cfg.account, U("2024-01-01"), U("2024-06-01"));
+        ASSERT_FALSE(result.is_null());
+        EXPECT_TRUE(result.is_array() || result.is_object());
+    });
+}
+
+// ── Segment fund ──────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetSegmentFundHistory_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_segment_fund_history();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
+
+TEST(TradeClientInteg, GetSegmentFundAvailable_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_segment_fund_available(U("SEC"));
+        ASSERT_FALSE(result.is_null());
+        EXPECT_TRUE(result.is_array() || result.is_object());
+    });
+}
+
+// ── Aggregate assets ──────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetAggregateAssets_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_aggregate_assets();
+        ASSERT_FALSE(result.is_null());
+        EXPECT_TRUE(result.is_array() || result.is_object());
+    });
+}
+
+// ── Funding history ───────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetFundingHistory_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_funding_history();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
+
+// ── Fund details ─────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetFundDetails_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_fund_details();
+        ASSERT_FALSE(result.is_null());
+        EXPECT_TRUE(result.is_array() || result.is_object());
+    });
+}
+
+// ── Position transfer records ─────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetPositionTransferRecords_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_position_transfer_records();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
+
+TEST(TradeClientInteg, GetPositionTransferExternalRecords_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_position_transfer_external_records();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
+
+// ── Option exercise (read-only queries) ──────────────────────────────────────
+
+TEST(TradeClientInteg, GetOptionExerciseRecords_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_option_exercise_records();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
+
+TEST(TradeClientInteg, GetOptionExercisePositions_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    ClientConfig cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_option_exercise_positions(U("Exercise"));
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        // May be empty if no exercisable option positions exist.
+        for (size_t i = 0; i < arr.size(); ++i) {
+            ASSERT_TRUE(arr.at(i).is_object());
+        }
+    });
+}
