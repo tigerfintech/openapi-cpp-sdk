@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 
+# ── Coverage ──────────────────────────────────────────────────────────────────
+option(ENABLE_COVERAGE "Enable code coverage instrumentation (gcov)" OFF)
+if(ENABLE_COVERAGE)
+    # The parent CMakeLists.txt overwrites CMAKE_CXX_FLAGS for Clang, so we
+    # must add coverage flags to the *target* rather than to the global flags.
+    # --coverage = -fprofile-arcs -ftest-coverage (GCC-compatible, works with Clang)
+    set(COVERAGE_CXX_FLAGS "--coverage;-fprofile-arcs;-ftest-coverage")
+    set(COVERAGE_LINK_FLAGS "--coverage")
+endif()
+
 # ── GoogleTest ────────────────────────────────────────────────────────────────
 find_package(GTest CONFIG QUIET)
 if(NOT GTest_FOUND)
@@ -24,6 +34,13 @@ function(common_test_setup target)
         ${OPENSSL_INCLUDE_DIRS}
     )
     target_compile_definitions(${target} PUBLIC ELPP_THREAD_SAFE)
+    if(ENABLE_COVERAGE)
+        target_compile_options(${target} PRIVATE ${COVERAGE_CXX_FLAGS})
+        target_link_options(${target} PRIVATE ${COVERAGE_LINK_FLAGS})
+        # Also instrument the main library so coverage data is generated for src/ files
+        target_compile_options(${PROJECT_NAME} PRIVATE ${COVERAGE_CXX_FLAGS})
+        target_link_options(${PROJECT_NAME} PRIVATE ${COVERAGE_LINK_FLAGS})
+    endif()
     if(APPLE)
         target_link_libraries(${target} PRIVATE
             ${PROJECT_NAME}
@@ -47,6 +64,14 @@ add_executable(unit_tests
     unit/test_contract_util.cpp
     unit/test_utils.cpp
     unit/test_client_config.cpp
+    unit/test_client_config_props.cpp
+    unit/test_enums.cpp
+    unit/test_tick_util.cpp
+    unit/test_properties.cpp
+    unit/test_model.cpp
+    unit/test_tiger_client.cpp
+    unit/test_sign_util.cpp
+    unit/test_trade_client_serialize.cpp
 )
 common_test_setup(unit_tests)
 add_test(NAME UnitTests COMMAND unit_tests)

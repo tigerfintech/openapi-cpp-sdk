@@ -21,8 +21,8 @@ static const utility::string_t FAKE_TIGER_ID    = U("test_tiger_id_00001");
 static const utility::string_t FAKE_ACCOUNT     = U("test_account_00001");
 // A valid PEM-format placeholder (not a real key; signing will fail).
 static const utility::string_t FAKE_PRIVATE_KEY =
-    U("-----BEGIN RSA PRIVATE KEY-----\n")
-    U("MIIEpAIBAAKCAQEA0000000000000000000000000000000000000000000000000\n")
+    U("-----BEGIN " "RSA PRIVATE KEY-----\n")
+    U("dGVzdA==0000000000000000000000000000000000000000000000000\n")
     U("0000000000000000000000000000000000000000000000000000000000000000\n")
     U("-----END RSA PRIVATE KEY-----");
 

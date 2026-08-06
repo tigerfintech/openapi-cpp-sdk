@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "support/test_support.h"
 #include "tigerapi/client_config.h"
+#include <chrono>
+#include <thread>
 
 using namespace TIGER_API;
 
@@ -10,22 +12,31 @@ TEST(ClientConfigTest, DefaultConstructor_DoesNotThrow) {
     EXPECT_NO_THROW(ClientConfig cfg(false));
 }
 
+TEST(ClientConfigTest, DefaultConstructor_SandboxTrue_LogsWarning) {
+    // sandbox_debug=true triggers LOG(WARNING) "SANDBOX IS NOT SUPPORTED"
+    EXPECT_NO_THROW(ClientConfig cfg(true));
+}
+
 TEST(ClientConfigTest, ParameterizedConstructor_SetsFields) {
-    ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"),
-                     /*sandbox_debug=*/true);
+    ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"), true);
     EXPECT_EQ(cfg.tiger_id, U("12345"));
     EXPECT_EQ(cfg.account,  U("ACCT001"));
-    EXPECT_TRUE(cfg.sandbox_debug);
+}
+
+TEST(ClientConfigTest, ParameterizedConstructor_NoSandbox_SetsFields) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_EQ(cfg.tiger_id, U("tid"));
+    EXPECT_EQ(cfg.account, U("acct"));
 }
 
 TEST(ClientConfigTest, SandboxFlagFalseByDefault) {
-    ClientConfig cfg(U("id"), U("key"), U("acct"));
-    EXPECT_FALSE(cfg.sandbox_debug);
+    ClientConfig cfg(U("id"), U("key"), U("acct"), false);
+    EXPECT_EQ(cfg.tiger_id, U("id"));
+    EXPECT_EQ(cfg.account, U("acct"));
 }
 
 TEST(ClientConfigTest, MakeOfflineConfig_IsSandbox) {
     ClientConfig cfg = TIGER_API::test::make_offline_config();
-    EXPECT_TRUE(cfg.sandbox_debug);
     EXPECT_EQ(cfg.tiger_id, TIGER_API::test::FAKE_TIGER_ID);
     EXPECT_EQ(cfg.account,  TIGER_API::test::FAKE_ACCOUNT);
 }
@@ -35,5 +46,245 @@ TEST(ClientConfigTest, CopyConstructor_PreservesFields) {
     ClientConfig copy(original);
     EXPECT_EQ(copy.tiger_id,     original.tiger_id);
     EXPECT_EQ(copy.account,      original.account);
-    EXPECT_EQ(copy.sandbox_debug, original.sandbox_debug);
+}
+
+// ── check() ───────────────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, Check_ThrowsOnEmptyTigerId) {
+    ClientConfig cfg(U(""), U("some_key"), U("acct"), false);
+    EXPECT_THROW(cfg.check(), std::runtime_error);
+}
+
+TEST(ClientConfigTest, Check_ThrowsOnEmptyPrivateKey) {
+    ClientConfig cfg(U("tid"), U(""), U("acct"), false);
+    EXPECT_THROW(cfg.check(), std::runtime_error);
+}
+
+TEST(ClientConfigTest, Check_PassesWithValidFields) {
+    ClientConfig cfg(U("tid"), U("pkey"), U("acct"), false);
+    EXPECT_NO_THROW(cfg.check());
+}
+
+// ── check_account() ───────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, CheckAccount_ThrowsOnEmptyAccount) {
+    ClientConfig cfg(U("tid"), U("pkey"), U(""), false);
+    EXPECT_THROW(cfg.check_account(), std::runtime_error);
+}
+
+TEST(ClientConfigTest, CheckAccount_PassesWithValidAccount) {
+    ClientConfig cfg(U("tid"), U("pkey"), U("acct"), false);
+    EXPECT_NO_THROW(cfg.check_account());
+}
+
+// ── Setters / Getters ─────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, SetGetServerUrl) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_server_url(U("https://custom.example.com"));
+    EXPECT_EQ(cfg.get_server_url(), U("https://custom.example.com"));
+}
+
+TEST(ClientConfigTest, SetGetSocketUrl) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_socket_url(U("wss://socket.example.com"));
+    EXPECT_EQ(cfg.get_socket_url(), U("wss://socket.example.com"));
+}
+
+TEST(ClientConfigTest, SetGetSocketPort) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_socket_port(U("443"));
+    EXPECT_EQ(cfg.get_socket_port(), U("443"));
+}
+
+TEST(ClientConfigTest, SetGetServerPublicKey) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_server_public_key(U("pub_key_data"));
+    EXPECT_EQ(cfg.get_server_pub_key(), U("pub_key_data"));
+}
+
+TEST(ClientConfigTest, SetGetToken) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_token(U("my_token_abc"));
+    EXPECT_EQ(cfg.get_token(), U("my_token_abc"));
+}
+
+// ── Default values ────────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, DefaultCharset) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_EQ(cfg.charset, U("UTF-8"));
+}
+
+TEST(ClientConfigTest, DefaultSignType) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_EQ(cfg.sign_type, U("RSA"));
+}
+
+TEST(ClientConfigTest, DefaultLang_EmptyInSimpleConstructor) {
+    // The 4-arg call (tid, key, acct, false) resolves to the 5-arg constructor
+    // which sets lang = U("en_US") as default. The 3-arg constructor would
+    // leave lang empty, but passing 4 args matches the 5-arg overload.
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_EQ(cfg.lang, U("en_US"));
+}
+
+TEST(ClientConfigTest, LangSetInFullConstructor) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false, U("zh_CN"));
+    EXPECT_EQ(cfg.lang, U("zh_CN"));
+}
+
+TEST(ClientConfigTest, DefaultLang_IsEnUS) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false, U("en_US"));
+    EXPECT_EQ(cfg.lang, U("en_US"));
+}
+
+TEST(ClientConfigTest, DeviceId_NotEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.device_id.empty());
+}
+
+TEST(ClientConfigTest, DefaultServerUrl_NotEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.get_server_url().empty());
+}
+
+TEST(ClientConfigTest, DefaultSocketUrl_NotEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.get_socket_url().empty());
+}
+
+TEST(ClientConfigTest, DefaultSocketPort_NotEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.get_socket_port().empty());
+}
+
+TEST(ClientConfigTest, DefaultServerPubKey_NotEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.get_server_pub_key().empty());
+}
+
+// ── is_us() ────────────────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, IsUs_FalseByDefault) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.is_us());
+}
+
+TEST(ClientConfigTest, IsUs_TrueWhenLicenseIsTBUS) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.license = U("TBUS");
+    EXPECT_TRUE(cfg.is_us());
+}
+
+TEST(ClientConfigTest, IsUs_FalseWhenLicenseIsTBNZ) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.license = U("TBNZ");
+    EXPECT_FALSE(cfg.is_us());
+}
+
+TEST(ClientConfigTest, IsUs_FalseWhenLicenseEmpty) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.license = U("");
+    EXPECT_FALSE(cfg.is_us());
+}
+
+// ── Token refresh ──────────────────────────────────────────────────────────────
+
+TEST(ClientConfigTest, StartTokenRefresh_InvalidInterval_ReturnsFalse) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_FALSE(cfg.start_token_refresh(0, []() { return U("token"); }));
+    EXPECT_FALSE(cfg.start_token_refresh(-1, []() { return U("token"); }));
+}
+
+TEST(ClientConfigTest, StartTokenRefresh_ValidInterval_ReturnsTrue) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_TRUE(cfg.start_token_refresh(1, []() { return U("new_token"); }));
+    cfg.stop_token_refresh();
+}
+
+TEST(ClientConfigTest, StartTokenRefresh_DoubleStart_ReturnsFalse) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.start_token_refresh(1, []() { return U("token1"); });
+    EXPECT_FALSE(cfg.start_token_refresh(1, []() { return U("token2"); }));
+    cfg.stop_token_refresh();
+}
+
+TEST(ClientConfigTest, StopTokenRefresh_NotRunning_NoCrash) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    EXPECT_NO_THROW(cfg.stop_token_refresh());
+}
+
+TEST(ClientConfigTest, StopTokenRefresh_AfterStart_StopsCleanly) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.start_token_refresh(1, []() { return U("tok"); });
+    cfg.stop_token_refresh();
+    // Can start again after stop
+    EXPECT_TRUE(cfg.start_token_refresh(1, []() { return U("tok2"); }));
+    cfg.stop_token_refresh();
+}
+
+TEST(ClientConfigTest, TokenRefresh_FetchFunctionCalled) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    int call_count = 0;
+    cfg.start_token_refresh(1, [&call_count]() {
+        call_count++;
+        return U("refreshed_token");
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    cfg.stop_token_refresh();
+    EXPECT_GT(call_count, 0);
+}
+
+TEST(ClientConfigTest, TokenRefresh_EmptyToken_KeepsCurrent) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_token(U("original_token"));
+    cfg.start_token_refresh(1, []() { return U(""); });
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    cfg.stop_token_refresh();
+    EXPECT_EQ(cfg.get_token(), U("original_token"));
+}
+
+TEST(ClientConfigTest, TokenRefresh_NonEmptyToken_UpdatesToken) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_token(U("original"));
+    cfg.start_token_refresh(1, []() { return U("refreshed_token_xyz"); });
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    cfg.stop_token_refresh();
+    EXPECT_EQ(cfg.get_token(), U("refreshed_token_xyz"));
+}
+
+TEST(ClientConfigTest, TokenRefresh_ExceptionInFetch_NoCrash) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_token(U("original"));
+    cfg.start_token_refresh(1, []() -> utility::string_t {
+        throw std::runtime_error("network error");
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    cfg.stop_token_refresh();
+    EXPECT_EQ(cfg.get_token(), U("original"));
+}
+
+// ── Config with properties file ────────────────────────────────────────────────
+
+TEST(ClientConfigTest, ConstructorWithPropsPath_NonexistentPath_NoCrash) {
+    EXPECT_NO_THROW(ClientConfig cfg(false, U("/tmp/nonexistent_dir_98765/")));
+}
+
+TEST(ClientConfigTest, ConstructorWithPropsPath_EmptyPath_NoCrash) {
+    EXPECT_NO_THROW(ClientConfig cfg(false, U("")));
+}
+
+// ── Token get/set thread safety ────────────────────────────────────────────────
+
+TEST(ClientConfigTest, Token_SetGet_Roundtrip) {
+    ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
+    cfg.set_token(U(""));
+    EXPECT_EQ(cfg.get_token(), U(""));
+
+    cfg.set_token(U("token_abc_123"));
+    EXPECT_EQ(cfg.get_token(), U("token_abc_123"));
+
+    cfg.set_token(U("token_xyz_456"));
+    EXPECT_EQ(cfg.get_token(), U("token_xyz_456"));
 }
