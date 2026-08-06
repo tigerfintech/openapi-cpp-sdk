@@ -115,7 +115,7 @@ notify:webhook:
         exit 0
       fi
       API="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
-      JOBS_JSON=$(curl -sS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "${API}/pipelines/${CI_PIPELINE_ID}/jobs" 2>/dev/null || echo "")
+      JOBS_JSON=$(curl --fail -sS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "${API}/pipelines/${CI_PIPELINE_ID}/jobs" 2>/dev/null || echo "")
       HAS_FAILED="no"
       FAILED_JOBS=""
       if [ -n "$JOBS_JSON" ] && command -v python3 >/dev/null 2>&1; then
