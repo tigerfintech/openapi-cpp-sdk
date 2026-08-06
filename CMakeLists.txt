@@ -32,9 +32,12 @@ if(WIN32)
     set(CMAKE_THREAD_PREFER_PTHREAD OFF)
     set(THREADS_PREFER_PTHREAD_FLAG OFF)
 endif()
-# Requires Boost >= 1.86. cpprestsdk is built from source against the same BOOST_ROOT,
-# so ABI is consistent regardless of version. Pass -DBOOST_ROOT to use a specific copy.
-find_package(Boost 1.86 REQUIRED COMPONENTS thread log program_options chrono filesystem)
+# Requires Boost >= 1.86 for source-built installs; CI Docker runners using
+# apt-installed Boost (Debian bookworm = 1.74) can pass -DBOOST_MIN_VERSION=1.74.
+# cpprestsdk is built from source against the same BOOST_ROOT, so ABI is
+# consistent regardless of version. Pass -DBOOST_ROOT to use a specific copy.
+set(BOOST_MIN_VERSION 1.86 CACHE STRING "Minimum Boost version")
+find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS thread log program_options chrono filesystem)
 find_package(Threads REQUIRED)
 # Protobuf 5.x's public headers (coded_stream.h etc.) directly include Abseil
 # headers, so a matching Abseil must be resolvable wherever Protobuf headers

@@ -3,11 +3,11 @@
 # unit-test: builds tigerapi + tests, runs unit tests (no credentials needed)
 # integration-test: runs against live sandbox (manual; needs real credentials)
 #
-# The runner is a shell executor with no sudo (no tty / no askpass).
-# Dependencies (Boost, Abseil, Protobuf, cpprestsdk, GoogleTest) are built
-# from source to a project-relative prefix by scripts/build_linux_mac.sh.
-# Only basic build tools (cmake, gcc, g++, make, git, tar, wget) must be
-# pre-installed on the runner.
+# Uses a Docker executor (gcc:13) tagged 'openapi'. The gcc:13 image provides
+# a modern glibc and apt for installing Boost from system packages, avoiding
+# the unreliable GitHub download that was failing on the previous shell runner.
+# Abseil, cpprestsdk, and GoogleTest are still built from source by
+# scripts/build_linux_mac.sh (smaller downloads than the Boost tarball).
 
 stages:
   - unit-test
@@ -17,40 +17,46 @@ variables:
   BUILD_DIR: build_ci
   CTEST_OUTPUT_ON_FAILURE: "1"
 
-# Shared setup: redirect all dependency prefixes to a project-relative
-# directory so that no sudo is required. The build script detects CI mode
-# via CI_PIPELINE_ID and skips sudo package installation automatically.
-.cpp_setup: &cpp_setup
-  - |
-    export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
-    export BOOST_ROOT="${LOCAL_OPT_PREFIX}/boost_1_86_0"
-    export CPPREST_PREFIX="${LOCAL_OPT_PREFIX}/cpprestsdk"
-    export ABSL_PREFIX="${LOCAL_OPT_PREFIX}/abseil-20240722.0"
-    export PROTOBUF_PREFIX="${LOCAL_OPT_PREFIX}/protobuf-v5.28.3"
-    export GTEST_PREFIX="${LOCAL_OPT_PREFIX}/googletest-v1.14.0"
-    export SDK_INSTALL_PREFIX="${CI_PROJECT_DIR}/output/Linux"
-    export SDK_INCLUDE_PREFIX="${SDK_INSTALL_PREFIX}"
-    export BUILD_TYPE=Release
-    export BUILD_TYPES=Release
-    export SKIP_DEMO=1
-    export SKIP_INCLUDE_COPY=1
+# Shared setup: install Boost + build tools via apt (Docker root, no sudo),
+# then set dependency prefixes. BOOST_ROOT points to /usr so the build script
+# finds the apt-installed Boost and skips the GitHub download. Protobuf,
+# Abseil, cpprestsdk, and GoogleTest are built from source to a local prefix.
+.cpp_base:
+  image: gcc:13
+  tags:
+    - openapi
+  before_script:
+    - apt-get update && apt-get install -y libboost-all-dev libprotobuf-dev protobuf-compiler cmake pkg-config
+    - |
+      export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
+      export BOOST_ROOT="/usr"
+      export CPPREST_PREFIX="${LOCAL_OPT_PREFIX}/cpprestsdk"
+      export ABSL_PREFIX="${LOCAL_OPT_PREFIX}/abseil-20240722.0"
+      export PROTOBUF_PREFIX="${LOCAL_OPT_PREFIX}/protobuf-v5.28.3"
+      export GTEST_PREFIX="${LOCAL_OPT_PREFIX}/googletest-v1.14.0"
+      export SDK_INSTALL_PREFIX="${CI_PROJECT_DIR}/output/Linux"
+      export SDK_INCLUDE_PREFIX="${SDK_INSTALL_PREFIX}"
+      export BUILD_TYPE=Release
+      export BUILD_TYPES=Release
+      export SKIP_DEMO=1
+      export SKIP_INCLUDE_COPY=1
 
 unit-test:
+  extends: .cpp_base
   stage: unit-test
-  before_script:
-    - *cpp_setup
   script:
     - chmod +x scripts/build_linux_mac.sh
-    # Build tigerapi + all dependencies (Boost / Protobuf / Abseil / cpprestsdk / GTest)
+    # Build tigerapi + deps (Boost found via apt; Protobuf/Abseil/cpprestsdk/GTest from source)
     - ./scripts/build_linux_mac.sh
     # Detect GTest cmake config dir (lib vs lib64) after build
     - GTEST_CONFIG=$(find "$GTEST_PREFIX" -name "GTestConfig.cmake" 2>/dev/null | head -1); GTEST_CMAKE_DIR=""; [[ -n "$GTEST_CONFIG" ]] && GTEST_CMAKE_DIR=$(dirname "$GTEST_CONFIG")
-    # Build tests ─────────────────────────────────────────────────────────────
+    # Build tests
     - |
       cmake -S . -B "$BUILD_DIR" \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_TESTS=ON \
         -DBOOST_ROOT="$BOOST_ROOT" \
+        -DBOOST_MIN_VERSION=1.74 \
         -DPROTOBUF_PREFIX="$PROTOBUF_PREFIX" \
         -DABSL_PREFIX="$ABSL_PREFIX" \
         -DCPPREST_PREFIX="$CPPREST_PREFIX" \
@@ -68,10 +74,9 @@ unit-test:
     expire_in: 1 week
 
 integration-test:
+  extends: .cpp_base
   stage: integration-test
   when: manual
-  before_script:
-    - *cpp_setup
   script:
     - chmod +x scripts/build_linux_mac.sh
     - ./scripts/build_linux_mac.sh
@@ -81,6 +86,7 @@ integration-test:
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_TESTS=ON \
         -DBOOST_ROOT="$BOOST_ROOT" \
+        -DBOOST_MIN_VERSION=1.74 \
         -DPROTOBUF_PREFIX="$PROTOBUF_PREFIX" \
         -DABSL_PREFIX="$ABSL_PREFIX" \
         -DCPPREST_PREFIX="$CPPREST_PREFIX" \
@@ -93,3 +99,59 @@ integration-test:
     name: sandbox
   variables:
     TIGER_RUN_INTEG: "true"
+
+# Pipeline result notification via a generic webhook (Feishu/Lark incoming
+# webhook). WEBHOOK_URL is a masked CI Variable — fork and PR runs that don't
+# configure it skip silently. notify failure never blocks.
+notify:webhook:
+  stage: .post
+  when: always
+  allow_failure: true
+  dependencies: []
+  script:
+    - |
+      if [ -z "$WEBHOOK_URL" ]; then
+        echo "WEBHOOK_URL not configured, skipping notification"
+        exit 0
+      fi
+      API="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
+      JOBS_JSON=$(curl -sS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "${API}/pipelines/${CI_PIPELINE_ID}/jobs" 2>/dev/null || echo "[]")
+      HAS_FAILED="no"
+      FAILED_JOBS=""
+      if command -v python3 >/dev/null 2>&1; then
+        OUT=$(printf '%s' "$JOBS_JSON" | python3 -c "import sys,json; js=json.load(sys.stdin); failed=[j['name'] for j in js if j.get('status')=='failed' and not j.get('allow_failure')]; print('yes' if failed else 'no'); print(', '.join(failed))" 2>/dev/null || printf 'no\n')
+        HAS_FAILED=$(printf '%s\n' "$OUT" | sed -n '1p')
+        FAILED_JOBS=$(printf '%s\n' "$OUT" | sed -n '2p')
+      else
+        echo "python3 not found, falling back to CI_PIPELINE_STATUS"
+        if [ "$CI_PIPELINE_STATUS" = "failed" ]; then HAS_FAILED="yes"; fi
+      fi
+      TITLE="✅ Pipeline passed"
+      COLOR="green"
+      if [ "$HAS_FAILED" = "yes" ]; then
+        TITLE="❌ Pipeline failed"
+        COLOR="red"
+      fi
+      CONTENT="**Repo:** ${CI_PROJECT_NAME}\n**Branch:** ${CI_COMMIT_REF_NAME}\n**Commit:** ${CI_COMMIT_SHORT_SHA}\n"
+      if [ -n "$FAILED_JOBS" ]; then
+        CONTENT="${CONTENT}\n**Failed jobs:** ${FAILED_JOBS}\n"
+      fi
+      CONTENT="${CONTENT}[View pipeline](${CI_PROJECT_URL}/-/pipelines/${CI_PIPELINE_ID})"
+      PAYLOAD=$(cat <<EOF
+      {
+        "msg_type": "interactive",
+        "card": {
+          "header": {
+            "title": {"tag": "plain_text", "content": "$TITLE #${CI_PIPELINE_IID} — ${CI_PROJECT_NAME}"},
+            "template": "$COLOR"
+          },
+          "elements": [
+            {"tag": "div", "text": {"tag": "lark_md", "content": "$CONTENT"}}
+          ]
+        }
+      }
+      EOF
+      )
+      curl --fail -sS -X POST "$WEBHOOK_URL" \
+        -H 'Content-Type: application/json' \
+        -d "$PAYLOAD"
