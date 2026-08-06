@@ -15,7 +15,7 @@ using namespace TIGER_API::test;
  *   TIGER_TEST_ID, TIGER_TEST_PRIVATE_KEY, TIGER_TEST_ACCOUNT
  */
 
-TEST(QuoteClientInteg, GetSymbols_ReturnsNonEmpty) {
+TEST(QuoteClientInteg, GetSymbols_ReturnsValidStructure) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
@@ -24,4 +24,8 @@ TEST(QuoteClientInteg, GetSymbols_ReturnsNonEmpty) {
     web::json::value result = client->get_symbols();
     EXPECT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
+    // Verify the result is actually non-empty, matching the test's intent
+    if (result.is_array()) {
+        EXPECT_GT(result.size(), 0u);
+    }
 }

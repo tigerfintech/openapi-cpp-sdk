@@ -74,6 +74,8 @@ add_executable(unit_tests
     unit/test_trade_client_serialize.cpp
 )
 common_test_setup(unit_tests)
+# test_client_config_props.cpp uses std::filesystem (C++17)
+set_target_properties(unit_tests PROPERTIES CXX_STANDARD 17)
 add_test(NAME UnitTests COMMAND unit_tests)
 
 # ── Integration tests (gated by TIGER_RUN_INTEG=true) ────────────────────────

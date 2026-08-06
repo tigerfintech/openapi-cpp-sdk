@@ -423,7 +423,7 @@ TEST(OrderUtilTest, OcaBracketsOrder_ProfitTakerTif) {
     Contract c = aapl();
     Order o = OrderUtil::oca_brackets_order(kAccount, c, kBuy, 100LL,
         185.0, U("GTC"), 165.0, 0.0, U("GTC"));
-    ASSERT_GE(o.oca_orders.size(), 1u);
+    ASSERT_GE(o.oca_orders.size(), 2u);
     EXPECT_EQ(o.oca_orders[0].time_in_force, U("GTC"));
     EXPECT_EQ(o.oca_orders[1].time_in_force, U("GTC"));
 }
@@ -433,7 +433,7 @@ TEST(OrderUtilTest, OcaBracketsOrder_AccountSet) {
     Order o = OrderUtil::oca_brackets_order(kAccount, c, kBuy, 100LL,
         185.0, U("DAY"), 165.0, 0.0, U("DAY"));
     EXPECT_EQ(o.account, kAccount);
-    ASSERT_GE(o.oca_orders.size(), 1u);
+    ASSERT_GE(o.oca_orders.size(), 2u);
     EXPECT_EQ(o.oca_orders[0].account, kAccount);
     EXPECT_EQ(o.oca_orders[1].account, kAccount);
 }

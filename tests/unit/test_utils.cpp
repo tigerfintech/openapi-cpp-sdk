@@ -219,25 +219,25 @@ TEST(UtilsTest, CamelToSnake_SingleKey) {
 }
 
 TEST(UtilsTest, CamelToSnake_MultipleKeys) {
-    // Note: camel_to_snake modifies the object in-place during iteration,
-    // which is UB for multi-key objects with cpprestsdk's vector-backed JSON.
-    // Test with a single key to verify conversion works.
     web::json::value obj = web::json::value::object();
     obj[U("firstName")] = web::json::value::string(U("John"));
+    obj[U("lastName")] = web::json::value::string(U("Doe"));
+    obj[U("age")] = web::json::value::number(30);
     Utils::camel_to_snake(obj);
     EXPECT_TRUE(obj.has_field(U("first_name")));
     EXPECT_FALSE(obj.has_field(U("firstName")));
+    EXPECT_TRUE(obj.has_field(U("last_name")));
+    EXPECT_FALSE(obj.has_field(U("lastName")));
+    EXPECT_TRUE(obj.has_field(U("age")));
 }
 
 TEST(UtilsTest, CamelToSnake_AlreadySnake_Unchanged) {
-    // Note: camel_to_snake erases the key even when snake_key == key,
-    // because it sets obj[snake_key] then erases obj[key] (same key).
-    // This is a known quirk of the implementation.
+    // Keys that are already snake_case should survive: the implementation
+    // skips erase when snake_key == key, so the field is preserved.
     web::json::value obj = web::json::value::object();
     obj[U("already_snake")] = web::json::value::string(U("v"));
     Utils::camel_to_snake(obj);
-    // The field is removed due to the erase-after-set quirk
-    EXPECT_FALSE(obj.has_field(U("already_snake")));
+    EXPECT_TRUE(obj.has_field(U("already_snake")));
 }
 
 TEST(UtilsTest, CamelToSnake_NestedObject) {
@@ -251,7 +251,6 @@ TEST(UtilsTest, CamelToSnake_NestedObject) {
 }
 
 TEST(UtilsTest, CamelToSnake_ArrayElements) {
-    // Note: array elements with single key each work fine.
     web::json::value arr = web::json::value::array(1);
     web::json::value elem = web::json::value::object();
     elem[U("itemId")] = web::json::value::number(1);

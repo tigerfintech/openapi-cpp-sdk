@@ -35,6 +35,8 @@ unit-test:
         -DABSL_PREFIX="${ABSL_PREFIX:-$(pwd)/build/abseil}"
     - cmake --build "$BUILD_DIR" --target unit_tests -j$(nproc)
     # Run unit tests ──────────────────────────────────────────────────────────
+    # GTEST_OUTPUT makes gtest write JUnit XML for GitLab's junit report artifact
+    - export GTEST_OUTPUT=xml:$BUILD_DIR/unit_test_results.xml
     - ctest --test-dir "$BUILD_DIR" -R UnitTests -V
   artifacts:
     reports:

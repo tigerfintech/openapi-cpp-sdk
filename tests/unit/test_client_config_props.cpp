@@ -5,6 +5,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <filesystem>
 
 using namespace TIGER_API;
 
@@ -97,7 +98,7 @@ TEST(ClientConfigPropsTest, LoadProps_DirectoryPath) {
     // it looks for tiger_openapi_config.properties in that directory.
     // Directory path must have a trailing slash for the path concatenation.
     const char* dir_path = "/tmp/test_cfg_dir/";
-    system("mkdir -p /tmp/test_cfg_dir");
+    std::filesystem::create_directories(dir_path);
     const char* file_path = "/tmp/test_cfg_dir/tiger_openapi_config.properties";
     {
         std::ofstream out(file_path);
@@ -126,7 +127,7 @@ TEST(ClientConfigPropsTest, LoadProps_NonexistentFile) {
 TEST(ClientConfigPropsTest, LoadToken_FromFile) {
     // Create a directory with both config and token files
     const char* dir_path = "/tmp/test_cfg_token_dir/";
-    system("mkdir -p /tmp/test_cfg_token_dir");
+    std::filesystem::create_directories(dir_path);
 
     // Create config file
     {
@@ -147,7 +148,7 @@ TEST(ClientConfigPropsTest, LoadToken_FromFile) {
 TEST(ClientConfigPropsTest, LoadToken_NoTokenFile) {
     // Create a directory with only config file (no token file)
     const char* dir_path = "/tmp/test_cfg_no_token_dir";
-    system("mkdir -p /tmp/test_cfg_no_token_dir");
+    std::filesystem::create_directories(dir_path);
     {
         std::ofstream out("/tmp/test_cfg_no_token_dir/tiger_openapi_config.properties");
         out << "tiger_id=tid_no_token\n";
@@ -205,7 +206,7 @@ TEST(ClientConfigPropsTest, LicenseTBSG_NotUS) {
 TEST(ClientConfigPropsTest, TokenRefresh_SavesTokenToFile) {
     // Set up a temp directory with config and token files
     const char* dir_path = "/tmp/test_cfg_refresh_dir/";
-    system("mkdir -p /tmp/test_cfg_refresh_dir");
+    std::filesystem::create_directories(dir_path);
 
     {
         std::ofstream out("/tmp/test_cfg_refresh_dir/tiger_openapi_config.properties");
