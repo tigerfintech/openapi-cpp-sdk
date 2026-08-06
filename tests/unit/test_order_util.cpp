@@ -265,3 +265,41 @@ TEST(OrderUtilTest, AddBrackets_StpLmtWhenLimitGiven) {
     OrderUtil::add_brackets_order(base, 185.0, U("DAY"), false, 165.0, 164.0, U("DAY"));
     EXPECT_EQ(base.stop_loss_order_type, U("STP_LMT"));
 }
+
+// ── LimitOrder overloads without account ────────────────────────────────────
+
+TEST(OrderUtilTest, LimitOrder_NoAccount_DoublePice_OrderType) {
+    Contract c = aapl();
+    Order o = OrderUtil::limit_order(c, kBuy, 100, 175.5);
+    EXPECT_EQ(o.order_type, U("LMT"));
+    EXPECT_DOUBLE_EQ(o.limit_price, 175.5);
+    // account defaults to empty when not specified
+    EXPECT_TRUE(o.account.empty());
+}
+
+TEST(OrderUtilTest, LimitOrder_NoAccount_StringPrice_OrderType) {
+    Contract c = aapl();
+    Order o = OrderUtil::limit_order(c, kBuy, 100, U("175.50"));
+    EXPECT_EQ(o.order_type, U("LMT"));
+    // limit_price should be parsed from the string
+    EXPECT_DOUBLE_EQ(o.limit_price, 175.5);
+}
+
+// ── IcebergOrder full params ─────────────────────────────────────────────────
+
+TEST(OrderUtilTest, IcebergOrder_FullParams_DisplaySize) {
+    Contract c = aapl();
+    // full: account, contract, action, quantity, limit_price, display_size,
+    //       min_display_size, check_intervals, price_type, start_time, end_time
+    Order o = OrderUtil::iceberg_order(kAccount, c, kBuy,
+                                        1000LL, 175.0,
+                                        100LL,   // display_size
+                                        50LL,    // min_display_size
+                                        5LL,     // check_intervals
+                                        U("LMT"),// price_type
+                                        0LL,     // start_time (0 = omit)
+                                        0LL);    // end_time
+    EXPECT_EQ(o.order_type, U("LMT"));
+    EXPECT_EQ(o.display_size, 100LL);
+    EXPECT_DOUBLE_EQ(o.limit_price, 175.0);
+}
