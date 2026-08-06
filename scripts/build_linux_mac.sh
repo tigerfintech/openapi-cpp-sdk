@@ -9,6 +9,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 OS_NAME="$(uname -s)"
 
+# Detect CI environment (GitLab CI sets CI_PIPELINE_ID).
+# In CI mode the build script avoids sudo and uses project-relative prefix paths
+# so that no tty/askpass is required.
+CI_MODE="${CI_MODE:-0}"
+if [[ -n "${CI_PIPELINE_ID:-}" ]]; then
+  CI_MODE=1
+fi
+
 log() { printf "\033[1;32m[+]\033[0m %s\n" "$*"; }
 warn() { printf "\033[1;33m[!]\033[0m %s\n" "$*"; }
 err() { printf "\033[1;31m[x]\033[0m %s\n" "$*" 1>&2; }
@@ -92,13 +100,20 @@ BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
 BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
 BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
-LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
+if [[ "$CI_MODE" == "1" ]]; then
+  LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-${PROJECT_ROOT}/.deps/opt}"
+else
+  LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
+fi
+mkdir -p "$LOCAL_OPT_PREFIX"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
 ABSL_PREFIX="${ABSL_PREFIX:-${LOCAL_OPT_PREFIX}/abseil-${ABSEIL_VERSION}}"
 PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
 PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
+GTEST_VERSION="${GTEST_VERSION:-v1.14.0}"
+GTEST_PREFIX="${GTEST_PREFIX:-${LOCAL_OPT_PREFIX}/googletest-${GTEST_VERSION}}"
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
@@ -112,13 +127,13 @@ ensure_prefix_writable() {
     if [[ -w "$prefix" ]]; then
       return 0
     fi
-    if command -v sudo >/dev/null 2>&1; then
+    if [[ "$CI_MODE" != "1" ]] && command -v sudo >/dev/null 2>&1; then
       if sudo mkdir -p "$prefix" 2>/dev/null; then
         SUDO_INSTALL="sudo"
         return 0
       fi
     fi
-    warn "No write permission for $prefix and sudo unavailable/failed."
+    warn "No write permission for $prefix${CI_MODE:+ (CI mode: sudo disabled)}."
     return 1
   else
     local parent
@@ -127,13 +142,13 @@ ensure_prefix_writable() {
       mkdir -p "$prefix"
       return 0
     fi
-    if command -v sudo >/dev/null 2>&1; then
+    if [[ "$CI_MODE" != "1" ]] && command -v sudo >/dev/null 2>&1; then
       if sudo mkdir -p "$prefix" 2>/dev/null; then
         SUDO_INSTALL="sudo"
         return 0
       fi
     fi
-    warn "Cannot create $prefix (no permission). Try running script with sudo or set SDK_INSTALL_PREFIX to a writable location."
+    warn "Cannot create $prefix (no permission)${CI_MODE:+ (CI mode: sudo disabled)}. Set SDK_INSTALL_PREFIX to a writable location."
     return 1
   fi
 }
@@ -157,7 +172,7 @@ case "$SDK_LIBRARY_TYPE" in
     ;;
 esac
 
-export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX ABSL_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
+export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX ABSL_PREFIX PROTOBUF_PREFIX GTEST_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
 
 find_tiger_library() {
   local sdk_root="$1"
@@ -180,6 +195,19 @@ find_tiger_library() {
 ensure_prereqs() {
   local base=(git cmake tar)
   if [[ "$OS_NAME" == "Linux" ]]; then
+    # In CI mode the runner has no sudo (no tty / no askpass).
+    # Assume base build tools are pre-installed; just verify they exist.
+    if [[ "$CI_MODE" == "1" ]]; then
+      log "CI mode: skipping system package installation (no sudo)."
+      local missing=()
+      for cmd in git cmake tar wget gcc g++ make; do
+        command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+      done
+      if [[ ${#missing[@]} -gt 0 ]]; then
+        fail "Missing commands in CI: ${missing[*]}. Pre-install them on the runner or in before_script."
+      fi
+      return
+    fi
     local sudo_prefix=(sudo)
     if ! command -v sudo >/dev/null 2>&1; then
       warn "sudo not detected, attempting package manager without it (requires root shell)."
@@ -435,6 +463,29 @@ build_protobuf() {
   popd >/dev/null
 }
 
+build_gtest() {
+  if [[ -f "${GTEST_PREFIX}/lib/cmake/GTest/GTestConfig.cmake" ]]; then
+    log "GoogleTest already installed at ${GTEST_PREFIX}"
+    return
+  fi
+  local repo="${DEPS_DIR}/googletest"
+  if [[ ! -d "$repo/.git" ]]; then
+    git clone https://github.com/google/googletest.git "$repo"
+  fi
+  pushd "$repo" >/dev/null
+  git fetch --tags
+  git checkout "$GTEST_VERSION"
+  rm -rf cmake_build
+  cmake -S . -B cmake_build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$GTEST_PREFIX" \
+    -DBUILD_GMOCK=ON \
+    -DBUILD_SHARED_LIBS=OFF
+  cmake --build cmake_build -- -j "$NUM_JOBS"
+  cmake --install cmake_build
+  popd >/dev/null
+}
+
 regenerate_protos() {
   if [[ "${SKIP_PROTO_REGEN:-0}" == "1" ]]; then
     warn "Skipping protobuf regeneration (SKIP_PROTO_REGEN=1)."
@@ -679,8 +730,9 @@ main() {
       build_cpprestsdk
       build_abseil
       build_protobuf
+      build_gtest
     else
-      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX are set."
+      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX, GTEST_PREFIX are set."
     fi
     regenerate_protos
     build_sdk
