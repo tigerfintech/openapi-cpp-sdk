@@ -26,7 +26,7 @@ variables:
   tags:
     - openapi
   before_script:
-    - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y --fix-broken libboost-all-dev libprotobuf-dev protobuf-compiler cmake pkg-config
+    - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y --no-install-recommends cmake pkg-config wget
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
