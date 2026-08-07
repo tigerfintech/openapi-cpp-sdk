@@ -387,7 +387,7 @@ build_cpprestsdk() {
   fi
   local repo="${DEPS_DIR}/cpprestsdk"
   if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/microsoft/cpprestsdk.git "$repo"
+    git -c http.version=HTTP/1.1 clone https://github.com/microsoft/cpprestsdk.git "$repo"
   fi
   pushd "$repo" >/dev/null
   git submodule update --init
