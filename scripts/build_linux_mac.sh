@@ -98,8 +98,8 @@ DEPS_DIR="${DEPS_DIR:-${PROJECT_ROOT}/.deps}"; mkdir -p "$DEPS_DIR"
 NUM_JOBS="${NUM_JOBS:-$(cpu_cores)}"
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
-BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
-BOOST_URL="https://ghproxy.com/https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
+BOOST_TARBALL="boost_${BOOST_VERSION}.tar.gz"
+BOOST_URL="https://archives.boost.org/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
 if [[ "$CI_MODE" == "1" ]]; then
   LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-${PROJECT_ROOT}/.deps/opt}"
 else
