@@ -277,7 +277,10 @@ detect_openssl() {
   log "OpenSSL detected at ${OPENSSL_ROOT_DIR}"
 }
 
-## Check if a system/package-manager Boost meets our version window (>= 1.86, < 1.90).
+## Check if a system/package-manager Boost meets our minimum (>= 1.74).
+## The project's CMakeLists.txt sets BOOST_MIN_VERSION=1.74, and cpprestsdk is
+## always built from source against the same BOOST_ROOT, so any version >= 1.74
+## is ABI-consistent end-to-end.
 ## Returns 0 and sets BOOST_ROOT if acceptable, 1 otherwise.
 _check_system_boost() {
   local include_dir="$1"
@@ -287,13 +290,11 @@ _check_system_boost() {
   [[ -n "$ver_num" ]] || return 1
   local major=$(( ver_num / 100000 ))
   local minor=$(( (ver_num / 100) % 1000 ))
-  # Require >= 1.86. cpprestsdk is always built from source against the same BOOST_ROOT,
-  # so any version >= 1.86 is ABI-consistent end-to-end.
-  if (( major > 1 || (major == 1 && minor >= 86) )); then
+  if (( major > 1 || (major == 1 && minor >= 74) )); then
     log "Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
     return 0
   fi
-  warn "System Boost ${major}.${minor} < 1.86; will build 1.86 from source."
+  warn "System Boost ${major}.${minor} < 1.74; will build from source."
   return 1
 }
 
@@ -326,10 +327,25 @@ build_boost() {
   local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
   if [[ ! -d "$src_dir" ]]; then
     if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
-      wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
+      # Try multiple mirrors — archives.boost.org is frequently slow/unreliable.
+      local boost_mirrors=(
+        "https://archives.boost.org/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+        "https://sourceforge.net/projects/boost/files/boost/${BOOST_DOTTED}/${BOOST_TARBALL}/download"
+        "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+      )
+      local downloaded=0
+      for url in "${boost_mirrors[@]}"; do
+        log "Trying Boost download from ${url}"
+        if wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${BOOST_TARBALL}" "$url" 2>/dev/null; then
+          downloaded=1
+          break
+        fi
+        warn "Download failed from ${url}, trying next mirror..."
+      done
+      if [[ "$downloaded" -eq 0 ]]; then
         rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
-        fail "Failed to download Boost from ${BOOST_URL}"
-      }
+        fail "Failed to download Boost from all mirrors"
+      fi
     fi
     tar -C "$CACHE_DIR" -xzf "${CACHE_DIR}/${BOOST_TARBALL}"
     # Verify the expected directory was produced by the tarball.

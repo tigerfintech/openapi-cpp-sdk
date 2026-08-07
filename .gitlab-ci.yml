@@ -1,13 +1,19 @@
 # TigerOpen C++ SDK — CI pipeline
 #
-# unit-test: builds tigerapi + tests, runs unit tests (no credentials needed)
-# integration-test: runs against live sandbox (manual; needs real credentials)
+# Two-stage pipeline mirroring the Python SDK:
+#   unit-test:       builds tigerapi + tests, runs unit tests (no credentials)
+#   integration-test: runs against live sandbox (allow_failure; needs credentials)
+#   notify:webhook:  parses JUnit XML artifacts → notification card (python urllib, no curl)
 #
-# Uses a Docker executor (gcc:13) tagged 'openapi'. The gcc:13 image provides
-# a modern glibc and apt for installing Boost from system packages, avoiding
-# the unreliable GitHub download that was failing on the previous shell runner.
-# Abseil, cpprestsdk, and GoogleTest are still built from source by
-# scripts/build_linux_mac.sh (smaller downloads than the Boost tarball).
+# Uses a Docker executor (gcc:13) tagged 'openapi'. Boost is installed via apt
+# (libboost-dev) to avoid the unreliable archives.boost.org download. Abseil,
+# cpprestsdk, and GoogleTest are still built from source by
+# scripts/build_linux_mac.sh.
+#
+# Integration credentials: TIGEROPEN_TIGER_ID, TIGEROPEN_PRIVATE_KEY,
+# TIGEROPEN_ACCOUNT env vars set in GitLab CI Variables (Protected + Masked).
+# The C++ tests read TIGER_TEST_ID / TIGER_TEST_PRIVATE_KEY / TIGER_TEST_ACCOUNT,
+# which are mapped below from the TIGEROPEN_* variables.
 
 stages:
   - unit-test
@@ -26,7 +32,8 @@ variables:
   tags:
     - openapi
   before_script:
-    - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y --no-install-recommends cmake pkg-config wget
+    - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
+    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-dev libssl-dev zlib1g-dev
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
@@ -65,18 +72,27 @@ unit-test:
         -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON
     - cmake --build "$BUILD_DIR" --target unit_tests -j$(nproc)
     # GTEST_OUTPUT makes gtest write JUnit XML for GitLab's junit report artifact
-    - export GTEST_OUTPUT=xml:$BUILD_DIR/unit_test_results.xml
+    - mkdir -p test-results
+    - export GTEST_OUTPUT=xml:$CI_PROJECT_DIR/test-results/unit.xml
     - ctest --test-dir "$BUILD_DIR" -R UnitTests -V
   artifacts:
-    reports:
-      junit: "$BUILD_DIR/unit_test_results.xml"
     when: always
+    paths:
+      - test-results/
+    reports:
+      junit: test-results/unit.xml
     expire_in: 1 week
 
 integration-test:
   extends: .cpp_base
   stage: integration-test
-  when: manual
+  allow_failure: true
+  variables:
+    TIGER_RUN_INTEG: "true"
+    # Map TIGEROPEN_* CI Variables → TIGER_TEST_* env vars expected by test_support.h
+    TIGER_TEST_ID: $TIGEROPEN_TIGER_ID
+    TIGER_TEST_PRIVATE_KEY: $TIGEROPEN_PRIVATE_KEY
+    TIGER_TEST_ACCOUNT: $TIGEROPEN_ACCOUNT
   script:
     - chmod +x scripts/build_linux_mac.sh
     - ./scripts/build_linux_mac.sh
@@ -94,77 +110,104 @@ integration-test:
         -DCMAKE_PREFIX_PATH="$PROTOBUF_PREFIX;$ABSL_PREFIX;$CPPREST_PREFIX;$BOOST_ROOT;$GTEST_PREFIX" \
         -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON
     - cmake --build "$BUILD_DIR" --target integ_tests -j$(nproc)
-    - TIGER_RUN_INTEG=true ctest --test-dir "$BUILD_DIR" -R IntegTests -V
-  environment:
-    name: sandbox
-  variables:
-    TIGER_RUN_INTEG: "true"
+    - mkdir -p test-results
+    - export GTEST_OUTPUT=xml:$CI_PROJECT_DIR/test-results/integ.xml
+    - ctest --test-dir "$BUILD_DIR" -R IntegTests -V
+  artifacts:
+    when: always
+    paths:
+      - test-results/
+    reports:
+      junit: test-results/integ.xml
+    expire_in: 1 week
 
-# Pipeline result notification via a generic webhook (chat incoming
-# webhook). WEBHOOK_URL is a masked CI Variable — fork and PR runs that don't
-# configure it skip silently. notify failure never blocks.
+# Pipeline result notification via chat webhook.
+# Parses JUnit XML artifacts directly (no GitLab API, no curl).
 notify:webhook:
   image: python:3.11-slim
   tags:
     - openapi
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq curl
   stage: .post
   when: always
   allow_failure: true
-  dependencies: []
+  needs:
+    - job: unit-test
+      artifacts: true
+    - job: integration-test
+      artifacts: true
   script:
     - |
-      if [ -z "$WEBHOOK_URL" ]; then
-        echo "WEBHOOK_URL not configured, skipping notification"
-        exit 0
-      fi
-      API="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
-      JOBS_JSON=$(curl --fail -sS --max-time 10 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "${API}/pipelines/${CI_PIPELINE_ID}/jobs" 2>/dev/null || echo "")
-      HAS_FAILED="no"
-      FAILED_JOBS=""
-      if [ -n "$JOBS_JSON" ] && command -v python3 >/dev/null 2>&1; then
-        OUT=$(printf '%s' "$JOBS_JSON" | python3 -c "import sys,json; js=json.load(sys.stdin); failed=[j['name'] for j in js if j.get('status')=='failed' and not j.get('allow_failure')]; print('yes' if failed else 'no'); print(', '.join(failed))" 2>/dev/null || printf 'no\n')
-        HAS_FAILED=$(printf '%s\n' "$OUT" | sed -n '1p')
-        FAILED_JOBS=$(printf '%s\n' "$OUT" | sed -n '2p')
-      else
-        echo "jobs API or python3 unavailable, falling back to CI_PIPELINE_STATUS"
-        if [ "$CI_PIPELINE_STATUS" != "success" ]; then HAS_FAILED="yes"; fi
-      fi
-      TITLE="✅ Pipeline passed"
-      COLOR="green"
-      if [ "$HAS_FAILED" = "yes" ]; then
-        TITLE="❌ Pipeline failed"
-        COLOR="red"
-      fi
-      CONTENT="**Repo:** ${CI_PROJECT_NAME}\n**Branch:** ${CI_COMMIT_REF_NAME}\n**Commit:** ${CI_COMMIT_SHORT_SHA}\n"
-      if [ -n "$FAILED_JOBS" ]; then
-        CONTENT="${CONTENT}\n**Failed jobs:** ${FAILED_JOBS}\n"
-      fi
-      TEST_REPORT=$(curl --fail -sS --max-time 10 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "${API}/pipelines/${CI_PIPELINE_ID}/test_report" 2>/dev/null || echo "")
-      TEST_STATS=""
-      if [ -n "$TEST_REPORT" ] && command -v python3 >/dev/null 2>&1; then
-        TEST_STATS=$(printf '%s' "$TEST_REPORT" | python3 -c "import sys,json; r=json.load(sys.stdin); t=r.get('total',{}); print(f"{t.get('count',0)} tests: {t.get('success',0)} passed, {t.get('failed',0)} failed, {t.get('skipped',0)} skipped")" 2>/dev/null)
-      fi
-      if [ -n "$TEST_STATS" ]; then
-        CONTENT="${CONTENT}\n**Tests:** ${TEST_STATS}\n"
-      fi
-      CONTENT="${CONTENT}[View pipeline](${CI_PROJECT_URL}/-/pipelines/${CI_PIPELINE_ID})"
-      PAYLOAD=$(cat <<EOF
-      {
-        "msg_type": "interactive",
-        "card": {
-          "header": {
-            "title": {"tag": "plain_text", "content": "$TITLE #${CI_PIPELINE_IID} — ${CI_PROJECT_NAME}"},
-            "template": "$COLOR"
-          },
-          "elements": [
-            {"tag": "div", "text": {"tag": os.environ["CARD_CONTENT_TAG"], "content": "$CONTENT"}}
-          ]
-        }
+      python3 << 'PYEOF'
+      import os, json, urllib.request, glob
+      import xml.etree.ElementTree as ET
+
+      webhook_url = os.environ.get("WEBHOOK_URL", "")
+      if not webhook_url:
+          print("WEBHOOK_URL not configured, skipping notification")
+          exit(0)
+      card_content_tag = os.environ["CARD_CONTENT_TAG"]
+
+      # 1. Parse JUnit XML artifacts — split unit/integration stats
+      def parse_xml(path):
+          t, f, s = 0, 0, 0
+          try:
+              tree = ET.parse(path)
+              root = tree.getroot()
+              for suite in root.iter("testsuite"):
+                  t += int(suite.get("tests", 0))
+                  f += int(suite.get("failures", 0)) + int(suite.get("errors", 0))
+                  s += int(suite.get("skipped", 0))
+          except Exception as e:
+              print(f"Failed to parse {path}: {e}")
+          return t, t - f - s, f, s
+
+      unit_t, unit_p, unit_f, unit_s = parse_xml("test-results/unit.xml")
+      integ_t, integ_p, integ_f, integ_s = parse_xml("test-results/integ.xml")
+
+      unit_stats = f"Unit: {unit_t} tests: {unit_p} passed, {unit_f} failed, {unit_s} skipped" if unit_t > 0 else ""
+      integ_stats = f"Integration: {integ_t} tests: {integ_p} passed, {integ_f} failed, {integ_s} skipped" if integ_t > 0 else ""
+
+      # 2. Determine pass/fail: unit test failures = pipeline failed
+      has_failed = unit_f > 0 or integ_f > 0
+      status = os.environ.get("CI_PIPELINE_STATUS", "")
+      if status == "failed":
+          has_failed = True
+
+      # 3. Build notification card
+      title = "❌ Pipeline failed" if has_failed else "✅ Pipeline passed"
+      color = "red" if has_failed else "green"
+      project_name = os.environ.get("CI_PROJECT_NAME", "")
+      branch = os.environ.get("CI_COMMIT_REF_NAME", "")
+      commit = os.environ.get("CI_COMMIT_SHORT_SHA", "")
+      pipeline_iid = os.environ.get("CI_PIPELINE_IID", "")
+      pipeline_url = os.environ.get("CI_PROJECT_URL", "") + "/-/pipelines/" + os.environ.get("CI_PIPELINE_ID", "")
+
+      content = f"**Repo:** {project_name}\n**Branch:** {branch}\n**Commit:** {commit}\n"
+      if unit_stats:
+          content += f"\n**Unit tests:** {unit_stats}\n"
+      if integ_stats:
+          content += f"**Integration tests:** {integ_stats}\n"
+      content += f"[View pipeline]({pipeline_url})"
+
+      payload = {
+          "msg_type": "interactive",
+          "card": {
+              "header": {
+                  "title": {"tag": "plain_text", "content": f"{title} #{pipeline_iid} — {project_name}"},
+                  "template": color
+              },
+              "elements": [
+                  {"tag": "div", "text": {"tag": card_content_tag, "content": content}}
+              ]
+          }
       }
-      EOF
-      )
-      curl --fail -sS --max-time 10 -X POST "$WEBHOOK_URL" \
-        -H 'Content-Type: application/json' \
-        -d "$PAYLOAD"
+
+      data = json.dumps(payload).encode("utf-8")
+      req = urllib.request.Request(webhook_url, data=data, headers={"Content-Type": "application/json"})
+      try:
+          with urllib.request.urlopen(req, timeout=10) as resp:
+              result = json.loads(resp.read())
+              print(f"Webhook response: {result}")
+      except Exception as e:
+          print(f"Webhook request failed: {e}")
+      PYEOF
