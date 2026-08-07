@@ -104,6 +104,11 @@ integration-test:
 # webhook). WEBHOOK_URL is a masked CI Variable — fork and PR runs that don't
 # configure it skip silently. notify failure never blocks.
 notify:webhook:
+  image: python:3.11-slim
+  tags:
+    - openapi
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq curl
   stage: .post
   when: always
   allow_failure: true
