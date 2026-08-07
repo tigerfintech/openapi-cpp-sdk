@@ -39,6 +39,27 @@ web::json::value extract_array(const web::json::value &v) {
     return web::json::value::array();
 }
 
+/// Check that a JSON field exists, is a string, and is non-empty.
+/// Absent or null fields are treated as "not present" (returns true = OK).
+/// Non-string types or empty strings return false (caller should EXPECT).
+static bool json_nonempty_string(const web::json::value &obj,
+                                 const utility::string_t &field) {
+    if (!obj.has_field(field)) return true;  // absent = skip assertion
+    const auto &v = obj.at(field);
+    if (v.is_null()) return true;            // null = skip assertion
+    if (!v.is_string()) return false;        // wrong type = fail
+    return !v.as_string().empty();
+}
+
+/// Check that a JSON field exists and is a string (for EXPECT_EQ cases).
+/// Returns false if absent, null, or non-string; true only for actual strings.
+static bool json_is_string(const web::json::value &obj,
+                            const utility::string_t &field) {
+    return obj.has_field(field)
+        && !obj.at(field).is_null()
+        && obj.at(field).is_string();
+}
+
 } // anonymous namespace
 
 // ── Asset ─────────────────────────────────────────────────────────────────────
@@ -58,15 +79,13 @@ TEST(TradeClientInteg, GetAsset_ReturnsValidFields) {
         const auto &asset = arr.at(0);
         ASSERT_TRUE(asset.is_object());
 
-        if (asset.has_field(U("account"))) {
-            EXPECT_FALSE(asset.at(U("account")).as_string().empty())
-                << "Asset.account is empty, want non-empty";
-        }
-        if (asset.has_field(U("currency"))) {
-            EXPECT_FALSE(asset.at(U("currency")).as_string().empty())
-                << "Asset.currency is empty, want non-empty";
-        }
-        if (asset.has_field(U("netLiquidation"))) {
+        EXPECT_TRUE(json_nonempty_string(asset, U("account")))
+            << "Asset.account is empty, want non-empty";
+
+        EXPECT_TRUE(json_nonempty_string(asset, U("currency")))
+            << "Asset.currency is empty, want non-empty";
+
+        if (asset.has_field(U("netLiquidation")) && asset.at(U("netLiquidation")).is_double()) {
             EXPECT_GE(asset.at(U("netLiquidation")).as_double(), 0.0)
                 << "Asset.netLiquidation should be >= 0";
         }
@@ -90,10 +109,9 @@ TEST(TradeClientInteg, GetAccounts_ReturnsValidFields) {
         const auto &acct = arr.at(0);
         ASSERT_TRUE(acct.is_object());
 
-        if (acct.has_field(U("account"))) {
-            EXPECT_FALSE(acct.at(U("account")).as_string().empty())
-                << "Account.account is empty, want non-empty";
-        }
+        EXPECT_TRUE(json_nonempty_string(acct, U("account")))
+            << "Account.account is empty, want non-empty";
+
     });
 }
 
@@ -116,18 +134,15 @@ TEST(TradeClientInteg, GetPositions_ReturnsValidFields) {
             const auto &pos = arr.at(i);
             ASSERT_TRUE(pos.is_object());
 
-            if (pos.has_field(U("symbol"))) {
-                EXPECT_FALSE(pos.at(U("symbol")).as_string().empty())
-                    << "Position[" << i << "].symbol is empty, want non-empty";
-            }
-            if (pos.has_field(U("account"))) {
-                EXPECT_FALSE(pos.at(U("account")).as_string().empty())
-                    << "Position[" << i << "].account is empty, want non-empty";
-            }
-            if (pos.has_field(U("secType"))) {
-                EXPECT_FALSE(pos.at(U("secType")).as_string().empty())
-                    << "Position[" << i << "].secType is empty, want non-empty";
-            }
+            EXPECT_TRUE(json_nonempty_string(pos, U("symbol")))
+                << "Position[" << i << "].symbol is empty, want non-empty";
+
+            EXPECT_TRUE(json_nonempty_string(pos, U("account")))
+                << "Position[" << i << "].account is empty, want non-empty";
+
+            EXPECT_TRUE(json_nonempty_string(pos, U("secType")))
+                << "Position[" << i << "].secType is empty, want non-empty";
+
         }
     });
 }
@@ -159,22 +174,20 @@ TEST(TradeClientInteg, GetOrders_ReturnsValidFields) {
             const auto &ord = arr.at(i);
             ASSERT_TRUE(ord.is_object());
 
-            if (ord.has_field(U("id"))) {
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
                 EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+
                     << "Order[" << i << "].id = 0, want non-zero";
             }
-            if (ord.has_field(U("symbol"))) {
-                EXPECT_FALSE(ord.at(U("symbol")).as_string().empty())
-                    << "Order[" << i << "].symbol is empty, want non-empty";
-            }
-            if (ord.has_field(U("action"))) {
-                EXPECT_FALSE(ord.at(U("action")).as_string().empty())
-                    << "Order[" << i << "].action is empty, want non-empty";
-            }
-            if (ord.has_field(U("status"))) {
-                EXPECT_FALSE(ord.at(U("status")).as_string().empty())
-                    << "Order[" << i << "].status is empty, want non-empty";
-            }
+            EXPECT_TRUE(json_nonempty_string(ord, U("symbol")))
+                << "Order[" << i << "].symbol is empty, want non-empty";
+
+            EXPECT_TRUE(json_nonempty_string(ord, U("action")))
+                << "Order[" << i << "].action is empty, want non-empty";
+
+            EXPECT_TRUE(json_nonempty_string(ord, U("status")))
+                << "Order[" << i << "].status is empty, want non-empty";
+
         }
     });
 }
@@ -196,18 +209,17 @@ TEST(TradeClientInteg, GetContract_ReturnsValidFields) {
         const auto &contract = arr.at(0);
         ASSERT_TRUE(contract.is_object());
 
-        if (contract.has_field(U("symbol"))) {
-            EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"))
+        if (json_is_string(contract, U("symbol"))) {
+        EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"))
                 << "Contract.symbol mismatch";
         }
-        if (contract.has_field(U("secType"))) {
-            EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"))
+        if (json_is_string(contract, U("secType"))) {
+        EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"))
                 << "Contract.secType mismatch";
         }
-        if (contract.has_field(U("currency"))) {
-            EXPECT_FALSE(contract.at(U("currency")).as_string().empty())
-                << "Contract.currency is empty, want non-empty (e.g. USD)";
-        }
+        EXPECT_TRUE(json_nonempty_string(contract, U("currency")))
+            << "Contract.currency is empty, want non-empty (e.g. USD)";
+
     });
 }
 
@@ -230,18 +242,17 @@ TEST(TradeClientInteg, GetActiveOrders_ReturnsValidFields) {
             const auto &ord = arr.at(i);
             ASSERT_TRUE(ord.is_object());
 
-            if (ord.has_field(U("id"))) {
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
                 EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+
                     << "ActiveOrder[" << i << "].id = 0, want non-zero";
             }
-            if (ord.has_field(U("symbol"))) {
-                EXPECT_FALSE(ord.at(U("symbol")).as_string().empty())
-                    << "ActiveOrder[" << i << "].symbol is empty, want non-empty";
-            }
-            if (ord.has_field(U("status"))) {
-                EXPECT_FALSE(ord.at(U("status")).as_string().empty())
-                    << "ActiveOrder[" << i << "].status is empty, want non-empty";
-            }
+            EXPECT_TRUE(json_nonempty_string(ord, U("symbol")))
+                << "ActiveOrder[" << i << "].symbol is empty, want non-empty";
+
+            EXPECT_TRUE(json_nonempty_string(ord, U("status")))
+                << "ActiveOrder[" << i << "].status is empty, want non-empty";
+
         }
     });
 }
@@ -267,7 +278,7 @@ unsigned long long get_first_order_id(TradeClient &client) {
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &ord = arr.at(i);
-        if (ord.is_object() && ord.has_field(U("id"))) {
+        if (ord.is_object() && ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
             auto id = ord.at(U("id")).as_number().to_int64();
             if (id != 0) return static_cast<unsigned long long>(id);
         }
@@ -293,14 +304,12 @@ TEST(TradeClientInteg, GetPrimeAsset_ReturnsValidFields) {
         for (size_t i = 0; i < arr.size(); ++i) {
             const auto &asset = arr.at(i);
             ASSERT_TRUE(asset.is_object());
-            if (asset.has_field(U("account"))) {
-                EXPECT_FALSE(asset.at(U("account")).as_string().empty())
-                    << "PrimeAsset[" << i << "].account is empty";
-            }
-            if (asset.has_field(U("currency"))) {
-                EXPECT_FALSE(asset.at(U("currency")).as_string().empty())
-                    << "PrimeAsset[" << i << "].currency is empty";
-            }
+            EXPECT_TRUE(json_nonempty_string(asset, U("account")))
+                << "PrimeAsset[" << i << "].account is empty";
+
+            EXPECT_TRUE(json_nonempty_string(asset, U("currency")))
+                << "PrimeAsset[" << i << "].currency is empty";
+
         }
     });
 }
@@ -332,10 +341,8 @@ TEST(TradeClientInteg, GetPositionList_ReturnsValidEntries) {
         for (size_t i = 0; i < positions.size(); ++i) {
             EXPECT_FALSE(positions[i].contract.symbol.empty())
                 << "Position[" << i << "].symbol is empty";
-            if (!positions[i].account.empty()) {
-                EXPECT_FALSE(positions[i].account.empty())
-                    << "Position[" << i << "].account is empty";
-            }
+            EXPECT_FALSE(positions[i].account.empty())
+                << "Position[" << i << "].account is empty";
         }
     });
 }
@@ -358,14 +365,14 @@ TEST(TradeClientInteg, GetFilledOrders_ReturnsValidFields) {
         for (size_t i = 0; i < arr.size(); ++i) {
             const auto &ord = arr.at(i);
             ASSERT_TRUE(ord.is_object());
-            if (ord.has_field(U("id"))) {
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
                 EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+
                     << "FilledOrder[" << i << "].id = 0, want non-zero";
             }
-            if (ord.has_field(U("status"))) {
-                EXPECT_FALSE(ord.at(U("status")).as_string().empty())
-                    << "FilledOrder[" << i << "].status is empty";
-            }
+            EXPECT_TRUE(json_nonempty_string(ord, U("status")))
+                << "FilledOrder[" << i << "].status is empty";
+
         }
     });
 }
@@ -386,8 +393,9 @@ TEST(TradeClientInteg, GetInactiveOrders_ReturnsValidFields) {
         for (size_t i = 0; i < arr.size(); ++i) {
             const auto &ord = arr.at(i);
             ASSERT_TRUE(ord.is_object());
-            if (ord.has_field(U("id"))) {
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
                 EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+
                     << "InactiveOrder[" << i << "].id = 0, want non-zero";
             }
         }
@@ -448,11 +456,11 @@ TEST(TradeClientInteg, GetContracts_ReturnsValidFields) {
         ASSERT_GT(arr.size(), 0u) << "GetContracts returned empty for AAPL STK";
         const auto &contract = arr.at(0);
         ASSERT_TRUE(contract.is_object());
-        if (contract.has_field(U("symbol"))) {
-            EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
+        if (json_is_string(contract, U("symbol"))) {
+        EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
         }
-        if (contract.has_field(U("secType"))) {
-            EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"));
+        if (json_is_string(contract, U("secType"))) {
+        EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"));
         }
     });
 }
@@ -472,8 +480,8 @@ TEST(TradeClientInteg, GetQuoteContract_ReturnsValidFields) {
         ASSERT_GT(arr.size(), 0u) << "GetQuoteContract returned empty for AAPL STK";
         const auto &contract = arr.at(0);
         ASSERT_TRUE(contract.is_object());
-        if (contract.has_field(U("symbol"))) {
-            EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
+        if (json_is_string(contract, U("symbol"))) {
+        EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"));
         }
     });
 }

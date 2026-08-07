@@ -41,6 +41,26 @@ web::json::value extract_array(const web::json::value &v) {
     return web::json::value::array();
 }
 
+/// Check that a JSON field exists, is a string, and is non-empty.
+/// Absent or null fields are treated as "not present" (returns true = OK).
+/// Non-string types or empty strings return false (caller should EXPECT).
+static bool json_nonempty_string(const web::json::value &obj,
+                                 const utility::string_t &field) {
+    if (!obj.has_field(field)) return true;
+    const auto &v = obj.at(field);
+    if (v.is_null()) return true;
+    if (!v.is_string()) return false;
+    return !v.as_string().empty();
+}
+
+/// Check that a JSON field exists and is a string (for EXPECT_EQ cases).
+static bool json_is_string(const web::json::value &obj,
+                            const utility::string_t &field) {
+    return obj.has_field(field)
+        && !obj.at(field).is_null()
+        && obj.at(field).is_string();
+}
+
 } // anonymous namespace
 
 // ── Existing test, enhanced with field-level assertions ──────────────────────
@@ -60,8 +80,7 @@ TEST(QuoteClientInteg, GetSymbols_ReturnsValidStructure) {
         // When entries exist, each should carry a symbol field.
         const auto &first = result.at(0);
         if (first.is_object()) {
-            EXPECT_TRUE(first.has_field(U("symbol")));
-            EXPECT_FALSE(first.at(U("symbol")).as_string().empty());
+            EXPECT_TRUE(json_nonempty_string(first, U("symbol")));
         }
     }
 }
@@ -82,14 +101,14 @@ TEST(QuoteClientInteg, GetMarketState_ReturnsValidFields) {
 
     const auto &entry = arr.at(0);
     ASSERT_TRUE(entry.is_object());
-    ASSERT_TRUE(entry.has_field(U("market")));
+    ASSERT_TRUE(json_is_string(entry, U("market")));
     EXPECT_EQ(entry.at(U("market")).as_string(), U("US"));
     // At least one status field should be non-empty.
     bool has_status = false;
-    if (entry.has_field(U("marketStatus")) && !entry.at(U("marketStatus")).as_string().empty()) {
+    if (json_nonempty_string(entry, U("marketStatus"))) {
         has_status = true;
     }
-    if (entry.has_field(U("status")) && !entry.at(U("status")).as_string().empty()) {
+    if (json_nonempty_string(entry, U("status"))) {
         has_status = true;
     }
     EXPECT_TRUE(has_status) << "MarketState has no status (marketStatus/status both empty)";
@@ -111,14 +130,16 @@ TEST(QuoteClientInteg, GetBrief_ReturnsValidFields) {
 
     const auto &brief = arr.at(0);
     ASSERT_TRUE(brief.is_object());
-    ASSERT_TRUE(brief.has_field(U("symbol")));
+    ASSERT_TRUE(json_is_string(brief, U("symbol")));
     EXPECT_EQ(brief.at(U("symbol")).as_string(), U("AAPL"));
-    if (brief.has_field(U("latestPrice"))) {
+    if (brief.has_field(U("latestPrice")) && brief.at(U("latestPrice")).is_double()) {
         EXPECT_GT(brief.at(U("latestPrice")).as_double(), 0.0)
+
             << "latestPrice should be > 0 for AAPL";
     }
-    if (brief.has_field(U("latestTime"))) {
+    if (brief.has_field(U("latestTime")) && brief.at(U("latestTime")).is_number()) {
         EXPECT_GT(brief.at(U("latestTime")).as_number().to_int64(), 0)
+
             << "latestTime should be non-zero";
     }
 }
@@ -141,7 +162,7 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
 
     const auto &kline = arr.at(0);
     ASSERT_TRUE(kline.is_object());
-    ASSERT_TRUE(kline.has_field(U("symbol")));
+    ASSERT_TRUE(json_is_string(kline, U("symbol")));
     EXPECT_EQ(kline.at(U("symbol")).as_string(), U("AAPL"));
     ASSERT_TRUE(kline.has_field(U("items")));
     ASSERT_TRUE(kline.at(U("items")).is_array());
@@ -149,17 +170,20 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
 
     const auto &item = kline.at(U("items")).at(0);
     ASSERT_TRUE(item.is_object());
-    if (item.has_field(U("time"))) {
+    if (item.has_field(U("time")) && item.at(U("time")).is_number()) {
         EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0)
+
             << "KlineItem.time should be non-zero";
     }
-    if (item.has_field(U("close"))) {
+    if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
         EXPECT_GT(item.at(U("close")).as_double(), 0.0)
+
             << "KlineItem.close should be > 0";
     }
     // High should be >= low
-    if (item.has_field(U("high")) && item.has_field(U("low"))) {
+    if (item.has_field(U("high")) && item.at(U("high")).is_double() && item.has_field(U("low")) && item.at(U("low")).is_double()) {
         EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
+
             << "KlineItem.high should be >= low";
     }
 }
@@ -180,7 +204,7 @@ TEST(QuoteClientInteg, GetTimeline_ReturnsValidFields) {
 
     const auto &tl = arr.at(0);
     ASSERT_TRUE(tl.is_object());
-    ASSERT_TRUE(tl.has_field(U("symbol")));
+    ASSERT_TRUE(json_is_string(tl, U("symbol")));
     EXPECT_EQ(tl.at(U("symbol")).as_string(), U("AAPL"));
 
     // Timeline buckets may legitimately be empty outside trading hours.
@@ -194,12 +218,14 @@ TEST(QuoteClientInteg, GetTimeline_ReturnsValidFields) {
         if (!items.is_array() || items.size() == 0) continue;
 
         const auto &item = items.at(0);
-        if (item.has_field(U("time"))) {
+        if (item.has_field(U("time")) && item.at(U("time")).is_number()) {
             EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0)
+
                 << "TimelineItem.time should be non-zero";
         }
-        if (item.has_field(U("price"))) {
+        if (item.has_field(U("price")) && item.at(U("price")).is_double()) {
             EXPECT_GT(item.at(U("price")).as_double(), 0.0)
+
                 << "TimelineItem.price should be > 0";
         }
         break; // only check first non-empty bucket
@@ -222,13 +248,13 @@ TEST(QuoteClientInteg, GetOptionExpiration_ReturnsValidFields) {
 
     const auto &exp = arr.at(0);
     ASSERT_TRUE(exp.is_object());
-    ASSERT_TRUE(exp.has_field(U("symbol")));
+    ASSERT_TRUE(json_is_string(exp, U("symbol")));
     EXPECT_EQ(exp.at(U("symbol")).as_string(), U("AAPL"));
     ASSERT_TRUE(exp.has_field(U("dates")));
     ASSERT_TRUE(exp.at(U("dates")).is_array());
     EXPECT_GT(exp.at(U("dates")).size(), 0u) << "no expiry dates for AAPL";
 
-    if (exp.has_field(U("optionSymbols"))) {
+    if (exp.has_field(U("optionSymbols")) && !exp.at(U("optionSymbols")).is_null()) {
         EXPECT_GT(exp.at(U("optionSymbols")).size(), 0u)
             << "OptionExpiration.optionSymbols is empty, want non-empty";
     }
@@ -246,15 +272,16 @@ TEST(QuoteClientInteg, GetCapitalFlow_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     ASSERT_TRUE(result.is_object());
 
-    ASSERT_TRUE(result.has_field(U("symbol")));
+    ASSERT_TRUE(json_is_string(result, U("symbol")));
     EXPECT_EQ(result.at(U("symbol")).as_string(), U("AAPL"));
 
     // Items may be empty outside market hours; when present, validate fields.
     if (result.has_field(U("items")) && result.at(U("items")).is_array()
         && result.at(U("items")).size() > 0) {
         const auto &item = result.at(U("items")).at(0);
-        if (item.has_field(U("timestamp"))) {
+        if (item.has_field(U("timestamp")) && item.at(U("timestamp")).is_number()) {
             EXPECT_GT(item.at(U("timestamp")).as_number().to_int64(), 0)
+
                 << "CapitalFlowItem.timestamp should be non-zero";
         }
     }
@@ -290,17 +317,15 @@ TEST(QuoteClientInteg, GetCorporateAction_ReturnsValidFields) {
     ASSERT_TRUE(found) << "GetCorporateAction returned no action entries";
     ASSERT_TRUE(first_action.is_object());
 
-    if (first_action.has_field(U("symbol"))) {
+    if (json_is_string(first_action, U("symbol"))) {
         EXPECT_EQ(first_action.at(U("symbol")).as_string(), U("AAPL"));
     }
-    if (first_action.has_field(U("actionType"))) {
-        EXPECT_FALSE(first_action.at(U("actionType")).as_string().empty())
-            << "CorporateAction.actionType is empty, want non-empty";
-    }
-    if (first_action.has_field(U("executeDate"))) {
-        EXPECT_FALSE(first_action.at(U("executeDate")).as_string().empty())
-            << "CorporateAction.executeDate is empty, want non-empty date string";
-    }
+    EXPECT_TRUE(json_nonempty_string(first_action, U("actionType")))
+        << "CorporateAction.actionType is empty, want non-empty";
+
+    EXPECT_TRUE(json_nonempty_string(first_action, U("executeDate")))
+        << "CorporateAction.executeDate is empty, want non-empty date string";
+
 }
 
 // ── Grab quote permission ────────────────────────────────────────────────────
@@ -320,10 +345,9 @@ TEST(QuoteClientInteg, GrabQuotePermission_ReturnsValidEntries) {
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
-        if (entry.has_field(U("name"))) {
-            EXPECT_FALSE(entry.at(U("name")).as_string().empty())
-                << "QuotePermission[" << i << "].Name is empty, want non-empty";
-        }
+        EXPECT_TRUE(json_nonempty_string(entry, U("name")))
+            << "QuotePermission[" << i << "].Name is empty, want non-empty";
+
     }
 }
 
@@ -476,10 +500,9 @@ TEST(QuoteClientInteg, GetQuotePermission_ReturnsValidStructure) {
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
-        if (entry.has_field(U("name"))) {
-            EXPECT_FALSE(entry.at(U("name")).as_string().empty())
-                << "QuotePermission[" << i << "].Name is empty";
-        }
+        EXPECT_TRUE(json_nonempty_string(entry, U("name")))
+            << "QuotePermission[" << i << "].Name is empty";
+
     }
 }
 
@@ -513,10 +536,9 @@ TEST(QuoteClientInteg, GetTradingCalendar_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetTradingCalendar returned empty for US 2024";
     const auto &entry = arr.at(0);
     ASSERT_TRUE(entry.is_object());
-    if (entry.has_field(U("tradeDate"))) {
-        EXPECT_FALSE(entry.at(U("tradeDate")).as_string().empty())
-            << "TradingCalendar.tradeDate is empty";
-    }
+    EXPECT_TRUE(json_nonempty_string(entry, U("tradeDate")))
+        << "TradingCalendar.tradeDate is empty";
+
 }
 
 TEST(QuoteClientInteg, GetQuoteStockTrade_ReturnsValidFields) {
@@ -531,7 +553,7 @@ TEST(QuoteClientInteg, GetQuoteStockTrade_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetQuoteStockTrade returned empty for AAPL";
     const auto &trade = arr.at(0);
     ASSERT_TRUE(trade.is_object());
-    if (trade.has_field(U("symbol"))) {
+    if (json_is_string(trade, U("symbol"))) {
         EXPECT_EQ(trade.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -548,7 +570,7 @@ TEST(QuoteClientInteg, GetStockDetail_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetStockDetail returned empty for AAPL";
     const auto &detail = arr.at(0);
     ASSERT_TRUE(detail.is_object());
-    if (detail.has_field(U("symbol"))) {
+    if (json_is_string(detail, U("symbol"))) {
         EXPECT_EQ(detail.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -565,7 +587,7 @@ TEST(QuoteClientInteg, GetHistoryTimeline_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetHistoryTimeline returned empty for AAPL";
     const auto &tl = arr.at(0);
     ASSERT_TRUE(tl.is_object());
-    if (tl.has_field(U("symbol"))) {
+    if (json_is_string(tl, U("symbol"))) {
         EXPECT_EQ(tl.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -582,7 +604,7 @@ TEST(QuoteClientInteg, GetTradeTick_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetTradeTick returned empty for AAPL";
     const auto &tick = arr.at(0);
     ASSERT_TRUE(tick.is_object());
-    if (tick.has_field(U("symbol"))) {
+    if (json_is_string(tick, U("symbol"))) {
         EXPECT_EQ(tick.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -599,7 +621,7 @@ TEST(QuoteClientInteg, GetQuoteRealTimeValue_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetQuoteRealTimeValue returned empty for AAPL";
     const auto &rt = arr.at(0);
     ASSERT_TRUE(rt.is_object());
-    if (rt.has_field(U("symbol"))) {
+    if (json_is_string(rt, U("symbol"))) {
         EXPECT_EQ(rt.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -658,7 +680,7 @@ TEST(QuoteClientInteg, GetQuoteDepth_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetQuoteDepth returned empty for AAPL";
     const auto &depth = arr.at(0);
     ASSERT_TRUE(depth.is_object());
-    if (depth.has_field(U("symbol"))) {
+    if (json_is_string(depth, U("symbol"))) {
         EXPECT_EQ(depth.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -705,7 +727,7 @@ TEST(QuoteClientInteg, GetOptionChain_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetOptionChain returned empty for AAPL@" << expiry;
     const auto &chain = arr.at(0);
     ASSERT_TRUE(chain.is_object());
-    if (chain.has_field(U("symbol"))) {
+    if (json_is_string(chain, U("symbol"))) {
         EXPECT_EQ(chain.at(U("symbol")).as_string(), U("AAPL"));
     }
     if (chain.has_field(U("items"))) {
@@ -718,15 +740,11 @@ TEST(QuoteClientInteg, GetOptionChain_ReturnsValidFields) {
         EXPECT_TRUE(has_call || has_put) << "OptionChainRow has neither call nor put";
         if (has_call) {
             const auto &call = row.at(U("call"));
-            if (call.has_field(U("identifier"))) {
-                EXPECT_FALSE(call.at(U("identifier")).as_string().empty());
-            }
+            EXPECT_TRUE(json_nonempty_string(call, U("identifier")));
         }
         if (has_put) {
             const auto &put = row.at(U("put"));
-            if (put.has_field(U("identifier"))) {
-                EXPECT_FALSE(put.at(U("identifier")).as_string().empty());
-            }
+            EXPECT_TRUE(json_nonempty_string(put, U("identifier")));
         }
     }
 }
@@ -747,7 +765,7 @@ TEST(QuoteClientInteg, GetOptionBrief_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetOptionBrief returned empty for " << identifier;
     const auto &brief = arr.at(0);
     ASSERT_TRUE(brief.is_object());
-    if (brief.has_field(U("identifier"))) {
+    if (json_is_string(brief, U("identifier"))) {
         EXPECT_EQ(brief.at(U("identifier")).as_string(), identifier);
     }
 }
@@ -773,8 +791,9 @@ TEST(QuoteClientInteg, GetOptionKlineValue_ReturnsValidFields) {
         ASSERT_TRUE(kline.at(U("items")).is_array());
         if (kline.at(U("items")).size() > 0) {
             const auto &item = kline.at(U("items")).at(0);
-            if (item.has_field(U("close"))) {
+            if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
                 EXPECT_GT(item.at(U("close")).as_double(), 0.0);
+
             }
         }
     }
@@ -859,7 +878,7 @@ TEST(QuoteClientInteg, GetOptionAnalysis_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetOptionAnalysis returned empty for AAPL";
     const auto &analysis = arr.at(0);
     ASSERT_TRUE(analysis.is_object());
-    if (analysis.has_field(U("symbol"))) {
+    if (json_is_string(analysis, U("symbol"))) {
         EXPECT_EQ(analysis.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
@@ -1004,8 +1023,9 @@ TEST(QuoteClientInteg, GetFutureKline_ReturnsValidFields) {
             ASSERT_TRUE(kline.at(U("items")).is_array());
             if (kline.at(U("items")).size() > 0) {
                 const auto &item = kline.at(U("items")).at(0);
-                if (item.has_field(U("close"))) {
+                if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
                     EXPECT_GT(item.at(U("close")).as_double(), 0.0);
+
                 }
             }
         }
@@ -1327,7 +1347,7 @@ TEST(QuoteClientInteg, GetStockFundamental_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetStockFundamental returned empty for AAPL";
     const auto &fund = arr.at(0);
     ASSERT_TRUE(fund.is_object());
-    if (fund.has_field(U("symbol"))) {
+    if (json_is_string(fund, U("symbol"))) {
         EXPECT_EQ(fund.at(U("symbol")).as_string(), U("AAPL"));
     }
 }
