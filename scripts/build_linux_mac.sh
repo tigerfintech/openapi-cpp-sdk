@@ -99,7 +99,7 @@ NUM_JOBS="${NUM_JOBS:-$(cpu_cores)}"
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
 BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
-BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
+BOOST_URL="https://ghproxy.com/https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
 if [[ "$CI_MODE" == "1" ]]; then
   LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-${PROJECT_ROOT}/.deps/opt}"
 else
