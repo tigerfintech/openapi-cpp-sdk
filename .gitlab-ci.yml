@@ -33,7 +33,7 @@ variables:
     - openapi
   before_script:
     - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
-    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev
+    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev libcpprest-dev
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
