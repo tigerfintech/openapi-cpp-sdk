@@ -326,7 +326,7 @@ build_boost() {
   local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
   if [[ ! -d "$src_dir" ]]; then
     if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
-      wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
+      wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
         rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
         fail "Failed to download Boost from ${BOOST_URL}"
       }
