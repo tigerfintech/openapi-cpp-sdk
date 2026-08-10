@@ -431,12 +431,14 @@ build_abseil() {
     return
   fi
   local repo="${DEPS_DIR}/abseil-cpp"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/abseil/abseil-cpp.git "$repo"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading abseil ${ABSEIL_VERSION} tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/abseil.tar.gz" \
+      "https://github.com/abseil/abseil-cpp/archive/refs/tags/${ABSEIL_VERSION}.tar.gz"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/abseil.tar.gz" --strip-components=1
   fi
   pushd "$repo" >/dev/null
-  git fetch --tags
-  git checkout "$ABSEIL_VERSION"
   rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
