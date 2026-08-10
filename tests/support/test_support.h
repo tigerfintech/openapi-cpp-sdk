@@ -69,8 +69,10 @@ inline IntegCreds read_integ_creds() {
     return {env("TIGER_TEST_ID"), env("TIGER_TEST_PRIVATE_KEY"), env("TIGER_TEST_ACCOUNT")};
 }
 
-/** Returns a sandbox ClientConfig populated from integration env vars. */
-inline ClientConfig make_integ_config() {
+/** Returns a sandbox ClientConfig populated from integration env vars.
+ * Returns const to avoid invoking the deleted move constructor in C++14
+ * (copy constructor is used instead). */
+inline const ClientConfig make_integ_config() {
     auto c = read_integ_creds();
     return ClientConfig(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/true);
 }
