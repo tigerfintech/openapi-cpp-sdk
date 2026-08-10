@@ -603,6 +603,8 @@ build_sdk() {
     local openssl_ssl="${OPENSSL_SSL_LIBRARY:-${openssl_root}/lib/libssl.${lib_ext}}"
     # On some Linux distros OpenSSL libs are under lib64.
     if [[ "$OS_NAME" == "Linux" ]]; then
+      [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib/x86_64-linux-gnu/libcrypto.${lib_ext}"
+      [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib/x86_64-linux-gnu/libssl.${lib_ext}"
       [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib64/libcrypto.${lib_ext}"
       [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib64/libssl.${lib_ext}"
     fi
