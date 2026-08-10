@@ -87,6 +87,7 @@ integration-test:
   extends: .cpp_base
   stage: integration-test
   allow_failure: true
+  when: always
   variables:
     TIGER_RUN_INTEG: "true"
     # Map TIGEROPEN_* CI Variables → TIGER_TEST_* env vars expected by test_support.h
