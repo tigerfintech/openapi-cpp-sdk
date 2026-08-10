@@ -33,13 +33,13 @@ variables:
     - openapi
   before_script:
     - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
-    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev
+    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev libprotobuf-dev protobuf-compiler libabsl-dev
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
       export CPPREST_PREFIX="${LOCAL_OPT_PREFIX}/cpprestsdk"
       export ABSL_PREFIX="${LOCAL_OPT_PREFIX}/abseil-20240722.0"
-      export PROTOBUF_PREFIX="${LOCAL_OPT_PREFIX}/protobuf-v5.28.3"
+      export PROTOBUF_PREFIX="/usr"
       export GTEST_PREFIX="${LOCAL_OPT_PREFIX}/googletest-v1.14.0"
       export SDK_INSTALL_PREFIX="${CI_PROJECT_DIR}/output/Linux"
       export LD_LIBRARY_PATH="${ABSL_PREFIX}/lib:${PROTOBUF_PREFIX}/lib:${LD_LIBRARY_PATH}"
