@@ -84,4 +84,6 @@ add_executable(integ_tests
     integ/test_trade_client.cpp
 )
 common_test_setup(integ_tests)
+# C++17 guaranteed copy elision avoids ClientConfig move (deleted move constructor)
+set_target_properties(integ_tests PROPERTIES CXX_STANDARD 17)
 add_test(NAME IntegTests COMMAND integ_tests)
