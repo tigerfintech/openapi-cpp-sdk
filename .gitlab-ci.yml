@@ -33,7 +33,7 @@ variables:
     - openapi
   before_script:
     - apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update
-    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev libcpprest-dev
+    - apt-get install -y --no-install-recommends cmake pkg-config wget libboost-all-dev libssl-dev zlib1g-dev libwebsocketpp-dev
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
@@ -138,7 +138,7 @@ notify:webhook:
   script:
     - |
       python3 << 'PYEOF'
-      import os, json, urllib.request, glob
+      import os, json, urllib.request
       import xml.etree.ElementTree as ET
 
       webhook_url = os.environ.get("WEBHOOK_URL", "")
@@ -167,8 +167,9 @@ notify:webhook:
       unit_stats = f"Unit: {unit_t} tests: {unit_p} passed, {unit_f} failed, {unit_s} skipped" if unit_t > 0 else ""
       integ_stats = f"Integration: {integ_t} tests: {integ_p} passed, {integ_f} failed, {integ_s} skipped" if integ_t > 0 else ""
 
-      # 2. Determine pass/fail: unit test failures = pipeline failed
-      has_failed = unit_f > 0 or integ_f > 0
+      # 2. Determine pass/fail: only unit test failures = pipeline failed
+      # (integration-test has allow_failure: true and must not affect notification status)
+      has_failed = unit_f > 0
       status = os.environ.get("CI_PIPELINE_STATUS", "")
       if status == "failed":
           has_failed = True
