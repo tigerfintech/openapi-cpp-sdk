@@ -129,7 +129,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasDeviceId) {
 namespace {
     TradeClient make_trade_client() {
         auto cfg = test::make_offline_config();
-        return TradeClient(cfg);
+        return TradeClient(*cfg);
     }
 }
 
