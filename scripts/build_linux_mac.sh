@@ -455,13 +455,20 @@ build_protobuf() {
     return
   fi
   [[ -n "${PROTOBUF_VERSION:-}" ]] || fail "PROTOBUF_VERSION is not set; cannot build protobuf from source."
-  local repo="${DEPS_DIR}/protobuf"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/protocolbuffers/protobuf "$repo"
+
+  # Download release tarball instead of git clone (GitHub clone unreliable from domestic CI)
+  local pb_tarball="protobuf-${PROTOBUF_VERSION}.tar.gz"
+  local pb_src="${DEPS_DIR}/protobuf-${PROTOBUF_VERSION}"
+  if [[ ! -d "$pb_src" ]]; then
+    log "Downloading protobuf ${PROTOBUF_VERSION} tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
+      "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}" \
+      || wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
+        "https://ghproxy.com/https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}"
+    tar -C "$DEPS_DIR" -xzf "${CACHE_DIR}/${pb_tarball}"
   fi
-  pushd "$repo" >/dev/null
-  git fetch --tags
-  git checkout "$PROTOBUF_VERSION"
+
+  pushd "$pb_src" >/dev/null
   rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
