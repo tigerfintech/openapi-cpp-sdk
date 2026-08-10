@@ -386,11 +386,14 @@ build_cpprestsdk() {
     return
   fi
   local repo="${DEPS_DIR}/cpprestsdk"
-  if [[ ! -d "$repo/.git" ]]; then
-    git -c http.version=HTTP/1.1 clone https://github.com/microsoft/cpprestsdk.git "$repo"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading cpprestsdk tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/cpprestsdk.tar.gz" \
+      "https://github.com/microsoft/cpprestsdk/archive/refs/tags/2.10.19.tar.gz"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/cpprestsdk.tar.gz" --strip-components=1
   fi
   pushd "$repo" >/dev/null
-  git submodule update --init
   local cmake_cxx_flags="-w"
   [[ "$OS_NAME" == "Darwin" ]] && cmake_cxx_flags="-Wno-error=null-pointer-subtraction -w"
   cmake -S . -B build \
@@ -494,12 +497,15 @@ build_gtest() {
     return
   fi
   local repo="${DEPS_DIR}/googletest"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/google/googletest.git "$repo"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading googletest ${GTEST_VERSION} tarball..."
+    local gtest_ver_no_v="${GTEST_VERSION#v}"
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/googletest.tar.gz" \
+      "https://github.com/google/googletest/archive/refs/tags/${GTEST_VERSION}.tar.gz"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/googletest.tar.gz" --strip-components=1
   fi
   pushd "$repo" >/dev/null
-  git fetch --tags
-  git checkout "$GTEST_VERSION"
   rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
