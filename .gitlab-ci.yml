@@ -42,6 +42,7 @@ variables:
       export PROTOBUF_PREFIX="${LOCAL_OPT_PREFIX}/protobuf-v5.28.3"
       export GTEST_PREFIX="${LOCAL_OPT_PREFIX}/googletest-v1.14.0"
       export SDK_INSTALL_PREFIX="${CI_PROJECT_DIR}/output/Linux"
+      export LD_LIBRARY_PATH="${ABSL_PREFIX}/lib:${PROTOBUF_PREFIX}/lib:${LD_LIBRARY_PATH}"
       export SDK_INCLUDE_PREFIX="${SDK_INSTALL_PREFIX}"
       export BUILD_TYPE=Release
       export BUILD_TYPES=Release
