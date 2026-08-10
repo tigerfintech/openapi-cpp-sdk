@@ -463,9 +463,9 @@ build_protobuf() {
   if [[ ! -d "$pb_src" ]]; then
     log "Downloading protobuf ${PROTOBUF_VERSION} tarball..."
     wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
-      "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}" \
+      "https://github.com/protocolbuffers/protobuf/archive/refs/tags/${PROTOBUF_VERSION}.tar.gz" \
       || wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
-        "https://ghproxy.com/https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}"
+        "https://ghproxy.com/https://github.com/protocolbuffers/protobuf/archive/refs/tags/${PROTOBUF_VERSION}.tar.gz"
     mkdir -p "$pb_src"
     tar -C "$pb_src" -xzf "${CACHE_DIR}/${pb_tarball}" --strip-components=1
   fi
