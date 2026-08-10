@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include "support/test_support.h"
 #include "tigerapi/client_config.h"
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 using namespace TIGER_API;
@@ -226,21 +229,40 @@ TEST(ClientConfigTest, StopTokenRefresh_AfterStart_StopsCleanly) {
 
 TEST(ClientConfigTest, TokenRefresh_FetchFunctionCalled) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
-    int call_count = 0;
-    cfg.start_token_refresh(1, [&call_count]() {
-        call_count++;
+    std::atomic<int> call_count{0};
+    std::mutex mtx;
+    std::condition_variable cv;
+    cfg.start_token_refresh(1, [&call_count, &cv]() {
+        call_count.fetch_add(1, std::memory_order_relaxed);
+        cv.notify_all();
         return U("refreshed_token");
     });
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        // Wait up to 5s for at least one callback (interval is 1s → 5× margin)
+        cv.wait_for(lock, std::chrono::seconds(5),
+                    [&call_count]() { return call_count.load() > 0; });
+    }
     cfg.stop_token_refresh();
-    EXPECT_GT(call_count, 0);
+    EXPECT_GT(call_count.load(), 0);
 }
 
 TEST(ClientConfigTest, TokenRefresh_EmptyToken_KeepsCurrent) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
     cfg.set_token(U("original_token"));
-    cfg.start_token_refresh(1, []() { return U(""); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    std::atomic<int> call_count{0};
+    std::mutex mtx;
+    std::condition_variable cv;
+    cfg.start_token_refresh(1, [&call_count, &cv]() {
+        call_count.fetch_add(1, std::memory_order_relaxed);
+        cv.notify_all();
+        return U("");
+    });
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait_for(lock, std::chrono::seconds(5),
+                    [&call_count]() { return call_count.load() > 0; });
+    }
     cfg.stop_token_refresh();
     EXPECT_EQ(cfg.get_token(), U("original_token"));
 }
@@ -248,8 +270,19 @@ TEST(ClientConfigTest, TokenRefresh_EmptyToken_KeepsCurrent) {
 TEST(ClientConfigTest, TokenRefresh_NonEmptyToken_UpdatesToken) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
     cfg.set_token(U("original"));
-    cfg.start_token_refresh(1, []() { return U("refreshed_token_xyz"); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    std::atomic<bool> updated{false};
+    std::mutex mtx;
+    std::condition_variable cv;
+    cfg.start_token_refresh(1, [&updated, &cv]() {
+        updated.store(true, std::memory_order_relaxed);
+        cv.notify_all();
+        return U("refreshed_token_xyz");
+    });
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait_for(lock, std::chrono::seconds(5),
+                    [&updated]() { return updated.load(); });
+    }
     cfg.stop_token_refresh();
     EXPECT_EQ(cfg.get_token(), U("refreshed_token_xyz"));
 }
@@ -257,10 +290,21 @@ TEST(ClientConfigTest, TokenRefresh_NonEmptyToken_UpdatesToken) {
 TEST(ClientConfigTest, TokenRefresh_ExceptionInFetch_NoCrash) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
     cfg.set_token(U("original"));
-    cfg.start_token_refresh(1, []() -> utility::string_t {
+    std::atomic<int> call_count{0};
+    std::mutex mtx;
+    std::condition_variable cv;
+    cfg.start_token_refresh(1, [&call_count, &cv]() -> utility::string_t {
+        call_count.fetch_add(1, std::memory_order_relaxed);
+        cv.notify_all();
         throw std::runtime_error("network error");
     });
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        // Wait for the callback to be invoked at least once (confirms the refresh
+        // thread actually ran and survived the exception without crashing).
+        cv.wait_for(lock, std::chrono::seconds(5),
+                    [&call_count]() { return call_count.load() > 0; });
+    }
     cfg.stop_token_refresh();
     EXPECT_EQ(cfg.get_token(), U("original"));
 }
