@@ -389,7 +389,7 @@ build_cpprestsdk() {
   if [[ ! -d "$repo" ]]; then
     log "Downloading cpprestsdk tarball..."
     wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/cpprestsdk.tar.gz" \
-      "https://github.com/microsoft/cpprestsdk/archive/refs/tags/2.10.19.tar.gz"
+      "https://github.com/microsoft/cpprestsdk/archive/refs/heads/master.tar.gz"
     mkdir -p "$repo"
     tar -C "$repo" -xzf "${CACHE_DIR}/cpprestsdk.tar.gz" --strip-components=1
   fi
