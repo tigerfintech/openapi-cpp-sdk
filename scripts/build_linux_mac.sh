@@ -457,7 +457,8 @@ build_protobuf() {
   [[ -n "${PROTOBUF_VERSION:-}" ]] || fail "PROTOBUF_VERSION is not set; cannot build protobuf from source."
 
   # Download release tarball instead of git clone (GitHub clone unreliable from domestic CI)
-  local pb_tarball="protobuf-${PROTOBUF_VERSION}.tar.gz"
+  local pb_ver_no_v="${PROTOBUF_VERSION#v}"  # strip 'v' prefix for filename
+  local pb_tarball="protobuf-${pb_ver_no_v}.tar.gz"
   local pb_src="${DEPS_DIR}/protobuf-${PROTOBUF_VERSION}"
   if [[ ! -d "$pb_src" ]]; then
     log "Downloading protobuf ${PROTOBUF_VERSION} tarball..."
@@ -465,7 +466,8 @@ build_protobuf() {
       "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}" \
       || wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
         "https://ghproxy.com/https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VERSION}/${pb_tarball}"
-    tar -C "$DEPS_DIR" -xzf "${CACHE_DIR}/${pb_tarball}"
+    mkdir -p "$pb_src"
+    tar -C "$pb_src" -xzf "${CACHE_DIR}/${pb_tarball}" --strip-components=1
   fi
 
   pushd "$pb_src" >/dev/null
