@@ -116,13 +116,13 @@ TEST(ModelTest, AlgoParam_ToJson) {
 
 TEST(ModelTest, Order_FromJson_BasicFields) {
     web::json::value j = web::json::value::object(true);
-    j[U("id")] = web::json::value::number(12345);
+    j[U("id")] = web::json::value::number((double)12345);
     j[U("orderType")] = web::json::value::string(U("LMT"));
     j[U("account")] = web::json::value::string(U("DU123"));
     j[U("action")] = web::json::value::string(U("BUY"));
     j[U("limitPrice")] = web::json::value::number(175.5);
     j[U("auxPrice")] = web::json::value::number(170.0);
-    j[U("totalQuantity")] = web::json::value::number(100);
+    j[U("totalQuantity")] = web::json::value::number((double)100);
 
     Order o(j);
     EXPECT_EQ(o.id, 12345ULL);
@@ -150,7 +150,7 @@ TEST(ModelTest, Order_FromJson_ContractFields) {
 
 TEST(ModelTest, Order_FromJson_AllAdvancedFields) {
     web::json::value j = web::json::value::object(true);
-    j[U("id")] = web::json::value::number(999);
+    j[U("id")] = web::json::value::number((double)999);
     j[U("orderType")] = web::json::value::string(U("LMT"));
     j[U("account")] = web::json::value::string(U("ACCT"));
     j[U("action")] = web::json::value::string(U("SELL"));
@@ -161,36 +161,36 @@ TEST(ModelTest, Order_FromJson_AllAdvancedFields) {
     j[U("outsideRth")] = web::json::value::boolean(true);
     j[U("adjustLimit")] = web::json::value::number(0.001);
     j[U("userMark")] = web::json::value::string(U("mark123"));
-    j[U("expireTime")] = web::json::value::number(1700000000000LL);
+    j[U("expireTime")] = web::json::value::number((int64_t)1700000000000LL);
     j[U("status")] = web::json::value::string(U("Filled"));
-    j[U("parentId")] = web::json::value::number(0);
-    j[U("openTime")] = web::json::value::number(1699000000000LL);
+    j[U("parentId")] = web::json::value::number((double)0);
+    j[U("openTime")] = web::json::value::number((int64_t)1699000000000LL);
     j[U("reason")] = web::json::value::string(U(""));
-    j[U("latestTime")] = web::json::value::number(1699500000000LL);
-    j[U("updateTime")] = web::json::value::number(1699600000000LL);
-    j[U("filledQuantity")] = web::json::value::number(100);
-    j[U("totalQuantity")] = web::json::value::number(100);
+    j[U("latestTime")] = web::json::value::number((int64_t)1699500000000LL);
+    j[U("updateTime")] = web::json::value::number((int64_t)1699600000000LL);
+    j[U("filledQuantity")] = web::json::value::number((double)100);
+    j[U("totalQuantity")] = web::json::value::number((double)100);
     j[U("avgFillPrice")] = web::json::value::number(198.5);
     j[U("realizedPnl")] = web::json::value::number(350.0);
     j[U("commission")] = web::json::value::number(1.5);
     j[U("gst")] = web::json::value::number(0.15);
-    j[U("displaySize")] = web::json::value::number(50);
-    j[U("minDisplaySize")] = web::json::value::number(25);
-    j[U("checkIntervals")] = web::json::value::number(5);
+    j[U("displaySize")] = web::json::value::number((double)50);
+    j[U("minDisplaySize")] = web::json::value::number((double)25);
+    j[U("checkIntervals")] = web::json::value::number((double)5);
     j[U("priceType")] = web::json::value::string(U("LIMIT_PRICE"));
-    j[U("startTime")] = web::json::value::number(1000);
-    j[U("endTime")] = web::json::value::number(2000);
-    j[U("totalQuantityScale")] = web::json::value::number(1);
-    j[U("filledQuantityScale")] = web::json::value::number(1);
+    j[U("startTime")] = web::json::value::number((double)1000);
+    j[U("endTime")] = web::json::value::number((double)2000);
+    j[U("totalQuantityScale")] = web::json::value::number((double)1);
+    j[U("filledQuantityScale")] = web::json::value::number((double)1);
     j[U("cashAmount")] = web::json::value::number(5000.0);
     j[U("comboType")] = web::json::value::string(U("VERTICAL"));
     j[U("attachType")] = web::json::value::string(U("PROFIT"));
-    j[U("profitTakerOrderId")] = web::json::value::number(888);
+    j[U("profitTakerOrderId")] = web::json::value::number((double)888);
     j[U("profitTakerPrice")] = web::json::value::number(210.0);
     j[U("profitTakerTif")] = web::json::value::string(U("DAY"));
     j[U("profitTakerRth")] = web::json::value::boolean(true);
     j[U("stopLossOrderType")] = web::json::value::string(U("STP"));
-    j[U("stopLossOrderId")] = web::json::value::number(777);
+    j[U("stopLossOrderId")] = web::json::value::number((double)777);
     j[U("stopLossPrice")] = web::json::value::number(190.0);
     j[U("stopLossLimitPrice")] = web::json::value::number(189.0);
     j[U("stopLossTif")] = web::json::value::string(U("DAY"));
@@ -269,7 +269,7 @@ TEST(ModelTest, Order_FromJson_ContractLegs) {
     leg[U("strike")] = web::json::value::string(U("175"));
     leg[U("right")] = web::json::value::string(U("CALL"));
     leg[U("action")] = web::json::value::string(U("BUY"));
-    leg[U("ratio")] = web::json::value::number(1);
+    leg[U("ratio")] = web::json::value::number((double)1);
     legs[0] = leg;
     j[U("contractLegs")] = legs;
 
@@ -285,7 +285,7 @@ TEST(ModelTest, Order_FromJson_OcaOrders) {
     web::json::value oca = web::json::value::array(1);
     web::json::value sub = web::json::value::object(true);
     sub[U("orderType")] = web::json::value::string(U("LMT"));
-    sub[U("id")] = web::json::value::number(42);
+    sub[U("id")] = web::json::value::number((double)42);
     oca[0] = sub;
     j[U("ocaOrders")] = oca;
 
@@ -298,8 +298,8 @@ TEST(ModelTest, Order_FromJson_OcaOrders) {
 TEST(ModelTest, Order_FromJson_SubIds) {
     web::json::value j = web::json::value::object(true);
     web::json::value subIds = web::json::value::array(2);
-    subIds[0] = web::json::value::number(1);
-    subIds[1] = web::json::value::number(2);
+    subIds[0] = web::json::value::number((double)1);
+    subIds[1] = web::json::value::number((double)2);
     j[U("subIds")] = subIds;
 
     Order o(j);
@@ -342,16 +342,16 @@ TEST(ModelTest, Position_FromJson_Basic) {
     j[U("market")] = web::json::value::string(U("US"));
     j[U("currency")] = web::json::value::string(U("USD"));
     j[U("identifier")] = web::json::value::string(U("AAPL"));
-    j[U("contractId")] = web::json::value::number(265598);
-    j[U("multiplier")] = web::json::value::number(1);
-    j[U("position")] = web::json::value::number(100);
+    j[U("contractId")] = web::json::value::number((double)265598);
+    j[U("multiplier")] = web::json::value::number((double)1);
+    j[U("position")] = web::json::value::number((double)100);
     j[U("averageCost")] = web::json::value::number(170.0);
     j[U("marketValue")] = web::json::value::number(17500.0);
     j[U("realizedPnl")] = web::json::value::number(500.0);
     j[U("unrealizedPnl")] = web::json::value::number(500.0);
     j[U("latestPrice")] = web::json::value::number(175.0);
-    j[U("updateTimestamp")] = web::json::value::number(1700000000000LL);
-    j[U("status")] = web::json::value::number(1);
+    j[U("updateTimestamp")] = web::json::value::number((int64_t)1700000000000LL);
+    j[U("status")] = web::json::value::number((double)1);
 
     Position p(j);
     EXPECT_EQ(p.account, U("ACCT"));
@@ -479,11 +479,11 @@ TEST(ModelTest, KlineItem_FromJson) {
     j[U("high")] = web::json::value::number(175.0);
     j[U("low")] = web::json::value::number(168.0);
     j[U("close")] = web::json::value::number(172.0);
-    j[U("time")] = web::json::value::number(1700000000000LL);
-    j[U("lastTime")] = web::json::value::number(1700000060000LL);
-    j[U("volume")] = web::json::value::number(1000000LL);
+    j[U("time")] = web::json::value::number((int64_t)1700000000000LL);
+    j[U("lastTime")] = web::json::value::number((int64_t)1700000060000LL);
+    j[U("volume")] = web::json::value::number((int64_t)1000000LL);
     j[U("settlement")] = web::json::value::number(171.5);
-    j[U("openInterest")] = web::json::value::number(50000LL);
+    j[U("openInterest")] = web::json::value::number((int64_t)50000LL);
 
     KlineItem ki;
     ki.from_json(j);
@@ -521,22 +521,22 @@ TEST(ModelTest, RealtimeQuote_FromJson_AllFields) {
     j[U("high")] = web::json::value::number(175.0);
     j[U("low")] = web::json::value::number(168.0);
     j[U("close")] = web::json::value::number(172.0);
-    j[U("volume")] = web::json::value::number(1000000LL);
+    j[U("volume")] = web::json::value::number((int64_t)1000000LL);
     j[U("adjPreClose")] = web::json::value::number(169.0);
     j[U("preClose")] = web::json::value::number(169.5);
     j[U("askPrice")] = web::json::value::number(172.1);
-    j[U("askSize")] = web::json::value::number(500);
+    j[U("askSize")] = web::json::value::number((double)500);
     j[U("bidPrice")] = web::json::value::number(171.9);
-    j[U("bidSize")] = web::json::value::number(400);
+    j[U("bidSize")] = web::json::value::number((double)400);
     j[U("latestPrice")] = web::json::value::number(172.0);
-    j[U("latestTime")] = web::json::value::number(1700000000000LL);
-    j[U("latestSize")] = web::json::value::number(100);
+    j[U("latestTime")] = web::json::value::number((int64_t)1700000000000LL);
+    j[U("latestSize")] = web::json::value::number((double)100);
     j[U("status")] = web::json::value::string(U("Active"));
     j[U("symbol")] = web::json::value::string(U("AAPL"));
     j[U("contractCode")] = web::json::value::string(U("CLZ5"));
-    j[U("openInterest")] = web::json::value::number(50000LL);
-    j[U("limitDown")] = web::json::value::number(0);
-    j[U("limitUp")] = web::json::value::number(1);
+    j[U("openInterest")] = web::json::value::number((int64_t)50000LL);
+    j[U("limitDown")] = web::json::value::number((double)0);
+    j[U("limitUp")] = web::json::value::number((double)1);
 
     RealtimeQuote rq;
     rq.from_json(j);
