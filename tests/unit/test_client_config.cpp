@@ -22,26 +22,26 @@ TEST(ClientConfigTest, DefaultConstructor_SandboxTrue_LogsWarning) {
 
 TEST(ClientConfigTest, ParameterizedConstructor_SetsFields) {
     ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"), true);
-    EXPECT_EQ(cfg.tiger_id, U("12345"));
-    EXPECT_EQ(cfg.account,  U("ACCT001"));
+    EXPECT_EQ(cfg->tiger_id, U("12345"));
+    EXPECT_EQ(cfg->account,  U("ACCT001"));
 }
 
 TEST(ClientConfigTest, ParameterizedConstructor_NoSandbox_SetsFields) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
-    EXPECT_EQ(cfg.tiger_id, U("tid"));
-    EXPECT_EQ(cfg.account, U("acct"));
+    EXPECT_EQ(cfg->tiger_id, U("tid"));
+    EXPECT_EQ(cfg->account, U("acct"));
 }
 
 TEST(ClientConfigTest, SandboxFlagFalseByDefault) {
     ClientConfig cfg(U("id"), U("key"), U("acct"), false);
-    EXPECT_EQ(cfg.tiger_id, U("id"));
-    EXPECT_EQ(cfg.account, U("acct"));
+    EXPECT_EQ(cfg->tiger_id, U("id"));
+    EXPECT_EQ(cfg->account, U("acct"));
 }
 
 TEST(ClientConfigTest, MakeOfflineConfig_IsSandbox) {
     auto cfg = TIGER_API::test::make_offline_config();
-    EXPECT_EQ(cfg.tiger_id, TIGER_API::test::FAKE_TIGER_ID);
-    EXPECT_EQ(cfg.account,  TIGER_API::test::FAKE_ACCOUNT);
+    EXPECT_EQ(cfg->tiger_id, TIGER_API::test::FAKE_TIGER_ID);
+    EXPECT_EQ(cfg->account,  TIGER_API::test::FAKE_ACCOUNT);
 }
 
 TEST(ClientConfigTest, CopyConstructor_PreservesFields) {
