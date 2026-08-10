@@ -22,20 +22,20 @@ TEST(ClientConfigTest, DefaultConstructor_SandboxTrue_LogsWarning) {
 
 TEST(ClientConfigTest, ParameterizedConstructor_SetsFields) {
     ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"), true);
-    EXPECT_EQ(cfg->tiger_id, U("12345"));
-    EXPECT_EQ(cfg->account,  U("ACCT001"));
+    EXPECT_EQ(cfg.tiger_id, U("12345"));
+    EXPECT_EQ(cfg.account,  U("ACCT001"));
 }
 
 TEST(ClientConfigTest, ParameterizedConstructor_NoSandbox_SetsFields) {
     ClientConfig cfg(U("tid"), U("key"), U("acct"), false);
-    EXPECT_EQ(cfg->tiger_id, U("tid"));
-    EXPECT_EQ(cfg->account, U("acct"));
+    EXPECT_EQ(cfg.tiger_id, U("tid"));
+    EXPECT_EQ(cfg.account, U("acct"));
 }
 
 TEST(ClientConfigTest, SandboxFlagFalseByDefault) {
     ClientConfig cfg(U("id"), U("key"), U("acct"), false);
-    EXPECT_EQ(cfg->tiger_id, U("id"));
-    EXPECT_EQ(cfg->account, U("acct"));
+    EXPECT_EQ(cfg.tiger_id, U("id"));
+    EXPECT_EQ(cfg.account, U("acct"));
 }
 
 TEST(ClientConfigTest, MakeOfflineConfig_IsSandbox) {
