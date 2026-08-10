@@ -15,9 +15,9 @@ namespace {
     // Create a TigerClient that won't make any network calls.
     // Using the fake offline config from test_support.h.
     std::unique_ptr<TigerClient> make_test_client() {
-        ClientConfig cfg = test::make_offline_config();
+        auto cfg = test::make_offline_config();
         // No check_account needed for base TigerClient
-        return std::make_unique<TigerClient>(cfg);
+        return std::make_unique<TigerClient>(*cfg);
     }
 }
 

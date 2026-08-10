@@ -68,8 +68,8 @@ TEST(TradeClientInteg, GetAsset_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_asset();
         ASSERT_FALSE(result.is_null());
@@ -98,8 +98,8 @@ TEST(TradeClientInteg, GetAccounts_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_accounts();
         ASSERT_FALSE(result.is_null());
@@ -121,8 +121,8 @@ TEST(TradeClientInteg, GetPositions_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_positions();
         ASSERT_FALSE(result.is_null());
@@ -153,8 +153,8 @@ TEST(TradeClientInteg, GetOrders_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
 
     // Query orders from the last 30 days.
     std::time_t now = std::time(nullptr);
@@ -198,8 +198,8 @@ TEST(TradeClientInteg, GetContract_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_contract(U("AAPL"), U("STK"));
         ASSERT_FALSE(result.is_null());
@@ -229,8 +229,8 @@ TEST(TradeClientInteg, GetActiveOrders_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_active_orders();
         ASSERT_FALSE(result.is_null());
@@ -294,8 +294,8 @@ TEST(TradeClientInteg, GetPrimeAsset_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_prime_asset();
         ASSERT_FALSE(result.is_null());
@@ -318,8 +318,8 @@ TEST(TradeClientInteg, GetPrimePortfolio_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         auto portfolio = client->get_prime_portfolio();
         // PortfolioAccount has account, update_timestamp, segments.
@@ -333,8 +333,8 @@ TEST(TradeClientInteg, GetPositionList_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         auto positions = client->get_position_list();
         // Positions may legitimately be empty for a fresh paper account.
@@ -353,8 +353,8 @@ TEST(TradeClientInteg, GetFilledOrders_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     std::time_t now = std::time(nullptr);
     std::time_t start = now - 30 * 24 * 60 * 60;
     EXPECT_NO_THROW({
@@ -381,8 +381,8 @@ TEST(TradeClientInteg, GetInactiveOrders_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     std::time_t now = std::time(nullptr);
     std::time_t start = now - 30 * 24 * 60 * 60;
     EXPECT_NO_THROW({
@@ -408,8 +408,8 @@ TEST(TradeClientInteg, GetOrder_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     auto order_id = get_first_order_id(*client);
     if (order_id == 0) {
         GTEST_SKIP() << "No orders available to test get_order";
@@ -427,8 +427,8 @@ TEST(TradeClientInteg, GetTransactions_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_transactions(U(""), U("AAPL"), U("STK"));
         ASSERT_FALSE(result.is_null());
@@ -447,8 +447,8 @@ TEST(TradeClientInteg, GetContracts_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_contracts(make_symbols(U("AAPL")), U("STK"));
         ASSERT_FALSE(result.is_null());
@@ -471,8 +471,8 @@ TEST(TradeClientInteg, GetQuoteContract_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_quote_contract(U("AAPL"), U("STK"), U(""));
         ASSERT_FALSE(result.is_null());
@@ -492,11 +492,11 @@ TEST(TradeClientInteg, GetAnalyticsAsset_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_analytics_asset(
-            cfg.account, U("2024-01-01"), U("2024-06-01"));
+            cfg->account, U("2024-01-01"), U("2024-06-01"));
         ASSERT_FALSE(result.is_null());
         EXPECT_TRUE(result.is_array() || result.is_object());
     });
@@ -508,8 +508,8 @@ TEST(TradeClientInteg, GetSegmentFundHistory_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_segment_fund_history();
         ASSERT_FALSE(result.is_null());
@@ -524,8 +524,8 @@ TEST(TradeClientInteg, GetSegmentFundAvailable_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_segment_fund_available(U("SEC"));
         ASSERT_FALSE(result.is_null());
@@ -539,8 +539,8 @@ TEST(TradeClientInteg, GetAggregateAssets_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_aggregate_assets();
         ASSERT_FALSE(result.is_null());
@@ -554,8 +554,8 @@ TEST(TradeClientInteg, GetFundingHistory_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_funding_history();
         ASSERT_FALSE(result.is_null());
@@ -572,8 +572,8 @@ TEST(TradeClientInteg, GetFundDetails_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_fund_details();
         ASSERT_FALSE(result.is_null());
@@ -587,8 +587,8 @@ TEST(TradeClientInteg, GetPositionTransferRecords_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_position_transfer_records();
         ASSERT_FALSE(result.is_null());
@@ -603,8 +603,8 @@ TEST(TradeClientInteg, GetPositionTransferExternalRecords_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_position_transfer_external_records();
         ASSERT_FALSE(result.is_null());
@@ -621,8 +621,8 @@ TEST(TradeClientInteg, GetOptionExerciseRecords_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_option_exercise_records();
         ASSERT_FALSE(result.is_null());
@@ -637,8 +637,8 @@ TEST(TradeClientInteg, GetOptionExercisePositions_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<TradeClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
     EXPECT_NO_THROW({
         web::json::value result = client->get_option_exercise_positions(U("Exercise"));
         ASSERT_FALSE(result.is_null());

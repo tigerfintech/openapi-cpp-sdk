@@ -36,7 +36,7 @@ using namespace TIGER_API;
 // ── TigerClient private methods ────────────────────────────────────────────────
 
 TEST(TigerClientPrivateTest, BuildSignContent_SingleKey) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value obj = value::object(true);
@@ -50,7 +50,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_SingleKey) {
 }
 
 TEST(TigerClientPrivateTest, BuildSignContent_NonStringValue) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value obj = value::object(true);
@@ -65,7 +65,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_NonStringValue) {
 }
 
 TEST(TigerClientPrivateTest, BuildSignContent_EmptyObject) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value obj = value::object(true);
@@ -74,7 +74,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_EmptyObject) {
 }
 
 TEST(TigerClientPrivateTest, BuildSignContent_SingleEntry) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value obj = value::object(true);
@@ -85,7 +85,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_SingleEntry) {
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasTigerId) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value params = client.build_common_params();
@@ -93,7 +93,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasTigerId) {
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasCharset) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value params = client.build_common_params();
@@ -101,7 +101,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasCharset) {
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasSignType) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value params = client.build_common_params();
@@ -109,7 +109,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasSignType) {
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasVersion) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value params = client.build_common_params();
@@ -117,7 +117,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasVersion) {
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasDeviceId) {
-    ClientConfig cfg = test::make_offline_config();
+    auto cfg = test::make_offline_config();
     TigerClient client(cfg);
 
     value params = client.build_common_params();
@@ -128,7 +128,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasDeviceId) {
 
 namespace {
     TradeClient make_trade_client() {
-        ClientConfig cfg = test::make_offline_config();
+        auto cfg = test::make_offline_config();
         return TradeClient(cfg);
     }
 }

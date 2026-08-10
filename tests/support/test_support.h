@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include <memory>
 #include "tigerapi/client_config.h"
 
 namespace TIGER_API {
@@ -30,8 +31,8 @@ static const utility::string_t FAKE_PRIVATE_KEY =
  * Returns a sandbox ClientConfig for unit tests: valid construction but no
  * real credentials — do NOT call methods that sign or send requests.
  */
-inline ClientConfig make_offline_config() {
-    return ClientConfig(FAKE_TIGER_ID, FAKE_PRIVATE_KEY, FAKE_ACCOUNT,
+inline std::shared_ptr<ClientConfig> make_offline_config() {
+    return std::make_shared<ClientConfig>(FAKE_TIGER_ID, FAKE_PRIVATE_KEY, FAKE_ACCOUNT,
                         /*sandbox_debug=*/true);
 }
 
@@ -69,10 +70,11 @@ inline IntegCreds read_integ_creds() {
     return {env("TIGER_TEST_ID"), env("TIGER_TEST_PRIVATE_KEY"), env("TIGER_TEST_ACCOUNT")};
 }
 
-/** Returns a sandbox ClientConfig populated from integration env vars. */
-inline ClientConfig make_integ_config() {
+/** Returns a sandbox ClientConfig populated from integration env vars.
+ * Returns shared_ptr to avoid ClientConfig move (deleted move constructor in C++14). */
+inline std::shared_ptr<ClientConfig> make_integ_config() {
     auto c = read_integ_creds();
-    return ClientConfig(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/true);
+    return std::make_shared<ClientConfig>(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/true);
 }
 
 } // namespace test

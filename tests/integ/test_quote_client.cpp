@@ -69,8 +69,8 @@ TEST(QuoteClientInteg, GetSymbols_ReturnsValidStructure) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_symbols();
     EXPECT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -91,8 +91,8 @@ TEST(QuoteClientInteg, GetMarketState_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_market_state(U("US"));
     ASSERT_FALSE(result.is_null());
 
@@ -120,8 +120,8 @@ TEST(QuoteClientInteg, GetBrief_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_brief(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
 
@@ -150,8 +150,8 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_kline(make_symbols(U("AAPL")), BarPeriod::DAY,
                                                  /*begin_time=*/-1, /*end_time=*/-1,
                                                  QuoteRight::br, /*limit=*/5);
@@ -194,8 +194,8 @@ TEST(QuoteClientInteg, GetTimeline_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_timeline(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
 
@@ -241,8 +241,8 @@ TEST(QuoteClientInteg, GetOptionExpiration_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_option_expiration(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
 
@@ -269,8 +269,8 @@ TEST(QuoteClientInteg, GetCapitalFlow_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_capital_flow(U("AAPL"), U("US"), U("day"));
     ASSERT_FALSE(result.is_null());
     ASSERT_TRUE(result.is_object());
@@ -299,8 +299,8 @@ TEST(QuoteClientInteg, GetCorporateAction_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_action(
         make_symbols(U("AAPL")), U("US"), U("DIVIDEND"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
@@ -340,8 +340,8 @@ TEST(QuoteClientInteg, GrabQuotePermission_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->grab_quote_permission();
     ASSERT_FALSE(result.is_null());
 
@@ -498,8 +498,8 @@ TEST(QuoteClientInteg, GetQuotePermission_ReturnsValidStructure) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_permission();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -516,8 +516,8 @@ TEST(QuoteClientInteg, GetAllSymbolNames_ReturnsValidStructure) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_all_symbol_names(Market::US);
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -534,8 +534,8 @@ TEST(QuoteClientInteg, GetTradingCalendar_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_trading_calendar(U("US"), U("2024-01-01"), U("2024-12-31"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -551,8 +551,8 @@ TEST(QuoteClientInteg, GetQuoteStockTrade_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_stock_trade(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -571,8 +571,8 @@ TEST(QuoteClientInteg, GetStockDetail_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_stock_detail(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -588,8 +588,8 @@ TEST(QuoteClientInteg, GetHistoryTimeline_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_history_timeline(make_symbols(U("AAPL")), U("2024-06-03"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -605,8 +605,8 @@ TEST(QuoteClientInteg, GetTradeTick_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_trade_tick(make_symbols(U("AAPL")), TradingSession::Regular);
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -625,8 +625,8 @@ TEST(QuoteClientInteg, GetQuoteRealTimeValue_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_real_time_value(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -642,8 +642,8 @@ TEST(QuoteClientInteg, GetQuoteRealTime_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     EXPECT_NO_THROW({
         auto quotes = client->get_quote_real_time(make_symbols(U("AAPL")));
         ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime returned empty for AAPL";
@@ -655,8 +655,8 @@ TEST(QuoteClientInteg, GetQuoteDelay_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_delay(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -669,8 +669,8 @@ TEST(QuoteClientInteg, GetQuoteShortableStocks_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_shortable_stocks(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -684,8 +684,8 @@ TEST(QuoteClientInteg, GetQuoteDepth_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_depth(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -701,8 +701,8 @@ TEST(QuoteClientInteg, GetStockBroker_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_stock_broker(U("AAPL"));
     ASSERT_FALSE(result.is_null());
     // Stock broker may return an object or array depending on data availability.
@@ -713,8 +713,8 @@ TEST(QuoteClientInteg, GetCapitalDistribution_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_capital_distribution(U("AAPL"));
     ASSERT_FALSE(result.is_null());
     // Capital distribution may be empty outside market hours.
@@ -727,8 +727,8 @@ TEST(QuoteClientInteg, GetOptionChain_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto expiry = get_first_option_expiry(*client);
     if (expiry.empty()) {
         GTEST_SKIP() << "No option expiry available for AAPL";
@@ -765,8 +765,8 @@ TEST(QuoteClientInteg, GetOptionBrief_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto identifier = get_first_option_identifier(*client);
     if (identifier.empty()) {
         GTEST_SKIP() << "No option identifier available for AAPL";
@@ -786,8 +786,8 @@ TEST(QuoteClientInteg, GetOptionKlineValue_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto identifier = get_first_option_identifier(*client);
     if (identifier.empty()) {
         GTEST_SKIP() << "No option identifier available for AAPL";
@@ -815,8 +815,8 @@ TEST(QuoteClientInteg, GetOptionTradeTick_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto identifier = get_first_option_identifier(*client);
     if (identifier.empty()) {
         GTEST_SKIP() << "No option identifier available for AAPL";
@@ -834,8 +834,8 @@ TEST(QuoteClientInteg, GetOptionSymbols_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_option_symbols(U("US"));
     ASSERT_FALSE(result.is_null());
     // Option symbols list may be large; just validate structure.
@@ -846,8 +846,8 @@ TEST(QuoteClientInteg, GetOptionDepth_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto identifier = get_first_option_identifier(*client);
     if (identifier.empty()) {
         GTEST_SKIP() << "No option identifier available for AAPL";
@@ -864,8 +864,8 @@ TEST(QuoteClientInteg, GetOptionTimeline_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto identifier = get_first_option_identifier(*client);
     if (identifier.empty()) {
         GTEST_SKIP() << "No option identifier available for AAPL";
@@ -885,8 +885,8 @@ TEST(QuoteClientInteg, GetOptionAnalysis_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_option_analysis(make_symbols(U("AAPL")), U("US"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -902,8 +902,8 @@ TEST(QuoteClientInteg, GetWarrantFilter_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_warrant_filter(U("0700"));
     ASSERT_FALSE(result.is_null());
     // Warrant filter may return an object with items or an array.
@@ -914,8 +914,8 @@ TEST(QuoteClientInteg, GetWarrantRealTimeQuote_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto warrant_symbol = get_first_warrant_symbol(*client, U("0700"));
     if (warrant_symbol.empty()) {
         GTEST_SKIP() << "No warrant symbol available for 0700";
@@ -934,8 +934,8 @@ TEST(QuoteClientInteg, GetFutureExchange_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_future_exchange();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -948,8 +948,8 @@ TEST(QuoteClientInteg, GetFutureContracts_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_future_contracts(U("ES"));
     ASSERT_FALSE(result.is_null());
     // May return empty if ES futures are not available for the account.
@@ -963,8 +963,8 @@ TEST(QuoteClientInteg, GetFutureContinuousContracts_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_future_continuous_contracts(U("ES"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -977,8 +977,8 @@ TEST(QuoteClientInteg, GetFutureCurrentContract_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_future_current_contract(U("ES"));
     ASSERT_FALSE(result.is_null());
     // May return object or array.
@@ -989,8 +989,8 @@ TEST(QuoteClientInteg, GetFutureContractByContractCode_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1004,8 +1004,8 @@ TEST(QuoteClientInteg, GetFutureContractByExchangeCode_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto exchange_code = get_first_future_exchange_code(*client);
     if (exchange_code.empty()) {
         GTEST_SKIP() << "No future exchange code available";
@@ -1022,8 +1022,8 @@ TEST(QuoteClientInteg, GetFutureKline_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1051,8 +1051,8 @@ TEST(QuoteClientInteg, GetFutureRealTimeQuoteValue_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1069,8 +1069,8 @@ TEST(QuoteClientInteg, GetFutureRealTimeQuote_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1089,8 +1089,8 @@ TEST(QuoteClientInteg, GetFutureTick_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1104,8 +1104,8 @@ TEST(QuoteClientInteg, GetFutureTradingDate_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1119,8 +1119,8 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1137,8 +1137,8 @@ TEST(QuoteClientInteg, GetFutureHistoryMainContract_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto contract_code = get_first_future_contract_code(*client);
     if (contract_code.empty()) {
         GTEST_SKIP() << "No future contract code available";
@@ -1157,8 +1157,8 @@ TEST(QuoteClientInteg, GetFundSymbols_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_fund_symbols();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -1171,8 +1171,8 @@ TEST(QuoteClientInteg, GetFundContracts_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto fund_symbol = get_first_fund_symbol(*client);
     if (fund_symbol.empty()) {
         GTEST_SKIP() << "No fund symbol available";
@@ -1189,8 +1189,8 @@ TEST(QuoteClientInteg, GetFundQuote_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto fund_symbol = get_first_fund_symbol(*client);
     if (fund_symbol.empty()) {
         GTEST_SKIP() << "No fund symbol available";
@@ -1207,8 +1207,8 @@ TEST(QuoteClientInteg, GetFundHistoryQuote_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto fund_symbol = get_first_fund_symbol(*client);
     if (fund_symbol.empty()) {
         GTEST_SKIP() << "No fund symbol available";
@@ -1245,8 +1245,8 @@ TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_symbol_change(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
@@ -1257,8 +1257,8 @@ TEST(QuoteClientInteg, GetCorporateDelisting_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_delisting(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
@@ -1269,8 +1269,8 @@ TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_ipo(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
@@ -1281,8 +1281,8 @@ TEST(QuoteClientInteg, GetFinancialCurrency_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_financial_currency(make_symbols(U("AAPL")), U("US"));
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1292,8 +1292,8 @@ TEST(QuoteClientInteg, GetFinancialExchangeRate_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value currencies = web::json::value::array();
     currencies[0] = web::json::value::string(U("USD"));
     currencies[1] = web::json::value::string(U("HKD"));
@@ -1309,8 +1309,8 @@ TEST(QuoteClientInteg, GetIndustryList_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_industry_list();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -1323,8 +1323,8 @@ TEST(QuoteClientInteg, GetIndustryStocks_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     auto industry_id = get_first_industry_id(*client);
     if (industry_id.empty()) {
         GTEST_SKIP() << "No industry ID available";
@@ -1341,8 +1341,8 @@ TEST(QuoteClientInteg, GetStockIndustry_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_stock_industry(U("AAPL"));
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1354,8 +1354,8 @@ TEST(QuoteClientInteg, GetStockFundamental_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_stock_fundamental(make_symbols(U("AAPL")), U("US"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -1371,8 +1371,8 @@ TEST(QuoteClientInteg, GetTradeRank_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_trade_rank(U("US"));
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1382,8 +1382,8 @@ TEST(QuoteClientInteg, GetQuoteOvernight_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_overnight(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
@@ -1396,8 +1396,8 @@ TEST(QuoteClientInteg, GetBrokerHold_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_broker_hold(U("HK"));
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1407,8 +1407,8 @@ TEST(QuoteClientInteg, GetMarketScannerTags_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_market_scanner_tags(U("US"));
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1427,8 +1427,8 @@ TEST(QuoteClientInteg, GetKlineQuota_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_kline_quota();
     ASSERT_FALSE(result.is_null());
     EXPECT_TRUE(result.is_array() || result.is_object());
@@ -1438,8 +1438,8 @@ TEST(QuoteClientInteg, GetAddonEntitlements_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    ClientConfig cfg = make_integ_config();
-    auto client = std::make_shared<QuoteClient>(cfg);
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_addon_entitlements();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
