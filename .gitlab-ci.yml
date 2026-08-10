@@ -37,6 +37,7 @@ variables:
     - |
       export LOCAL_OPT_PREFIX="${CI_PROJECT_DIR}/.deps/opt"
       export BOOST_ROOT="/usr"
+      export BOOST_MIN_VERSION=1.74
       export CPPREST_PREFIX="${LOCAL_OPT_PREFIX}/cpprestsdk"
       export ABSL_PREFIX="${LOCAL_OPT_PREFIX}/abseil-20240722.0"
       export PROTOBUF_PREFIX="${LOCAL_OPT_PREFIX}/protobuf-v5.28.3"
