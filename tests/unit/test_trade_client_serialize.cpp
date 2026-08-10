@@ -37,7 +37,7 @@ using namespace TIGER_API;
 
 TEST(TigerClientPrivateTest, BuildSignContent_SingleKey) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value obj = value::object(true);
     obj[U("b")] = value::string(U("2"));
@@ -51,7 +51,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_SingleKey) {
 
 TEST(TigerClientPrivateTest, BuildSignContent_NonStringValue) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value obj = value::object(true);
     obj[U("num")] = value::number(42);
@@ -66,7 +66,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_NonStringValue) {
 
 TEST(TigerClientPrivateTest, BuildSignContent_EmptyObject) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value obj = value::object(true);
     utility::string_t result = client.build_sign_content(obj);
@@ -75,7 +75,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_EmptyObject) {
 
 TEST(TigerClientPrivateTest, BuildSignContent_SingleEntry) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value obj = value::object(true);
     obj[U("key")] = value::string(U("value"));
@@ -86,7 +86,7 @@ TEST(TigerClientPrivateTest, BuildSignContent_SingleEntry) {
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasTigerId) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value params = client.build_common_params();
     EXPECT_EQ(params[U("tiger_id")].as_string(), test::FAKE_TIGER_ID);
@@ -94,7 +94,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasTigerId) {
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasCharset) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value params = client.build_common_params();
     EXPECT_EQ(params[U("charset")].as_string(), U("UTF-8"));
@@ -102,7 +102,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasCharset) {
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasSignType) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value params = client.build_common_params();
     EXPECT_EQ(params[U("sign_type")].as_string(), U("RSA"));
@@ -110,7 +110,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasSignType) {
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasVersion) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value params = client.build_common_params();
     EXPECT_EQ(params[U("version")].as_string(), OPEN_API_SERVICE_VERSION);
@@ -118,7 +118,7 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasVersion) {
 
 TEST(TigerClientPrivateTest, BuildCommonParams_HasDeviceId) {
     auto cfg = test::make_offline_config();
-    TigerClient client(cfg);
+    TigerClient client(*cfg);
 
     value params = client.build_common_params();
     EXPECT_FALSE(params[U("device_id")].as_string().empty());

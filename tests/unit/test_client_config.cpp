@@ -39,7 +39,7 @@ TEST(ClientConfigTest, SandboxFlagFalseByDefault) {
 }
 
 TEST(ClientConfigTest, MakeOfflineConfig_IsSandbox) {
-    ClientConfig cfg = TIGER_API::test::make_offline_config();
+    auto cfg = TIGER_API::test::make_offline_config();
     EXPECT_EQ(cfg.tiger_id, TIGER_API::test::FAKE_TIGER_ID);
     EXPECT_EQ(cfg.account,  TIGER_API::test::FAKE_ACCOUNT);
 }
