@@ -165,6 +165,7 @@ notify:webhook:
 
       unit_t, unit_p, unit_f, unit_s = parse_xml("test-results/unit.xml")
       integ_t, integ_p, integ_f, integ_s = parse_xml("test-results/integ.xml")
+      print(f"DEBUG: unit={unit_t}/{unit_f} integ={integ_t}/{integ_f}")
 
       unit_stats = f"Unit: {unit_t} tests: {unit_p} passed, {unit_f} failed, {unit_s} skipped" if unit_t > 0 else ""
       integ_stats = f"Integration: {integ_t} tests: {integ_p} passed, {integ_f} failed, {integ_s} skipped" if integ_t > 0 else ""
@@ -190,6 +191,8 @@ notify:webhook:
           content += f"\n**Unit tests:** {unit_stats}\n"
       if integ_stats:
           content += f"**Integration tests:** {integ_stats}\n"
+      print("===CONTENT===")
+      print(content)
       content += f"[View pipeline]({pipeline_url})"
 
       payload = {
