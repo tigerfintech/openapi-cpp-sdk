@@ -85,10 +85,9 @@ TEST(TradeClientInteg, GetAsset_ReturnsValidFields) {
         EXPECT_TRUE(json_nonempty_string(asset, U("currency")))
             << "Asset.currency is empty, want non-empty";
 
-        if (asset.has_field(U("netLiquidation")) && asset.at(U("netLiquidation")).is_double()) {
-            EXPECT_GE(asset.at(U("netLiquidation")).as_double(), 0.0)
-                << "Asset.netLiquidation should be >= 0";
-        }
+        ASSERT_TRUE(asset.has_field(U("netLiquidation"))) << "Asset missing netLiquidation field";
+        EXPECT_GE(asset.at(U("netLiquidation")).as_double(), 0.0)
+            << "Asset.netLiquidation should be >= 0";
     });
 }
 

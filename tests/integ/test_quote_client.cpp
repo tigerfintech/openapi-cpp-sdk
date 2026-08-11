@@ -132,16 +132,10 @@ TEST(QuoteClientInteg, GetBrief_ReturnsValidFields) {
     ASSERT_TRUE(brief.is_object());
     ASSERT_TRUE(json_is_string(brief, U("symbol")));
     EXPECT_EQ(brief.at(U("symbol")).as_string(), U("AAPL"));
-    if (brief.has_field(U("latestPrice")) && brief.at(U("latestPrice")).is_double()) {
-        EXPECT_GT(brief.at(U("latestPrice")).as_double(), 0.0)
-
-            << "latestPrice should be > 0 for AAPL";
-    }
-    if (brief.has_field(U("latestTime")) && brief.at(U("latestTime")).is_number()) {
-        EXPECT_GT(brief.at(U("latestTime")).as_number().to_int64(), 0)
-
-            << "latestTime should be non-zero";
-    }
+    ASSERT_TRUE(brief.has_field(U("latestPrice"))) << "Brief missing latestPrice field";
+    EXPECT_GT(brief.at(U("latestPrice")).as_double(), 0.0) << "latestPrice should be > 0 for AAPL";
+    ASSERT_TRUE(brief.has_field(U("latestTime"))) << "Brief missing latestTime field";
+    EXPECT_GT(brief.at(U("latestTime")).as_number().to_int64(), 0) << "latestTime should be non-zero";
 }
 
 // ── K-line ───────────────────────────────────────────────────────────────────
@@ -170,22 +164,15 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
 
     const auto &item = kline.at(U("items")).at(0);
     ASSERT_TRUE(item.is_object());
-    if (item.has_field(U("time")) && item.at(U("time")).is_number()) {
-        EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0)
-
-            << "KlineItem.time should be non-zero";
-    }
-    if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
-        EXPECT_GT(item.at(U("close")).as_double(), 0.0)
-
-            << "KlineItem.close should be > 0";
-    }
-    // High should be >= low
-    if (item.has_field(U("high")) && item.at(U("high")).is_double() && item.has_field(U("low")) && item.at(U("low")).is_double()) {
-        EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
-
-            << "KlineItem.high should be >= low";
-    }
+    ASSERT_TRUE(item.has_field(U("time"))) << "KlineItem missing time field";
+    EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0) << "KlineItem.time should be non-zero";
+    ASSERT_TRUE(item.has_field(U("close"))) << "KlineItem missing close field";
+    EXPECT_GT(item.at(U("close")).as_double(), 0.0) << "KlineItem.close should be > 0";
+    // Cross-field constraint: high >= low
+    ASSERT_TRUE(item.has_field(U("high"))) << "KlineItem missing high field";
+    ASSERT_TRUE(item.has_field(U("low"))) << "KlineItem missing low field";
+    EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
+        << "KlineItem.high should be >= low";
 }
 
 // ── Timeline ─────────────────────────────────────────────────────────────────
@@ -221,16 +208,10 @@ TEST(QuoteClientInteg, GetTimeline_ReturnsValidFields) {
         if (!items.is_array() || items.size() == 0) continue;
 
         const auto &item = items.at(0);
-        if (item.has_field(U("time")) && item.at(U("time")).is_number()) {
-            EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0)
-
-                << "TimelineItem.time should be non-zero";
-        }
-        if (item.has_field(U("price")) && item.at(U("price")).is_double()) {
-            EXPECT_GT(item.at(U("price")).as_double(), 0.0)
-
-                << "TimelineItem.price should be > 0";
-        }
+        ASSERT_TRUE(item.has_field(U("time"))) << "TimelineItem missing time field";
+        EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0) << "TimelineItem.time should be non-zero";
+        ASSERT_TRUE(item.has_field(U("price"))) << "TimelineItem missing price field";
+        EXPECT_GT(item.at(U("price")).as_double(), 0.0) << "TimelineItem.price should be > 0";
         break; // only check first non-empty bucket
     }
 }
@@ -334,7 +315,7 @@ TEST(QuoteClientInteg, GetCorporateAction_ReturnsValidFields) {
 
 }
 
-// ── Grab quote permission ────────────────────────────────────────────────────
+// ── Claim market data device access ─────────────────────────────────────────
 
 TEST(QuoteClientInteg, GrabQuotePermission_ReturnsValidEntries) {
     if (!integ_enabled()) {
@@ -616,8 +597,16 @@ TEST(QuoteClientInteg, GetTradeTick_ReturnsValidFields) {
     }
     const auto &tick = arr.at(0);
     ASSERT_TRUE(tick.is_object());
-    if (json_is_string(tick, U("symbol"))) {
-        EXPECT_EQ(tick.at(U("symbol")).as_string(), U("AAPL"));
+    ASSERT_TRUE(json_is_string(tick, U("symbol")));
+    EXPECT_EQ(tick.at(U("symbol")).as_string(), U("AAPL"));
+    // Validate tick items when present
+    if (tick.has_field(U("items")) && tick.at(U("items")).is_array()
+        && tick.at(U("items")).size() > 0) {
+        const auto &item = tick.at(U("items")).at(0);
+        ASSERT_TRUE(item.has_field(U("time"))) << "TradeTickItem missing time field";
+        EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0) << "TradeTickItem.time should be non-zero";
+        ASSERT_TRUE(item.has_field(U("price"))) << "TradeTickItem missing price field";
+        EXPECT_GT(item.at(U("price")).as_double(), 0.0) << "TradeTickItem.price should be > 0";
     }
 }
 
@@ -700,9 +689,12 @@ TEST(QuoteClientInteg, GetQuoteDepth_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetQuoteDepth returned empty for AAPL";
     const auto &depth = arr.at(0);
     ASSERT_TRUE(depth.is_object());
-    if (json_is_string(depth, U("symbol"))) {
-        EXPECT_EQ(depth.at(U("symbol")).as_string(), U("AAPL"));
-    }
+    ASSERT_TRUE(json_is_string(depth, U("symbol")));
+    EXPECT_EQ(depth.at(U("symbol")).as_string(), U("AAPL"));
+    // At least one side (asks or bids) should be present and an array when depth data exists.
+    bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
+    bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
+    EXPECT_TRUE(has_asks || has_bids) << "QuoteDepth has neither asks nor bids arrays";
 }
 
 TEST(QuoteClientInteg, GetStockBroker_ReturnsValidFields) {
@@ -721,8 +713,19 @@ TEST(QuoteClientInteg, GetStockBroker_ReturnsValidFields) {
     if (result.is_null()) {
         GTEST_SKIP() << "GetStockBroker returned null — not supported for this account";
     }
-    // Stock broker may return an object or array depending on data availability.
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    // Stock broker data has a symbol field identifying the queried stock.
+    auto arr = extract_array(result);
+    const web::json::value *first = nullptr;
+    web::json::value single;
+    if (arr.size() > 0) {
+        single = arr.at(0);
+        first = &single;
+    } else if (result.is_object()) {
+        first = &result;
+    }
+    if (first && first->is_object() && json_is_string(*first, U("symbol"))) {
+        EXPECT_EQ(first->at(U("symbol")).as_string(), U("00700"));
+    }
 }
 
 TEST(QuoteClientInteg, GetCapitalDistribution_ReturnsValidFields) {
@@ -734,7 +737,14 @@ TEST(QuoteClientInteg, GetCapitalDistribution_ReturnsValidFields) {
     web::json::value result = client->get_capital_distribution(U("AAPL"));
     ASSERT_FALSE(result.is_null());
     // Capital distribution may be empty outside market hours.
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    if (result.is_null() || (!result.is_object() && !result.is_array())) {
+        GTEST_SKIP() << "GetCapitalDistribution returned empty — non-trading hours";
+    }
+    // Expect a symbol field when the result is an object.
+    if (result.is_object()) {
+        ASSERT_TRUE(json_is_string(result, U("symbol"))) << "CapitalDistribution missing symbol field";
+        EXPECT_EQ(result.at(U("symbol")).as_string(), U("AAPL"));
+    }
 }
 
 // ── Option quote: additional tests ───────────────────────────────────────────
@@ -822,9 +832,11 @@ TEST(QuoteClientInteg, GetOptionKlineValue_ReturnsValidFields) {
         ASSERT_TRUE(kline.at(U("items")).is_array());
         if (kline.at(U("items")).size() > 0) {
             const auto &item = kline.at(U("items")).at(0);
-            if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
-                EXPECT_GT(item.at(U("close")).as_double(), 0.0);
-
+            ASSERT_TRUE(item.has_field(U("close"))) << "OptionKlineItem missing close field";
+            EXPECT_GT(item.at(U("close")).as_double(), 0.0) << "OptionKlineItem.close should be > 0";
+            if (item.has_field(U("high")) && item.has_field(U("low"))) {
+                EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
+                    << "OptionKlineItem.high should be >= low";
             }
         }
     }
@@ -865,8 +877,13 @@ TEST(QuoteClientInteg, GetOptionSymbols_ReturnsValidFields) {
     if (result.is_null()) {
         GTEST_SKIP() << "GetOptionSymbols returned null";
     }
-    // Option symbols list may be large; just validate structure.
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    // Option symbols list may be large; validate that entries are non-empty strings or objects.
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size() && i < 5; ++i) {
+        const auto &entry = arr.at(i);
+        bool valid = (entry.is_string() && !entry.as_string().empty()) || entry.is_object();
+        EXPECT_TRUE(valid) << "OptionSymbol[" << i << "] is neither a non-empty string nor object";
+    }
 }
 
 TEST(QuoteClientInteg, GetOptionDepth_ReturnsValidFields) {
@@ -933,8 +950,15 @@ TEST(QuoteClientInteg, GetWarrantFilter_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_warrant_filter(U("0700"));
     ASSERT_FALSE(result.is_null());
-    // Warrant filter may return an object with items or an array.
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        // Each warrant entry should identify itself with a symbol or warrantSymbol.
+        bool has_symbol = (entry.has_field(U("symbol")) && entry.at(U("symbol")).is_string() && !entry.at(U("symbol")).as_string().empty())
+                       || (entry.has_field(U("warrantSymbol")) && entry.at(U("warrantSymbol")).is_string() && !entry.at(U("warrantSymbol")).as_string().empty());
+        EXPECT_TRUE(has_symbol) << "WarrantFilter[" << i << "] has no symbol/warrantSymbol field";
+    }
 }
 
 TEST(QuoteClientInteg, GetWarrantRealTimeQuote_ReturnsValidFields) {
@@ -969,6 +993,11 @@ TEST(QuoteClientInteg, GetFutureExchange_ReturnsValidFields) {
     ASSERT_GT(arr.size(), 0u) << "GetFutureExchange returned empty";
     const auto &exchange = arr.at(0);
     ASSERT_TRUE(exchange.is_object());
+    // Exchange entry must have a non-empty code field.
+    bool has_code = (exchange.has_field(U("exchangeCode")) && exchange.at(U("exchangeCode")).is_string() && !exchange.at(U("exchangeCode")).as_string().empty())
+                 || (exchange.has_field(U("code")) && exchange.at(U("code")).is_string() && !exchange.at(U("code")).as_string().empty())
+                 || (exchange.has_field(U("exchange")) && exchange.at(U("exchange")).is_string() && !exchange.at(U("exchange")).as_string().empty());
+    EXPECT_TRUE(has_code) << "FutureExchange entry has no exchangeCode/code/exchange field";
 }
 
 TEST(QuoteClientInteg, GetFutureContracts_ReturnsValidFields) {
@@ -982,7 +1011,12 @@ TEST(QuoteClientInteg, GetFutureContracts_ReturnsValidFields) {
     // May return empty if ES futures are not available for the account.
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &contract = arr.at(i);
+        ASSERT_TRUE(contract.is_object());
+        bool has_code = (contract.has_field(U("contractCode")) && contract.at(U("contractCode")).is_string() && !contract.at(U("contractCode")).as_string().empty())
+                     || (contract.has_field(U("symbol")) && contract.at(U("symbol")).is_string() && !contract.at(U("symbol")).as_string().empty())
+                     || (contract.has_field(U("code")) && contract.at(U("code")).is_string() && !contract.at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureContract[" << i << "] has no contractCode/symbol/code field";
     }
 }
 
@@ -996,7 +1030,12 @@ TEST(QuoteClientInteg, GetFutureContinuousContracts_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &contract = arr.at(i);
+        ASSERT_TRUE(contract.is_object());
+        bool has_code = (contract.has_field(U("contractCode")) && contract.at(U("contractCode")).is_string() && !contract.at(U("contractCode")).as_string().empty())
+                     || (contract.has_field(U("symbol")) && contract.at(U("symbol")).is_string() && !contract.at(U("symbol")).as_string().empty())
+                     || (contract.has_field(U("code")) && contract.at(U("code")).is_string() && !contract.at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureContinuousContract[" << i << "] has no contractCode/symbol/code field";
     }
 }
 
@@ -1008,8 +1047,22 @@ TEST(QuoteClientInteg, GetFutureCurrentContract_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_future_current_contract(U("ES"));
     ASSERT_FALSE(result.is_null());
-    // May return object or array.
-    EXPECT_TRUE(result.is_object() || result.is_array());
+    // May return object or array; when present validate the code field.
+    auto arr = extract_array(result);
+    const web::json::value *first = nullptr;
+    web::json::value single;
+    if (arr.size() > 0) {
+        single = arr.at(0);
+        first = &single;
+    } else if (result.is_object()) {
+        first = &result;
+    }
+    if (first && first->is_object()) {
+        bool has_code = (first->has_field(U("contractCode")) && first->at(U("contractCode")).is_string() && !first->at(U("contractCode")).as_string().empty())
+                     || (first->has_field(U("symbol")) && first->at(U("symbol")).is_string() && !first->at(U("symbol")).as_string().empty())
+                     || (first->has_field(U("code")) && first->at(U("code")).is_string() && !first->at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureCurrentContract has no contractCode/symbol/code field";
+    }
 }
 
 TEST(QuoteClientInteg, GetFutureContractByContractCode_ReturnsValidFields) {
@@ -1024,7 +1077,22 @@ TEST(QuoteClientInteg, GetFutureContractByContractCode_ReturnsValidFields) {
     }
     web::json::value result = client->get_future_contract_by_contract_code(contract_code);
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_object() || result.is_array());
+    // Validate code field echoes back the requested contract code.
+    auto arr = extract_array(result);
+    const web::json::value *first = nullptr;
+    web::json::value single;
+    if (arr.size() > 0) {
+        single = arr.at(0);
+        first = &single;
+    } else if (result.is_object()) {
+        first = &result;
+    }
+    if (first && first->is_object()) {
+        bool has_code = (first->has_field(U("contractCode")) && first->at(U("contractCode")).is_string() && !first->at(U("contractCode")).as_string().empty())
+                     || (first->has_field(U("symbol")) && first->at(U("symbol")).is_string() && !first->at(U("symbol")).as_string().empty())
+                     || (first->has_field(U("code")) && first->at(U("code")).is_string() && !first->at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureContractByContractCode has no contractCode/symbol/code field";
+    }
 }
 
 TEST(QuoteClientInteg, GetFutureContractByExchangeCode_ReturnsValidFields) {
@@ -1041,7 +1109,12 @@ TEST(QuoteClientInteg, GetFutureContractByExchangeCode_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &contract = arr.at(i);
+        ASSERT_TRUE(contract.is_object());
+        bool has_code = (contract.has_field(U("contractCode")) && contract.at(U("contractCode")).is_string() && !contract.at(U("contractCode")).as_string().empty())
+                     || (contract.has_field(U("symbol")) && contract.at(U("symbol")).is_string() && !contract.at(U("symbol")).as_string().empty())
+                     || (contract.has_field(U("code")) && contract.at(U("code")).is_string() && !contract.at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureContractByExchangeCode[" << i << "] has no contractCode/symbol/code field";
     }
 }
 
@@ -1065,9 +1138,12 @@ TEST(QuoteClientInteg, GetFutureKline_ReturnsValidFields) {
             ASSERT_TRUE(kline.at(U("items")).is_array());
             if (kline.at(U("items")).size() > 0) {
                 const auto &item = kline.at(U("items")).at(0);
-                if (item.has_field(U("close")) && item.at(U("close")).is_double()) {
-                    EXPECT_GT(item.at(U("close")).as_double(), 0.0);
-
+                ASSERT_TRUE(item.has_field(U("close"))) << "FutureKlineItem missing close field";
+                EXPECT_GT(item.at(U("close")).as_double(), 0.0) << "FutureKlineItem.close should be > 0";
+                // Cross-field constraint: high >= low when both fields present
+                if (item.has_field(U("high")) && item.has_field(U("low"))) {
+                    EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
+                        << "FutureKlineItem.high should be >= low";
                 }
             }
         }
@@ -1088,7 +1164,16 @@ TEST(QuoteClientInteg, GetFutureRealTimeQuoteValue_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &qt = arr.at(i);
+        ASSERT_TRUE(qt.is_object());
+        bool has_code = (qt.has_field(U("contractCode")) && qt.at(U("contractCode")).is_string() && !qt.at(U("contractCode")).as_string().empty())
+                     || (qt.has_field(U("symbol")) && qt.at(U("symbol")).is_string() && !qt.at(U("symbol")).as_string().empty())
+                     || (qt.has_field(U("code")) && qt.at(U("code")).is_string() && !qt.at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_code) << "FutureRealTimeQuoteValue[" << i << "] has no contractCode/symbol/code field";
+        // Latest price must be positive when present.
+        if (qt.has_field(U("latestPrice")) && qt.at(U("latestPrice")).is_double()) {
+            EXPECT_GT(qt.at(U("latestPrice")).as_double(), 0.0) << "FutureRealTimeQuoteValue.latestPrice should be > 0";
+        }
     }
 }
 
@@ -1124,7 +1209,18 @@ TEST(QuoteClientInteg, GetFutureTick_ReturnsValidFields) {
     }
     web::json::value result = client->get_future_tick(contract_code);
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto tick_arr = extract_array(result);
+    // Tick data may be empty outside trading hours; when present validate fields.
+    for (size_t i = 0; i < tick_arr.size(); ++i) {
+        const auto &tick = tick_arr.at(i);
+        ASSERT_TRUE(tick.is_object());
+        if (tick.has_field(U("time")) && tick.at(U("time")).is_number()) {
+            EXPECT_GT(tick.at(U("time")).as_number().to_int64(), 0) << "FutureTick[" << i << "].time should be non-zero";
+        }
+        if (tick.has_field(U("price")) && tick.at(U("price")).is_double()) {
+            EXPECT_GT(tick.at(U("price")).as_double(), 0.0) << "FutureTick[" << i << "].price should be > 0";
+        }
+    }
 }
 
 TEST(QuoteClientInteg, GetFutureTradingDate_ReturnsValidFields) {
@@ -1139,7 +1235,13 @@ TEST(QuoteClientInteg, GetFutureTradingDate_ReturnsValidFields) {
     }
     web::json::value result = client->get_future_trading_date(contract_code, U("2024-06-03"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto tdate_arr = extract_array(result);
+    // Trading date list may be empty; when present each entry must be non-empty string or object.
+    for (size_t i = 0; i < tdate_arr.size(); ++i) {
+        const auto &entry = tdate_arr.at(i);
+        bool valid = entry.is_string() ? !entry.as_string().empty() : entry.is_object();
+        EXPECT_TRUE(valid) << "FutureTradingDate[" << i << "] is neither a non-empty string nor object";
+    }
 }
 
 TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
@@ -1156,7 +1258,16 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &depth = arr.at(i);
+        ASSERT_TRUE(depth.is_object());
+        // Depth entry must carry a symbol/code identifier.
+        bool has_symbol = (depth.has_field(U("symbol")) && depth.at(U("symbol")).is_string() && !depth.at(U("symbol")).as_string().empty())
+                       || (depth.has_field(U("contractCode")) && depth.at(U("contractCode")).is_string() && !depth.at(U("contractCode")).as_string().empty());
+        EXPECT_TRUE(has_symbol) << "FutureDepth[" << i << "] has no symbol/contractCode field";
+        // At least one side (asks or bids) should be present.
+        bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
+        bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
+        EXPECT_TRUE(has_asks || has_bids) << "FutureDepth[" << i << "] has neither asks nor bids";
     }
 }
 
@@ -1295,7 +1406,13 @@ TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
     web::json::value result = client->get_corporate_symbol_change(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "CorporateSymbolChange[" << i << "].symbol is empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetCorporateDelisting_ReturnsValidFields) {
@@ -1307,7 +1424,13 @@ TEST(QuoteClientInteg, GetCorporateDelisting_ReturnsValidFields) {
     web::json::value result = client->get_corporate_delisting(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "CorporateDelisting[" << i << "].symbol is empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
@@ -1319,7 +1442,13 @@ TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
     web::json::value result = client->get_corporate_ipo(
         make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "CorporateIpo[" << i << "].symbol is empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetFinancialCurrency_ReturnsValidFields) {
@@ -1330,7 +1459,15 @@ TEST(QuoteClientInteg, GetFinancialCurrency_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_financial_currency(make_symbols(U("AAPL")), U("US"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "FinancialCurrency[" << i << "].symbol is empty";
+        EXPECT_TRUE(json_nonempty_string(entry, U("currency")))
+            << "FinancialCurrency[" << i << "].currency is empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetFinancialExchangeRate_ReturnsValidFields) {
@@ -1345,7 +1482,18 @@ TEST(QuoteClientInteg, GetFinancialExchangeRate_ReturnsValidFields) {
     web::json::value result = client->get_financial_exchange_rate(
         currencies, U("2024-01-01"), U("2024-06-01"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("currency")))
+            << "FinancialExchangeRate[" << i << "].currency is empty";
+        // exchange rate value should be positive when present
+        if (entry.has_field(U("rate")) && entry.at(U("rate")).is_double()) {
+            EXPECT_GT(entry.at(U("rate")).as_double(), 0.0)
+                << "FinancialExchangeRate[" << i << "].rate should be > 0";
+        }
+    }
 }
 
 // ── Industry: additional tests ────────────────────────────────────────────────
@@ -1359,8 +1507,17 @@ TEST(QuoteClientInteg, GetIndustryList_ReturnsValidFields) {
     web::json::value result = client->get_industry_list();
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
+    ASSERT_GT(arr.size(), 0u) << "GetIndustryList returned empty";
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &industry = arr.at(i);
+        ASSERT_TRUE(industry.is_object());
+        // Each industry entry must have a non-empty identifier (id or code) and a name.
+        bool has_id = (industry.has_field(U("id")) && industry.at(U("id")).is_string() && !industry.at(U("id")).as_string().empty())
+                   || (industry.has_field(U("industryId")) && industry.at(U("industryId")).is_string() && !industry.at(U("industryId")).as_string().empty())
+                   || (industry.has_field(U("code")) && industry.at(U("code")).is_string() && !industry.at(U("code")).as_string().empty());
+        EXPECT_TRUE(has_id) << "IndustryEntry[" << i << "] has no id/industryId/code field";
+        EXPECT_TRUE(json_nonempty_string(industry, U("name")))
+            << "IndustryEntry[" << i << "].name is empty, want non-empty";
     }
 }
 
@@ -1377,8 +1534,12 @@ TEST(QuoteClientInteg, GetIndustryStocks_ReturnsValidFields) {
     web::json::value result = client->get_industry_stocks(industry_id, U("US"));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
+    ASSERT_GT(arr.size(), 0u) << "GetIndustryStocks returned empty for industry " << industry_id;
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &stock = arr.at(i);
+        ASSERT_TRUE(stock.is_object());
+        EXPECT_TRUE(json_nonempty_string(stock, U("symbol")))
+            << "IndustryStock[" << i << "].symbol is empty, want non-empty";
     }
 }
 
@@ -1390,7 +1551,20 @@ TEST(QuoteClientInteg, GetStockIndustry_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_stock_industry(U("AAPL"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    // When data is present, expect a symbol field identifying AAPL.
+    if (result.is_object() && json_is_string(result, U("symbol"))) {
+        EXPECT_EQ(result.at(U("symbol")).as_string(), U("AAPL"));
+        EXPECT_TRUE(json_nonempty_string(result, U("name")))
+            << "StockIndustry.name is empty, want non-empty";
+    } else if (result.is_array() && result.size() > 0) {
+        const auto &entry = result.at(0);
+        ASSERT_TRUE(entry.is_object());
+        if (json_is_string(entry, U("symbol"))) {
+            EXPECT_EQ(entry.at(U("symbol")).as_string(), U("AAPL"));
+        }
+        EXPECT_TRUE(json_nonempty_string(entry, U("name")))
+            << "StockIndustry[0].name is empty, want non-empty";
+    }
 }
 
 // ── Other quote: additional tests ────────────────────────────────────────────
@@ -1420,7 +1594,14 @@ TEST(QuoteClientInteg, GetTradeRank_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_trade_rank(U("US"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    // Rank may be empty outside trading hours.
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "TradeRankItem[" << i << "].symbol is empty, want non-empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetQuoteOvernight_ReturnsValidFields) {
@@ -1433,7 +1614,10 @@ TEST(QuoteClientInteg, GetQuoteOvernight_ReturnsValidFields) {
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
-        ASSERT_TRUE(arr.at(i).is_object());
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "QuoteOvernight[" << i << "].symbol is empty, want non-empty";
     }
 }
 
@@ -1445,7 +1629,13 @@ TEST(QuoteClientInteg, GetBrokerHold_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_broker_hold(U("HK"));
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "BrokerHold[" << i << "].symbol is empty, want non-empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetMarketScannerTags_ReturnsValidFields) {
@@ -1469,7 +1659,13 @@ TEST(QuoteClientInteg, GetMarketScannerTags_ReturnsValidFields) {
     if (result.is_null()) {
         GTEST_SKIP() << "GetMarketScannerTags returned null";
     }
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("name")))
+            << "MarketScannerTag[" << i << "].name is empty, want non-empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetMarketScanner_ReturnsValidFields) {
@@ -1489,7 +1685,13 @@ TEST(QuoteClientInteg, GetKlineQuota_ReturnsValidFields) {
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_kline_quota();
     ASSERT_FALSE(result.is_null());
-    EXPECT_TRUE(result.is_array() || result.is_object());
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("method")))
+            << "KlineQuota[" << i << "].method is empty, want non-empty";
+    }
 }
 
 TEST(QuoteClientInteg, GetAddonEntitlements_ReturnsValidFields) {
