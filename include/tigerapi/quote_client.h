@@ -56,8 +56,11 @@ namespace TIGER_API {
 
         /** Option quote related api **/
         value get_option_expiration(const value &symbols);
-        value get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter= value::null());
-        value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null());
+        value get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter= value::null(),
+                               value return_greek_value= value::null());
+        value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null(),
+                               value return_greek_value= value::null(),
+                               utility::string_t timezone= U("US/Eastern"));
         value get_option_brief(value identifiers);
         value get_option_brief(const utility::string_t identifier);
         value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
@@ -99,9 +102,8 @@ namespace TIGER_API {
 
         /** Financial related api **/
         value get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
-                                  time_t begin_date, time_t end_date, utility::string_t lang=U(""));
-        value get_financial_daily(const value &symbols, const value &fields,
-                                  time_t begin_date, time_t end_date, utility::string_t lang=U(""));
+                               utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
+                               utility::string_t lang=U(""));
         value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
                                    utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
                                    time_t end_date=-1, utility::string_t lang=U(""));

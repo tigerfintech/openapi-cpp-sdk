@@ -257,7 +257,8 @@ namespace TIGER_API {
         return post(OPTION_EXPIRATION, obj);
     }
 
-    value QuoteClient::get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter) {
+    value QuoteClient::get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter,
+                                        value return_greek_value) {
         value obj = value::object(true);
         value basic = value::object(true);
         basic[P_SYMBOL] = value::string(symbol);
@@ -265,12 +266,19 @@ namespace TIGER_API {
         value option_basic = value::array();
         option_basic[0] = basic;
         obj[U("option_basic")] = option_basic;
+        if (!option_filter.is_null()) {
+            obj[U("option_filter")] = option_filter;
+        }
+        if (!return_greek_value.is_null()) {
+            obj[U("return_greek_value")] = return_greek_value;
+        }
         return post(OPTION_CHAIN, obj);
     }
 
-    value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter) {
-        time_t expiry_ts = Utils::date_string_to_timestamp(expiry);
-        return get_option_chain(symbol, expiry_ts, option_filter);
+    value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter,
+                                        value return_greek_value, utility::string_t timezone) {
+        time_t expiry_ts = Utils::date_string_to_timestamp(expiry, timezone);
+        return get_option_chain(symbol, expiry_ts, option_filter, return_greek_value);
     }
 
     value QuoteClient::get_option_brief(const utility::string_t identifier) {
@@ -638,22 +646,22 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
-                                           time_t begin_date, time_t end_date, utility::string_t lang) {
+                                           utility::string_t begin_date, utility::string_t end_date,
+                                           utility::string_t lang) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_MARKET] = value::string(market);
         obj[P_FIELDS] = fields;
-        obj[P_BEGIN_DATE] = value::number(static_cast<int64_t>(begin_date));
-        obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
+        if (!begin_date.empty()) {
+            obj[P_BEGIN_DATE] = value::string(begin_date);
+        }
+        if (!end_date.empty()) {
+            obj[P_END_DATE] = value::string(end_date);
+        }
         if (!lang.empty()) {
             obj[P_LANG] = value::string(lang);
         }
         return post(FINANCIAL_DAILY, obj);
-    }
-
-    value QuoteClient::get_financial_daily(const value &symbols, const value &fields,
-                                           time_t begin_date, time_t end_date, utility::string_t lang) {
-        return get_financial_daily(symbols, U("US"), fields, begin_date, end_date, lang);
     }
 
     value QuoteClient::get_financial_report(const value &symbols, utility::string_t market, const value &fields,
