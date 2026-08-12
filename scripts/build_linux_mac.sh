@@ -22,6 +22,30 @@ warn() { printf "\033[1;33m[!]\033[0m %s\n" "$*"; }
 err() { printf "\033[1;31m[x]\033[0m %s\n" "$*" 1>&2; }
 fail() { err "$*"; exit 1; }
 
+# verify_download <file> <dep-name-version>
+# Checks SHA256 of <file> against scripts/dep-checksums.txt.
+# Fails hard if checksum mismatches or is not listed.
+verify_download() {
+  local file="$1" dep="$2"
+  local checksums_file="${SCRIPT_DIR}/dep-checksums.txt"
+  if [[ ! -f "$checksums_file" ]]; then
+    warn "dep-checksums.txt not found — skipping integrity check for ${dep}"
+    return
+  fi
+  local expected
+  expected=$(grep "^${dep}" "$checksums_file" | awk '{print $2}')
+  if [[ -z "$expected" ]]; then
+    warn "No checksum entry for '${dep}' in dep-checksums.txt — skipping"
+    return
+  fi
+  local actual
+  actual=$(sha256sum "$file" | awk '{print $1}')
+  if [[ "$actual" != "$expected" ]]; then
+    fail "SHA256 mismatch for ${dep}: expected ${expected}, got ${actual}"
+  fi
+  log "Checksum OK: ${dep}"
+}
+
 require_cmd() {
   local cmd="$1"
   command -v "$cmd" >/dev/null 2>&1 || fail "Command '$cmd' is required but missing."
@@ -107,6 +131,7 @@ else
 fi
 mkdir -p "$LOCAL_OPT_PREFIX"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
+CPPREST_VERSION="${CPPREST_VERSION:-v2.10.18}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
 ABSL_PREFIX="${ABSL_PREFIX:-${LOCAL_OPT_PREFIX}/abseil-${ABSEIL_VERSION}}"
@@ -388,9 +413,11 @@ build_cpprestsdk() {
   fi
   local repo="${DEPS_DIR}/cpprestsdk"
   if [[ ! -d "$repo" ]]; then
-    log "Downloading cpprestsdk tarball..."
+    log "Downloading cpprestsdk ${CPPREST_VERSION} tarball..."
+    # Fixed tag instead of refs/heads/master — reproducible builds
     wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/cpprestsdk.tar.gz" \
-      "https://github.com/microsoft/cpprestsdk/archive/refs/heads/master.tar.gz"
+      "https://github.com/microsoft/cpprestsdk/archive/refs/tags/${CPPREST_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/cpprestsdk.tar.gz" "cpprestsdk-${CPPREST_VERSION}"
     mkdir -p "$repo"
     tar -C "$repo" -xzf "${CACHE_DIR}/cpprestsdk.tar.gz" --strip-components=1
   fi
@@ -435,6 +462,7 @@ build_abseil() {
     log "Downloading abseil ${ABSEIL_VERSION} tarball..."
     wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/abseil.tar.gz" \
       "https://github.com/abseil/abseil-cpp/archive/refs/tags/${ABSEIL_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/abseil.tar.gz" "abseil-${ABSEIL_VERSION}"
     mkdir -p "$repo"
     tar -C "$repo" -xzf "${CACHE_DIR}/abseil.tar.gz" --strip-components=1
   fi
@@ -472,6 +500,7 @@ build_protobuf() {
       "https://github.com/protocolbuffers/protobuf/archive/refs/tags/${PROTOBUF_VERSION}.tar.gz" \
       || wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${pb_tarball}" \
         "https://ghproxy.com/https://github.com/protocolbuffers/protobuf/archive/refs/tags/${PROTOBUF_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/${pb_tarball}" "protobuf-${PROTOBUF_VERSION}"
     mkdir -p "$pb_src"
     tar -C "$pb_src" -xzf "${CACHE_DIR}/${pb_tarball}" --strip-components=1
   fi
@@ -502,9 +531,9 @@ build_gtest() {
   local repo="${DEPS_DIR}/googletest"
   if [[ ! -d "$repo" ]]; then
     log "Downloading googletest ${GTEST_VERSION} tarball..."
-    local gtest_ver_no_v="${GTEST_VERSION#v}"
     wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/googletest.tar.gz" \
       "https://github.com/google/googletest/archive/refs/tags/${GTEST_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/googletest.tar.gz" "googletest-${GTEST_VERSION}"
     mkdir -p "$repo"
     tar -C "$repo" -xzf "${CACHE_DIR}/googletest.tar.gz" --strip-components=1
   fi

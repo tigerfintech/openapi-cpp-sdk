@@ -1,0 +1,10 @@
+# SHA256 checksums for C++ SDK build dependencies.
+# Source: computed from official GitHub release tarballs.
+# Used by scripts/build_linux_mac.sh verify_download() to detect
+# corrupted or substituted tarballs before extraction.
+#
+# Format: <sha256>  <dep-name>-<version>
+abseil-20240722.0       f50e5ac311a81382da7fa75b97310e4b9006474f9560ac46f54a9967f07d4ae3
+protobuf-v5.28.3        7fce939b9b7181bd0bd157360e0cc88a8cabf01ac4efe4662494f56dd955d4c1
+googletest-v1.14.0      8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7
+cpprestsdk-v2.10.18     6bd74a637ff182144b6a4271227ea8b6b3ea92389f88b25b215e6f94fd4d41cb
