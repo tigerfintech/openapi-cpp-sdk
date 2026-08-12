@@ -137,6 +137,11 @@ namespace TIGER_API {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
                 throw std::runtime_error("Exception: response sign verify failed");
             }
+            if (!result.has_field(P_DATA)) {
+                LOG(ERROR) << U("Exception: response missing data field, response: ") << result_str;
+                throw std::runtime_error("Exception: response missing data field");
+            }
+            // Allow data:null on code==0 (valid empty success response).
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {

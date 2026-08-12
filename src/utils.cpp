@@ -42,14 +42,31 @@ namespace TIGER_API {
         return str8to16(result);
     }
 
-    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string) {
+    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string,
+                                            const utility::string_t &timezone) {
         struct tm tm;
         utility::istringstream_t ss(date_string);
         ss >> std::get_time(&tm, U("%Y-%m-%d"));
         tm.tm_hour = 0;
         tm.tm_min = 0;
         tm.tm_sec = 0;
+        // WARNING: setenv/unsetenv is not thread-safe with concurrent mktime/localtime
+        // calls in other threads. This is acceptable for single-threaded SDK usage but
+        // callers in multi-threaded environments should serialize all time-zone
+        // conversions externally.
+        static std::mutex tz_mutex;
+        std::lock_guard<std::mutex> lock(tz_mutex);
+        const char* old_tz = getenv("TZ");
+        std::string old_tz_str = old_tz ? old_tz : "";
+        setenv("TZ", utility::conversions::to_utf8string(timezone).c_str(), 1);
+        tzset();
         time_t res = mktime(&tm) * 1000;
+        if (!old_tz_str.empty()) {
+            setenv("TZ", old_tz_str.c_str(), 1);
+        } else {
+            unsetenv("TZ");
+        }
+        tzset();
         return res;
     }
 

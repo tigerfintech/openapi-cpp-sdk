@@ -18,7 +18,8 @@ namespace TIGER_API {
 
         static utility::string_t get_timestamp();
 
-        static time_t date_string_to_timestamp(const utility::string_t &date_string);
+        static time_t date_string_to_timestamp(const utility::string_t &date_string,
+                                                const utility::string_t &timezone=U("US/Eastern"));
 
         static utility::string_t get_device_id();
 
