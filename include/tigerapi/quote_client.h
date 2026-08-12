@@ -104,6 +104,8 @@ namespace TIGER_API {
         value get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
                                utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                utility::string_t lang=U(""));
+        // Backward-compatible no-param overload (deprecated — use the full-param version)
+        value get_financial_daily() { return get_financial_daily(value::array(), U("US"), value::array()); }
         value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
                                    utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
                                    time_t end_date=-1, utility::string_t lang=U(""));

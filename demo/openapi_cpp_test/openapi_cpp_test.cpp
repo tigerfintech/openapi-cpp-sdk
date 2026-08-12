@@ -1121,7 +1121,7 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     oss << std::endl;
     oss << "========================================" << std::endl;
     oss << "     OpenAPI C++ SDK Test Report         " << std::endl;
-    oss << "     SDK Version: openapi-cpp-sdk-" << PROJECT_VERSION << "  " << std::endl;
+    oss << "     SDK Version: openapi-cpp-sdk-" << PROJECT_VERSION << "  " << std::endl;  // PROJECT_VERSION defined in include/tigerapi/version.h
     oss << "========================================" << std::endl;
     oss << "Total: " << total << "  Passed: " << passed << "  Failed: " << failed << "  Skipped: " << skipped << std::endl;
     oss << "Pass Rate: " << (total > 0 ? (passed * 100 / total) : 0) << "% (" << passed << "/" << total << ")" << std::endl;

@@ -44,16 +44,20 @@ namespace TIGER_API {
 
     time_t Utils::date_string_to_timestamp(const utility::string_t &date_string,
                                             const utility::string_t &timezone) {
-        struct tm tm;
+        struct tm tm = {};
         utility::istringstream_t ss(date_string);
         ss >> std::get_time(&tm, U("%Y-%m-%d"));
         tm.tm_hour = 0;
         tm.tm_min = 0;
         tm.tm_sec = 0;
-        // WARNING: setenv/unsetenv is not thread-safe with concurrent mktime/localtime
-        // calls in other threads. This is acceptable for single-threaded SDK usage but
-        // callers in multi-threaded environments should serialize all time-zone
-        // conversions externally.
+        tm.tm_isdst = -1;  // let mktime determine DST automatically
+        // WARNING: setenv/unsetenv is NOT thread-safe — tz_mutex only serializes callers
+        // of this function. Any other thread concurrently calling mktime/localtime/time/
+        // ctime/strftime will observe the temporarily-modified TZ and may produce wrong
+        // results. This is a known limitation. A correct fix requires replacing the
+        // setenv/mktime approach with manual UTC arithmetic (e.g., timegm on Linux,
+        // _mkgmtime on Windows) and a timezone offset lookup table.
+        // Safe for single-threaded or short-lived SDK contexts.
         static std::mutex tz_mutex;
         std::lock_guard<std::mutex> lock(tz_mutex);
         const char* old_tz = getenv("TZ");
