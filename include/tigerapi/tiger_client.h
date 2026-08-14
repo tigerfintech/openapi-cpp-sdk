@@ -55,7 +55,11 @@ namespace TIGER_API {
 
         utility::string_t build_sign_content(const value &obj);
 
-        value build_common_params();
+        // Build the envelope's common params. api_method is optional; when supplied,
+        // per-endpoint version overrides may promote the version away from the global
+        // OPEN_API_SERVICE_VERSION default (e.g. financial_report / trading_calendar
+        // need V2.0). Default empty argument keeps existing callers working.
+        value build_common_params(const utility::string_t &api_method = U(""));
     };
 }
 

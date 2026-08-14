@@ -713,22 +713,31 @@ public:
     }
 
     // --- Corporate Action: new types (SYMBOL_CHANGE / DELISTING / IPO) ---
+    // begin_date/end_date are epoch-ms int64 (server contract; matches Java Date
+    // serialization and Rust Option<i64>). Convert human dates via
+    // Utils::date_string_to_timestamp.
     static void test_get_corporate_symbol_change(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("META"));
-        value result = quote_client->get_corporate_symbol_change(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        value result = quote_client->get_corporate_symbol_change(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2022-01-01")),
+            Utils::date_string_to_timestamp(U("2023-01-01")));
         ucout << U("corporate_symbol_change: ") << result << endl;
     }
     static void test_get_corporate_delisting(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("TWTR"));
-        value result = quote_client->get_corporate_delisting(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        value result = quote_client->get_corporate_delisting(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2022-01-01")),
+            Utils::date_string_to_timestamp(U("2023-01-01")));
         ucout << U("corporate_delisting: ") << result << endl;
     }
     static void test_get_corporate_ipo(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("RIVN"));
-        value result = quote_client->get_corporate_ipo(symbols, U("US"), U("2021-01-01"), U("2022-01-01"));
+        value result = quote_client->get_corporate_ipo(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2021-01-01")),
+            Utils::date_string_to_timestamp(U("2022-01-01")));
         ucout << U("corporate_ipo: ") << result << endl;
     }
 
