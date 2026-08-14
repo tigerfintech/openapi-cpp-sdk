@@ -611,8 +611,8 @@ namespace TIGER_API {
     // Financial new interfaces
 
     value QuoteClient::get_corporate_action(const value &symbols, const utility::string_t &market,
-                                            const utility::string_t &action_type, const utility::string_t &begin_date,
-                                            const utility::string_t &end_date) {
+                                            const utility::string_t &action_type, time_t begin_date,
+                                            time_t end_date) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         if (!market.empty()) {
@@ -621,27 +621,29 @@ namespace TIGER_API {
         if (!action_type.empty()) {
             obj[P_ACTION_TYPE] = value::string(action_type);
         }
-        if (!begin_date.empty()) {
-            obj[P_BEGIN_DATE] = value::string(begin_date);
+        // begin_date/end_date are epoch-ms int64. Java's Date field serializes to
+        // epoch-ms via fastjson; Rust switched to Option<i64>. Omit when <= 0.
+        if (begin_date > 0) {
+            obj[P_BEGIN_DATE] = value::number(static_cast<int64_t>(begin_date));
         }
-        if (!end_date.empty()) {
-            obj[P_END_DATE] = value::string(end_date);
+        if (end_date > 0) {
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
         }
         return post(CORPORATE_ACTION, obj);
     }
 
     value QuoteClient::get_corporate_symbol_change(const value &symbols, const utility::string_t &market,
-                                                   const utility::string_t &begin_date, const utility::string_t &end_date) {
+                                                   time_t begin_date, time_t end_date) {
         return get_corporate_action(symbols, market, U("symbol_change"), begin_date, end_date);
     }
 
     value QuoteClient::get_corporate_delisting(const value &symbols, const utility::string_t &market,
-                                               const utility::string_t &begin_date, const utility::string_t &end_date) {
+                                               time_t begin_date, time_t end_date) {
         return get_corporate_action(symbols, market, U("delisting"), begin_date, end_date);
     }
 
     value QuoteClient::get_corporate_ipo(const value &symbols, const utility::string_t &market,
-                                         const utility::string_t &begin_date, const utility::string_t &end_date) {
+                                         time_t begin_date, time_t end_date) {
         return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
     }
 

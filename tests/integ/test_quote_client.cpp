@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "support/test_support.h"
 #include "tigerapi/quote_client.h"
+#include "tigerapi/utils.h"
 #include <memory>
 
 using namespace TIGER_API;
@@ -285,7 +286,9 @@ TEST(QuoteClientInteg, GetCorporateAction_ReturnsValidFields) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_action(
-        make_symbols(U("AAPL")), U("US"), U("DIVIDEND"), U("2024-01-01"), U("2025-12-31"));
+        make_symbols(U("AAPL")), U("US"), U("DIVIDEND"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
 
     // The server returns a map keyed by symbol: {"AAPL": [{...}, ...]}.
@@ -1408,7 +1411,9 @@ TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_symbol_change(
-        make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
+        make_symbols(U("AAPL")), U("US"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
@@ -1426,7 +1431,9 @@ TEST(QuoteClientInteg, GetCorporateDelisting_ReturnsValidFields) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_delisting(
-        make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
+        make_symbols(U("AAPL")), U("US"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
@@ -1444,7 +1451,9 @@ TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_corporate_ipo(
-        make_symbols(U("AAPL")), U("US"), U("2024-01-01"), U("2025-12-31"));
+        make_symbols(U("AAPL")), U("US"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {

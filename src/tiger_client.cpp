@@ -2,6 +2,7 @@
 #include "tigerapi/version.h"
 #include "tigerapi/contract_util.h"
 #include "tigerapi/logger.h"
+#include <map>
 #include <memory>
 
 namespace TIGER_API {
@@ -39,11 +40,39 @@ namespace TIGER_API {
         return str;
     }
 
-    value TigerClient::build_common_params() {
+    // Endpoints that the gateway rejects on the global V3.0 default and require
+    // an older API version. Matches the Java SDK request classes:
+    //   FinancialReportRequest        -> V2_0
+    //   FinancialDailyRequest         -> V2_0
+    //   QuoteTradeCalendarRequest     -> V2_0
+    // Rust SDK pins the same set via call_into_versioned(..., VERSION_V2).
+    // Without the override the gateway answers 'biz param error(failed to parse
+    // parameters in biz_content)' (financial_report / financial_daily) or returns
+    // an empty market field (trading_calendar).
+    static const std::map<utility::string_t, utility::string_t>&
+    endpoint_version_overrides() {
+        static const std::map<utility::string_t, utility::string_t> table = {
+            {U("financial_report"), U("2.0")},
+            {U("financial_daily"), U("2.0")},
+            {U("trading_calendar"), U("2.0")},
+        };
+        return table;
+    }
+
+    value TigerClient::build_common_params(const utility::string_t &api_method) {
         value common_params;
         common_params[P_TIGER_ID] = value::string(client_config.tiger_id);
         common_params[P_CHARSET] = value::string(client_config.charset);
-        common_params[P_VERSION] = value::string(OPEN_API_SERVICE_VERSION);
+        // Use per-endpoint version override if present; otherwise the global default.
+        utility::string_t version = OPEN_API_SERVICE_VERSION;
+        if (!api_method.empty()) {
+            const auto &table = endpoint_version_overrides();
+            auto it = table.find(api_method);
+            if (it != table.end()) {
+                version = it->second;
+            }
+        }
+        common_params[P_VERSION] = value::string(version);
         common_params[P_SIGN_TYPE] = value::string(client_config.sign_type);
         common_params[P_DEVICE_ID] = value::string(client_config.device_id);
         return common_params;
@@ -76,7 +105,9 @@ namespace TIGER_API {
         /************************** set request body ***************************/
 
         value params = value::object(true);
-        value common_params = build_common_params();
+        // Pass api_method so build_common_params can apply per-endpoint version overrides
+        // (e.g. financial_report / trading_calendar require V2.0, not the global V3.0).
+        value common_params = build_common_params(api_method);
         for (const auto &kvp: common_params.as_object()) {
             params[kvp.first] = kvp.second;
         }

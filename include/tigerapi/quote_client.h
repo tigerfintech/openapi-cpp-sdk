@@ -112,15 +112,20 @@ namespace TIGER_API {
         value get_financial_report(const value &symbols, const value &fields,
                                    utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
                                    time_t end_date=-1, utility::string_t lang=U(""));
+        // begin_date/end_date are epoch-ms int64 (matches Java's Date → fastjson epoch-ms
+        // wire shape, Rust's Option<i64>, and get_financial_report above). Server rejects
+        // string dates with 'biz param error(failed to parse parameters in biz_content)'.
+        // Pass -1 or 0 to omit. Use Utils::date_string_to_timestamp("YYYY-MM-DD") to
+        // convert human dates.
         value get_corporate_action(const value &symbols, const utility::string_t &market=U(""),
-                                   const utility::string_t &action_type=U(""), const utility::string_t &begin_date=U(""),
-                                   const utility::string_t &end_date=U(""));
+                                   const utility::string_t &action_type=U(""), time_t begin_date=-1,
+                                   time_t end_date=-1);
         value get_corporate_symbol_change(const value &symbols, const utility::string_t &market=U(""),
-                                          const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                          time_t begin_date=-1, time_t end_date=-1);
         value get_corporate_delisting(const value &symbols, const utility::string_t &market=U(""),
-                                      const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                      time_t begin_date=-1, time_t end_date=-1);
         value get_corporate_ipo(const value &symbols, const utility::string_t &market=U(""),
-                                const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                time_t begin_date=-1, time_t end_date=-1);
         value get_financial_currency(const value &symbols, utility::string_t market=U(""), utility::string_t lang=U(""));
         value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                          utility::string_t timezone=U(""), utility::string_t lang=U(""));
