@@ -111,7 +111,13 @@ namespace TIGER_API {
         for (const auto &kvp: common_params.as_object()) {
             params[kvp.first] = kvp.second;
         }
-        if (!client_config.lang.empty()) {
+        // `body` may be a top-level array (v1-style batch endpoints like
+        // option_brief, option_kline, option_trade_tick — which serialize
+        // biz_content as `[{...}, ...]`). cpprestsdk throws "not an object"
+        // when you call `array[stringKey]`, so only attach `lang` for object
+        // bodies. v1 batch endpoints have no request-level `lang` field
+        // anyway (Java `BatchApiModel` serializes `items` directly).
+        if (!client_config.lang.empty() && body.is_object()) {
             body[P_LANG] = value::string(client_config.lang);
         }
         if (!body.is_null() && body.size() > 0) {

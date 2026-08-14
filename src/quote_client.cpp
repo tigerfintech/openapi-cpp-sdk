@@ -508,7 +508,15 @@ namespace TIGER_API {
 
     value QuoteClient::get_option_depth(const value &symbols, utility::string_t market) {
         value obj = value::object(true);
-        obj[U("option_basic")] = symbols;
+        // Callers pass an array of OCC identifier strings; server expects
+        // `option_basic` to be an array of expanded contract objects
+        // `[{symbol, expiry, right, strike}, ...]`. Match the Rust
+        // `OptionDepthRequest` / Java `OptionCommonModel` wire shape.
+        // If the caller already passes an array of objects, pass through.
+        value option_basic = (symbols.is_array() && symbols.size() > 0 && symbols.at(0).is_string())
+                                 ? identifiers_to_options(symbols)
+                                 : symbols;
+        obj[U("option_basic")] = option_basic;
         if (!market.empty()) {
             obj[P_MARKET] = value::string(market);
         }
@@ -517,7 +525,12 @@ namespace TIGER_API {
 
     value QuoteClient::get_option_timeline(const value &symbols, utility::string_t market, time_t begin_time) {
         value obj = value::object(true);
-        obj[U("option_query")] = symbols;
+        // Match Rust `OptionTimelineRequest`: `option_query` is an array of
+        // expanded contract objects, not raw identifier strings.
+        value option_query = (symbols.is_array() && symbols.size() > 0 && symbols.at(0).is_string())
+                                 ? identifiers_to_options(symbols)
+                                 : symbols;
+        obj[U("option_query")] = option_query;
         if (!market.empty()) {
             obj[P_MARKET] = value::string(market);
         }
