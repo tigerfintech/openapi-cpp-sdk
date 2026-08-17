@@ -3,6 +3,7 @@
 #include "integ/test_market_helpers.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/utils.h"
+#include <chrono>
 #include <memory>
 
 using namespace TIGER_API;
@@ -1403,7 +1404,20 @@ TEST(QuoteClientInteg, GetFundHistoryQuote_ReturnsValidFields) {
     if (fund_symbol.empty()) {
         GTEST_SKIP() << "No fund symbol available (account may lack fund entitlement)";
     }
-    web::json::value result = client->get_fund_history_quote(make_symbols(fund_symbol), -1, -1, 5);
+    // Server requires begin_time/end_time in epoch-ms (Java FundQuoteHistoryModel
+    // uses Long, and Java integ test passes "2025-01-01".."2025-06-30" via
+    // DateUtils.getTimestamp which yields ms). Empty range triggers
+    // "biz param error(field 'begin_time' cannot be empty)".
+    auto now = std::chrono::system_clock::now();
+    auto end_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()).count();
+    // ~180 days lookback — funds do not necessarily have daily prints.
+    auto begin_ms = end_ms - 180LL * 24 * 60 * 60 * 1000;
+    web::json::value result = client->get_fund_history_quote(
+        make_symbols(fund_symbol),
+        static_cast<time_t>(begin_ms),
+        static_cast<time_t>(end_ms),
+        5);
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
