@@ -29,14 +29,15 @@ verify_download() {
   local file="$1" dep="$2"
   local checksums_file="${SCRIPT_DIR}/dep-checksums.txt"
   if [[ ! -f "$checksums_file" ]]; then
-    warn "dep-checksums.txt not found — skipping integrity check for ${dep}"
-    return
+    fail "dep-checksums.txt not found — cannot verify integrity of ${dep}"
   fi
   local expected
-  expected=$(grep "^${dep}" "$checksums_file" | awk '{print $2}')
+  # Use awk for exact field-1 match: avoids grep regex metacharacters in
+  # version strings (dots) and prevents prefix collisions (e.g. protobuf-v5.28.3
+  # vs protobuf-v5.28.31).
+  expected=$(awk -v dep="${dep}" '$1 == dep {print $2}' "$checksums_file")
   if [[ -z "$expected" ]]; then
-    warn "No checksum entry for '${dep}' in dep-checksums.txt — skipping"
-    return
+    fail "No checksum entry for '${dep}' in dep-checksums.txt — refusing to use unverified tarball"
   fi
   local actual
   actual=$(sha256sum "$file" | awk '{print $1}')

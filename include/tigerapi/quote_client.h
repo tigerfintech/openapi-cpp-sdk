@@ -105,6 +105,7 @@ namespace TIGER_API {
                                utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                utility::string_t lang=U(""));
         // Backward-compatible no-param overload (deprecated — use the full-param version)
+        [[deprecated("use get_financial_daily(symbols, market, fields) instead")]]
         value get_financial_daily() { return get_financial_daily(value::array(), U("US"), value::array()); }
         value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
                                    utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
@@ -142,8 +143,8 @@ namespace TIGER_API {
                               int limit=0, int page=0, utility::string_t lang=U(""));
         value get_market_scanner_tags(utility::string_t market=U(""), const value &multi_tags_fields=value::null());
 
-        // Market scanner
-        value get_market_scanner();
+        // Market scanner. market defaults to "US"; pass e.g. "HK" or "AU" for other markets.
+        value get_market_scanner(utility::string_t market=U("US"));
 
         // general
         value get_kline_quota(bool with_details = false);
