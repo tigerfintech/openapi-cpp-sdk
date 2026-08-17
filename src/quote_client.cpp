@@ -808,6 +808,17 @@ namespace TIGER_API {
         return post(MARKET_SCANNER_TAGS, obj);
     }
 
+    value QuoteClient::get_market_scanner() {
+        // Minimal server-accepted payload matching Java MarketScannerModel: market + page/page_size.
+        // Scanner filters are optional; callers wanting rich filter support can invoke the
+        // underlying endpoint directly. This overload is convenience-only.
+        value obj = value::object(true);
+        obj[P_MARKET] = value::string(U("US"));
+        obj[P_PAGE] = value::number(1);
+        obj[P_PAGE_SIZE] = value::number(20);
+        return post(MARKET_SCANNER, obj);
+    }
+
     // Industry related interfaces
 
     value QuoteClient::get_industry_list(utility::string_t industry_level, utility::string_t lang) {
