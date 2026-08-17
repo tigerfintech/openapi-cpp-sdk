@@ -127,6 +127,10 @@ namespace TIGER_API {
                                       time_t begin_date=-1, time_t end_date=-1);
         value get_corporate_ipo(const value &symbols, const utility::string_t &market=U(""),
                                 time_t begin_date=-1, time_t end_date=-1);
+        value get_corporate_split(const value &symbols, const utility::string_t &market=U(""),
+                                  time_t begin_date=-1, time_t end_date=-1);
+        value get_corporate_dividend(const value &symbols, const utility::string_t &market=U(""),
+                                     time_t begin_date=-1, time_t end_date=-1);
         value get_financial_currency(const value &symbols, utility::string_t market=U(""), utility::string_t lang=U(""));
         value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                          utility::string_t timezone=U(""), utility::string_t lang=U(""));

@@ -665,6 +665,16 @@ namespace TIGER_API {
         return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
     }
 
+    value QuoteClient::get_corporate_split(const value &symbols, const utility::string_t &market,
+                                           time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("split"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_corporate_dividend(const value &symbols, const utility::string_t &market,
+                                              time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("dividend"), begin_date, end_date);
+    }
+
     value QuoteClient::get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
                                            utility::string_t begin_date, utility::string_t end_date,
                                            utility::string_t lang) {

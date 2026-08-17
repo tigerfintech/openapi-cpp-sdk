@@ -173,11 +173,55 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
     EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0) << "KlineItem.time should be non-zero";
     ASSERT_TRUE(item.has_field(U("close"))) << "KlineItem missing close field";
     EXPECT_GT(item.at(U("close")).as_double(), 0.0) << "KlineItem.close should be > 0";
+    ASSERT_TRUE(item.has_field(U("open"))) << "KlineItem missing open field";
+    EXPECT_GT(item.at(U("open")).as_double(), 0.0) << "KlineItem.open should be > 0";
+    ASSERT_TRUE(item.has_field(U("volume"))) << "KlineItem missing volume field";
+    EXPECT_GT(item.at(U("volume")).as_number().to_int64(), 0) << "KlineItem.volume should be > 0";
     // Cross-field constraint: high >= low
     ASSERT_TRUE(item.has_field(U("high"))) << "KlineItem missing high field";
     ASSERT_TRUE(item.has_field(U("low"))) << "KlineItem missing low field";
     EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
         << "KlineItem.high should be >= low";
+}
+
+TEST(QuoteClientInteg, GetKline_WeekPeriod_HK) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_kline(make_symbols(U("00700")), BarPeriod::WEEK,
+                                                 /*begin_time=*/-1, /*end_time=*/-1,
+                                                 QuoteRight::br, /*limit=*/5);
+    ASSERT_FALSE(result.is_null());
+
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        // HK weekly bars are historical — empty implies the account lacks HK data entitlement.
+        GTEST_SKIP() << "GetKline(week,HK) returned empty — account may lack HK data entitlement";
+    }
+
+    const auto &kline = arr.at(0);
+    ASSERT_TRUE(kline.is_object());
+    if (json_is_string(kline, U("symbol"))) {
+        EXPECT_EQ(kline.at(U("symbol")).as_string(), U("00700"));
+    }
+    ASSERT_TRUE(kline.has_field(U("items")));
+    ASSERT_TRUE(kline.at(U("items")).is_array());
+    ASSERT_GT(kline.at(U("items")).size(), 0u) << "Kline items is empty for 00700 (week)";
+
+    const auto &item = kline.at(U("items")).at(0);
+    ASSERT_TRUE(item.is_object());
+    ASSERT_TRUE(item.has_field(U("close"))) << "KlineItem(week) missing close field";
+    EXPECT_GT(item.at(U("close")).as_double(), 0.0) << "KlineItem(week).close should be > 0";
+    ASSERT_TRUE(item.has_field(U("open"))) << "KlineItem(week) missing open field";
+    EXPECT_GT(item.at(U("open")).as_double(), 0.0) << "KlineItem(week).open should be > 0";
+    ASSERT_TRUE(item.has_field(U("volume"))) << "KlineItem(week) missing volume field";
+    EXPECT_GT(item.at(U("volume")).as_number().to_int64(), 0) << "KlineItem(week).volume should be > 0";
+    if (item.has_field(U("high")) && item.has_field(U("low"))) {
+        EXPECT_GE(item.at(U("high")).as_double(), item.at(U("low")).as_double())
+            << "KlineItem(week).high should be >= low";
+    }
 }
 
 // ── Timeline ─────────────────────────────────────────────────────────────────
@@ -222,6 +266,46 @@ TEST(QuoteClientInteg, GetTimeline_ReturnsValidFields) {
         ASSERT_TRUE(item.has_field(U("price"))) << "TimelineItem missing price field";
         EXPECT_GT(item.at(U("price")).as_double(), 0.0) << "TimelineItem.price should be > 0";
         break; // only check first non-empty bucket
+    }
+}
+
+TEST(QuoteClientInteg, GetTimeline_HK) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_timeline(make_symbols(U("00700")));
+    ASSERT_FALSE(result.is_null());
+
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        if (is_market_trading(*client, U("HK"))) {
+            FAIL() << "GetTimeline(HK) empty during HK trading hours (real regression)";
+        }
+        return;
+    }
+
+    const auto &tl = arr.at(0);
+    ASSERT_TRUE(tl.is_object());
+    if (json_is_string(tl, U("symbol"))) {
+        EXPECT_EQ(tl.at(U("symbol")).as_string(), U("00700"));
+    }
+
+    const utility::string_t bucket_names[] = {U("intraday"), U("preHours"), U("afterHours")};
+    for (const auto &bucket_name : bucket_names) {
+        if (!tl.has_field(bucket_name)) continue;
+        const auto &bucket = tl.at(bucket_name);
+        if (!bucket.is_object() || !bucket.has_field(U("items"))) continue;
+        const auto &items = bucket.at(U("items"));
+        if (!items.is_array() || items.size() == 0) continue;
+
+        const auto &item = items.at(0);
+        ASSERT_TRUE(item.has_field(U("time"))) << "TimelineItem(HK) missing time field";
+        EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0) << "TimelineItem(HK).time should be non-zero";
+        ASSERT_TRUE(item.has_field(U("price"))) << "TimelineItem(HK) missing price field";
+        EXPECT_GT(item.at(U("price")).as_double(), 0.0) << "TimelineItem(HK).price should be > 0";
+        break;
     }
 }
 
@@ -582,6 +666,10 @@ TEST(QuoteClientInteg, GetStockDetail_ReturnsValidFields) {
     if (json_is_string(detail, U("symbol"))) {
         EXPECT_EQ(detail.at(U("symbol")).as_string(), U("AAPL"));
     }
+    // latest_price must be positive when present
+    if (detail.has_field(U("latestPrice")) && detail.at(U("latestPrice")).is_double()) {
+        EXPECT_GT(detail.at(U("latestPrice")).as_double(), 0.0) << "StockDetail.latestPrice should be > 0";
+    }
 }
 
 TEST(QuoteClientInteg, GetHistoryTimeline_ReturnsValidFields) {
@@ -660,6 +748,26 @@ TEST(QuoteClientInteg, GetQuoteRealTime_ReturnsValidEntries) {
         auto quotes = client->get_quote_real_time(make_symbols(U("AAPL")));
         ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime returned empty for AAPL";
         EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote.symbol is empty";
+        EXPECT_GT(quotes[0].latest_price, 0.0) << "RealtimeQuote.latest_price should be > 0";
+    });
+}
+
+TEST(QuoteClientInteg, GetQuoteRealTime_HK) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    EXPECT_NO_THROW({
+        auto quotes = client->get_quote_real_time(make_symbols(U("00700")));
+        if (quotes.empty()) {
+            if (is_market_trading(*client, U("HK"))) {
+                FAIL() << "GetQuoteRealTime(HK) returned empty during HK trading hours (real regression)";
+            }
+            return;
+        }
+        EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote(HK).symbol is empty";
+        EXPECT_GT(quotes[0].latest_price, 0.0) << "RealtimeQuote(HK).latest_price should be > 0";
     });
 }
 
@@ -719,6 +827,31 @@ TEST(QuoteClientInteg, GetQuoteDepth_ReturnsValidFields) {
     bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
     bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
     EXPECT_TRUE(has_asks || has_bids) << "QuoteDepth has neither asks nor bids arrays";
+}
+
+TEST(QuoteClientInteg, GetQuoteDepth_HK) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_quote_depth(make_symbols(U("00700")));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        if (is_market_trading(*client, U("HK"))) {
+            FAIL() << "GetQuoteDepth(HK) returned empty during HK trading hours (real regression)";
+        }
+        return;
+    }
+    const auto &depth = arr.at(0);
+    ASSERT_TRUE(depth.is_object());
+    if (json_is_string(depth, U("symbol"))) {
+        EXPECT_EQ(depth.at(U("symbol")).as_string(), U("00700"));
+    }
+    bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
+    bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
+    EXPECT_TRUE(has_asks || has_bids) << "QuoteDepth(HK) has neither asks nor bids arrays";
 }
 
 TEST(QuoteClientInteg, GetStockBroker_ReturnsValidFields) {
@@ -807,13 +940,34 @@ TEST(QuoteClientInteg, GetOptionChain_ReturnsValidFields) {
         bool has_call = row.has_field(U("call")) && row.at(U("call")).is_object();
         bool has_put = row.has_field(U("put")) && row.at(U("put")).is_object();
         EXPECT_TRUE(has_call || has_put) << "OptionChainRow has neither call nor put";
+        // strike must be positive when present at the row level
+        if (row.has_field(U("strike")) && row.at(U("strike")).is_double()) {
+            EXPECT_GT(row.at(U("strike")).as_double(), 0.0) << "OptionChainRow.strike should be > 0";
+        }
+        // expiry must be non-empty when present at the row level
+        if (row.has_field(U("expiry")) && row.at(U("expiry")).is_string()) {
+            EXPECT_FALSE(row.at(U("expiry")).as_string().empty()) << "OptionChainRow.expiry should not be empty";
+        }
         if (has_call) {
             const auto &call = row.at(U("call"));
             EXPECT_TRUE(json_nonempty_string(call, U("identifier")));
+            // strike and expiry may also live inside the leg object
+            if (call.has_field(U("strike")) && call.at(U("strike")).is_double()) {
+                EXPECT_GT(call.at(U("strike")).as_double(), 0.0) << "OptionChainRow.call.strike should be > 0";
+            }
+            if (call.has_field(U("expiry")) && call.at(U("expiry")).is_string()) {
+                EXPECT_FALSE(call.at(U("expiry")).as_string().empty()) << "OptionChainRow.call.expiry should not be empty";
+            }
         }
         if (has_put) {
             const auto &put = row.at(U("put"));
             EXPECT_TRUE(json_nonempty_string(put, U("identifier")));
+            if (put.has_field(U("strike")) && put.at(U("strike")).is_double()) {
+                EXPECT_GT(put.at(U("strike")).as_double(), 0.0) << "OptionChainRow.put.strike should be > 0";
+            }
+            if (put.has_field(U("expiry")) && put.at(U("expiry")).is_string()) {
+                EXPECT_FALSE(put.at(U("expiry")).as_string().empty()) << "OptionChainRow.put.expiry should not be empty";
+            }
         }
     }
 }
@@ -1235,6 +1389,8 @@ TEST(QuoteClientInteg, GetFutureRealTimeQuote_ReturnsValidEntries) {
         for (size_t i = 0; i < quotes.size(); ++i) {
             EXPECT_FALSE(quotes[i].contract_code.empty())
                 << "RealtimeQuote[" << i << "].contract_code is empty";
+            EXPECT_GT(quotes[i].latest_price, 0.0)
+                << "RealtimeQuote[" << i << "].latest_price should be > 0";
         }
     });
 }
@@ -1511,6 +1667,30 @@ TEST(QuoteClientInteg, GetFinancialReport_ReturnsValidFields) {
     }
 }
 
+TEST(QuoteClientInteg, GetFinancialReport_Quarterly) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value fields = web::json::value::array();
+    fields[0] = web::json::value::string(U("total_revenue"));
+    web::json::value result = client->get_financial_report(
+        make_symbols(U("AAPL")), U("US"), fields, U("Quarterly"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2024-12-31")));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        GTEST_SKIP() << "GetFinancialReport(Quarterly) returned empty for AAPL (no entitlement)";
+    }
+    const auto &entry = arr.at(0);
+    ASSERT_TRUE(entry.is_object());
+    if (json_is_string(entry, U("symbol"))) {
+        EXPECT_EQ(entry.at(U("symbol")).as_string(), U("AAPL"));
+    }
+}
+
 TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
@@ -1568,6 +1748,56 @@ TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
         ASSERT_TRUE(entry.is_object());
         EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
             << "CorporateIpo[" << i << "].symbol is empty";
+    }
+}
+
+TEST(QuoteClientInteg, GetCorporateSplit_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_corporate_split(
+        make_symbols(U("AAPL")), U("US"),
+        Utils::date_string_to_timestamp(U("2020-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    // AAPL had a 4-for-1 split in August 2020; the range 2020-2025 must return
+    // at least one entry.
+    ASSERT_GT(arr.size(), 0u) << "GetCorporateSplit returned empty for AAPL over 2020-2025";
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "CorporateSplit[" << i << "].symbol is empty";
+        EXPECT_TRUE(json_nonempty_string(entry, U("executeDate")))
+            << "CorporateSplit[" << i << "].executeDate is empty";
+    }
+}
+
+TEST(QuoteClientInteg, GetCorporateDividend_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_corporate_dividend(
+        make_symbols(U("AAPL")), U("US"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2025-12-31")));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    // AAPL pays quarterly dividends; the 2024-2025 range must return at least
+    // one entry.
+    ASSERT_GT(arr.size(), 0u) << "GetCorporateDividend returned empty for AAPL over 2024-2025";
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &entry = arr.at(i);
+        ASSERT_TRUE(entry.is_object());
+        EXPECT_TRUE(json_nonempty_string(entry, U("symbol")))
+            << "CorporateDividend[" << i << "].symbol is empty";
+        EXPECT_TRUE(json_nonempty_string(entry, U("executeDate")))
+            << "CorporateDividend[" << i << "].executeDate is empty";
     }
 }
 

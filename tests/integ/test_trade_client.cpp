@@ -5,7 +5,9 @@
 #include "tigerapi/trade_client.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/client_config.h"
+#include "tigerapi/model.h"
 #include <memory>
+#include <string>
 
 using namespace TIGER_API;
 using namespace TIGER_API::test;
@@ -720,5 +722,380 @@ TEST(TradeClientInteg, GetOptionExercisePositions_ReturnsValidFields) {
         for (size_t i = 0; i < arr.size(); ++i) {
             ASSERT_TRUE(arr.at(i).is_object());
         }
+    });
+}
+
+// ── Preview order ─────────────────────────────────────────────────────────────
+//
+// Sends a preview (no actual order placed). Validates that the response
+// carries non-negative commission / margin fields, matching the Go SDK
+// TestIntegPreviewOrderFields pattern.
+
+TEST(TradeClientInteg, PreviewOrder_LmtBuyAapl_ReturnsValidFields) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+
+    // Build a LMT BUY 1 AAPL STK order priced well below the market so
+    // it would never accidentally fill even if preview were treated as live.
+    Contract contract(U("STK"), U("AAPL"), U("USD"), U("AAPL"), U("SMART"), 0);
+    Order order(U("LMT"), cfg->account, contract, U("BUY"), 1, /*limit_price=*/1.0);
+
+    web::json::value result;
+    EXPECT_NO_THROW({
+        result = client->preview_order(order);
+    });
+    ASSERT_FALSE(result.is_null()) << "PreviewOrder returned null";
+
+    // isPass may be false (e.g. insufficient buying power); the call itself
+    // must succeed and commission must be >= 0 when present.
+    if (result.has_field(U("commission")) && result.at(U("commission")).is_number()) {
+        EXPECT_GE(result.at(U("commission")).as_double(), 0.0)
+            << "PreviewOrder.commission should be >= 0";
+    }
+    if (result.has_field(U("initMargin")) && result.at(U("initMargin")).is_number()) {
+        EXPECT_GE(result.at(U("initMargin")).as_double(), 0.0)
+            << "PreviewOrder.initMargin should be >= 0";
+    }
+    if (result.has_field(U("maintMargin")) && result.at(U("maintMargin")).is_number()) {
+        EXPECT_GE(result.at(U("maintMargin")).as_double(), 0.0)
+            << "PreviewOrder.maintMargin should be >= 0";
+    }
+}
+
+// ── Place order (Mode A: try → catch trading-hours error → return) ────────────
+//
+// Places a LMT BUY 1 AAPL at $1 (well below market). Outside trading hours the
+// server rejects the order with a "trading hours" error — we catch that and
+// return cleanly. Inside trading hours the order must be accepted (it will sit
+// open at $1 and never fill). The placed order ID is stored for cancel/modify
+// tests below via a process-global.
+
+namespace {
+/// Order ID placed by PlaceOrder_LmtBuyAapl. 0 = not placed (out of hours or
+/// order was not accepted). Written once by the Place test; read by
+/// CancelOrder and ModifyOrder tests.
+unsigned long long g_placed_order_id = 0;
+} // anonymous namespace
+
+TEST(TradeClientInteg, PlaceOrder_LmtBuyAapl_AcceptsOrSkipsOutOfHours) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+
+    Contract contract(U("STK"), U("AAPL"), U("USD"), U("AAPL"), U("SMART"), 0);
+    Order order(U("LMT"), cfg->account, contract, U("BUY"), 1, /*limit_price=*/1.0);
+
+    web::json::value result;
+    try {
+        result = client->place_order(order);
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        // Common out-of-hours error substrings from the gateway.
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder rejected outside trading hours (expected): " << msg;
+        }
+        // Any other exception is a real failure.
+        FAIL() << "PlaceOrder threw unexpected exception: " << msg;
+    }
+
+    ASSERT_FALSE(result.is_null()) << "PlaceOrder returned null";
+    // Extract the order ID for subsequent cancel/modify tests.
+    if (result.has_field(U("id")) && result.at(U("id")).is_number()) {
+        g_placed_order_id = static_cast<unsigned long long>(
+            result.at(U("id")).as_number().to_int64());
+        EXPECT_NE(g_placed_order_id, 0u) << "PlaceOrder returned id = 0";
+    }
+    if (result.has_field(U("orderId")) && result.at(U("orderId")).is_number()) {
+        g_placed_order_id = static_cast<unsigned long long>(
+            result.at(U("orderId")).as_number().to_int64());
+        EXPECT_NE(g_placed_order_id, 0u) << "PlaceOrder returned orderId = 0";
+    }
+}
+
+// ── Cancel order (Mode A) ─────────────────────────────────────────────────────
+//
+// Cancels the order placed by PlaceOrder_LmtBuyAapl. Skips if that test did
+// not produce an order ID (i.e. out-of-hours or place failed).
+
+TEST(TradeClientInteg, CancelOrder_PlacedOrder_Succeeds) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    if (g_placed_order_id == 0) {
+        GTEST_SKIP() << "No placed order ID available (PlaceOrder test did not run or was skipped)";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+
+    web::json::value result;
+    try {
+        result = client->cancel_order(g_placed_order_id);
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "CancelOrder rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "CancelOrder rejected outside trading hours (expected): " << msg;
+        }
+        FAIL() << "CancelOrder threw unexpected exception: " << msg;
+    }
+    ASSERT_FALSE(result.is_null()) << "CancelOrder returned null";
+    // Reset so modify test does not try to modify a cancelled order.
+    g_placed_order_id = 0;
+}
+
+// ── Modify order (Mode A) ─────────────────────────────────────────────────────
+//
+// Places a fresh LMT BUY 1 AAPL at $1, then modifies the limit price to $1.01.
+// Both sub-operations follow Mode A (catch trading-hours rejection → skip).
+
+TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+
+    // Step 1: place a LMT order at $1.
+    Contract contract(U("STK"), U("AAPL"), U("USD"), U("AAPL"), U("SMART"), 0);
+    Order order(U("LMT"), cfg->account, contract, U("BUY"), 1, /*limit_price=*/1.0);
+
+    web::json::value place_result;
+    try {
+        place_result = client->place_order(order);
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder (modify prereq) rejected during trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder (modify prereq) rejected outside trading hours: " << msg;
+        }
+        FAIL() << "PlaceOrder (modify prereq) threw unexpected exception: " << msg;
+    }
+    ASSERT_FALSE(place_result.is_null()) << "PlaceOrder (modify prereq) returned null";
+
+    // Extract the new order ID.
+    unsigned long long modify_order_id = 0;
+    if (place_result.has_field(U("id")) && place_result.at(U("id")).is_number()) {
+        modify_order_id = static_cast<unsigned long long>(
+            place_result.at(U("id")).as_number().to_int64());
+    }
+    if (modify_order_id == 0
+        && place_result.has_field(U("orderId"))
+        && place_result.at(U("orderId")).is_number()) {
+        modify_order_id = static_cast<unsigned long long>(
+            place_result.at(U("orderId")).as_number().to_int64());
+    }
+    if (modify_order_id == 0) {
+        GTEST_SKIP() << "PlaceOrder did not return an order ID — cannot test modify";
+    }
+
+    // Step 2: modify the limit price.
+    Order modify_req(U("LMT"), cfg->account, contract, U("BUY"), 1, /*limit_price=*/1.01);
+    modify_req.id = modify_order_id;
+
+    web::json::value modify_result;
+    try {
+        modify_result = client->modify_order(modify_req, /*limit_price=*/1.01);
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            // Clean up the open order before skipping.
+            try { client->cancel_order(modify_order_id); } catch (...) {}
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "ModifyOrder rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "ModifyOrder rejected outside trading hours (expected): " << msg;
+        }
+        try { client->cancel_order(modify_order_id); } catch (...) {}
+        FAIL() << "ModifyOrder threw unexpected exception: " << msg;
+    }
+    ASSERT_FALSE(modify_result.is_null()) << "ModifyOrder returned null";
+
+    // Clean up: cancel the modified order so it does not linger.
+    try { client->cancel_order(modify_order_id); } catch (...) {}
+}
+
+// ── get_accounts ──────────────────────────────────────────────────────────────
+//
+// Duplicates the existing GetAccounts_ReturnsValidFields test style but uses
+// the explicit function name called out in the task spec to ensure the
+// endpoint is covered even if the existing test is reorganised.
+
+TEST(TradeClientInteg, GetAccounts_NonEmpty_AccountFieldPresent) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_accounts();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        ASSERT_GT(arr.size(), 0u) << "get_accounts returned empty";
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &acct = arr.at(i);
+            ASSERT_TRUE(acct.is_object());
+            EXPECT_TRUE(json_nonempty_string(acct, U("account")))
+                << "Account[" << i << "].account is empty, want non-empty";
+        }
+    });
+}
+
+// ── get_assets ────────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetAssets_NonEmpty_CoreFieldsValid) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_asset();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        ASSERT_GT(arr.size(), 0u) << "get_asset returned empty";
+        const auto &asset = arr.at(0);
+        ASSERT_TRUE(asset.is_object());
+        EXPECT_TRUE(json_nonempty_string(asset, U("account")))
+            << "Asset.account is empty, want non-empty";
+        EXPECT_TRUE(json_nonempty_string(asset, U("currency")))
+            << "Asset.currency is empty, want non-empty";
+        if (asset.has_field(U("netLiquidation")) && asset.at(U("netLiquidation")).is_number()) {
+            EXPECT_GE(asset.at(U("netLiquidation")).as_double(), 0.0)
+                << "Asset.netLiquidation should be >= 0";
+        }
+        if (asset.has_field(U("buyingPower")) && asset.at(U("buyingPower")).is_number()) {
+            EXPECT_GE(asset.at(U("buyingPower")).as_double(), 0.0)
+                << "Asset.buyingPower should be >= 0";
+        }
+    });
+}
+
+// ── get_positions ─────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetPositions_FieldsValidWhenNonEmpty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_positions();
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        // Positions may legitimately be empty for a fresh paper account.
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &pos = arr.at(i);
+            ASSERT_TRUE(pos.is_object());
+            EXPECT_TRUE(json_nonempty_string(pos, U("symbol")))
+                << "Position[" << i << "].symbol is empty, want non-empty";
+            EXPECT_TRUE(json_nonempty_string(pos, U("account")))
+                << "Position[" << i << "].account is empty, want non-empty";
+            EXPECT_TRUE(json_nonempty_string(pos, U("secType")))
+                << "Position[" << i << "].secType is empty, want non-empty";
+        }
+    });
+}
+
+// ── get_orders ────────────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetOrders_Last30Days_FieldsValidWhenNonEmpty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    std::time_t now = std::time(nullptr);
+    std::time_t start = now - 30 * 24 * 60 * 60;
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_orders(
+            U(""), U(""), U("ALL"), U(""), start, now, 10);
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &ord = arr.at(i);
+            ASSERT_TRUE(ord.is_object());
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
+                EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+                    << "Order[" << i << "].id = 0, want non-zero";
+            }
+            EXPECT_TRUE(json_nonempty_string(ord, U("symbol")))
+                << "Order[" << i << "].symbol is empty, want non-empty";
+            EXPECT_TRUE(json_nonempty_string(ord, U("action")))
+                << "Order[" << i << "].action is empty, want non-empty";
+            EXPECT_TRUE(json_nonempty_string(ord, U("status")))
+                << "Order[" << i << "].status is empty, want non-empty";
+        }
+    });
+}
+
+// ── get_filled_orders ─────────────────────────────────────────────────────────
+
+TEST(TradeClientInteg, GetFilledOrders_Last30Days_FieldsValidWhenNonEmpty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    std::time_t now = std::time(nullptr);
+    std::time_t start = now - 30 * 24 * 60 * 60;
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_filled_orders(
+            U(""), U(""), U("ALL"), U(""), start, now);
+        ASSERT_FALSE(result.is_null());
+        auto arr = extract_array(result);
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const auto &ord = arr.at(i);
+            ASSERT_TRUE(ord.is_object());
+            if (ord.has_field(U("id")) && ord.at(U("id")).is_number()) {
+                EXPECT_NE(ord.at(U("id")).as_number().to_int64(), 0)
+                    << "FilledOrder[" << i << "].id = 0, want non-zero";
+            }
+            EXPECT_TRUE(json_nonempty_string(ord, U("status")))
+                << "FilledOrder[" << i << "].status is empty, want non-empty";
+        }
+    });
+}
+
+// ── get_segment_fund_available ────────────────────────────────────────────────
+//
+// Queries available segment fund for the SEC segment. The response may be empty
+// for accounts that have not set up segment fund transfers; the wire path is
+// validated by the call succeeding without exception.
+
+TEST(TradeClientInteg, GetSegmentFundAvailable_Sec_DoesNotThrow) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    EXPECT_NO_THROW({
+        web::json::value result = client->get_segment_fund_available(U("SEC"));
+        ASSERT_FALSE(result.is_null());
+        // Response is account-dependent; accept any non-null shape.
+        EXPECT_TRUE(result.is_array() || result.is_object())
+            << "GetSegmentFundAvailable returned unexpected type";
     });
 }
