@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "support/test_support.h"
+#include "integ/test_market_helpers.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/utils.h"
 #include <memory>
@@ -665,7 +666,8 @@ TEST(QuoteClientInteg, GetQuoteShortableStocks_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    // This endpoint returns code:1000 ("method not supported") for some accounts.
+    // Endpoint may return code:1000 ("method not supported") for accounts without
+    // the shortable-stocks entitlement — that is a legitimate permission skip.
     web::json::value result;
     try {
         result = client->get_quote_shortable_stocks(make_symbols(U("AAPL")));
@@ -972,14 +974,24 @@ TEST(QuoteClientInteg, GetWarrantRealTimeQuote_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    auto warrant_symbol = get_first_warrant_symbol(*client, U("0700"));
+    // Dynamically resolve a live HK warrant. Fail only when HK is trading and
+    // we cannot find one; outside HK trading hours, skip cleanly.
+    auto warrant_symbol = resolve_hk_warrant_symbol(*client);
     if (warrant_symbol.empty()) {
-        GTEST_SKIP() << "No warrant symbol available for 0700";
+        if (is_market_trading(*client, U("HK"))) {
+            FAIL() << "HK market is trading but no warrant symbol could be resolved";
+        }
+        GTEST_SKIP() << "No warrant symbol resolvable outside HK trading hours";
     }
     web::json::value result = client->get_warrant_real_time_quote(warrant_symbol);
     ASSERT_FALSE(result.is_null());
     auto arr = extract_array(result);
-    ASSERT_GT(arr.size(), 0u) << "GetWarrantRealTimeQuote returned empty";
+    if (arr.size() == 0) {
+        if (is_market_trading(*client, U("HK"))) {
+            FAIL() << "HK is trading but GetWarrantRealTimeQuote returned empty for " << warrant_symbol;
+        }
+        GTEST_SKIP() << "GetWarrantRealTimeQuote empty outside HK trading hours";
+    }
     const auto &rt = arr.at(0);
     ASSERT_TRUE(rt.is_object());
 }
@@ -1255,9 +1267,18 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    auto contract_code = get_first_future_contract_code(*client);
+    // Prefer a CME front-month contract seeded from the exchange listing so we
+    // never depend on the account's default watchlist for a working contract.
+    auto contract_code = resolve_us_future_front_month_contract(*client);
     if (contract_code.empty()) {
-        GTEST_SKIP() << "No future contract code available";
+        contract_code = get_first_future_contract_code(*client);
+    }
+    const bool us_trading = is_market_trading(*client, U("US"));
+    if (contract_code.empty()) {
+        if (us_trading) {
+            FAIL() << "US futures market trading but no contract code resolvable";
+        }
+        GTEST_SKIP() << "No future contract code available (US futures closed)";
     }
     web::json::value result = client->get_future_depth(make_symbols(contract_code));
     ASSERT_FALSE(result.is_null());
@@ -1269,11 +1290,15 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
         bool has_symbol = (depth.has_field(U("symbol")) && depth.at(U("symbol")).is_string() && !depth.at(U("symbol")).as_string().empty())
                        || (depth.has_field(U("contractCode")) && depth.at(U("contractCode")).is_string() && !depth.at(U("contractCode")).as_string().empty());
         EXPECT_TRUE(has_symbol) << "FutureDepth[" << i << "] has no symbol/contractCode field";
-        // At least one side (asks or bids) should be present.
+        // At least one side (asks or bids) should be present when the market trades.
         bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
         bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
         if (!has_asks && !has_bids) {
-            GTEST_SKIP() << "FutureDepth returned no asks/bids (market closed or data unavailable)";
+            if (us_trading) {
+                FAIL() << "FutureDepth returned no asks/bids for " << contract_code
+                       << " while US market is trading";
+            }
+            GTEST_SKIP() << "FutureDepth empty outside US trading hours";
         }
     }
 }
@@ -1336,9 +1361,11 @@ TEST(QuoteClientInteg, GetFundContracts_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    auto fund_symbol = get_first_fund_symbol(*client);
+    auto fund_symbol = resolve_fund_symbol(*client);
     if (fund_symbol.empty()) {
-        GTEST_SKIP() << "No fund symbol available";
+        // Fund symbol universe is populated regardless of market hours — a real
+        // empty response signals an account without fund entitlement.
+        GTEST_SKIP() << "No fund symbol available (account may lack fund entitlement)";
     }
     web::json::value result = client->get_fund_contracts(make_symbols(fund_symbol));
     ASSERT_FALSE(result.is_null());
@@ -1354,9 +1381,9 @@ TEST(QuoteClientInteg, GetFundQuote_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    auto fund_symbol = get_first_fund_symbol(*client);
+    auto fund_symbol = resolve_fund_symbol(*client);
     if (fund_symbol.empty()) {
-        GTEST_SKIP() << "No fund symbol available";
+        GTEST_SKIP() << "No fund symbol available (account may lack fund entitlement)";
     }
     web::json::value result = client->get_fund_quote(make_symbols(fund_symbol));
     ASSERT_FALSE(result.is_null());
@@ -1372,9 +1399,9 @@ TEST(QuoteClientInteg, GetFundHistoryQuote_ReturnsValidFields) {
     }
     auto cfg = make_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
-    auto fund_symbol = get_first_fund_symbol(*client);
+    auto fund_symbol = resolve_fund_symbol(*client);
     if (fund_symbol.empty()) {
-        GTEST_SKIP() << "No fund symbol available";
+        GTEST_SKIP() << "No fund symbol available (account may lack fund entitlement)";
     }
     web::json::value result = client->get_fund_history_quote(make_symbols(fund_symbol), -1, -1, 5);
     ASSERT_FALSE(result.is_null());
@@ -1390,18 +1417,52 @@ TEST(QuoteClientInteg, GetFinancialDaily_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    // get_financial_daily() is declared in quote_client.h but not yet
-    // implemented in quote_client.cpp. Skip until the implementation lands.
-    GTEST_SKIP() << "get_financial_daily() not yet implemented in SDK";
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    // Field values match server-side FinancialDailyField enum (see Java SDK
+    // com.tigerbrokers.stock.openapi.client.struct.enums.FinancialDailyField).
+    web::json::value fields = web::json::value::array();
+    fields[0] = web::json::value::string(U("market_capitalization"));
+    fields[1] = web::json::value::string(U("shares_outstanding"));
+    web::json::value result = client->get_financial_daily(
+        make_symbols(U("AAPL")), U("US"), fields,
+        U("2024-01-01"), U("2024-06-30"));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        // Financial daily data is historical — non-empty regardless of trading
+        // hours. Empty implies the account/market lacks the entitlement.
+        GTEST_SKIP() << "GetFinancialDaily returned empty for AAPL (no entitlement)";
+    }
+    const auto &entry = arr.at(0);
+    ASSERT_TRUE(entry.is_object());
+    if (json_is_string(entry, U("symbol"))) {
+        EXPECT_EQ(entry.at(U("symbol")).as_string(), U("AAPL"));
+    }
 }
 
 TEST(QuoteClientInteg, GetFinancialReport_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    // get_financial_report() is declared in quote_client.h but not yet
-    // implemented in quote_client.cpp. Skip until the implementation lands.
-    GTEST_SKIP() << "get_financial_report() not yet implemented in SDK";
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value fields = web::json::value::array();
+    fields[0] = web::json::value::string(U("total_revenue"));
+    web::json::value result = client->get_financial_report(
+        make_symbols(U("AAPL")), U("US"), fields, U("Annual"),
+        Utils::date_string_to_timestamp(U("2024-01-01")),
+        Utils::date_string_to_timestamp(U("2024-06-30")));
+    ASSERT_FALSE(result.is_null());
+    auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        GTEST_SKIP() << "GetFinancialReport returned empty for AAPL (no entitlement)";
+    }
+    const auto &entry = arr.at(0);
+    ASSERT_TRUE(entry.is_object());
+    if (json_is_string(entry, U("symbol"))) {
+        EXPECT_EQ(entry.at(U("symbol")).as_string(), U("AAPL"));
+    }
 }
 
 TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
@@ -1667,12 +1728,20 @@ TEST(QuoteClientInteg, GetMarketScannerTags_ReturnsValidFields) {
     try {
         result = client->get_market_scanner_tags(U("US"), multi_tags);
     } catch (const std::exception &ex) {
+        // Endpoint may not be supported for all accounts — treat as a
+        // permission skip.
         GTEST_SKIP() << "GetMarketScannerTags not supported: " << ex.what();
     }
     if (result.is_null()) {
-        GTEST_SKIP() << "GetMarketScannerTags returned null";
+        GTEST_SKIP() << "GetMarketScannerTags returned null (not supported)";
     }
     auto arr = extract_array(result);
+    if (arr.size() == 0) {
+        if (is_market_trading(*client, U("US"))) {
+            FAIL() << "GetMarketScannerTags returned empty while US is trading";
+        }
+        GTEST_SKIP() << "GetMarketScannerTags empty outside US trading hours";
+    }
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
@@ -1685,9 +1754,28 @@ TEST(QuoteClientInteg, GetMarketScanner_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    // get_market_scanner() is declared in quote_client.h but not yet
-    // implemented in quote_client.cpp. Skip until the implementation lands.
-    GTEST_SKIP() << "get_market_scanner() not yet implemented in SDK";
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result;
+    try {
+        result = client->get_market_scanner();
+    } catch (const std::exception &ex) {
+        GTEST_SKIP() << "GetMarketScanner not supported: " << ex.what();
+    }
+    if (result.is_null()) {
+        GTEST_SKIP() << "GetMarketScanner returned null (not supported)";
+    }
+    // Response may be an array or an object with items — accept either shape.
+    auto arr = extract_array(result);
+    if (arr.size() == 0 && !result.is_object()) {
+        if (is_market_trading(*client, U("US"))) {
+            FAIL() << "GetMarketScanner returned empty while US is trading";
+        }
+        GTEST_SKIP() << "GetMarketScanner empty outside US trading hours";
+    }
+    for (size_t i = 0; i < arr.size(); ++i) {
+        ASSERT_TRUE(arr.at(i).is_object());
+    }
 }
 
 TEST(QuoteClientInteg, GetKlineQuota_ReturnsValidFields) {
