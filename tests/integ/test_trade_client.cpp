@@ -203,22 +203,23 @@ TEST(TradeClientInteg, GetContract_ReturnsValidFields) {
     auto client = std::make_shared<TradeClient>(*cfg);
     // AAPL/STK is a stable, always-listed identifier — contract metadata is not
     // driven by trading hours, so any empty response indicates a real bug.
+    // The /contract endpoint runs on API v3.0 (see OPEN_API_SERVICE_VERSION),
+    // which returns `data` as a single ContractItem object (matches Java
+    // ContractResponse.item and Go SDK Contract3). v2.0 wraps it in an array,
+    // but that path is not used here.
     web::json::value result = client->get_contract(U("AAPL"), U("STK"));
     ASSERT_FALSE(result.is_null()) << "GetContract returned null for AAPL STK";
-    auto arr = extract_array(result);
-    ASSERT_GT(arr.size(), 0u) << "GetContract returned empty for AAPL STK";
-    const auto &contract = arr.at(0);
-    ASSERT_TRUE(contract.is_object());
+    ASSERT_TRUE(result.is_object()) << "GetContract v3.0 should return a single object";
 
-    if (json_is_string(contract, U("symbol"))) {
-        EXPECT_EQ(contract.at(U("symbol")).as_string(), U("AAPL"))
+    if (json_is_string(result, U("symbol"))) {
+        EXPECT_EQ(result.at(U("symbol")).as_string(), U("AAPL"))
                 << "Contract.symbol mismatch";
     }
-    if (json_is_string(contract, U("secType"))) {
-        EXPECT_EQ(contract.at(U("secType")).as_string(), U("STK"))
+    if (json_is_string(result, U("secType"))) {
+        EXPECT_EQ(result.at(U("secType")).as_string(), U("STK"))
                 << "Contract.secType mismatch";
     }
-    EXPECT_TRUE(json_nonempty_string(contract, U("currency")))
+    EXPECT_TRUE(json_nonempty_string(result, U("currency")))
         << "Contract.currency is empty, want non-empty (e.g. USD)";
 
 }
