@@ -201,6 +201,8 @@ namespace TIGER_API {
             utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = ContractUtil::extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
+                LOG(WARNING) << U("identifiers_to_options: skipping unparseable identifier '")
+                             << identifier.as_string() << U("' (ContractUtil::extract_option_info returned empty fields)") << endl;
                 continue;
             }
             value obj = value::object(true);

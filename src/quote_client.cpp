@@ -513,6 +513,11 @@ namespace TIGER_API {
         // `[{symbol, expiry, right, strike}, ...]`. Match the Rust
         // `OptionDepthRequest` / Java `OptionCommonModel` wire shape.
         // If the caller already passes an array of objects, pass through.
+        // NOTE: only the first element is checked for type. Heterogeneous arrays
+        // (mixed strings and objects) are not supported: if symbols[0] is a string
+        // the whole array is passed through identifiers_to_options, which skips
+        // non-string elements; if symbols[0] is an object the array is passed
+        // through as-is and string elements will be forwarded verbatim to the server.
         value option_basic = (symbols.is_array() && symbols.size() > 0 && symbols.at(0).is_string())
                                  ? identifiers_to_options(symbols)
                                  : symbols;
@@ -808,12 +813,12 @@ namespace TIGER_API {
         return post(MARKET_SCANNER_TAGS, obj);
     }
 
-    value QuoteClient::get_market_scanner() {
+    value QuoteClient::get_market_scanner(utility::string_t market) {
         // Minimal server-accepted payload matching Java MarketScannerModel: market + page/page_size.
         // Scanner filters are optional; callers wanting rich filter support can invoke the
         // underlying endpoint directly. This overload is convenience-only.
         value obj = value::object(true);
-        obj[P_MARKET] = value::string(U("US"));
+        obj[P_MARKET] = value::string(market.empty() ? U("US") : market);
         obj[P_PAGE] = value::number(1);
         obj[P_PAGE_SIZE] = value::number(20);
         return post(MARKET_SCANNER, obj);

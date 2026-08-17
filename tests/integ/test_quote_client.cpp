@@ -1298,6 +1298,11 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
     if (contract_code.empty()) {
         contract_code = get_first_future_contract_code(*client);
     }
+    // NOTE: is_market_trading(U("US")) reflects the US equity (NYSE/NASDAQ) market
+    // status, not the CME futures market.  CME futures trade nearly 24 hours so
+    // this check is conservative: it may skip tests during equity off-hours even
+    // though CME is still open.  The heuristic avoids false FAILs at the cost of
+    // occasional missed coverage outside equity hours.
     const bool us_trading = is_market_trading(*client, U("US"));
     if (contract_code.empty()) {
         if (us_trading) {
@@ -1438,7 +1443,8 @@ TEST(QuoteClientInteg, GetFundHistoryQuote_ReturnsValidFields) {
     auto end_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
         now.time_since_epoch()).count();
     // ~180 days lookback — funds do not necessarily have daily prints.
-    auto begin_ms = end_ms - 180LL * 24 * 60 * 60 * 1000;
+    constexpr int64_t kDays180Ms = 180LL * 24 * 60 * 60 * 1000;
+    auto begin_ms = end_ms - kDays180Ms;
     web::json::value result = client->get_fund_history_quote(
         make_symbols(fund_symbol),
         static_cast<time_t>(begin_ms),
@@ -1809,7 +1815,13 @@ TEST(QuoteClientInteg, GetMarketScanner_ReturnsValidFields) {
     }
     // Response may be an array or an object with items — accept either shape.
     auto arr = extract_array(result);
-    if (arr.size() == 0 && !result.is_object()) {
+    // Empty-response guard: treat as empty only when both the extracted array is
+    // empty AND the object wrapper (if any) does not contain a non-empty items
+    // field.  A bare non-array object without an "items" field is also treated
+    // as empty.  This prevents a server returning { "items": [] } from being
+    // misidentified as a populated response.
+    bool effectively_empty = (arr.size() == 0);
+    if (effectively_empty) {
         if (is_market_trading(*client, U("US"))) {
             FAIL() << "GetMarketScanner returned empty while US is trading (real regression)";
         }
@@ -1819,6 +1831,13 @@ TEST(QuoteClientInteg, GetMarketScanner_ReturnsValidFields) {
     }
     for (size_t i = 0; i < arr.size(); ++i) {
         ASSERT_TRUE(arr.at(i).is_object());
+    }
+    // When the response is an object wrapper, assert the items field is present
+    // and is an array so we can detect shape regressions even when the list is
+    // non-empty.
+    if (result.is_object() && result.has_field(U("items"))) {
+        EXPECT_TRUE(result.at(U("items")).is_array())
+            << "GetMarketScanner object-form response: 'items' must be an array";
     }
 }
 

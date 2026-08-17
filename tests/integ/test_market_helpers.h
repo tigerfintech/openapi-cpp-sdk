@@ -88,8 +88,8 @@ inline utility::string_t extract_status(const web::json::value &result,
     return U("");
 }
 
-/// Fetch (and cache) the market status. Errors are cached as "" and treated
-/// as "unknown / closed" by the callers.
+/// Fetch (and cache) the market status. Errors are NOT cached so the next
+/// call retries the request; only a successful (non-empty) status is stored.
 inline utility::string_t market_status(QuoteClient &qc,
                                        const utility::string_t &market) {
     std::lock_guard<std::mutex> lock(market_state_cache_mutex());
@@ -101,9 +101,13 @@ inline utility::string_t market_status(QuoteClient &qc,
         auto result = qc.get_market_state(market);
         status = extract_status(result, market);
     } catch (...) {
-        status = U("");
+        // Do not cache errors — allow the next call to retry.
+        return U("");
     }
-    cache[market] = status;
+    // Only cache a successfully retrieved (non-empty) status.
+    if (!status.empty()) {
+        cache[market] = status;
+    }
     return status;
 }
 
