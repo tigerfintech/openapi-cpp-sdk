@@ -337,7 +337,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_quote_depth(symbols);
+        value result = quote_client->get_quote_depth(symbols, Market::US, TradingSession::OverNight);
         ucout << U("result: ") << result << endl;
     }
 
@@ -355,7 +355,8 @@ public:
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
         //value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        vector<Kline> result = quote_client->get_kline(symbols, U("day"), -1, -1, 5);
+        vector<Kline> result = quote_client->get_kline(symbols, U("1min"), -1, -1, 5, U("br"), U(""),
+                                                       TradingSession::OverNight);
         ucout << result.at(0).to_string() << endl;
     }
 
@@ -371,7 +372,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_trade_tick(symbols, 0, 100000000);
+        value result = quote_client->get_trade_tick(symbols, TradingSession::OverNight, -1, -1, 2000);
         ucout << U("Result: ") << result << endl;
     }
 

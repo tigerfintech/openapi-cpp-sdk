@@ -116,8 +116,8 @@ TEST(TigerClientPrivateTest, BuildCommonParams_HasVersion) {
     EXPECT_EQ(params[U("version")].as_string(), OPEN_API_SERVICE_VERSION);
 }
 
-// Per-endpoint version override: financial_report / financial_daily / trading_calendar
-// must pin API v2.0 or the gateway rejects the call (matches Java V2_0 and Rust
+// Per-endpoint version overrides for endpoints that do not use the global version.
+// The following endpoints must pin API v2.0 or the gateway rejects the call (matches Java V2_0 and Rust
 // VERSION_V2 fixes).
 TEST(TigerClientPrivateTest, BuildCommonParams_FinancialReport_UsesV2) {
     auto cfg = test::make_offline_config();
@@ -141,6 +141,14 @@ TEST(TigerClientPrivateTest, BuildCommonParams_TradingCalendar_UsesV2) {
 
     value params = client.build_common_params(U("trading_calendar"));
     EXPECT_EQ(params[U("version")].as_string(), U("2.0"));
+}
+
+TEST(TigerClientPrivateTest, BuildCommonParams_QuoteOvernight_UsesV1) {
+    auto cfg = test::make_offline_config();
+    TigerClient client(*cfg);
+
+    value params = client.build_common_params(U("quote_overnight"));
+    EXPECT_EQ(params[U("version")].as_string(), U("1.0"));
 }
 
 TEST(TigerClientPrivateTest, BuildCommonParams_UnknownMethod_UsesGlobalVersion) {

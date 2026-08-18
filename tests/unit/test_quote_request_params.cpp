@@ -1,71 +1,105 @@
 // Wire-key contract tests for QuoteClient request parameter construction.
-//
-// Each test mirrors the obj-building logic in quote_client.cpp and asserts
-// that the exact JSON key names sent to the gateway are stable. If a rename
-// or refactor changes a wire key, the test fails before the change reaches
-// a live server.
-//
-// Design: no network, no credentials. We construct value objects the same way
-// quote_client.cpp does, then assert key presence and value correctness.
 
 #include <gtest/gtest.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include "cpprest/http_listener.h"
 #include "cpprest/json.h"
 #include "tigerapi/constants.h"
 #include "tigerapi/enums.h"
+#include "tigerapi/quote_client.h"
 #include "tigerapi/utils.h"
 
 using namespace TIGER_API;
 using namespace web;
 using json::value;
 
-// ── get_kline wire keys ───────────────────────────────────────────────────────
+namespace {
 
-TEST(QuoteRequestParamsTest, GetKline_WireKeys_Present) {
-    value obj = value::object(true);
+utility::string_t make_private_key() {
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr);
+    EVP_PKEY *key = nullptr;
+    if (!ctx || EVP_PKEY_keygen_init(ctx) <= 0 ||
+        EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048) <= 0 ||
+        EVP_PKEY_keygen(ctx, &key) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        throw std::runtime_error("failed to generate test RSA key");
+    }
+    EVP_PKEY_CTX_free(ctx);
+
+    BIO *bio = BIO_new(BIO_s_mem());
+    if (!bio || PEM_write_bio_PrivateKey(bio, key, nullptr, nullptr, 0, nullptr, nullptr) != 1) {
+        BIO_free(bio);
+        EVP_PKEY_free(key);
+        throw std::runtime_error("failed to encode test RSA key");
+    }
+    char *data = nullptr;
+    const long size = BIO_get_mem_data(bio, &data);
+    const utility::string_t pem = Utils::str8to16(std::string(data, static_cast<size_t>(size)));
+    BIO_free(bio);
+    EVP_PKEY_free(key);
+    return pem;
+}
+
+class QuoteRequestCaptureTest : public ::testing::Test {
+protected:
+    QuoteRequestCaptureTest()
+        : listener_(U("http://127.0.0.1:39091")) {
+        listener_.support(methods::POST, [this](http_request request) {
+            captured_ = request.extract_json().get();
+            value response = value::object();
+            response[P_CODE] = value::number(1);
+            request.reply(status_codes::OK, response).wait();
+        });
+        listener_.open().wait();
+    }
+
+    ~QuoteRequestCaptureTest() override {
+        listener_.close().wait();
+    }
+
+    std::unique_ptr<QuoteClient> make_client() {
+        static const utility::string_t private_key = make_private_key();
+        ClientConfig config(U("test_tiger_id"), private_key, U("test_account"), true, U(""));
+        config.set_server_url(U("http://127.0.0.1:39091"));
+        return std::make_unique<QuoteClient>(config, false);
+    }
+
+    value biz_content() const {
+        return value::parse(captured_.at(P_BIZ_CONTENT).as_string());
+    }
+
+    web::http::experimental::listener::http_listener listener_;
+    value captured_;
+};
+
+value one_symbol() {
     value symbols = value::array();
     symbols[0] = value::string(U("AAPL"));
-    obj[P_SYMBOLS] = symbols;
-    obj[P_PERIOD] = value::string(U("day"));
-    obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(1700000000000LL));
-    obj[P_END_TIME]   = value::number(static_cast<int64_t>(1700086400000LL));
-    obj[P_RIGHT]      = value::string(U("br"));
-    obj[P_LIMIT]      = value::number(251);
-
-    EXPECT_TRUE(obj.has_field(U("symbols")));
-    EXPECT_TRUE(obj.has_field(U("period")));
-    EXPECT_TRUE(obj.has_field(U("begin_time")));
-    EXPECT_TRUE(obj.has_field(U("end_time")));
-    EXPECT_TRUE(obj.has_field(U("right")));
-    EXPECT_TRUE(obj.has_field(U("limit")));
+    return symbols;
 }
 
-TEST(QuoteRequestParamsTest, GetKline_Period_WireValue) {
-    value obj = value::object(true);
-    obj[P_PERIOD] = value::string(enum_to_str(BarPeriod::DAY));
-    EXPECT_EQ(obj.at(U("period")).as_string(), U("day"));
-}
+} // namespace
 
-TEST(QuoteRequestParamsTest, GetKline_Right_WireValue_BuJi) {
-    value obj = value::object(true);
-    obj[P_RIGHT] = value::string(enum_to_str(QuoteRight::br));
-    EXPECT_EQ(obj.at(U("right")).as_string(), U("br"));
-}
+// ── get_kline wire keys ───────────────────────────────────────────────────────
 
-TEST(QuoteRequestParamsTest, GetKline_Right_WireValue_None) {
-    value obj = value::object(true);
-    obj[P_RIGHT] = value::string(enum_to_str(QuoteRight::nr));
-    EXPECT_EQ(obj.at(U("right")).as_string(), U("nr"));
-}
+TEST_F(QuoteRequestCaptureTest, GetKlineSendsV2EnvelopeAndSession) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_kline(one_symbol(), BarPeriod::ONE_MINUTE, 1700000000000LL,
+                                   1700086400000LL, QuoteRight::br, 251, U("next"),
+                                   TradingSession::OverNight), std::runtime_error);
 
-TEST(QuoteRequestParamsTest, GetKline_BeginEndTime_Int64) {
-    // Timestamps must be stored as int64, not double, to avoid precision loss.
-    int64_t begin = 1700000000000LL;
-    int64_t end   = 1700086400000LL;
-    value obj = value::object(true);
-    obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin));
-    obj[P_END_TIME]   = value::number(static_cast<int64_t>(end));
-    EXPECT_EQ(obj.at(U("begin_time")).as_number().to_int64(), begin);
-    EXPECT_EQ(obj.at(U("end_time")).as_number().to_int64(), end);
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("kline"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SYMBOLS).as_array().at(0).as_string(), U("AAPL"));
+    EXPECT_EQ(content.at(P_PERIOD).as_string(), U("1min"));
+    EXPECT_EQ(content.at(P_BEGIN_TIME).as_number().to_int64(), 1700000000000LL);
+    EXPECT_EQ(content.at(P_END_TIME).as_number().to_int64(), 1700086400000LL);
+    EXPECT_EQ(content.at(P_RIGHT).as_string(), U("br"));
+    EXPECT_EQ(content.at(P_LIMIT).as_integer(), 251);
+    EXPECT_EQ(content.at(P_PAGE_TOKEN).as_string(), U("next"));
+    EXPECT_EQ(content.at(P_TRADE_SESSION).as_string(), U("OverNight"));
 }
 
 // ── get_timeline wire keys ────────────────────────────────────────────────────
@@ -93,56 +127,34 @@ TEST(QuoteRequestParamsTest, GetTimeline_IncludeHourTrading_DefaultFalse) {
 
 // ── get_trade_tick wire keys ──────────────────────────────────────────────────
 
-TEST(QuoteRequestParamsTest, GetTradeTick_WireKeys_Present) {
-    value obj = value::object(true);
-    value symbols = value::array();
-    symbols[0] = value::string(U("AAPL"));
-    obj[P_SYMBOLS]       = symbols;
-    obj[P_TRADE_SESSION] = value::string(enum_to_str(TradingSession::Regular));
-    obj[P_BEGIN_INDEX]   = value::number(static_cast<int64_t>(0));
-    obj[P_END_INDEX]     = value::number(static_cast<int64_t>(30));
-    obj[P_LIMIT]         = value::number(30);
+TEST_F(QuoteRequestCaptureTest, GetTradeTickSendsV2EnvelopeAndLatestOvernightRange) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_trade_tick(one_symbol(), TradingSession::OverNight, -1, -1, 2000),
+                 std::runtime_error);
 
-    EXPECT_TRUE(obj.has_field(U("symbols")));
-    EXPECT_TRUE(obj.has_field(U("trade_session")));
-    EXPECT_TRUE(obj.has_field(U("begin_index")));
-    EXPECT_TRUE(obj.has_field(U("end_index")));
-    EXPECT_TRUE(obj.has_field(U("limit")));
-    // camelCase must NOT be used
-    EXPECT_FALSE(obj.has_field(U("tradeSession")));
-    EXPECT_FALSE(obj.has_field(U("beginIndex")));
-    EXPECT_FALSE(obj.has_field(U("endIndex")));
-}
-
-TEST(QuoteRequestParamsTest, GetTradeTick_TradeSession_WireValue) {
-    value obj = value::object(true);
-    obj[P_TRADE_SESSION] = value::string(enum_to_str(TradingSession::Regular));
-    EXPECT_EQ(obj.at(U("trade_session")).as_string(), U("Regular"));
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("trade_tick"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SYMBOLS).as_array().at(0).as_string(), U("AAPL"));
+    EXPECT_EQ(content.at(P_TRADE_SESSION).as_string(), U("OverNight"));
+    EXPECT_EQ(content.at(P_BEGIN_INDEX).as_number().to_int64(), -1);
+    EXPECT_EQ(content.at(P_END_INDEX).as_number().to_int64(), -1);
+    EXPECT_EQ(content.at(P_LIMIT).as_integer(), 2000);
 }
 
 // ── get_quote_depth wire keys ─────────────────────────────────────────────────
 
-TEST(QuoteRequestParamsTest, GetQuoteDepth_WireKeys_Present) {
-    value obj = value::object(true);
-    value symbols = value::array();
-    symbols[0] = value::string(U("AAPL"));
-    obj[P_SYMBOLS] = symbols;
-    obj[P_MARKET]  = value::string(enum_to_str(Market::US));
+TEST_F(QuoteRequestCaptureTest, GetQuoteDepthSendsV2EnvelopeAndSession) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_quote_depth(one_symbol(), Market::US, TradingSession::OverNight),
+                 std::runtime_error);
 
-    EXPECT_TRUE(obj.has_field(U("symbols")));
-    EXPECT_TRUE(obj.has_field(U("market")));
-}
-
-TEST(QuoteRequestParamsTest, GetQuoteDepth_Market_WireValue) {
-    value obj = value::object(true);
-    obj[P_MARKET] = value::string(enum_to_str(Market::US));
-    EXPECT_EQ(obj.at(U("market")).as_string(), U("US"));
-}
-
-TEST(QuoteRequestParamsTest, GetQuoteDepth_Market_HK_WireValue) {
-    value obj = value::object(true);
-    obj[P_MARKET] = value::string(enum_to_str(Market::HK));
-    EXPECT_EQ(obj.at(U("market")).as_string(), U("HK"));
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("quote_depth"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SYMBOLS).as_array().at(0).as_string(), U("AAPL"));
+    EXPECT_EQ(content.at(P_MARKET).as_string(), U("US"));
+    EXPECT_EQ(content.at(P_TRADE_SESSION).as_string(), U("OverNight"));
 }
 
 // ── get_capital_flow wire keys ────────────────────────────────────────────────

@@ -24,6 +24,7 @@ TEST(EnumTest, License_TBUS) { EXPECT_EQ(enum_to_str(License::TBUS), U("TBUS"));
 TEST(EnumTest, TradingSession_PreMarket) { EXPECT_EQ(enum_to_str(TradingSession::PreMarket), U("PreMarket")); }
 TEST(EnumTest, TradingSession_Regular) { EXPECT_EQ(enum_to_str(TradingSession::Regular), U("Regular")); }
 TEST(EnumTest, TradingSession_AfterHours) { EXPECT_EQ(enum_to_str(TradingSession::AfterHours), U("AfterHours")); }
+TEST(EnumTest, TradingSession_OverNight) { EXPECT_EQ(enum_to_str(TradingSession::OverNight), U("OverNight")); }
 
 // ── SecType ────────────────────────────────────────────────────────────────────
 

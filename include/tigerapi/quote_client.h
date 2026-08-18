@@ -34,10 +34,17 @@ namespace TIGER_API {
         value get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
                         QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                        QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session);
         value get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
                         utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                        utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session);
         vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
-                              int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
+                               int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token,
+                                TradingSession trade_session);
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
         value get_trade_tick(const value &symbols, long begin_index=-1,
@@ -47,6 +54,7 @@ namespace TIGER_API {
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
         value get_quote_depth(const value &symbols, Market market = Market::US);
+        value get_quote_depth(const value &symbols, Market market, TradingSession trade_session);
         value get_stock_broker(utility::string_t symbol, int limit=40, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_capital_distribution(utility::string_t symbol, Market market = Market::US, utility::string_t lang=U(""));
         value get_capital_flow(utility::string_t symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY,

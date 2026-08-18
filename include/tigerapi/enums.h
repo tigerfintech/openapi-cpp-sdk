@@ -69,7 +69,8 @@ namespace TIGER_API {
     enum class TradingSession {
         PreMarket,  // PreMarket
         Regular,    // Regular
-        AfterHours  // AfterHours
+        AfterHours, // AfterHours
+        OverNight   // OverNight
     };
 
     inline utility::string_t enum_to_str(TradingSession session) {
@@ -80,6 +81,8 @@ namespace TIGER_API {
                 return U("Regular");
             case TradingSession::AfterHours:
                 return U("AfterHours");
+            case TradingSession::OverNight:
+                return U("OverNight");
         }
         return U("");
     }
