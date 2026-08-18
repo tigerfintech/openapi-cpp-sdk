@@ -42,9 +42,9 @@ namespace TIGER_API {
 
     // Endpoints that the gateway rejects on the global V3.0 default and require
     // an older API version. Matches the Java SDK request classes:
-    //   FinancialReportRequest        -> V2_0
-    //   FinancialDailyRequest         -> V2_0
-    //   QuoteTradeCalendarRequest     -> V2_0
+    //   QuoteKlineRequest / QuoteDepthRequest / QuoteTradeTickRequest -> V2_0
+    //   FinancialReportRequest / FinancialDailyRequest                -> V2_0
+    //   QuoteTradeCalendarRequest                                     -> V2_0
     // Rust SDK pins the same set via call_into_versioned(..., VERSION_V2).
     // Without the override the gateway answers 'biz param error(failed to parse
     // parameters in biz_content)' (financial_report / financial_daily) or returns
@@ -52,6 +52,10 @@ namespace TIGER_API {
     static const std::map<utility::string_t, utility::string_t>&
     endpoint_version_overrides() {
         static const std::map<utility::string_t, utility::string_t> table = {
+            {U("quote_overnight"), U("1.0")},
+            {U("kline"), U("2.0")},
+            {U("quote_depth"), U("2.0")},
+            {U("trade_tick"), U("2.0")},
             {U("financial_report"), U("2.0")},
             {U("financial_daily"), U("2.0")},
             {U("trading_calendar"), U("2.0")},

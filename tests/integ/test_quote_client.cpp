@@ -184,6 +184,30 @@ TEST(QuoteClientInteg, GetKline_ReturnsValidFields) {
         << "KlineItem.high should be >= low";
 }
 
+TEST(QuoteClientInteg, GetKlineOvernight_Typed_ReturnsValidFieldsWhenNonempty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_readonly_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    auto klines = client->get_kline(make_symbols(U("AAPL")), U("1min"),
+                                     /*begin_time=*/-1, /*end_time=*/-1,
+                                     /*limit=*/5, U("br"), U(""),
+                                     TradingSession::OverNight);
+
+    for (const auto &kline : klines) {
+        EXPECT_FALSE(kline.symbol.empty());
+        EXPECT_FALSE(kline.period.empty());
+        for (const auto &item : kline.items) {
+            EXPECT_GT(item.time, 0);
+            EXPECT_GT(item.open, 0.0);
+            EXPECT_GT(item.close, 0.0);
+            EXPECT_GE(item.high, item.low);
+            EXPECT_GE(item.volume, 0);
+        }
+    }
+}
+
 TEST(QuoteClientInteg, GetKline_WeekPeriod_HK) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
@@ -721,6 +745,36 @@ TEST(QuoteClientInteg, GetTradeTick_ReturnsValidFields) {
     }
 }
 
+TEST(QuoteClientInteg, GetTradeTickOvernight_Typed_ReturnsValidFieldsWhenNonempty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_readonly_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_trade_tick(
+        make_symbols(U("AAPL")), TradingSession::OverNight, -1, -1, 100);
+    ASSERT_FALSE(result.is_null());
+
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &tick = arr.at(i);
+        ASSERT_TRUE(tick.is_object());
+        ASSERT_TRUE(json_is_string(tick, U("symbol")));
+        EXPECT_FALSE(tick.at(U("symbol")).as_string().empty());
+        if (!tick.has_field(U("items"))) continue;
+        ASSERT_TRUE(tick.at(U("items")).is_array());
+        const auto &items = tick.at(U("items"));
+        for (size_t j = 0; j < items.size(); ++j) {
+            const auto &item = items.at(j);
+            ASSERT_TRUE(item.is_object());
+            ASSERT_TRUE(item.has_field(U("time")));
+            EXPECT_GT(item.at(U("time")).as_number().to_int64(), 0);
+            ASSERT_TRUE(item.has_field(U("price")));
+            EXPECT_GT(item.at(U("price")).as_double(), 0.0);
+        }
+    }
+}
+
 TEST(QuoteClientInteg, GetQuoteRealTimeValue_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
@@ -833,6 +887,31 @@ TEST(QuoteClientInteg, GetQuoteDepth_ReturnsValidFields) {
     bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
     bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
     EXPECT_TRUE(has_asks || has_bids) << "QuoteDepth has neither asks nor bids arrays";
+}
+
+TEST(QuoteClientInteg, GetQuoteDepthOvernight_Typed_ReturnsValidFieldsWhenNonempty) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_readonly_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    web::json::value result = client->get_quote_depth(
+        make_symbols(U("AAPL")), Market::US, TradingSession::OverNight);
+    ASSERT_FALSE(result.is_null());
+
+    auto arr = extract_array(result);
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const auto &depth = arr.at(i);
+        ASSERT_TRUE(depth.is_object());
+        ASSERT_TRUE(json_is_string(depth, U("symbol")));
+        EXPECT_FALSE(depth.at(U("symbol")).as_string().empty());
+        if (depth.has_field(U("asks"))) {
+            EXPECT_TRUE(depth.at(U("asks")).is_array());
+        }
+        if (depth.has_field(U("bids"))) {
+            EXPECT_TRUE(depth.at(U("bids")).is_array());
+        }
+    }
 }
 
 TEST(QuoteClientInteg, GetQuoteDepth_HK) {
@@ -1972,7 +2051,7 @@ TEST(QuoteClientInteg, GetQuoteOvernight_ReturnsValidFields) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    auto cfg = make_integ_config();
+    auto cfg = make_readonly_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     web::json::value result = client->get_quote_overnight(make_symbols(U("AAPL")));
     ASSERT_FALSE(result.is_null());

@@ -1,3 +1,10 @@
+## Unreleased
+### New
+- `TradingSession::OverNight` and overnight-session support for `get_kline`, `get_quote_depth`, and the existing enum overload of `get_trade_tick`
+
+### Fixed
+- `get_quote_overnight` now uses its required API version 1.0
+
 ## 1.3.0 (2026-07-24)
 ### New
 - `OrderUtil::amount_order` — 按金额下市价单（如基金申购），不指定股数

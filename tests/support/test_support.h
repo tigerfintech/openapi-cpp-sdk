@@ -77,5 +77,23 @@ inline std::shared_ptr<ClientConfig> make_integ_config() {
     return std::make_shared<ClientConfig>(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/true);
 }
 
+/** Returns a production config from a properties path when provided.
+ * Falls back to the existing integration environment credentials otherwise. */
+inline std::shared_ptr<ClientConfig> make_readonly_integ_config() {
+    const char* props_path = std::getenv("TIGEROPEN_PROPS_PATH");
+    if (!props_path || *props_path == '\0') {
+        props_path = std::getenv("TIGER_CONFIG_PATH");
+    }
+    if (!props_path || *props_path == '\0') {
+        return make_integ_config();
+    }
+#if defined(_WIN32)
+    auto path = utility::conversions::to_string_t(std::string(props_path));
+#else
+    utility::string_t path(props_path);
+#endif
+    return std::make_shared<ClientConfig>(/*sandbox_debug=*/false, path);
+}
+
 } // namespace test
 } // namespace TIGER_API
