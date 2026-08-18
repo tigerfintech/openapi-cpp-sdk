@@ -43,14 +43,14 @@ web::json::value extract_array(const web::json::value &v) {
     return web::json::value::array();
 }
 
-/// Check that a JSON field exists, is a string, and is non-empty.
-/// Absent or null fields are treated as "not present" (returns true = OK).
-/// Non-string types or empty strings return false (caller should EXPECT).
+/// Check that a JSON field exists, is a non-null string, and is non-empty.
+/// Absent fields are treated as "not present" (returns true = OK to skip).
+/// Null fields, non-string types, or empty strings return false (assertion fails).
 static bool json_nonempty_string(const web::json::value &obj,
                                  const utility::string_t &field) {
     if (!obj.has_field(field)) return true;  // absent = skip assertion
     const auto &v = obj.at(field);
-    if (v.is_null()) return true;            // null = skip assertion
+    if (v.is_null()) return false;           // null is not a non-empty string
     if (!v.is_string()) return false;        // wrong type = fail
     return !v.as_string().empty();
 }
