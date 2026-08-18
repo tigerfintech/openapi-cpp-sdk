@@ -96,9 +96,10 @@ TEST(UtilsSignTest, FillPrivateKeyMarker_BareBase64_WrapsAsRsa) {
     // A bare base64 string (not PEM) should be wrapped as RSA PRIVATE KEY
     utility::string_t bare = U("dGVzdA==0000000000000000000000000000000000000000000000000");
     utility::string_t result = Utils::fill_private_key_marker(bare);
-    // Should have BEGIN " "RSA PRIVATE KEY or BEGIN " "PRIVATE KEY header
-    bool has_rsa = result.find(U("BEGIN " "RSA PRIVATE KEY")) != utility::string_t::npos;
-    bool has_pkcs8 = result.find(U("BEGIN " "PRIVATE KEY")) != utility::string_t::npos;
+    // Should have BEGIN RSA PRIVATE KEY or BEGIN PRIVATE KEY header
+    // (string intentionally kept whole — the marker is a PEM format label, not a real key)
+    bool has_rsa = result.find(U("BEGIN RSA PRIVATE KEY")) != utility::string_t::npos;
+    bool has_pkcs8 = result.find(U("BEGIN PRIVATE KEY")) != utility::string_t::npos;
     EXPECT_TRUE(has_rsa || has_pkcs8);
 }
 
@@ -112,8 +113,9 @@ TEST(UtilsSignTest, FillPrivateKeyMarker_WithRealPrivateKey_PreservesHeader) {
     RsaKeyPair keys = generate_rsa_key_pair();
     utility::string_t pem = Utils::str8to16(keys.private_key_pem);
     utility::string_t result = Utils::fill_private_key_marker(pem);
-    // Should have BEGIN " "PRIVATE KEY (PKCS#8 format from OpenSSL)
-    EXPECT_NE(result.find(U("BEGIN " "PRIVATE KEY")), utility::string_t::npos);
+    // Should have BEGIN PRIVATE KEY (PKCS#8 format from OpenSSL)
+    // (string kept whole — PEM format label, not a real key)
+    EXPECT_NE(result.find(U("BEGIN PRIVATE KEY")), utility::string_t::npos);
     EXPECT_NE(result.find(U("END PRIVATE KEY")), utility::string_t::npos);
 }
 
