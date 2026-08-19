@@ -425,10 +425,10 @@ ResponseModel response = client.grab_quote_kline(symbols, "day", "2024-01-01", "
 | `HK_ODD_LOT_TRADE` | 碎股交易（Odd Lot Trade） |
 | `HK_AUCTION_TRADE` | 竞价交易（Auction Trade） |
 | `HK_OVERSEAS_TRADE` | 场外交易（Overseas Trade） |
-| `HK_LATE_TRADE_OFF_EXCHG` | 开市前成交（Late Trade Off Exchange） |
+| `HK_LATE_TRADE_OFF_EXCHG` | 场外延迟交易（Late Trade Off Exchange） |
 | `HK_NON_DIRECT_OFF_EXCHG_TRADE` | 非自动对盘（Non-Direct Off Exchange Trade） |
 | `HK_DIRECT_OFF_EXCHG_TRADE` | 同券商自动对盘（Direct Off Exchange Trade） |
-| `HK_AUTOMATIC_INTERNALIZED` | 同券商非自动对盘（Automatic Internalized） |
+| `HK_AUTOMATIC_INTERNALIZED` | 自动内部化（Automatic Internalized） |
 
 ### WebSocket 长连接推送
 

@@ -49,6 +49,11 @@ namespace TIGER_API {
     // Without the override the gateway answers 'biz param error(failed to parse
     // parameters in biz_content)' (financial_report / financial_daily) or returns
     // an empty market field (trading_calendar).
+    //
+    // quote_overnight is independently pinned to 1.0 (not the V2_0 group above):
+    // the gateway rejects V3.0 for this endpoint and 2.0 is also rejected; 1.0 is
+    // the only accepted version (confirmed via live testing; see CHANGELOG 1.3.1
+    // "get_quote_overnight now uses its required API version 1.0").
     static const std::map<utility::string_t, utility::string_t>&
     endpoint_version_overrides() {
         static const std::map<utility::string_t, utility::string_t> table = {
