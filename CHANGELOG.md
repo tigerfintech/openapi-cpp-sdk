@@ -1,5 +1,6 @@
-## Unreleased
+## 1.3.1 (2026-08-19)
 ### New
+- `get_option_chain` response adds `markPrice`, `preMarkPrice`, `markTimestamp`, `midPrice`, `preMidPrice`, `midTimestamp` fields
 - `TradingSession::OverNight` and overnight-session support for `get_kline`, `get_quote_depth`, and the existing enum overload of `get_trade_tick`
 
 ### Fixed
