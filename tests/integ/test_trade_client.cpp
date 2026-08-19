@@ -776,7 +776,7 @@ TEST(TradeClientInteg, PreviewOrder_LmtBuyAapl_ReturnsValidFields) {
 namespace {
 /// Order ID placed by PlaceOrder_LmtBuyAapl. 0 = not placed (out of hours or
 /// order was not accepted). Written once by the Place test; read by
-/// CancelOrder and ModifyOrder tests.
+/// CancelOrder test only. ModifyOrder places its own fresh order independently.
 unsigned long long g_placed_order_id = 0;
 } // anonymous namespace
 
@@ -855,7 +855,7 @@ TEST(TradeClientInteg, CancelOrder_PlacedOrder_Succeeds) {
         FAIL() << "CancelOrder threw unexpected exception: " << msg;
     }
     ASSERT_FALSE(result.is_null()) << "CancelOrder returned null";
-    // Reset so modify test does not try to modify a cancelled order.
+    // Reset so CancelOrder is not retried if the test suite runs again.
     g_placed_order_id = 0;
 }
 

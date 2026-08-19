@@ -184,7 +184,7 @@ notify:webhook:
       branch = os.environ.get("CI_COMMIT_REF_NAME", "")
       commit = os.environ.get("CI_COMMIT_SHORT_SHA", "")
       pipeline_iid = os.environ.get("CI_PIPELINE_IID", "")
-      pipeline_url = os.environ.get("CI_PROJECT_URL", "") + "/-/pipelines/" + os.environ.get("CI_PIPELINE_ID", "")
+      pipeline_url = os.environ.get("CI_PROJECT_URL", "") + "/-/pipelines/" + os.environ.get("CI_PIPELINE_IID", "")
 
       content = f"**Repo:** {project_name}\n**Branch:** {branch}\n**Commit:** {commit}\n"
       if unit_stats:

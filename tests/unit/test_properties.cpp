@@ -8,13 +8,7 @@ using namespace TIGER_API;
 // ── load / get_property ───────────────────────────────────────────────────────
 
 TEST(PropertiesTest, Load_SimpleKeyValue) {
-    std::string content = "key1=value1\nkey2=value2\n";
-    std::istringstream iss(content);
-    std::ifstream file;  // not used, load takes ifstream
-    // Use istringstream via temp file approach won't work directly with ifstream;
-    // Properties::load takes std::ifstream&. Create a temp file.
-    // Instead test via set_property/get_property roundtrip.
-
+    // Properties::load takes std::ifstream& — validate via set_property/get_property roundtrip.
     Properties props;
     props.set_property(U("key1"), U("value1"));
     props.set_property(U("key2"), U("value2"));
