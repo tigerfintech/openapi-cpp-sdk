@@ -6,6 +6,36 @@
 
 using namespace TIGER_API;
 
+TEST(ModelTest, KlineItem_ParsesDecimalVolume) {
+    web::json::value j = web::json::value::object(true);
+    j[U("volume")] = web::json::value::number(12);
+    j[U("volumeDecimal")] = web::json::value::number(12.3456);
+
+    KlineItem item;
+    item.from_json(j);
+
+    EXPECT_EQ(item.volume, 12);
+    ASSERT_TRUE(item.volume_decimal);
+    EXPECT_DOUBLE_EQ(*item.volume_decimal, 12.3456);
+}
+
+TEST(ModelTest, KlineItem_DistinguishesMissingAndZeroDecimalVolume) {
+    KlineItem item;
+    item.from_json(web::json::value::object(true));
+    EXPECT_FALSE(item.volume_decimal);
+
+    web::json::value j = web::json::value::object(true);
+    j[U("volumeDecimal")] = web::json::value::number(0.0);
+    item.from_json(j);
+
+    ASSERT_TRUE(item.volume_decimal);
+    EXPECT_DOUBLE_EQ(*item.volume_decimal, 0.0);
+
+    j[U("volumeDecimal")] = web::json::value::null();
+    item.from_json(j);
+    EXPECT_FALSE(item.volume_decimal);
+}
+
 // ── Contract constructors ──────────────────────────────────────────────────────
 
 TEST(ModelTest, Contract_DefaultConstructor) {
@@ -494,6 +524,7 @@ TEST(ModelTest, KlineItem_FromJson) {
     EXPECT_EQ(ki.time, 1700000000000LL);
     EXPECT_EQ(ki.last_time, 1700000060000LL);
     EXPECT_EQ(ki.volume, 1000000LL);
+    EXPECT_FALSE(ki.volume_decimal);
     EXPECT_DOUBLE_EQ(ki.settlement, 171.5);
     EXPECT_EQ(ki.open_interest, 50000LL);
 }
@@ -503,6 +534,7 @@ TEST(ModelTest, KlineItem_DefaultValues) {
     EXPECT_DOUBLE_EQ(ki.open, 0.0);
     EXPECT_DOUBLE_EQ(ki.high, 0.0);
     EXPECT_EQ(ki.volume, 0LL);
+    EXPECT_FALSE(ki.volume_decimal);
 }
 
 // ── Kline ──────────────────────────────────────────────────────────────────────

@@ -306,6 +306,11 @@ public:
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_timeline(symbols, false, 1675167178931);
         ucout << U("result: ") << result << endl;
+
+        value crypto_symbols = value::array();
+        crypto_symbols[0] = value::string(U("BTC.USD"));
+        ucout << U("crypto result: ")
+              << quote_client->get_timeline(crypto_symbols, false, -1, SecType::CC) << endl;
     }
 
     static void test_get_history_timeline(const std::shared_ptr<QuoteClient> quote_client) {
@@ -358,6 +363,15 @@ public:
         vector<Kline> result = quote_client->get_kline(symbols, U("1min"), -1, -1, 5, U("br"), U(""),
                                                        TradingSession::OverNight);
         ucout << result.at(0).to_string() << endl;
+
+        value crypto_symbols = value::array();
+        crypto_symbols[0] = value::string(U("BTC.USD"));
+        vector<Kline> crypto = quote_client->get_kline(crypto_symbols, U("day"), -1, -1, 5,
+                                                       U("br"), U(""), SecType::CC);
+        ucout << crypto.at(0).to_string() << endl;
+        if (!crypto.at(0).items.empty() && crypto.at(0).items.at(0).volume_decimal) {
+            ucout << U("fractional volume: ") << *crypto.at(0).items.at(0).volume_decimal << endl;
+        }
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
