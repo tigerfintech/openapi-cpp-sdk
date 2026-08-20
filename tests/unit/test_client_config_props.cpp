@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include <filesystem>
+#include <stdexcept>
 
 using namespace TIGER_API;
 
@@ -54,17 +55,16 @@ TEST(ClientConfigPropsTest, LoadProps_Pk1Fallback) {
     EXPECT_EQ(cfg.private_key, U("pk1_key_data"));
 }
 
-TEST(ClientConfigPropsTest, LoadProps_SandboxEnv) {
+TEST(ClientConfigPropsTest, LoadProps_SandboxEnv_Throws) {
     const char* tmp_path = "/tmp/test_cfg_sandbox.properties";
     {
         std::ofstream out(tmp_path);
         out << "env=SANDBOX\n";
     }
 
-    ClientConfig cfg(false, utility::string_t(tmp_path));
-    // sandbox_debug should be true when env=SANDBOX
-    // Also server_url should be sandbox URL
-    EXPECT_EQ(cfg.get_server_url(), SANDBOX_TIGER_SERVER_URL);
+    // Sandbox is deprecated and no longer reachable; construction fails loud
+    // instead of silently redirecting to the (dead) sandbox endpoint.
+    EXPECT_THROW(ClientConfig cfg(false, utility::string_t(tmp_path)), std::runtime_error);
 }
 
 TEST(ClientConfigPropsTest, LoadProps_CustomServerUrl) {

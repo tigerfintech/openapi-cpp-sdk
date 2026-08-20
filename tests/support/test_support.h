@@ -28,12 +28,13 @@ static const utility::string_t FAKE_PRIVATE_KEY =
     U("-----END RSA PRIVATE KEY-----");
 
 /**
- * Returns a sandbox ClientConfig for unit tests: valid construction but no
+ * Returns an offline ClientConfig for unit tests: valid construction but no
  * real credentials — do NOT call methods that sign or send requests.
+ * sandbox_debug is deprecated (throws if true) and not requested here.
  */
 inline std::shared_ptr<ClientConfig> make_offline_config() {
     return std::make_shared<ClientConfig>(FAKE_TIGER_ID, FAKE_PRIVATE_KEY, FAKE_ACCOUNT,
-                        /*sandbox_debug=*/true);
+                        /*sandbox_debug=*/false);
 }
 
 // ── Integration test helpers ─────────────────────────────────────────────────
@@ -70,11 +71,13 @@ inline IntegCreds read_integ_creds() {
     return {env("TIGER_TEST_ID"), env("TIGER_TEST_PRIVATE_KEY"), env("TIGER_TEST_ACCOUNT")};
 }
 
-/** Returns a sandbox ClientConfig populated from integration env vars.
+/** Returns a production ClientConfig populated from integration env vars.
+ * Sandbox is deprecated (throws if requested) — integration tests run
+ * against production, matching the other SDKs' integ test convention.
  * Returns shared_ptr to avoid ClientConfig move (deleted move constructor in C++14). */
 inline std::shared_ptr<ClientConfig> make_integ_config() {
     auto c = read_integ_creds();
-    return std::make_shared<ClientConfig>(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/true);
+    return std::make_shared<ClientConfig>(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/false);
 }
 
 /** Returns a production config from a properties path when provided.

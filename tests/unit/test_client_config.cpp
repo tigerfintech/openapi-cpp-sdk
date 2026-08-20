@@ -15,13 +15,14 @@ TEST(ClientConfigTest, DefaultConstructor_DoesNotThrow) {
     EXPECT_NO_THROW(ClientConfig cfg(false));
 }
 
-TEST(ClientConfigTest, DefaultConstructor_SandboxTrue_LogsWarning) {
-    // sandbox_debug=true triggers LOG(WARNING) "SANDBOX IS NOT SUPPORTED"
-    EXPECT_NO_THROW(ClientConfig cfg(true));
+TEST(ClientConfigTest, DefaultConstructor_SandboxTrue_Throws) {
+    // sandbox_debug=true is deprecated and no longer reachable; the
+    // constructor fails loud instead of silently falling back to production.
+    EXPECT_THROW(ClientConfig cfg(true), std::runtime_error);
 }
 
 TEST(ClientConfigTest, ParameterizedConstructor_SetsFields) {
-    ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"), true);
+    ClientConfig cfg(U("12345"), U("fake_key"), U("ACCT001"), false);
     EXPECT_EQ(cfg.tiger_id, U("12345"));
     EXPECT_EQ(cfg.account,  U("ACCT001"));
 }
@@ -38,14 +39,14 @@ TEST(ClientConfigTest, SandboxFlagFalseByDefault) {
     EXPECT_EQ(cfg.account, U("acct"));
 }
 
-TEST(ClientConfigTest, MakeOfflineConfig_IsSandbox) {
+TEST(ClientConfigTest, MakeOfflineConfig_SetsFakeCredentials) {
     auto cfg = TIGER_API::test::make_offline_config();
     EXPECT_EQ(cfg->tiger_id, TIGER_API::test::FAKE_TIGER_ID);
     EXPECT_EQ(cfg->account,  TIGER_API::test::FAKE_ACCOUNT);
 }
 
 TEST(ClientConfigTest, CopyConstructor_PreservesFields) {
-    ClientConfig original(U("tid"), U("pkey"), U("acct"), true);
+    ClientConfig original(U("tid"), U("pkey"), U("acct"), false);
     ClientConfig copy(original);
     EXPECT_EQ(copy.tiger_id,     original.tiger_id);
     EXPECT_EQ(copy.account,      original.account);
