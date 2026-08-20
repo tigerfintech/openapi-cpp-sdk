@@ -91,15 +91,29 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time) {
+        return get_timeline(symbols, include_hour_trading, begin_time, SecType::ALL);
+    }
+
+    value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time,
+                                    SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
         obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(TIMELINE, obj);
     }
 
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time,
+                                 time_t end_time, utility::string_t right, int limit,
+                                 utility::string_t page_token) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token, SecType::ALL);
+    }
+
     value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time, utility::string_t right,
-                                 int limit, utility::string_t page_token) {
+                                 int limit, utility::string_t page_token, SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
@@ -108,12 +122,22 @@ namespace TIGER_API {
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(KLINE, obj);
     }
 
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time,
+                                 time_t end_time, utility::string_t right, int limit,
+                                 utility::string_t page_token, TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
+                         trade_session, SecType::ALL);
+    }
+
     value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
-                                 utility::string_t right, int limit, utility::string_t page_token,
-                                 TradingSession trade_session) {
+                                  utility::string_t right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session, SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
@@ -123,33 +147,61 @@ namespace TIGER_API {
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
         obj[P_TRADE_SESSION] = value::string(enum_to_str(trade_session));
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(KLINE, obj);
     }
 
     value
     QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time, QuoteRight right,
                            int limit, utility::string_t page_token) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token, SecType::ALL);
+    }
+
+    value
+    QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time, QuoteRight right,
+                           int limit, utility::string_t page_token, SecType sec_type) {
         return get_kline(symbols, enum_to_str(period), begin_time, end_time, enum_to_str(right), limit,
-                         page_token);
+                         page_token, sec_type);
     }
 
     value QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
-                                 QuoteRight right, int limit, utility::string_t page_token,
-                                 TradingSession trade_session) {
+                                  QuoteRight right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
+                         trade_session, SecType::ALL);
+    }
+
+    value QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                                  QuoteRight right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session, SecType sec_type) {
         return get_kline(symbols, enum_to_str(period), begin_time, end_time, enum_to_str(right), limit,
-                         page_token, trade_session);
+                         page_token, trade_session, sec_type);
     }
 
     vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
                            int limit, utility::string_t right, utility::string_t page_token) {
-        return parse_klines(get_kline(symbols, period, begin_time, end_time, right, limit, page_token));
+        return get_kline(symbols, period, begin_time, end_time, limit, right, page_token, SecType::ALL);
+    }
+
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                           int limit, utility::string_t right, utility::string_t page_token, SecType sec_type) {
+        return parse_klines(get_kline(symbols, period, begin_time, end_time, right, limit, page_token, sec_type));
     }
 
     vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
                                          int limit, utility::string_t right, utility::string_t page_token,
                                          TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, limit, right, page_token,
+                         trade_session, SecType::ALL);
+    }
+
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                         int limit, utility::string_t right, utility::string_t page_token,
+                                         TradingSession trade_session, SecType sec_type) {
         return parse_klines(get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
-                                      trade_session));
+                                      trade_session, sec_type));
     }
 
     value QuoteClient::get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right) {

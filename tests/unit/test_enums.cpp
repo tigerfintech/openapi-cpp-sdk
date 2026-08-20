@@ -36,6 +36,7 @@ TEST(EnumTest, SecType_IOPT) { EXPECT_EQ(enum_to_str(SecType::IOPT), U("IOPT"));
 TEST(EnumTest, SecType_FUT) { EXPECT_EQ(enum_to_str(SecType::FUT), U("FUT")); }
 TEST(EnumTest, SecType_FOP) { EXPECT_EQ(enum_to_str(SecType::FOP), U("FOP")); }
 TEST(EnumTest, SecType_CASH) { EXPECT_EQ(enum_to_str(SecType::CASH), U("CASH")); }
+TEST(EnumTest, SecType_CC) { EXPECT_EQ(enum_to_str(SecType::CC), U("CC")); }
 
 // ── SegmentType ────────────────────────────────────────────────────────────────
 

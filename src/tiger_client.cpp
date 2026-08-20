@@ -40,8 +40,8 @@ namespace TIGER_API {
         return str;
     }
 
-    // Endpoints that the gateway rejects on the global V3.0 default and require
-    // an older API version. Matches the Java SDK request classes:
+    // Endpoints pinned to a specific gateway version. Matches the Java SDK request classes:
+    //   QuoteTimelineRequest                                      -> V3_0
     //   QuoteKlineRequest / QuoteDepthRequest / QuoteTradeTickRequest -> V2_0
     //   FinancialReportRequest / FinancialDailyRequest                -> V2_0
     //   QuoteTradeCalendarRequest                                     -> V2_0
@@ -58,6 +58,7 @@ namespace TIGER_API {
     endpoint_version_overrides() {
         static const std::map<utility::string_t, utility::string_t> table = {
             {U("quote_overnight"), U("1.0")},
+            {U("timeline"), U("3.0")},
             {U("kline"), U("2.0")},
             {U("quote_depth"), U("2.0")},
             {U("trade_tick"), U("2.0")},

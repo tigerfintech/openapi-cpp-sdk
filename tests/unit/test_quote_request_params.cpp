@@ -60,7 +60,7 @@ protected:
 
     std::unique_ptr<QuoteClient> make_client() {
         static const utility::string_t private_key = make_private_key();
-        ClientConfig config(U("test_tiger_id"), private_key, U("test_account"), true, U(""));
+        ClientConfig config(U("test_tiger_id"), private_key, U("test_account"), false, U(""));
         config.set_server_url(U("http://127.0.0.1:39091"));
         return std::make_unique<QuoteClient>(config, false);
     }
@@ -100,29 +100,47 @@ TEST_F(QuoteRequestCaptureTest, GetKlineSendsV2EnvelopeAndSession) {
     EXPECT_EQ(content.at(P_LIMIT).as_integer(), 251);
     EXPECT_EQ(content.at(P_PAGE_TOKEN).as_string(), U("next"));
     EXPECT_EQ(content.at(P_TRADE_SESSION).as_string(), U("OverNight"));
+    EXPECT_FALSE(content.has_field(P_SEC_TYPE));
+}
+
+TEST_F(QuoteRequestCaptureTest, GetCryptoKlineSendsSecTypeWithPageToken) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_kline(one_symbol(), BarPeriod::ONE_MINUTE, 1700000000000LL,
+                                   1700086400000LL, QuoteRight::br, 251, U("next"),
+                                   SecType::CC), std::runtime_error);
+
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SEC_TYPE).as_string(), U("CC"));
+    EXPECT_EQ(content.at(P_PAGE_TOKEN).as_string(), U("next"));
 }
 
 // ── get_timeline wire keys ────────────────────────────────────────────────────
 
-TEST(QuoteRequestParamsTest, GetTimeline_WireKeys_Present) {
-    value obj = value::object(true);
-    value symbols = value::array();
-    symbols[0] = value::string(U("TSLA"));
-    obj[P_SYMBOLS] = symbols;
-    obj[U("include_hour_trading")] = value::boolean(true);
-    obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(1700000000000LL));
+TEST_F(QuoteRequestCaptureTest, GetCryptoTimelineSendsV3AndSecType) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_timeline(one_symbol(), false, 1700000000000LL, SecType::CC),
+                 std::runtime_error);
 
-    EXPECT_TRUE(obj.has_field(U("symbols")));
-    EXPECT_TRUE(obj.has_field(U("include_hour_trading")));
-    EXPECT_TRUE(obj.has_field(U("begin_time")));
-    // Wire key must NOT be camelCase
-    EXPECT_FALSE(obj.has_field(U("includeHourTrading")));
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("timeline"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("3.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SEC_TYPE).as_string(), U("CC"));
+    EXPECT_EQ(content.at(P_BEGIN_TIME).as_number().to_int64(), 1700000000000LL);
 }
 
 TEST(QuoteRequestParamsTest, GetTimeline_IncludeHourTrading_DefaultFalse) {
     value obj = value::object(true);
     obj[U("include_hour_trading")] = value::boolean(false);
     EXPECT_FALSE(obj.at(U("include_hour_trading")).as_bool());
+}
+
+TEST_F(QuoteRequestCaptureTest, GetTimelineLegacyOverloadOmitsSecType) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_timeline(one_symbol()), std::runtime_error);
+
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("3.0"));
+    EXPECT_FALSE(biz_content().has_field(P_SEC_TYPE));
 }
 
 // ── get_trade_tick wire keys ──────────────────────────────────────────────────

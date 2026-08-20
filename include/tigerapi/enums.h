@@ -95,7 +95,8 @@ namespace TIGER_API {
         IOPT, // IOPT (Bull/Bear)
         FUT,  // Future
         FOP,  // Future Option
-        CASH  // Cash
+        CASH, // Cash
+        CC    // Cryptocurrency
     };
 
     inline utility::string_t enum_to_str(SecType secType) {
@@ -124,6 +125,9 @@ namespace TIGER_API {
                 break;
             case SecType::CASH:
                 name = U("CASH");
+                break;
+            case SecType::CC:
+                name = U("CC");
                 break;
         }
         return name;

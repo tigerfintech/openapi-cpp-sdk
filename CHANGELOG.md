@@ -1,6 +1,10 @@
 ## 1.3.1 (2026-08-19)
 ### New
+- HTTP K-line and current-timeline requests support cryptocurrency symbols through `SecType::CC`; K-line pagination propagates `sec_type`, and typed `KlineItem` results expose fractional `volume_decimal` parsed from `volumeDecimal`. Existing overloads remain available and omit `sec_type` as before.
 - `get_option_chain` response adds `markPrice`, `preMarkPrice`, `markTimestamp`, `midPrice`, `preMidPrice`, `midTimestamp` fields
+
+### Breaking
+- ABI change: adding `KlineItem::volume_decimal` changes the exported structure layout. Rebuild applications and libraries against the updated SDK. The field is `boost::optional<double>` so a missing or null `volumeDecimal` remains distinct from an explicit `0`; read it with a presence check, for example `if (item.volume_decimal) { double volume = *item.volume_decimal; }`.
 - `TradingSession::OverNight` and overnight-session support for `get_kline`, `get_quote_depth`, and the existing enum overload of `get_trade_tick`
 ### Fixed
 - `get_quote_overnight` now uses its required API version 1.0

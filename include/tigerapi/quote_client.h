@@ -31,20 +31,36 @@ namespace TIGER_API {
         value get_brief(const value &symbols, bool include_hour_trading=false, bool include_ask_bid=false, QuoteRight right=QuoteRight::br);
         value get_stock_detail(const value &symbols, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_timeline(const value &symbols, bool include_hour_trading=false, time_t begin_time=-1);
+        value get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time, SecType sec_type);
         value get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
-                        QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
+                         QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
         value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
-                        QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session);
+                         QuoteRight right, int limit, utility::string_t page_token, SecType sec_type);
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                         QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session);
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                         QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session,
+                         SecType sec_type);
         value get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
-                        utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
+                         utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
         value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
-                        utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session);
+                         utility::string_t right, int limit, utility::string_t page_token, SecType sec_type);
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                         utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session);
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                         utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session,
+                         SecType sec_type);
         vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
                                int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
         vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token, SecType sec_type);
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
                                 int limit, utility::string_t right, utility::string_t page_token,
                                 TradingSession trade_session);
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token,
+                                TradingSession trade_session, SecType sec_type);
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
         value get_trade_tick(const value &symbols, long begin_index=-1,
