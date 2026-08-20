@@ -305,4 +305,31 @@ namespace TIGER_API {
         return stat(path.c_str(), &path_info) == 0 && S_ISDIR(path_info.st_mode);
 #endif
 	}
+
+    utility::string_t Utils::truncate_for_log(const utility::string_t& s, size_t max_bytes) {
+        if (s.size() <= max_bytes) {
+            return s;
+        }
+        size_t cut = max_bytes;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+        // utility::string_t is UTF-16 (wchar_t) on Windows. Avoid splitting a
+        // surrogate pair by not letting the cut land right after a high
+        // surrogate (0xD800-0xDBFF), which would leave a lone low surrogate
+        // (0xDC00-0xDFFF) — or worse, an unpaired high surrogate — at the
+        // boundary.
+        while (cut > 0 && s[cut - 1] >= 0xD800 && s[cut - 1] <= 0xDBFF) {
+            --cut;
+        }
+#else
+        // utility::string_t is UTF-8 (char) on Linux/Mac. Back up over any
+        // UTF-8 continuation bytes (10xxxxxx) so the cut lands on a complete
+        // code point boundary and doesn't emit an invalid sequence.
+        while (cut > 0 && (static_cast<unsigned char>(s[cut]) & 0xC0) == 0x80) {
+            --cut;
+        }
+#endif
+        utility::ostringstream_t oss;
+        oss << s.substr(0, cut) << U(" ...[") << s.size() << U(" chars total]");
+        return oss.str();
+    }
 }

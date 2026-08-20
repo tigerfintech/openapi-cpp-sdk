@@ -46,6 +46,14 @@ namespace TIGER_API {
         static utility::string_t double_to_string(double num, int precision = 1);
 
         static bool is_directory(const utility::string_t& path);
+
+        // Truncate s to at most max_bytes bytes for log output, respecting UTF-8
+        // multi-byte character boundaries to avoid emitting invalid sequences.
+        // Returns the original string when it fits within max_bytes; otherwise
+        // returns a prefix followed by " ...[N chars total]".
+        static const size_t kMaxLogBytes = 500;
+        static utility::string_t truncate_for_log(const utility::string_t& s,
+                                                   size_t max_bytes = kMaxLogBytes);
     };
 }
 #endif //CPPSDK_UTILS_H
