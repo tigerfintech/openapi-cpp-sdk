@@ -179,14 +179,27 @@ notify:webhook:
       # 2. Determine pass/fail.
       #    unit_f is None  → XML missing/corrupt; treat as failed (conservative).
       #    unit_f > 0      → explicit unit failures.
-      #    integration-test has allow_failure: true and must not drive the color.
+      #    integ_f is None → integration-test always runs with `when: always`
+      #                       and `artifacts: when: always`, so a missing/corrupt
+      #                       integ.xml means the job crashed before producing a
+      #                       report (e.g. build failure) rather than "didn't run".
+      #                       Treat it as failed too, same as unit_f is None.
+      #    integ_f > 0     → explicit integration failures. Even though
+      #                       integration-test has allow_failure: true (so it
+      #                       doesn't block the pipeline), its failures still
+      #                       drive this notification's color red — see
+      #                       ac214e2 fix(ci): include integration test
+      #                       failures in red notification.
       #    CI_PIPELINE_STATUS is unreliable in .post stage (reads "running"),
       #    so we rely exclusively on parsed XML counts.
-      if unit_f is None:
+      if unit_f is None or integ_f is None:
           has_failed = True
-          print("Unit JUnit XML unavailable — treating pipeline as failed")
+          if unit_f is None:
+              print("Unit JUnit XML unavailable — treating pipeline as failed")
+          if integ_f is None:
+              print("Integration JUnit XML unavailable — treating pipeline as failed")
       else:
-          has_failed = (unit_f > 0) or (integ_f is not None and integ_f > 0)
+          has_failed = (unit_f > 0) or (integ_f > 0)
 
       # 3. Build Feishu card
       title = "❌ Pipeline failed" if has_failed else "✅ Pipeline passed"
