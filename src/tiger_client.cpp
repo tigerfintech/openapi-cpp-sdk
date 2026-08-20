@@ -148,7 +148,13 @@ namespace TIGER_API {
         try {
             LOG(DEBUG) << U("request:\n") << U("Server: ") << http_client_->base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
-               LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());
+                utility::string_t req_body = Utils::json_format(params.serialize());
+                static const size_t kMaxReqLogBytes = 500;
+                if (req_body.size() > kMaxReqLogBytes) {
+                    LOG(DEBUG) << U("body (truncated): ") << req_body.substr(0, kMaxReqLogBytes) << U(" ...[") << req_body.size() << U(" chars total]");
+                } else {
+                    LOG(DEBUG) << U("body:\n") << req_body;
+                }
             }
             // Wait for headers
             response = http_client_->request(request).get();
@@ -194,9 +200,22 @@ namespace TIGER_API {
             LOG(ERROR) << U("get response error :") << e.what() << endl;
             throw;
         }
-        LOG(DEBUG) << U("response:\n") << result.serialize();
-        // json format
-        LOG(DEBUG) << U("body:\n") << Utils::json_format(result_str);
+        // Truncate large responses in DEBUG logs to prevent CI log overflow
+        // (e.g. get_all_symbols returns thousands of symbols, easily > 4 MB).
+        static const size_t kMaxLogBytes = 500;
+        utility::string_t result_serial = result.serialize();
+        if (result_serial.size() > kMaxLogBytes) {
+            LOG(DEBUG) << U("response (truncated): ") << result_serial.substr(0, kMaxLogBytes) << U(" ...[") << result_serial.size() << U(" chars total]");
+        } else {
+            LOG(DEBUG) << U("response:\n") << result_serial;
+        }
+        // Pretty-printed body — also truncated for the same reason.
+        utility::string_t formatted = Utils::json_format(result_str);
+        if (formatted.size() > kMaxLogBytes) {
+            LOG(DEBUG) << U("body (truncated): ") << formatted.substr(0, kMaxLogBytes) << U(" ...[") << formatted.size() << U(" chars total]");
+        } else {
+            LOG(DEBUG) << U("body:\n") << formatted;
+        }
 
         return result_data;
     }
