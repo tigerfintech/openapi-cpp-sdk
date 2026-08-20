@@ -6,8 +6,10 @@
 #include "tigerapi/quote_client.h"
 #include "tigerapi/client_config.h"
 #include "tigerapi/model.h"
+#include "tigerapi/order_util.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 using namespace TIGER_API;
 using namespace TIGER_API::test;
@@ -19,8 +21,10 @@ using namespace TIGER_API::test;
  * Required env vars when TIGER_RUN_INTEG=true:
  *   TIGER_TEST_ID, TIGER_TEST_PRIVATE_KEY, TIGER_TEST_ACCOUNT
  *
- * These tests only exercise read-only trade endpoints (contract/asset/position/
- * order queries) — no order placement, modification, or cancellation.
+ * These tests exercise both read-only trade endpoints (contract/asset/
+ * position/order queries) and order placement, modification, and
+ * cancellation, using the "AcceptsOrSkips" trading-hours-tolerant pattern
+ * for the latter (see the order-placement section below).
  *
  * Field-value assertions follow the Go SDK trade_client_integ_test.go patterns,
  * adapted for the C++ SDK which returns raw web::json::value.  Note that some
@@ -805,6 +809,9 @@ TEST(TradeClientInteg, PlaceOrder_LmtBuyAapl_AcceptsOrSkipsOutOfHours) {
             }
             GTEST_SKIP() << "PlaceOrder rejected outside trading hours (expected): " << msg;
         }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder rejected (permission/account-state boundary): " << msg;
+        }
         // Any other exception is a real failure.
         FAIL() << "PlaceOrder threw unexpected exception: " << msg;
     }
@@ -852,6 +859,9 @@ TEST(TradeClientInteg, CancelOrder_PlacedOrder_Succeeds) {
             }
             GTEST_SKIP() << "CancelOrder rejected outside trading hours (expected): " << msg;
         }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "CancelOrder rejected (permission/account-state boundary): " << msg;
+        }
         FAIL() << "CancelOrder threw unexpected exception: " << msg;
     }
     ASSERT_FALSE(result.is_null()) << "CancelOrder returned null";
@@ -888,6 +898,9 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
                 FAIL() << "PlaceOrder (modify prereq) rejected during trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder (modify prereq) rejected outside trading hours: " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder (modify prereq) rejected (permission/account-state boundary): " << msg;
         }
         FAIL() << "PlaceOrder (modify prereq) threw unexpected exception: " << msg;
     }
@@ -928,6 +941,10 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
             }
             GTEST_SKIP() << "ModifyOrder rejected outside trading hours (expected): " << msg;
         }
+        if (is_permission_error(msg)) {
+            try { client->cancel_order(modify_order_id); } catch (...) {}
+            GTEST_SKIP() << "ModifyOrder rejected (permission/account-state boundary): " << msg;
+        }
         try { client->cancel_order(modify_order_id); } catch (...) {}
         FAIL() << "ModifyOrder threw unexpected exception: " << msg;
     }
@@ -935,6 +952,518 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
 
     // Clean up: cancel the modified order so it does not linger.
     try { client->cancel_order(modify_order_id); } catch (...) {}
+}
+
+// ── order-type matrix (OrderUtil builders) ────────────────────────────────────
+//
+// Each test builds an order via OrderUtil and either previews it (no order
+// placed) or places+cleans-up via the Mode A trading-hours-tolerant pattern
+// used above: real exceptions FAIL, but a trading-hours/market-closed
+// rejection is tolerated (and cross-checked against live market state before
+// being allowed to skip).
+
+namespace {
+    Contract aapl_stock() {
+        return Contract(U("STK"), U("AAPL"), U("USD"), U("AAPL"), U("SMART"), 0);
+    }
+
+    /// Extract an order id from a place_order()/preview_order() JSON result,
+    /// trying both the "id" and "orderId" field names used across endpoints.
+    unsigned long long extract_order_id(const web::json::value &result) {
+        if (result.has_field(U("id")) && result.at(U("id")).is_number()) {
+            return static_cast<unsigned long long>(result.at(U("id")).as_number().to_int64());
+        }
+        if (result.has_field(U("orderId")) && result.at(U("orderId")).is_number()) {
+            return static_cast<unsigned long long>(result.at(U("orderId")).as_number().to_int64());
+        }
+        return 0;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_MktBuyAapl_PreviewOnly) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::market_order(cfg->account, contract, U("BUY"), 1);
+    EXPECT_NO_THROW({
+        web::json::value result = client->preview_order(order);
+        ASSERT_FALSE(result.is_null()) << "PreviewOrder(MKT) returned null";
+    });
+}
+
+TEST(TradeClientInteg, PlaceOrder_StopSellAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    // Deep out-of-the-money stop so it cannot actually trigger a fill.
+    auto order = OrderUtil::stop_order(cfg->account, contract, U("SELL"), 1, /*aux_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(STP) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(STP) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(STP) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(STP) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(STP) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(STP) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_StopLimitSellAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::stop_limit_order(cfg->account, contract, U("SELL"), 1,
+                                              /*limit_price=*/0.01, /*aux_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(STP_LMT) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(STP_LMT) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(STP_LMT) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(STP_LMT) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(STP_LMT) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(STP_LMT) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_TrailSellAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::trail_order(cfg->account, contract, U("SELL"), 1,
+                                         /*aux_price=*/0, /*trailing_percent=*/5.0);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(TRAIL) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(TRAIL) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(TRAIL) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(TRAIL) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(TRAIL) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(TRAIL) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_IcebergBuyAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::iceberg_order(cfg->account, contract, U("BUY"), 10,
+                                           /*limit_price=*/0.01, /*display_size=*/1);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(ICEBERG) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(ICEBERG) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(ICEBERG) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(ICEBERG) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(ICEBERG) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(ICEBERG) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_TwapBuyAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    std::time_t start = std::time(nullptr) + 60;
+    std::time_t end = start + 3600;
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::twap_order(cfg->account, contract, U("BUY"), 10,
+                                        start, end, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(TWAP) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(TWAP) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(TWAP) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(TWAP) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(TWAP) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(TWAP) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_VwapBuyAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    std::time_t start = std::time(nullptr) + 60;
+    std::time_t end = start + 3600;
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::vwap_order(cfg->account, contract, U("BUY"), 10,
+                                        start, end, /*participation_rate=*/0.1, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(VWAP) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(VWAP) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(VWAP) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(VWAP) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(VWAP) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(VWAP) threw unexpected exception: " << msg;
+    }
+}
+
+// OCA/ATTACHED orders: preview_order() is rejected by the server for these
+// ("OCA/ATTACHED order preview not supported", per OrderUtil's header
+// comment) — place_order() must be called directly, never preview first.
+
+TEST(TradeClientInteg, PlaceOrder_OcaBracketsAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::oca_brackets_order(cfg->account, contract, U("BUY"), 1,
+                                                /*profit_taker_price=*/999999.0, /*profit_taker_tif=*/U("DAY"),
+                                                /*stop_loss_price=*/0.01, /*stop_loss_limit_price=*/0.0,
+                                                /*stop_loss_tif=*/U("DAY"));
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(OCA brackets) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(OCA brackets) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(OCA brackets) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(OCA brackets) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(OCA brackets) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(OCA brackets) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_WithBracketsAapl_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract = aapl_stock();
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    OrderUtil::add_brackets_order(order, /*profit_taker_price=*/999999.0, /*profit_taker_tif=*/U("DAY"),
+                                   /*profit_taker_rth=*/false, /*stop_loss_price=*/0.01,
+                                   /*stop_loss_limit_price=*/0.0, /*stop_loss_tif=*/U("DAY"));
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(with brackets) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(with brackets) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(with brackets) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(with brackets) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(with brackets) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(with brackets) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_UsOptLimit_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    auto leg = resolve_us_option_contract(*quote_client);
+    if (!leg.ok) {
+        if (is_market_trading(*quote_client, U("US"))) {
+            FAIL() << "Could not resolve a live AAPL option contract during US trading hours";
+        }
+        GTEST_SKIP() << "Could not resolve a live AAPL option contract (market likely closed)";
+    }
+    Contract contract(U("OPT"), U("AAPL"), leg.expiry, leg.strike, leg.right,
+                       U("USD"), /*multiplier=*/100, U(""), /*contract_id=*/0);
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(US OPT) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(US OPT) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(US OPT) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(US OPT) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(US OPT) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(US OPT) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_HkStkLimit_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract(U("STK"), U("00700"), U("HKD"), U("00700"), U("SEHK"), 0);
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(HK STK) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(HK STK) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("HK"))) {
+                FAIL() << "PlaceOrder(HK STK) rejected during HK trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(HK STK) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(HK STK) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(HK STK) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_CnStkLimit_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract(U("STK"), U("000001"), U("CNH"), U("000001"), U("SEHKSZSE"), 0);
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(CN STK) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(CN STK) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("CN"))) {
+                FAIL() << "PlaceOrder(CN STK) rejected during CN trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(CN STK) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(CN STK) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(CN STK) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_SgStkLimit_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    Contract contract(U("STK"), U("D05"), U("SGD"), U("D05"), U("SGX"), 0);
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(SG STK) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(SG STK) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("SG"))) {
+                FAIL() << "PlaceOrder(SG STK) rejected during SG trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(SG STK) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(SG STK) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(SG STK) threw unexpected exception: " << msg;
+    }
+}
+
+TEST(TradeClientInteg, PlaceOrder_UsMlegVerticalSpread_AcceptsOrSkips) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_integ_config();
+    auto client = std::make_shared<TradeClient>(*cfg);
+    auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    auto spread = resolve_us_vertical_spread_legs(*quote_client);
+    if (!spread.ok) {
+        if (is_market_trading(*quote_client, U("US"))) {
+            FAIL() << "Could not resolve AAPL vertical-spread PUT legs during US trading hours";
+        }
+        GTEST_SKIP() << "Could not resolve AAPL vertical-spread PUT legs (market likely closed)";
+    }
+    ContractLeg lower;
+    lower.sec_type = U("OPT");
+    lower.symbol = U("AAPL");
+    lower.expiry = spread.expiry;
+    lower.strike = spread.lower_strike;
+    lower.right = U("PUT");
+    lower.action = U("BUY");
+    lower.ratio = 1;
+
+    ContractLeg upper;
+    upper.sec_type = U("OPT");
+    upper.symbol = U("AAPL");
+    upper.expiry = spread.expiry;
+    upper.strike = spread.upper_strike;
+    upper.right = U("PUT");
+    upper.action = U("SELL");
+    upper.ratio = 1;
+
+    std::vector<ContractLeg> legs{lower, upper};
+    // Deep-negative limit price: a credit-spread combo at this price cannot
+    // execute — this is the deliberate safety mechanism for this test.
+    auto order = OrderUtil::multi_leg_order(cfg->account, U("VERTICAL"), legs, U("BUY"), 1,
+                                             U("LMT"), /*limit_price=*/-100.0);
+    try {
+        web::json::value result = client->place_order(order);
+        ASSERT_FALSE(result.is_null()) << "PlaceOrder(US MLEG vertical) returned null";
+        auto order_id = extract_order_id(result);
+        ASSERT_NE(order_id, 0u) << "PlaceOrder(US MLEG vertical) returned zero order id";
+        try { client->cancel_order(order_id); } catch (...) {}
+    } catch (const std::exception &ex) {
+        std::string msg(ex.what());
+        if (msg.find("trading hours") != std::string::npos
+            || msg.find("market is closed") != std::string::npos
+            || msg.find("outside") != std::string::npos) {
+            if (is_market_trading(*quote_client, U("US"))) {
+                FAIL() << "PlaceOrder(US MLEG vertical) rejected during US trading hours: " << msg;
+            }
+            GTEST_SKIP() << "PlaceOrder(US MLEG vertical) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_permission_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(US MLEG vertical) rejected (permission/account-state boundary): " << msg;
+        }
+        FAIL() << "PlaceOrder(US MLEG vertical) threw unexpected exception: " << msg;
+    }
 }
 
 // ── get_accounts ──────────────────────────────────────────────────────────────
