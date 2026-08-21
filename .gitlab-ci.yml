@@ -118,7 +118,11 @@ integration-test:
     # Run with --output-on-failure instead of -V to suppress verbose per-test
     # stdout from passing tests.  Pipe through tail to hard-cap at 3.5 MB so
     # GitLab's 4 MB log limit is never hit even if a single test is chatty.
-    - ctest --test-dir "$BUILD_DIR" -R IntegTests --output-on-failure 2>&1 | tail -c 3670016 || true
+    # set -o pipefail so the job's exit code reflects ctest's real result
+    # instead of tail's (which is always 0) — otherwise this job silently
+    # reports success regardless of how many integration tests fail.
+    - set -o pipefail
+    - ctest --test-dir "$BUILD_DIR" -R IntegTests --output-on-failure 2>&1 | tail -c 3670016
   artifacts:
     when: always
     paths:
