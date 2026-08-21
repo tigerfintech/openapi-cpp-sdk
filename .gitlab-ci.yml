@@ -88,6 +88,9 @@ unit-test:
 integration-test:
   extends: .cpp_base
   stage: integration-test
+  # Serialize per-branch so a concurrent scheduled+manual pipeline can't
+  # both write test-results/integ.xml at once and corrupt each other's output.
+  resource_group: $CI_COMMIT_REF_SLUG
   allow_failure: true
   when: always
   variables:
