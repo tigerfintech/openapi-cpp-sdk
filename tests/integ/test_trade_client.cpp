@@ -1146,11 +1146,15 @@ TEST(TradeClientInteg, PlaceOrder_TwapBuyAapl_AcceptsOrSkips) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<TradeClient>(*cfg);
     auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
-    std::time_t start = std::time(nullptr) + 60;
-    std::time_t end = start + 3600;
+    // start_time/end_time are epoch milliseconds (server-side contract; matches
+    // Python/Java/Rust integ tests) — a plain std::time_t seconds value is
+    // interpreted by the server as year-1970, so end_time always reads as
+    // already expired.
+    long long start_ms = static_cast<long long>(std::time(nullptr)) * 1000 + 60'000;
+    long long end_ms = start_ms + 3600'000;
     Contract contract = aapl_stock();
     auto order = OrderUtil::twap_order(cfg->account, contract, U("BUY"), 10,
-                                        start, end, /*limit_price=*/0.01);
+                                        start_ms, end_ms, /*limit_price=*/0.01);
     try {
         web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(TWAP) returned null";
@@ -1181,11 +1185,12 @@ TEST(TradeClientInteg, PlaceOrder_VwapBuyAapl_AcceptsOrSkips) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<TradeClient>(*cfg);
     auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
-    std::time_t start = std::time(nullptr) + 60;
-    std::time_t end = start + 3600;
+    // start_time/end_time are epoch milliseconds — see PlaceOrder_TwapBuyAapl_AcceptsOrSkips.
+    long long start_ms = static_cast<long long>(std::time(nullptr)) * 1000 + 60'000;
+    long long end_ms = start_ms + 3600'000;
     Contract contract = aapl_stock();
     auto order = OrderUtil::vwap_order(cfg->account, contract, U("BUY"), 10,
-                                        start, end, /*participation_rate=*/0.1, /*limit_price=*/0.01);
+                                        start_ms, end_ms, /*participation_rate=*/0.1, /*limit_price=*/0.01);
     try {
         web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(VWAP) returned null";
