@@ -52,7 +52,7 @@ web::json::value extract_array(const web::json::value &v) {
 web::json::value extract_corporate_action_array(const web::json::value &v, const utility::string_t &symbol) {
     if (v.is_null() || !v.is_object() || !v.has_field(symbol)) return web::json::value::array();
     const auto &arr = v.at(symbol);
-    return arr.is_null() ? web::json::value::array() : arr;
+    return arr.is_array() ? arr : web::json::value::array();
 }
 
 /// Check that a JSON field exists, is a non-null string, and is non-empty.

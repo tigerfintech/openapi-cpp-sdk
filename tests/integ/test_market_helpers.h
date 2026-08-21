@@ -465,7 +465,11 @@ inline ResolvedOptionLeg resolve_us_option_contract(QuoteClient &qc) {
         const auto &items = row_wrapper.at(U("items"));
         if (!items.is_array() || items.size() == 0) continue;
         const auto &row = items.at(items.size() / 2);
-        if (!row.has_field(U("strike")) || !row.at(U("strike")).is_double()) continue;
+        // is_number() (not is_double()) — a whole-number strike (e.g. 100)
+        // may serialize as a JSON integer, which is_double() rejects,
+        // silently skipping a valid row and masking real parse failures
+        // as an out-of-hours/unresolvable skip.
+        if (!row.has_field(U("strike")) || !row.at(U("strike")).is_number()) continue;
         double strike = row.at(U("strike")).as_double();
         if (strike <= 0.0) continue;
 
@@ -544,7 +548,8 @@ inline ResolvedVerticalSpreadLegs resolve_us_vertical_spread_legs(QuoteClient &q
     for (size_t i = 0; i < items.size(); ++i) {
         const auto &row = items.at(i);
         if (!row.has_field(U("put")) || !row.at(U("put")).is_object()) continue;
-        if (!row.has_field(U("strike")) || !row.at(U("strike")).is_double()) continue;
+        // is_number(), not is_double() — see resolve_us_option_contract() above.
+        if (!row.has_field(U("strike")) || !row.at(U("strike")).is_number()) continue;
         double strike = row.at(U("strike")).as_double();
         if (strike > 0.0) put_strikes.push_back(strike);
     }
