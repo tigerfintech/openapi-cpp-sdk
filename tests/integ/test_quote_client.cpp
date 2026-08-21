@@ -44,6 +44,17 @@ web::json::value extract_array(const web::json::value &v) {
     return web::json::value::array();
 }
 
+/// get_corporate_action (and its symbol_change/delisting/ipo/split/dividend
+/// wrappers) returns data keyed by symbol, e.g. {"AAPL": [...]},  not a raw
+/// array or an "items" wrapper — extract_array() falls through to empty for
+/// this shape, which coincidentally matched when the queried range had no
+/// events. Look up the requested symbol's entry directly instead.
+web::json::value extract_corporate_action_array(const web::json::value &v, const utility::string_t &symbol) {
+    if (v.is_null() || !v.is_object() || !v.has_field(symbol)) return web::json::value::array();
+    const auto &arr = v.at(symbol);
+    return arr.is_null() ? web::json::value::array() : arr;
+}
+
 /// Check that a JSON field exists, is a non-null string, and is non-empty.
 /// Absent fields are treated as "not present" (returns true = OK to skip).
 /// Null fields, non-string types, or empty strings return false (assertion fails).
@@ -1795,7 +1806,7 @@ TEST(QuoteClientInteg, GetCorporateSymbolChange_ReturnsValidFields) {
         Utils::date_string_to_timestamp(U("2024-01-01")),
         Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
-    auto arr = extract_array(result);
+    auto arr = extract_corporate_action_array(result, U("AAPL"));
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
@@ -1815,7 +1826,7 @@ TEST(QuoteClientInteg, GetCorporateDelisting_ReturnsValidFields) {
         Utils::date_string_to_timestamp(U("2024-01-01")),
         Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
-    auto arr = extract_array(result);
+    auto arr = extract_corporate_action_array(result, U("AAPL"));
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
@@ -1835,7 +1846,7 @@ TEST(QuoteClientInteg, GetCorporateIpo_ReturnsValidFields) {
         Utils::date_string_to_timestamp(U("2024-01-01")),
         Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
-    auto arr = extract_array(result);
+    auto arr = extract_corporate_action_array(result, U("AAPL"));
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &entry = arr.at(i);
         ASSERT_TRUE(entry.is_object());
@@ -1855,7 +1866,7 @@ TEST(QuoteClientInteg, GetCorporateSplit_ReturnsValidFields) {
         Utils::date_string_to_timestamp(U("2020-01-01")),
         Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
-    auto arr = extract_array(result);
+    auto arr = extract_corporate_action_array(result, U("AAPL"));
     // AAPL had a 4-for-1 split in August 2020; the range 2020-2025 must return
     // at least one entry.
     ASSERT_GT(arr.size(), 0u) << "GetCorporateSplit returned empty for AAPL over 2020-2025";
@@ -1880,7 +1891,7 @@ TEST(QuoteClientInteg, GetCorporateDividend_ReturnsValidFields) {
         Utils::date_string_to_timestamp(U("2024-01-01")),
         Utils::date_string_to_timestamp(U("2025-12-31")));
     ASSERT_FALSE(result.is_null());
-    auto arr = extract_array(result);
+    auto arr = extract_corporate_action_array(result, U("AAPL"));
     // AAPL pays quarterly dividends; the 2024-2025 range must return at least
     // one entry.
     ASSERT_GT(arr.size(), 0u) << "GetCorporateDividend returned empty for AAPL over 2024-2025";

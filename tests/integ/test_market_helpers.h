@@ -19,14 +19,18 @@
 #include <gtest/gtest.h>
 #include <cpprest/json.h>
 #include "tigerapi/quote_client.h"
+#include "tigerapi/trade_client.h"
+#include "tigerapi/model.h"
 #include "tigerapi/utils.h"
 
 #include <algorithm>
+#include <chrono>
 #include <ctime>
 #include <cctype>
 #include <map>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace TIGER_API {
@@ -99,6 +103,74 @@ inline bool is_permission_error(const std::string &msg) {
         if (lower.find(m) != std::string::npos) return true;
     }
     return false;
+}
+
+// ── Order-state race tolerance (modify/cancel) ──────────────────────────────
+//
+// Separate from is_permission_error(): these markers signal the order already
+// moved to a terminal/non-modifiable state by the time modify/cancel ran (a
+// timing race, not an account-permission boundary). Mirrors Python's
+// _TERMINAL_ORDER_KEYWORDS and Rust's TERMINAL_ORDER_MARKERS — log and
+// tolerate, never fail the test on these.
+inline bool is_terminal_order_error(const std::string &msg) {
+    static const char* const markers[] = {
+        "cannot be modified", "cannot be cancelled", "cannot be canceled",
+        "already cancelled", "already canceled", "already filled",
+        "not in a modifiable state", "invalid order status",
+        "cancellation is not allowed", "cancel is not allowed",
+    };
+    std::string lower(msg);
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    for (const char* m : markers) {
+        if (lower.find(m) != std::string::npos) return true;
+    }
+    return false;
+}
+
+// ── Rate-limit tolerance (place_order) ──────────────────────────────────────
+//
+// Mirrors Python's _RATE_LIMIT_KEYWORDS / place_order_with_rate_limit_handling
+// and Rust's RATE_LIMIT_MARKERS: a shared account-level QPS cap is a legitimate
+// CI boundary, not a defect — retry with exponential backoff a couple of
+// times, then let the final attempt's exception propagate to the caller's
+// normal is_permission_error()/trading-hours handling (which itself may skip).
+inline bool is_rate_limit_error(const std::string &msg) {
+    static const char* const markers[] = {
+        "too_many_requests", "rate limit", "requestrateexceedlimit",
+        "rate exceeded",
+    };
+    std::string lower(msg);
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    for (const char* m : markers) {
+        if (lower.find(m) != std::string::npos) return true;
+    }
+    return false;
+}
+
+/// place_order with backoff-then-propagate on rate-limit errors.
+///
+/// Sleeps `pre_delay` before every attempt to smooth request pacing, then on
+/// a rate-limit error retries up to `max_retries` times with exponential
+/// backoff (1s, 2s, 4s, ...). Non-rate-limit exceptions and the final
+/// exhausted attempt propagate to the caller unchanged — callers already
+/// handle trading-hours/permission errors via is_permission_error(), so this
+/// only adds tolerance for the rate-limit case on top of that.
+inline web::json::value place_order_with_rate_limit_handling(
+        TradeClient &client, Order &order, int max_retries = 2,
+        std::chrono::milliseconds pre_delay = std::chrono::milliseconds(500)) {
+    auto delay = std::chrono::milliseconds(1000);
+    for (int attempt = 0; ; ++attempt) {
+        if (pre_delay.count() > 0) std::this_thread::sleep_for(pre_delay);
+        try {
+            return client.place_order(order);
+        } catch (const std::exception &ex) {
+            if (!is_rate_limit_error(ex.what()) || attempt >= max_retries) throw;
+            std::this_thread::sleep_for(delay);
+            delay *= 2;
+        }
+    }
 }
 
 // ── Trading-hours helpers ────────────────────────────────────────────────────

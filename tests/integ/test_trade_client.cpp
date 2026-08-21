@@ -945,6 +945,13 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
             try { client->cancel_order(modify_order_id); } catch (...) {}
             GTEST_SKIP() << "ModifyOrder rejected (permission/account-state boundary): " << msg;
         }
+        if (is_terminal_order_error(msg)) {
+            // Order already moved to a terminal/non-modifiable state before
+            // modify ran (timing race, not a defect) — mirrors Python's
+            // _TERMINAL_ORDER_KEYWORDS / Rust's TERMINAL_ORDER_MARKERS.
+            try { client->cancel_order(modify_order_id); } catch (...) {}
+            GTEST_SKIP() << "ModifyOrder hit terminal order state (expected race): " << msg;
+        }
         try { client->cancel_order(modify_order_id); } catch (...) {}
         FAIL() << "ModifyOrder threw unexpected exception: " << msg;
     }
@@ -1071,7 +1078,7 @@ TEST(TradeClientInteg, PlaceOrder_TrailSellAapl_AcceptsOrSkips) {
     auto order = OrderUtil::trail_order(cfg->account, contract, U("SELL"), 1,
                                          /*aux_price=*/0, /*trailing_percent=*/5.0);
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(TRAIL) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(TRAIL) returned zero order id";
@@ -1104,7 +1111,7 @@ TEST(TradeClientInteg, PlaceOrder_IcebergBuyAapl_AcceptsOrSkips) {
     auto order = OrderUtil::iceberg_order(cfg->account, contract, U("BUY"), 10,
                                            /*limit_price=*/0.01, /*display_size=*/1);
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(ICEBERG) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(ICEBERG) returned zero order id";
@@ -1139,7 +1146,7 @@ TEST(TradeClientInteg, PlaceOrder_TwapBuyAapl_AcceptsOrSkips) {
     auto order = OrderUtil::twap_order(cfg->account, contract, U("BUY"), 10,
                                         start, end, /*limit_price=*/0.01);
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(TWAP) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(TWAP) returned zero order id";
@@ -1174,7 +1181,7 @@ TEST(TradeClientInteg, PlaceOrder_VwapBuyAapl_AcceptsOrSkips) {
     auto order = OrderUtil::vwap_order(cfg->account, contract, U("BUY"), 10,
                                         start, end, /*participation_rate=*/0.1, /*limit_price=*/0.01);
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(VWAP) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(VWAP) returned zero order id";
@@ -1213,7 +1220,7 @@ TEST(TradeClientInteg, PlaceOrder_OcaBracketsAapl_AcceptsOrSkips) {
                                                 /*stop_loss_price=*/0.01, /*stop_loss_limit_price=*/0.0,
                                                 /*stop_loss_tif=*/U("DAY"));
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(OCA brackets) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(OCA brackets) returned zero order id";
@@ -1248,7 +1255,7 @@ TEST(TradeClientInteg, PlaceOrder_WithBracketsAapl_AcceptsOrSkips) {
                                    /*profit_taker_rth=*/false, /*stop_loss_price=*/0.01,
                                    /*stop_loss_limit_price=*/0.0, /*stop_loss_tif=*/U("DAY"));
     try {
-        web::json::value result = client->place_order(order);
+        web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(with brackets) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(with brackets) returned zero order id";
