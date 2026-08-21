@@ -1108,8 +1108,14 @@ TEST(TradeClientInteg, PlaceOrder_IcebergBuyAapl_AcceptsOrSkips) {
     auto client = std::make_shared<TradeClient>(*cfg);
     auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
     Contract contract = aapl_stock();
+    // The server now requires min_display_size on ICEBERG orders (rejects with
+    // "ICEBERG order is missing the minDisplaySize parameter" otherwise) — use
+    // the full overload, mirroring Python/Rust's integ tests which always set
+    // both display_size and min_display_size.
     auto order = OrderUtil::iceberg_order(cfg->account, contract, U("BUY"), 10,
-                                           /*limit_price=*/0.01, /*display_size=*/1);
+                                           /*limit_price=*/0.01, /*display_size=*/2,
+                                           /*min_display_size=*/1, /*check_intervals=*/0,
+                                           /*price_type=*/U(""), /*start_time=*/0, /*end_time=*/0);
     try {
         web::json::value result = place_order_with_rate_limit_handling(*client, order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(ICEBERG) returned null";
