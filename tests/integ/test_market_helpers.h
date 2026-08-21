@@ -82,6 +82,11 @@ inline bool is_permission_error(const std::string &msg) {
         "at non-trading hour",
         "orders cannot be placed at this moment",
         "auction order is not allowed at this moment",
+        // TWAP/VWAP start_time must fall within the current regular session
+        // (e.g. "needs to be between 2026-08-21 09:30:00 and 16:00:00") —
+        // a trading-hours boundary, not a code defect. Matches Rust's
+        // PERMISSION_ERROR_MARKERS entry of the same name.
+        "time range for the order",
         "does not support stock long",
         "does not support stock short",
         "cash order by market order",
