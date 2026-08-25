@@ -69,7 +69,8 @@ namespace TIGER_API {
     enum class TradingSession {
         PreMarket,  // PreMarket
         Regular,    // Regular
-        AfterHours  // AfterHours
+        AfterHours, // AfterHours
+        OverNight   // OverNight
     };
 
     inline utility::string_t enum_to_str(TradingSession session) {
@@ -80,6 +81,8 @@ namespace TIGER_API {
                 return U("Regular");
             case TradingSession::AfterHours:
                 return U("AfterHours");
+            case TradingSession::OverNight:
+                return U("OverNight");
         }
         return U("");
     }
@@ -92,7 +95,8 @@ namespace TIGER_API {
         IOPT, // IOPT (Bull/Bear)
         FUT,  // Future
         FOP,  // Future Option
-        CASH  // Cash
+        CASH, // Cash
+        CC    // Cryptocurrency
     };
 
     inline utility::string_t enum_to_str(SecType secType) {
@@ -121,6 +125,9 @@ namespace TIGER_API {
                 break;
             case SecType::CASH:
                 name = U("CASH");
+                break;
+            case SecType::CC:
+                name = U("CC");
                 break;
         }
         return name;

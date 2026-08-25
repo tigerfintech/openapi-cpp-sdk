@@ -8,6 +8,7 @@
 #include <typeinfo>
 //#include <any>
 #include <string>
+#include <boost/optional.hpp>
 #include "cpprest/json.h"
 #include "cpprest/details/basic_types.h"
 #include "win32.h"
@@ -672,6 +673,7 @@ namespace TIGER_API {
         double close = 0;
         time_t time;
         long long volume = 0;
+        boost::optional<double> volume_decimal;
         time_t last_time;
         long long open_interest = 0;
         double settlement = 0;
@@ -697,6 +699,10 @@ namespace TIGER_API {
             }
             if (j.has_field(U("volume"))) {
                 volume = j.at(U("volume")).as_number().to_int64();
+            }
+            volume_decimal = boost::none;
+            if (j.has_field(U("volumeDecimal")) && !j.at(U("volumeDecimal")).is_null()) {
+                volume_decimal = j.at(U("volumeDecimal")).as_double();
             }
             if (j.has_field(U("settlement"))) {
                 settlement = j.at(U("settlement")).as_double();

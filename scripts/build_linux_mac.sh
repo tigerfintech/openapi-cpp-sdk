@@ -9,10 +9,43 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 OS_NAME="$(uname -s)"
 
+# Detect CI environment (GitLab CI sets CI_PIPELINE_ID).
+# In CI mode the build script avoids sudo and uses project-relative prefix paths
+# so that no tty/askpass is required.
+CI_MODE="${CI_MODE:-0}"
+if [[ -n "${CI_PIPELINE_ID:-}" ]]; then
+  CI_MODE=1
+fi
+
 log() { printf "\033[1;32m[+]\033[0m %s\n" "$*"; }
 warn() { printf "\033[1;33m[!]\033[0m %s\n" "$*"; }
 err() { printf "\033[1;31m[x]\033[0m %s\n" "$*" 1>&2; }
 fail() { err "$*"; exit 1; }
+
+# verify_download <file> <dep-name-version>
+# Checks SHA256 of <file> against scripts/dep-checksums.txt.
+# Fails hard if checksum mismatches or is not listed.
+verify_download() {
+  local file="$1" dep="$2"
+  local checksums_file="${SCRIPT_DIR}/dep-checksums.txt"
+  if [[ ! -f "$checksums_file" ]]; then
+    fail "dep-checksums.txt not found — cannot verify integrity of ${dep}"
+  fi
+  local expected
+  # Use awk for exact field-1 match: avoids grep regex metacharacters in
+  # version strings (dots) and prevents prefix collisions (e.g. protobuf-v5.28.3
+  # vs protobuf-v5.28.31).
+  expected=$(awk -v dep="${dep}" '$1 == dep {print $2}' "$checksums_file")
+  if [[ -z "$expected" ]]; then
+    fail "No checksum entry for '${dep}' in dep-checksums.txt — refusing to use unverified tarball"
+  fi
+  local actual
+  actual=$(sha256sum "$file" | awk '{print $1}')
+  if [[ "$actual" != "$expected" ]]; then
+    fail "SHA256 mismatch for ${dep}: expected ${expected}, got ${actual}"
+  fi
+  log "Checksum OK: ${dep}"
+}
 
 require_cmd() {
   local cmd="$1"
@@ -90,15 +123,24 @@ DEPS_DIR="${DEPS_DIR:-${PROJECT_ROOT}/.deps}"; mkdir -p "$DEPS_DIR"
 NUM_JOBS="${NUM_JOBS:-$(cpu_cores)}"
 BOOST_VERSION="${BOOST_VERSION:-1_86_0}"
 BOOST_DOTTED="${BOOST_VERSION//_/.}"
-BOOST_TARBALL="boost-${BOOST_DOTTED}-b2-nodocs.tar.gz"
-BOOST_URL="https://github.com/boostorg/boost/releases/download/boost-${BOOST_DOTTED}/${BOOST_TARBALL}"
-LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
+BOOST_TARBALL="boost_${BOOST_VERSION}.tar.gz"
+BOOST_URL="https://archives.boost.org/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+if [[ "$CI_MODE" == "1" ]]; then
+  LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-${PROJECT_ROOT}/.deps/opt}"
+else
+  LOCAL_OPT_PREFIX="${LOCAL_OPT_PREFIX:-/usr/local/opt}"
+fi
+mkdir -p "$LOCAL_OPT_PREFIX"
 BOOST_ROOT="${BOOST_ROOT:-${LOCAL_OPT_PREFIX}/boost_${BOOST_VERSION}}"
+CPPREST_VERSION="${CPPREST_VERSION:-v2.10.18}"
 CPPREST_PREFIX="${CPPREST_PREFIX:-${LOCAL_OPT_PREFIX}/cpprestsdk}"
 ABSEIL_VERSION="${ABSEIL_VERSION:-20240722.0}"
 ABSL_PREFIX="${ABSL_PREFIX:-${LOCAL_OPT_PREFIX}/abseil-${ABSEIL_VERSION}}"
 PROTOBUF_VERSION="${PROTOBUF_VERSION:-v5.28.3}"
 PROTOBUF_PREFIX="${PROTOBUF_PREFIX:-${LOCAL_OPT_PREFIX}/protobuf-${PROTOBUF_VERSION}}"
+GTEST_VERSION="${GTEST_VERSION:-v1.14.0}"
+BOOST_MIN_VERSION="${BOOST_MIN_VERSION:-1.86}"
+GTEST_PREFIX="${GTEST_PREFIX:-${LOCAL_OPT_PREFIX}/googletest-${GTEST_VERSION}}"
 SDK_INSTALL_PREFIX="${SDK_INSTALL_PREFIX:-${INSTALL_PREFIX}}"
 SDK_OUTPUT_PREFIX="${INSTALL_PREFIX}"
 SDK_INCLUDE_PREFIX="${SDK_INCLUDE_PREFIX:-${SDK_INSTALL_PREFIX}}"
@@ -112,13 +154,13 @@ ensure_prefix_writable() {
     if [[ -w "$prefix" ]]; then
       return 0
     fi
-    if command -v sudo >/dev/null 2>&1; then
+    if [[ "$CI_MODE" != "1" ]] && command -v sudo >/dev/null 2>&1; then
       if sudo mkdir -p "$prefix" 2>/dev/null; then
         SUDO_INSTALL="sudo"
         return 0
       fi
     fi
-    warn "No write permission for $prefix and sudo unavailable/failed."
+    warn "No write permission for $prefix${CI_MODE:+ (CI mode: sudo disabled)}."
     return 1
   else
     local parent
@@ -127,13 +169,13 @@ ensure_prefix_writable() {
       mkdir -p "$prefix"
       return 0
     fi
-    if command -v sudo >/dev/null 2>&1; then
+    if [[ "$CI_MODE" != "1" ]] && command -v sudo >/dev/null 2>&1; then
       if sudo mkdir -p "$prefix" 2>/dev/null; then
         SUDO_INSTALL="sudo"
         return 0
       fi
     fi
-    warn "Cannot create $prefix (no permission). Try running script with sudo or set SDK_INSTALL_PREFIX to a writable location."
+    warn "Cannot create $prefix (no permission)${CI_MODE:+ (CI mode: sudo disabled)}. Set SDK_INSTALL_PREFIX to a writable location."
     return 1
   fi
 }
@@ -157,7 +199,7 @@ case "$SDK_LIBRARY_TYPE" in
     ;;
 esac
 
-export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX ABSL_PREFIX PROTOBUF_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
+export BUILD_TYPE BOOST_ROOT CPPREST_PREFIX ABSL_PREFIX PROTOBUF_PREFIX GTEST_PREFIX SDK_INSTALL_PREFIX SDK_INCLUDE_PREFIX
 
 find_tiger_library() {
   local sdk_root="$1"
@@ -180,6 +222,19 @@ find_tiger_library() {
 ensure_prereqs() {
   local base=(git cmake tar)
   if [[ "$OS_NAME" == "Linux" ]]; then
+    # In CI mode the runner has no sudo (no tty / no askpass).
+    # Assume base build tools are pre-installed; just verify they exist.
+    if [[ "$CI_MODE" == "1" ]]; then
+      log "CI mode: skipping system package installation (no sudo)."
+      local missing=()
+      for cmd in git cmake tar wget gcc g++ make; do
+        command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+      done
+      if [[ ${#missing[@]} -gt 0 ]]; then
+        fail "Missing commands in CI: ${missing[*]}. Pre-install them on the runner or in before_script."
+      fi
+      return
+    fi
     local sudo_prefix=(sudo)
     if ! command -v sudo >/dev/null 2>&1; then
       warn "sudo not detected, attempting package manager without it (requires root shell)."
@@ -249,7 +304,10 @@ detect_openssl() {
   log "OpenSSL detected at ${OPENSSL_ROOT_DIR}"
 }
 
-## Check if a system/package-manager Boost meets our version window (>= 1.86, < 1.90).
+## Check if a system/package-manager Boost meets our minimum (>= 1.74).
+## The project's CMakeLists.txt sets BOOST_MIN_VERSION=1.74, and cpprestsdk is
+## always built from source against the same BOOST_ROOT, so any version >= 1.74
+## is ABI-consistent end-to-end.
 ## Returns 0 and sets BOOST_ROOT if acceptable, 1 otherwise.
 _check_system_boost() {
   local include_dir="$1"
@@ -259,13 +317,11 @@ _check_system_boost() {
   [[ -n "$ver_num" ]] || return 1
   local major=$(( ver_num / 100000 ))
   local minor=$(( (ver_num / 100) % 1000 ))
-  # Require >= 1.86. cpprestsdk is always built from source against the same BOOST_ROOT,
-  # so any version >= 1.86 is ABI-consistent end-to-end.
-  if (( major > 1 || (major == 1 && minor >= 86) )); then
+  if (( major > 1 || (major == 1 && minor >= 74) )); then
     log "Found compatible system Boost ${major}.${minor} at ${include_dir%/include}"
     return 0
   fi
-  warn "System Boost ${major}.${minor} < 1.86; will build 1.86 from source."
+  warn "System Boost ${major}.${minor} < 1.74; will build from source."
   return 1
 }
 
@@ -298,10 +354,25 @@ build_boost() {
   local src_dir="${CACHE_DIR}/boost-${BOOST_DOTTED}"
   if [[ ! -d "$src_dir" ]]; then
     if [[ ! -f "${CACHE_DIR}/${BOOST_TARBALL}" ]]; then
-      wget -O "${CACHE_DIR}/${BOOST_TARBALL}" "$BOOST_URL" || {
+      # Try multiple mirrors — archives.boost.org is frequently slow/unreliable.
+      local boost_mirrors=(
+        "https://archives.boost.org/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+        "https://sourceforge.net/projects/boost/files/boost/${BOOST_DOTTED}/${BOOST_TARBALL}/download"
+        "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_DOTTED}/source/${BOOST_TARBALL}"
+      )
+      local downloaded=0
+      for url in "${boost_mirrors[@]}"; do
+        log "Trying Boost download from ${url}"
+        if wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/${BOOST_TARBALL}" "$url" 2>/dev/null; then
+          downloaded=1
+          break
+        fi
+        warn "Download failed from ${url}, trying next mirror..."
+      done
+      if [[ "$downloaded" -eq 0 ]]; then
         rm -f "${CACHE_DIR}/${BOOST_TARBALL}"
-        fail "Failed to download Boost from ${BOOST_URL}"
-      }
+        fail "Failed to download Boost from all mirrors"
+      fi
     fi
     tar -C "$CACHE_DIR" -xzf "${CACHE_DIR}/${BOOST_TARBALL}"
     # Verify the expected directory was produced by the tarball.
@@ -342,11 +413,16 @@ build_cpprestsdk() {
     return
   fi
   local repo="${DEPS_DIR}/cpprestsdk"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/microsoft/cpprestsdk.git "$repo"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading cpprestsdk ${CPPREST_VERSION} tarball..."
+    # Fixed tag instead of refs/heads/master — reproducible builds
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/cpprestsdk.tar.gz" \
+      "https://github.com/microsoft/cpprestsdk/archive/refs/tags/${CPPREST_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/cpprestsdk.tar.gz" "cpprestsdk-${CPPREST_VERSION}"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/cpprestsdk.tar.gz" --strip-components=1
   fi
   pushd "$repo" >/dev/null
-  git submodule update --init
   local cmake_cxx_flags="-w"
   [[ "$OS_NAME" == "Darwin" ]] && cmake_cxx_flags="-Wno-error=null-pointer-subtraction -w"
   cmake -S . -B build \
@@ -383,12 +459,15 @@ build_abseil() {
     return
   fi
   local repo="${DEPS_DIR}/abseil-cpp"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/abseil/abseil-cpp.git "$repo"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading abseil ${ABSEIL_VERSION} tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/abseil.tar.gz" \
+      "https://github.com/abseil/abseil-cpp/archive/refs/tags/${ABSEIL_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/abseil.tar.gz" "abseil-${ABSEIL_VERSION}"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/abseil.tar.gz" --strip-components=1
   fi
   pushd "$repo" >/dev/null
-  git fetch --tags
-  git checkout "$ABSEIL_VERSION"
   rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
@@ -411,13 +490,21 @@ build_protobuf() {
     return
   fi
   [[ -n "${PROTOBUF_VERSION:-}" ]] || fail "PROTOBUF_VERSION is not set; cannot build protobuf from source."
-  local repo="${DEPS_DIR}/protobuf"
-  if [[ ! -d "$repo/.git" ]]; then
-    git clone https://github.com/protocolbuffers/protobuf "$repo"
+
+  # Download release tarball instead of git clone (GitHub clone unreliable from domestic CI)
+  local pb_ver_no_v="${PROTOBUF_VERSION#v}"  # strip 'v' prefix for filename
+  local pb_tarball="protobuf-${pb_ver_no_v}.tar.gz"
+  local pb_src="${DEPS_DIR}/protobuf-${PROTOBUF_VERSION}"
+  if [[ ! -d "$pb_src" ]]; then
+    log "Downloading protobuf ${PROTOBUF_VERSION} tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=5 -O "${CACHE_DIR}/${pb_tarball}" \
+      "https://github.com/protocolbuffers/protobuf/archive/refs/tags/${PROTOBUF_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/${pb_tarball}" "protobuf-${PROTOBUF_VERSION}"
+    mkdir -p "$pb_src"
+    tar -C "$pb_src" -xzf "${CACHE_DIR}/${pb_tarball}" --strip-components=1
   fi
-  pushd "$repo" >/dev/null
-  git fetch --tags
-  git checkout "$PROTOBUF_VERSION"
+
+  pushd "$pb_src" >/dev/null
   rm -rf cmake_build
   cmake -S . -B cmake_build \
     -DCMAKE_BUILD_TYPE=Release \
@@ -432,6 +519,32 @@ build_protobuf() {
   cmake --build cmake_build -- -j "$NUM_JOBS"
   cmake --install cmake_build
   touch "$abseil_stamp"
+  popd >/dev/null
+}
+
+build_gtest() {
+  if [[ -f "${GTEST_PREFIX}/lib/cmake/GTest/GTestConfig.cmake" ]]; then
+    log "GoogleTest already installed at ${GTEST_PREFIX}"
+    return
+  fi
+  local repo="${DEPS_DIR}/googletest"
+  if [[ ! -d "$repo" ]]; then
+    log "Downloading googletest ${GTEST_VERSION} tarball..."
+    wget --retry-connrefused --waitretry=5 --tries=3 -O "${CACHE_DIR}/googletest.tar.gz" \
+      "https://github.com/google/googletest/archive/refs/tags/${GTEST_VERSION}.tar.gz"
+    verify_download "${CACHE_DIR}/googletest.tar.gz" "googletest-${GTEST_VERSION}"
+    mkdir -p "$repo"
+    tar -C "$repo" -xzf "${CACHE_DIR}/googletest.tar.gz" --strip-components=1
+  fi
+  pushd "$repo" >/dev/null
+  rm -rf cmake_build
+  cmake -S . -B cmake_build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$GTEST_PREFIX" \
+    -DBUILD_GMOCK=ON \
+    -DBUILD_SHARED_LIBS=OFF
+  cmake --build cmake_build -- -j "$NUM_JOBS"
+  cmake --install cmake_build
   popd >/dev/null
 }
 
@@ -520,6 +633,8 @@ build_sdk() {
     local openssl_ssl="${OPENSSL_SSL_LIBRARY:-${openssl_root}/lib/libssl.${lib_ext}}"
     # On some Linux distros OpenSSL libs are under lib64.
     if [[ "$OS_NAME" == "Linux" ]]; then
+      [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib/x86_64-linux-gnu/libcrypto.${lib_ext}"
+      [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib/x86_64-linux-gnu/libssl.${lib_ext}"
       [[ -f "$openssl_crypto" ]] || openssl_crypto="${openssl_root}/lib64/libcrypto.${lib_ext}"
       [[ -f "$openssl_ssl" ]]   || openssl_ssl="${openssl_root}/lib64/libssl.${lib_ext}"
     fi
@@ -527,6 +642,7 @@ build_sdk() {
       -DCMAKE_BUILD_TYPE="$cfg" \
       -DCMAKE_INSTALL_PREFIX="$install_dir" \
       -DBOOST_ROOT="$BOOST_ROOT" \
+      -DBOOST_MIN_VERSION="$BOOST_MIN_VERSION" \
       -Dprotobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_ROOT="${PROTOBUF_PREFIX}" \
       -DProtobuf_DIR="${protobuf_cmake_dir}" \
@@ -679,8 +795,9 @@ main() {
       build_cpprestsdk
       build_abseil
       build_protobuf
+      build_gtest
     else
-      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX are set."
+      warn "Skipping dependency build because SKIP_DEPS=1. Ensure BOOST_ROOT, CPPREST_PREFIX, ABSL_PREFIX, PROTOBUF_PREFIX, GTEST_PREFIX are set."
     fi
     regenerate_protos
     build_sdk
