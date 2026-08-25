@@ -133,13 +133,18 @@ inline bool is_terminal_order_error(const std::string &msg) {
     return false;
 }
 
-// ── Rate-limit tolerance (place_order) ──────────────────────────────────────
+// ── Rate-limit tolerance ────────────────────────────────────────────────────
 //
 // Mirrors Python's _RATE_LIMIT_KEYWORDS / place_order_with_rate_limit_handling
 // and Rust's RATE_LIMIT_MARKERS: a shared account-level QPS cap is a legitimate
 // CI boundary, not a defect — retry with exponential backoff a couple of
-// times, then let the final attempt's exception propagate to the caller's
-// normal is_permission_error()/trading-hours handling (which itself may skip).
+// times, then let the final attempt's exception propagate.
+//
+// The cap is account-level, so it can land on cancel_order / modify_order just
+// as readily as on place_order. Every catch site therefore has to test this
+// predicate itself: a rate-limit message matches neither is_permission_error()
+// nor the trading-hours markers, so without an explicit guard it falls through
+// to FAIL().
 inline bool is_rate_limit_error(const std::string &msg) {
     static const char* const markers[] = {
         "too_many_requests", "rate limit", "requestrateexceedlimit",
@@ -159,9 +164,9 @@ inline bool is_rate_limit_error(const std::string &msg) {
 /// Sleeps `pre_delay` before every attempt to smooth request pacing, then on
 /// a rate-limit error retries up to `max_retries` times with exponential
 /// backoff (1s, 2s, 4s, ...). Non-rate-limit exceptions and the final
-/// exhausted attempt propagate to the caller unchanged — callers already
-/// handle trading-hours/permission errors via is_permission_error(), so this
-/// only adds tolerance for the rate-limit case on top of that.
+/// exhausted attempt propagate unchanged; the caller's catch block is
+/// responsible for turning a surviving rate limit into a skip via
+/// is_rate_limit_error().
 inline web::json::value place_order_with_rate_limit_handling(
         TradeClient &client, Order &order, int max_retries = 2,
         std::chrono::milliseconds pre_delay = std::chrono::milliseconds(500)) {

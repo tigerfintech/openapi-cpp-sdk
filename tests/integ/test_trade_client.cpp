@@ -809,6 +809,9 @@ TEST(TradeClientInteg, PlaceOrder_LmtBuyAapl_AcceptsOrSkipsOutOfHours) {
             }
             GTEST_SKIP() << "PlaceOrder rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder rejected (permission/account-state boundary): " << msg;
         }
@@ -859,6 +862,9 @@ TEST(TradeClientInteg, CancelOrder_PlacedOrder_Succeeds) {
             }
             GTEST_SKIP() << "CancelOrder rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "CancelOrder throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "CancelOrder rejected (permission/account-state boundary): " << msg;
         }
@@ -898,6 +904,9 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
                 FAIL() << "PlaceOrder (modify prereq) rejected during trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder (modify prereq) rejected outside trading hours: " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder (modify prereq) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder (modify prereq) rejected (permission/account-state boundary): " << msg;
@@ -940,6 +949,10 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
                 FAIL() << "ModifyOrder rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "ModifyOrder rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            try { client->cancel_order(modify_order_id); } catch (...) {}
+            GTEST_SKIP() << "ModifyOrder throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             try { client->cancel_order(modify_order_id); } catch (...) {}
@@ -1027,6 +1040,9 @@ TEST(TradeClientInteg, PlaceOrder_StopSellAapl_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(STP) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(STP) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(STP) rejected (permission/account-state boundary): " << msg;
         }
@@ -1060,6 +1076,9 @@ TEST(TradeClientInteg, PlaceOrder_StopLimitSellAapl_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(STP_LMT) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(STP_LMT) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(STP_LMT) rejected (permission/account-state boundary): " << msg;
         }
@@ -1092,6 +1111,9 @@ TEST(TradeClientInteg, PlaceOrder_TrailSellAapl_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(TRAIL) rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(TRAIL) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(TRAIL) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(TRAIL) rejected (permission/account-state boundary): " << msg;
@@ -1132,6 +1154,9 @@ TEST(TradeClientInteg, PlaceOrder_IcebergBuyAapl_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(ICEBERG) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(ICEBERG) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(ICEBERG) rejected (permission/account-state boundary): " << msg;
         }
@@ -1171,6 +1196,9 @@ TEST(TradeClientInteg, PlaceOrder_TwapBuyAapl_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(TWAP) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(TWAP) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(TWAP) rejected (permission/account-state boundary): " << msg;
         }
@@ -1206,6 +1234,9 @@ TEST(TradeClientInteg, PlaceOrder_VwapBuyAapl_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(VWAP) rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(VWAP) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(VWAP) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(VWAP) rejected (permission/account-state boundary): " << msg;
@@ -1246,6 +1277,9 @@ TEST(TradeClientInteg, PlaceOrder_OcaBracketsAapl_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(OCA brackets) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(OCA brackets) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(OCA brackets) rejected (permission/account-state boundary): " << msg;
         }
@@ -1280,6 +1314,9 @@ TEST(TradeClientInteg, PlaceOrder_WithBracketsAapl_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(with brackets) rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(with brackets) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(with brackets) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(with brackets) rejected (permission/account-state boundary): " << msg;
@@ -1321,6 +1358,9 @@ TEST(TradeClientInteg, PlaceOrder_UsOptLimit_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(US OPT) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(US OPT) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(US OPT) rejected (permission/account-state boundary): " << msg;
         }
@@ -1352,6 +1392,9 @@ TEST(TradeClientInteg, PlaceOrder_HkStkLimit_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(HK STK) rejected during HK trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(HK STK) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(HK STK) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(HK STK) rejected (permission/account-state boundary): " << msg;
@@ -1385,6 +1428,9 @@ TEST(TradeClientInteg, PlaceOrder_CnStkLimit_AcceptsOrSkips) {
             }
             GTEST_SKIP() << "PlaceOrder(CN STK) rejected outside trading hours (expected): " << msg;
         }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(CN STK) throttled (account rate limit): " << msg;
+        }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(CN STK) rejected (permission/account-state boundary): " << msg;
         }
@@ -1416,6 +1462,9 @@ TEST(TradeClientInteg, PlaceOrder_SgStkLimit_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(SG STK) rejected during SG trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(SG STK) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(SG STK) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(SG STK) rejected (permission/account-state boundary): " << msg;
@@ -1476,6 +1525,9 @@ TEST(TradeClientInteg, PlaceOrder_UsMlegVerticalSpread_AcceptsOrSkips) {
                 FAIL() << "PlaceOrder(US MLEG vertical) rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "PlaceOrder(US MLEG vertical) rejected outside trading hours (expected): " << msg;
+        }
+        if (is_rate_limit_error(msg)) {
+            GTEST_SKIP() << "PlaceOrder(US MLEG vertical) throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
             GTEST_SKIP() << "PlaceOrder(US MLEG vertical) rejected (permission/account-state boundary): " << msg;
