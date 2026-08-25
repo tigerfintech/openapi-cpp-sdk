@@ -27,6 +27,7 @@
 #include <chrono>
 #include <ctime>
 #include <cctype>
+#include <iostream>
 #include <map>
 #include <mutex>
 #include <string>
@@ -181,6 +182,44 @@ inline web::json::value place_order_with_rate_limit_handling(
             delay *= 2;
         }
     }
+}
+
+/// Best-effort cleanup cancel that never throws, but never fails silently.
+///
+/// Cleanup cancels run on a shared real account, so an order that is not
+/// cancelled stays live. The common reason a cleanup cancel fails is the very
+/// rate limit that made the test skip in the first place — the cap is
+/// account-level, so an immediate single-shot cancel is likely to be rejected
+/// too. Hence the same exponential backoff as
+/// place_order_with_rate_limit_handling().
+///
+/// If every attempt fails the exception is still swallowed (a cleanup path must
+/// not overwrite the test's real verdict, and throwing from one would abort the
+/// enclosing GTEST_SKIP()), but the order id and final error are written to
+/// stderr so a lingering order can be found and cancelled by hand. A silent
+/// `catch (...) {}` leaves no trace of what to clean up.
+inline void cleanup_cancel_order(TradeClient &client, unsigned long long order_id,
+                                 const std::string &context,
+                                 int max_retries = 2) {
+    auto delay = std::chrono::milliseconds(1000);
+    std::string last_error;
+    for (int attempt = 0; attempt <= max_retries; ++attempt) {
+        try {
+            client.cancel_order(order_id);
+            return;
+        } catch (const std::exception &ex) {
+            last_error = ex.what();
+            if (!is_rate_limit_error(last_error) || attempt == max_retries) break;
+            std::this_thread::sleep_for(delay);
+            delay *= 2;
+        } catch (...) {
+            last_error = "unknown non-std exception";
+            break;
+        }
+    }
+    std::cerr << "[cleanup] " << context << ": failed to cancel order id="
+              << order_id << " — it may still be live on the account. Last error: "
+              << last_error << std::endl;
 }
 
 // ── Trading-hours helpers ────────────────────────────────────────────────────

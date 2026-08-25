@@ -944,34 +944,34 @@ TEST(TradeClientInteg, ModifyOrder_PlaceThenModifyPrice_Succeeds) {
             || msg.find("market is closed") != std::string::npos
             || msg.find("outside") != std::string::npos) {
             // Clean up the open order before skipping.
-            try { client->cancel_order(modify_order_id); } catch (...) {}
+            cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
             if (is_market_trading(*quote_client, U("US"))) {
                 FAIL() << "ModifyOrder rejected during US trading hours: " << msg;
             }
             GTEST_SKIP() << "ModifyOrder rejected outside trading hours (expected): " << msg;
         }
         if (is_rate_limit_error(msg)) {
-            try { client->cancel_order(modify_order_id); } catch (...) {}
+            cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
             GTEST_SKIP() << "ModifyOrder throttled (account rate limit): " << msg;
         }
         if (is_permission_error(msg)) {
-            try { client->cancel_order(modify_order_id); } catch (...) {}
+            cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
             GTEST_SKIP() << "ModifyOrder rejected (permission/account-state boundary): " << msg;
         }
         if (is_terminal_order_error(msg)) {
             // Order already moved to a terminal/non-modifiable state before
             // modify ran (timing race, not a defect) — mirrors Python's
             // _TERMINAL_ORDER_KEYWORDS / Rust's TERMINAL_ORDER_MARKERS.
-            try { client->cancel_order(modify_order_id); } catch (...) {}
+            cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
             GTEST_SKIP() << "ModifyOrder hit terminal order state (expected race): " << msg;
         }
-        try { client->cancel_order(modify_order_id); } catch (...) {}
+        cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
         FAIL() << "ModifyOrder threw unexpected exception: " << msg;
     }
     ASSERT_FALSE(modify_result.is_null()) << "ModifyOrder returned null";
 
     // Clean up: cancel the modified order so it does not linger.
-    try { client->cancel_order(modify_order_id); } catch (...) {}
+    cleanup_cancel_order(*client, modify_order_id, "ModifyOrder_PlaceThenModifyPrice_Succeeds");
 }
 
 // ── order-type matrix (OrderUtil builders) ────────────────────────────────────
@@ -1029,7 +1029,7 @@ TEST(TradeClientInteg, PlaceOrder_StopSellAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(STP) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(STP) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_StopSellAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1065,7 +1065,7 @@ TEST(TradeClientInteg, PlaceOrder_StopLimitSellAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(STP_LMT) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(STP_LMT) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_StopLimitSellAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1101,7 +1101,7 @@ TEST(TradeClientInteg, PlaceOrder_TrailSellAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(TRAIL) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(TRAIL) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_TrailSellAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1143,7 +1143,7 @@ TEST(TradeClientInteg, PlaceOrder_IcebergBuyAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(ICEBERG) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(ICEBERG) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_IcebergBuyAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1185,7 +1185,7 @@ TEST(TradeClientInteg, PlaceOrder_TwapBuyAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(TWAP) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(TWAP) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_TwapBuyAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1224,7 +1224,7 @@ TEST(TradeClientInteg, PlaceOrder_VwapBuyAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(VWAP) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(VWAP) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_VwapBuyAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1266,7 +1266,7 @@ TEST(TradeClientInteg, PlaceOrder_OcaBracketsAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(OCA brackets) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(OCA brackets) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_OcaBracketsAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1304,7 +1304,7 @@ TEST(TradeClientInteg, PlaceOrder_WithBracketsAapl_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(with brackets) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(with brackets) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_WithBracketsAapl_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1347,7 +1347,7 @@ TEST(TradeClientInteg, PlaceOrder_UsOptLimit_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(US OPT) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(US OPT) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_UsOptLimit_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1382,7 +1382,7 @@ TEST(TradeClientInteg, PlaceOrder_HkStkLimit_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(HK STK) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(HK STK) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_HkStkLimit_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1417,7 +1417,7 @@ TEST(TradeClientInteg, PlaceOrder_CnStkLimit_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(CN STK) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(CN STK) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_CnStkLimit_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1452,7 +1452,7 @@ TEST(TradeClientInteg, PlaceOrder_SgStkLimit_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(SG STK) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(SG STK) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_SgStkLimit_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
@@ -1515,7 +1515,7 @@ TEST(TradeClientInteg, PlaceOrder_UsMlegVerticalSpread_AcceptsOrSkips) {
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(US MLEG vertical) returned null";
         auto order_id = extract_order_id(result);
         ASSERT_NE(order_id, 0u) << "PlaceOrder(US MLEG vertical) returned zero order id";
-        try { client->cancel_order(order_id); } catch (...) {}
+        cleanup_cancel_order(*client, order_id, "PlaceOrder_UsMlegVerticalSpread_AcceptsOrSkips");
     } catch (const std::exception &ex) {
         std::string msg(ex.what());
         if (msg.find("trading hours") != std::string::npos
