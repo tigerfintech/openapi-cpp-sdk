@@ -74,13 +74,21 @@ unit-test:
         -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON
     - cmake --build "$BUILD_DIR" --target unit_tests -j$(nproc)
     # GTEST_OUTPUT makes gtest write JUnit XML for GitLab's junit report artifact
+    # Drop this job's own stale report first: build dirs get reused, and a
+    # leftover file would be re-archived as if this run had produced it.
+    # Only our own file — a sibling job's report may legitimately sit here.
+    - rm -f test-results/unit.xml
     - mkdir -p test-results
     - export GTEST_OUTPUT=xml:$CI_PROJECT_DIR/test-results/unit.xml
     - ctest --test-dir "$BUILD_DIR" -R UnitTests -V
   artifacts:
     when: always
+    # Explicit file, not the whole directory: the runner reuses build dirs, so a
+    # directory glob can also archive the *other* job's stale report from a
+    # previous pipeline. Artifact download order across `needs` is not
+    # guaranteed, so a stale copy can overwrite the real one in notify:webhook.
     paths:
-      - test-results/
+      - test-results/unit.xml
     reports:
       junit: test-results/unit.xml
     expire_in: 1 week
@@ -116,6 +124,10 @@ integration-test:
         -DCMAKE_PREFIX_PATH="$PROTOBUF_PREFIX;$ABSL_PREFIX;$CPPREST_PREFIX;$BOOST_ROOT;$GTEST_PREFIX" \
         -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON
     - cmake --build "$BUILD_DIR" --target integ_tests -j$(nproc)
+    # Drop this job's own stale report first: build dirs get reused, and a
+    # leftover file would be re-archived as if this run had produced it.
+    # Only our own file — a sibling job's report may legitimately sit here.
+    - rm -f test-results/integ.xml
     - mkdir -p test-results
     - export GTEST_OUTPUT=xml:$CI_PROJECT_DIR/test-results/integ.xml
     # Run with --output-on-failure instead of -V to suppress verbose per-test
@@ -128,8 +140,12 @@ integration-test:
     - ctest --test-dir "$BUILD_DIR" -R IntegTests --output-on-failure 2>&1 | tail -c 3670016
   artifacts:
     when: always
+    # Explicit file, not the whole directory: the runner reuses build dirs, so a
+    # directory glob can also archive the *other* job's stale report from a
+    # previous pipeline. Artifact download order across `needs` is not
+    # guaranteed, so a stale copy can overwrite the real one in notify:webhook.
     paths:
-      - test-results/
+      - test-results/integ.xml
     reports:
       junit: test-results/integ.xml
     expire_in: 1 week
