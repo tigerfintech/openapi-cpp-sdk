@@ -90,7 +90,7 @@ TEST_F(QuoteRequestCaptureTest, GetKlineSendsV2EnvelopeAndSession) {
                                    TradingSession::OverNight), std::runtime_error);
 
     EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("kline"));
-    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("3.0"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
     const value content = biz_content();
     EXPECT_EQ(content.at(P_SYMBOLS).as_array().at(0).as_string(), U("AAPL"));
     EXPECT_EQ(content.at(P_PERIOD).as_string(), U("1min"));
