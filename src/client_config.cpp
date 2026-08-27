@@ -188,6 +188,8 @@ void TIGER_API::ClientConfig::load_props()
 		std::transform(env.begin(), env.end(), env.begin(), ::toupper);
 		if (env == U("SANDBOX")) {
 			sandbox_debug = true;
+		} else if (env == U("TEST")) {
+			server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
 		}
 
 		// Explicit server_url/server_public_key in the properties file take

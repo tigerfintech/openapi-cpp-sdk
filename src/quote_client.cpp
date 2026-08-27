@@ -230,15 +230,24 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_quote_real_time_value(const value &symbols) {
+        return get_quote_real_time_value(symbols, SecType::ALL);
+    }
+
+    value QuoteClient::get_quote_real_time_value(const value &symbols, SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(QUOTE_REAL_TIME, obj);
     }
 
     vector<RealtimeQuote> QuoteClient::get_quote_real_time(const value &symbols) {
-        value obj = value::object(true);
-        obj[P_SYMBOLS] = symbols;
-        value result = post(QUOTE_REAL_TIME, obj);
+        return get_quote_real_time(symbols, SecType::ALL);
+    }
+
+    vector<RealtimeQuote> QuoteClient::get_quote_real_time(const value &symbols, SecType sec_type) {
+        value result = get_quote_real_time_value(symbols, sec_type);
         json::array result_array = result.as_array();
         vector<RealtimeQuote> quotes;
         for (const auto &item: result_array) {

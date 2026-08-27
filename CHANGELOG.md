@@ -1,3 +1,7 @@
+## Unreleased
+### New
+- `RealtimeQuote` 新增 `amount` 字段，支持股票和数字货币实时行情成交额；`get_quote_real_time` 新增 `SecType` overload 用于数字货币实时行情。
+
 ## 1.3.1 (2026-08-19)
 ### New
 - HTTP K-line and current-timeline requests support cryptocurrency symbols through `SecType::CC`; K-line pagination propagates `sec_type`, and typed `KlineItem` results expose fractional `volume_decimal` parsed from `volumeDecimal`. Existing overloads remain available and omit `sec_type` as before.

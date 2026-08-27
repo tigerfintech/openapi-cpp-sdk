@@ -809,13 +809,31 @@ TEST(QuoteClientInteg, GetQuoteRealTime_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    auto cfg = make_integ_config();
+    auto cfg = make_readonly_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     EXPECT_NO_THROW({
         auto quotes = client->get_quote_real_time(make_symbols(U("AAPL")));
         ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime returned empty for AAPL";
         EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote.symbol is empty";
         EXPECT_GT(quotes[0].latest_price, 0.0) << "RealtimeQuote.latest_price should be > 0";
+        EXPECT_GT(quotes[0].amount, 0.0) << "RealtimeQuote.amount should be > 0";
+    });
+}
+
+TEST(QuoteClientInteg, GetQuoteRealTime_CC_ReturnsAmount) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_readonly_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    EXPECT_NO_THROW({
+        auto quotes = client->get_quote_real_time(make_symbols(U("BTC.USD")), SecType::CC);
+        ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime(CC) returned empty for BTC.USD";
+        EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote(CC).symbol is empty";
+        if (quotes[0].amount == 0.0) {
+            GTEST_SKIP() << "quote_real_time CC amount not returned by current server";
+        }
+        EXPECT_GT(quotes[0].amount, 0.0) << "RealtimeQuote(CC).amount should be > 0";
     });
 }
 

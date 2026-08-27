@@ -66,7 +66,9 @@ namespace TIGER_API {
         value get_trade_tick(const value &symbols, long begin_index=-1,
                              long end_index=-1, utility::string_t trade_session=U("Regular"), int limit=100);
         value get_quote_real_time_value(const value &symbols);
+        value get_quote_real_time_value(const value &symbols, SecType sec_type);
         vector<RealtimeQuote> get_quote_real_time(const value &symbols);
+        vector<RealtimeQuote> get_quote_real_time(const value &symbols, SecType sec_type);
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
         value get_quote_depth(const value &symbols, Market market = Market::US);

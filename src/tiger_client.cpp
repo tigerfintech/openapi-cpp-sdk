@@ -58,6 +58,7 @@ namespace TIGER_API {
     endpoint_version_overrides() {
         static const std::map<utility::string_t, utility::string_t> table = {
             {U("quote_overnight"), U("1.0")},
+            {U("quote_real_time"), U("2.0")},
             {U("timeline"), U("3.0")},
             {U("kline"), U("2.0")},
             {U("quote_depth"), U("2.0")},
@@ -157,6 +158,7 @@ namespace TIGER_API {
 
             // Wait for data
             response.content_ready().wait();
+            result_str = response.extract_string().get();
 
         }
         catch (const std::exception &ex) {
@@ -164,11 +166,15 @@ namespace TIGER_API {
             throw;
         }
         try {
-            result = response.extract_json().get();
-            result_str = result.serialize();
-            if (result[P_CODE].is_null()) {
-                LOG(ERROR) << U("Exception: api error, response: ") << result.serialize();
-                throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
+            try {
+                result = value::parse(result_str);
+            } catch (...) {
+                LOG(ERROR) << Utils::truncate_for_log(result_str);
+                throw std::runtime_error(Utils::str16to8(Utils::truncate_for_log(result_str)));
+            }
+            if (!result.is_object() || !result.has_field(P_CODE) || result[P_CODE].is_null()) {
+                LOG(ERROR) << U("Exception: response missing code field, response: ") << result_str;
+                throw std::runtime_error("Exception: response missing code field");
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {

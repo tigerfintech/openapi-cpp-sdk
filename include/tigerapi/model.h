@@ -743,6 +743,7 @@ namespace TIGER_API {
         double bid_price = 0;
         double bid_size = 0;
         double latest_price = 0;
+        double amount = 0;
         time_t latest_time;
         long long latest_size = 0;
         utility::string_t status;
@@ -790,6 +791,9 @@ namespace TIGER_API {
 
             if (j.has_field(U("latestPrice")))
                 latest_price = j.at(U("latestPrice")).as_double();
+
+            if (j.has_field(U("amount")))
+                amount = j.at(U("amount")).as_double();
 
             if (j.has_field(U("latestTime")))
                 latest_time = j.at(U("latestTime")).as_number().to_int64();
