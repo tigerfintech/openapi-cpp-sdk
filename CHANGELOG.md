@@ -1,4 +1,4 @@
-## Unreleased
+## 1.3.2 (2026-08-27)
 ### New
 - `RealtimeQuote` 新增 `amount` 字段，支持股票和数字货币实时行情成交额；`get_quote_real_time` 新增 `SecType` overload 用于数字货币实时行情。
 
