@@ -189,6 +189,8 @@ void TIGER_API::ClientConfig::load_props()
 		if (env == U("SANDBOX")) {
 			sandbox_debug = true;
 		} else if (env == U("TEST")) {
+			// TEST uses the sandbox public key for response signature verification.
+			// Callers still need to provide the actual QA gateway via server_url or test env vars.
 			server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
 		}
 

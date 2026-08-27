@@ -173,7 +173,7 @@ namespace TIGER_API {
                 throw std::runtime_error(Utils::str16to8(Utils::truncate_for_log(result_str)));
             }
             if (!result.is_object() || !result.has_field(P_CODE) || result[P_CODE].is_null()) {
-                LOG(ERROR) << U("Exception: response missing code field, response: ") << result_str;
+                LOG(ERROR) << U("Exception: response missing code field, response: ") << Utils::truncate_for_log(result_str);
                 throw std::runtime_error("Exception: response missing code field");
             }
             int code = result[P_CODE].as_integer();
