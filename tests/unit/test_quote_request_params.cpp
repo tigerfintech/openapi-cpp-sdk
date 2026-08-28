@@ -47,9 +47,7 @@ protected:
         : listener_(U("http://127.0.0.1:39091")) {
         listener_.support(methods::POST, [this](http_request request) {
             captured_ = request.extract_json().get();
-            value response = value::object();
-            response[P_CODE] = value::number(1);
-            request.reply(status_codes::OK, response).wait();
+            request.reply(status_codes::OK, response_body_, content_type_).wait();
         });
         listener_.open().wait();
     }
@@ -71,6 +69,8 @@ protected:
 
     web::http::experimental::listener::http_listener listener_;
     value captured_;
+    utility::string_t response_body_ = U("{\"code\":1}");
+    utility::string_t content_type_ = U("application/json");
 };
 
 value one_symbol() {
@@ -127,6 +127,42 @@ TEST_F(QuoteRequestCaptureTest, GetCryptoTimelineSendsV3AndSecType) {
     const value content = biz_content();
     EXPECT_EQ(content.at(P_SEC_TYPE).as_string(), U("CC"));
     EXPECT_EQ(content.at(P_BEGIN_TIME).as_number().to_int64(), 1700000000000LL);
+}
+
+TEST_F(QuoteRequestCaptureTest, GetCryptoRealtimeQuoteSendsSecType) {
+    auto client = make_client();
+    EXPECT_THROW(client->get_quote_real_time(one_symbol(), SecType::CC), std::runtime_error);
+
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("quote_real_time"));
+    EXPECT_EQ(captured_.at(P_VERSION).as_string(), U("2.0"));
+    const value content = biz_content();
+    EXPECT_EQ(content.at(P_SYMBOLS).as_array().at(0).as_string(), U("AAPL"));
+    EXPECT_EQ(content.at(P_SEC_TYPE).as_string(), U("CC"));
+}
+
+TEST_F(QuoteRequestCaptureTest, InvalidJsonResponseThrowsClearError) {
+    response_body_ = U("<html>bad gateway</html>");
+    content_type_ = U("text/html");
+    auto client = make_client();
+
+    try {
+        client->get_quote_real_time(one_symbol());
+        FAIL() << "expected invalid JSON response exception";
+    } catch (const std::runtime_error &e) {
+        EXPECT_EQ(std::string(e.what()), "<html>bad gateway</html>");
+    }
+}
+
+TEST_F(QuoteRequestCaptureTest, MissingCodeResponseThrowsClearError) {
+    response_body_ = U("{\"message\":\"missing code\"}");
+    auto client = make_client();
+
+    try {
+        client->get_quote_real_time(one_symbol());
+        FAIL() << "expected missing code exception";
+    } catch (const std::runtime_error &e) {
+        EXPECT_NE(std::string(e.what()).find("response missing code field"), std::string::npos);
+    }
 }
 
 TEST(QuoteRequestParamsTest, GetTimeline_IncludeHourTrading_DefaultFalse) {

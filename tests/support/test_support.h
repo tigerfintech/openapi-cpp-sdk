@@ -95,7 +95,19 @@ inline std::shared_ptr<ClientConfig> make_readonly_integ_config() {
 #else
     utility::string_t path(props_path);
 #endif
-    return std::make_shared<ClientConfig>(/*sandbox_debug=*/false, path);
+    if (!path.empty() && path.back() != U('/') && path.back() != U('\\')) {
+        path += U('/');
+    }
+    auto cfg = std::make_shared<ClientConfig>(/*sandbox_debug=*/false, path);
+    const char* server_url = std::getenv("TIGEROPEN_SERVER_URL");
+    if (server_url && *server_url != '\0') {
+#if defined(_WIN32)
+        cfg->set_server_url(utility::conversions::to_string_t(std::string(server_url)));
+#else
+        cfg->set_server_url(utility::string_t(server_url));
+#endif
+    }
+    return cfg;
 }
 
 } // namespace test

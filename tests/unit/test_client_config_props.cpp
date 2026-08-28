@@ -67,6 +67,17 @@ TEST(ClientConfigPropsTest, LoadProps_SandboxEnv_Throws) {
     EXPECT_THROW(ClientConfig cfg(false, utility::string_t(tmp_path)), std::runtime_error);
 }
 
+TEST(ClientConfigPropsTest, LoadProps_TestEnvUsesSandboxPublicKey) {
+    const char* tmp_path = "/tmp/test_cfg_test_env.properties";
+    {
+        std::ofstream out(tmp_path);
+        out << "env=TEST\n";
+    }
+
+    ClientConfig cfg(false, utility::string_t(tmp_path));
+    EXPECT_EQ(cfg.get_server_pub_key(), SANDBOX_TIGER_PUBLIC_KEY);
+}
+
 TEST(ClientConfigPropsTest, LoadProps_CustomServerUrl) {
     const char* tmp_path = "/tmp/test_cfg_custom_url.properties";
     {

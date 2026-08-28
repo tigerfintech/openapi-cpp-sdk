@@ -5,6 +5,7 @@
 #include "tigerapi/utils.h"
 #include <chrono>
 #include <memory>
+#include <sstream>
 
 using namespace TIGER_API;
 using namespace TIGER_API::test;
@@ -23,6 +24,8 @@ using namespace TIGER_API::test;
  */
 
 namespace {
+
+constexpr size_t kMaxDiagnosticLen = 3000;
 
 /// Build a JSON array of symbol strings, e.g. ["AAPL"].
 web::json::value make_symbols(const utility::string_t &sym) {
@@ -73,6 +76,31 @@ static bool json_is_string(const web::json::value &obj,
     return obj.has_field(field)
         && !obj.at(field).is_null()
         && obj.at(field).is_string();
+}
+
+static std::string narrow(const utility::string_t &s) {
+#ifdef _UTF16_STRINGS
+    return utility::conversions::to_utf8string(s);
+#else
+    return s;
+#endif
+}
+
+static std::string diagnostic(const utility::string_t &request,
+                              const web::json::value &response) {
+    std::ostringstream oss;
+    oss << "request=" << narrow(request) << " response=" << narrow(response.serialize());
+    auto out = oss.str();
+    if (out.size() > kMaxDiagnosticLen) {
+        // Back up from a UTF-8 continuation byte so the diagnostic remains valid text.
+        size_t end = kMaxDiagnosticLen;
+        while (end > 0 && (static_cast<unsigned char>(out[end]) & 0xC0) == 0x80) {
+            --end;
+        }
+        out.resize(end);
+        out += "...<truncated>";
+    }
+    return out;
 }
 
 } // anonymous namespace
@@ -809,13 +837,31 @@ TEST(QuoteClientInteg, GetQuoteRealTime_ReturnsValidEntries) {
     if (!integ_enabled()) {
         GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
     }
-    auto cfg = make_integ_config();
+    auto cfg = make_readonly_integ_config();
     auto client = std::make_shared<QuoteClient>(*cfg);
     EXPECT_NO_THROW({
         auto quotes = client->get_quote_real_time(make_symbols(U("AAPL")));
         ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime returned empty for AAPL";
         EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote.symbol is empty";
         EXPECT_GT(quotes[0].latest_price, 0.0) << "RealtimeQuote.latest_price should be > 0";
+        EXPECT_GT(quotes[0].amount, 0.0) << "RealtimeQuote.amount should be > 0";
+    });
+}
+
+TEST(QuoteClientInteg, GetQuoteRealTime_CC_ReturnsAmount) {
+    if (!integ_enabled()) {
+        GTEST_SKIP() << "Set TIGER_RUN_INTEG=true to run integration tests";
+    }
+    auto cfg = make_readonly_integ_config();
+    auto client = std::make_shared<QuoteClient>(*cfg);
+    EXPECT_NO_THROW({
+        auto quotes = client->get_quote_real_time(make_symbols(U("BTC.USD")), SecType::CC);
+        ASSERT_GT(quotes.size(), 0u) << "GetQuoteRealTime(CC) returned empty for BTC.USD";
+        EXPECT_FALSE(quotes[0].symbol.empty()) << "RealtimeQuote(CC).symbol is empty";
+        if (quotes[0].amount == 0.0) {
+            GTEST_SKIP() << "quote_real_time CC amount not returned by current server";
+        }
+        EXPECT_GT(quotes[0].amount, 0.0) << "RealtimeQuote(CC).amount should be > 0";
     });
 }
 
@@ -1570,23 +1616,26 @@ TEST(QuoteClientInteg, GetFutureDepth_ReturnsValidFields) {
         }
         GTEST_SKIP() << "No future contract code available (US futures closed)";
     }
+    const auto request = make_symbols(contract_code).serialize();
     web::json::value result = client->get_future_depth(make_symbols(contract_code));
-    ASSERT_FALSE(result.is_null());
+    ASSERT_FALSE(result.is_null()) << diagnostic(request, result);
     auto arr = extract_array(result);
     for (size_t i = 0; i < arr.size(); ++i) {
         const auto &depth = arr.at(i);
-        ASSERT_TRUE(depth.is_object());
+        ASSERT_TRUE(depth.is_object()) << diagnostic(request, result);
         // Depth entry must carry a symbol/code identifier.
         bool has_symbol = (depth.has_field(U("symbol")) && depth.at(U("symbol")).is_string() && !depth.at(U("symbol")).as_string().empty())
                        || (depth.has_field(U("contractCode")) && depth.at(U("contractCode")).is_string() && !depth.at(U("contractCode")).as_string().empty());
-        EXPECT_TRUE(has_symbol) << "FutureDepth[" << i << "] has no symbol/contractCode field";
+        EXPECT_TRUE(has_symbol) << "FutureDepth[" << i << "] has no symbol/contractCode field; "
+                                << diagnostic(request, result);
         // At least one side (asks or bids) should be present when the market trades.
         bool has_asks = depth.has_field(U("asks")) && depth.at(U("asks")).is_array();
         bool has_bids = depth.has_field(U("bids")) && depth.at(U("bids")).is_array();
         if (!has_asks && !has_bids) {
             if (us_trading) {
                 FAIL() << "FutureDepth returned no asks/bids for " << contract_code
-                       << " while US market is trading (real regression)";
+                       << " while US market is trading (real regression); "
+                       << diagnostic(request, result);
             }
             // Wire path validated by the request completing; empty depth is expected
             // outside US futures trading hours.

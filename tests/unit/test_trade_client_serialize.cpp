@@ -151,12 +151,20 @@ TEST(TigerClientPrivateTest, BuildCommonParams_QuoteOvernight_UsesV1) {
     EXPECT_EQ(params[U("version")].as_string(), U("1.0"));
 }
 
+TEST(TigerClientPrivateTest, BuildCommonParams_QuoteRealTime_UsesV2) {
+    auto cfg = test::make_offline_config();
+    TigerClient client(*cfg);
+
+    value params = client.build_common_params(U("quote_real_time"));
+    EXPECT_EQ(params[U("version")].as_string(), U("2.0"));
+}
+
 TEST(TigerClientPrivateTest, BuildCommonParams_UnknownMethod_UsesGlobalVersion) {
     auto cfg = test::make_offline_config();
     TigerClient client(*cfg);
 
     // Non-overridden endpoints must keep the global default (currently V3.0).
-    value params = client.build_common_params(U("quote_real_time"));
+    value params = client.build_common_params(U("unknown_method"));
     EXPECT_EQ(params[U("version")].as_string(), OPEN_API_SERVICE_VERSION);
 }
 

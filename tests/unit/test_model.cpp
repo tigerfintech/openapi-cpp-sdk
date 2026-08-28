@@ -561,6 +561,7 @@ TEST(ModelTest, RealtimeQuote_FromJson_AllFields) {
     j[U("bidPrice")] = web::json::value::number(171.9);
     j[U("bidSize")] = web::json::value::number((double)400);
     j[U("latestPrice")] = web::json::value::number(172.0);
+    j[U("amount")] = web::json::value::number(123456.78);
     j[U("latestTime")] = web::json::value::number((int64_t)1700000000000LL);
     j[U("latestSize")] = web::json::value::number((double)100);
     j[U("status")] = web::json::value::string(U("Active"));
@@ -584,6 +585,7 @@ TEST(ModelTest, RealtimeQuote_FromJson_AllFields) {
     EXPECT_DOUBLE_EQ(rq.bid_price, 171.9);
     EXPECT_DOUBLE_EQ(rq.bid_size, 400);
     EXPECT_DOUBLE_EQ(rq.latest_price, 172.0);
+    EXPECT_DOUBLE_EQ(rq.amount, 123456.78);
     EXPECT_EQ(rq.latest_time, 1700000000000LL);
     EXPECT_EQ(rq.latest_size, 100LL);
     EXPECT_EQ(rq.status, U("Active"));
@@ -598,7 +600,22 @@ TEST(ModelTest, RealtimeQuote_DefaultValues) {
     RealtimeQuote rq;
     EXPECT_DOUBLE_EQ(rq.open, 0.0);
     EXPECT_EQ(rq.volume, 0LL);
+    EXPECT_DOUBLE_EQ(rq.amount, 0.0);
     EXPECT_TRUE(rq.symbol.empty());
+}
+
+TEST(ModelTest, RealtimeQuote_FromJson_CryptoAmount) {
+    web::json::value j = web::json::value::object(true);
+    j[U("symbol")] = web::json::value::string(U("BTCUSD"));
+    j[U("latestPrice")] = web::json::value::number(65000.0);
+    j[U("amount")] = web::json::value::number(987654.32);
+
+    RealtimeQuote rq;
+    rq.from_json(j);
+
+    EXPECT_EQ(rq.symbol, U("BTCUSD"));
+    EXPECT_DOUBLE_EQ(rq.latest_price, 65000.0);
+    EXPECT_DOUBLE_EQ(rq.amount, 987654.32);
 }
 
 TEST(ModelTest, RealtimeQuote_ToString) {
