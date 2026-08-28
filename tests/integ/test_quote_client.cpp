@@ -92,6 +92,7 @@ static std::string diagnostic(const utility::string_t &request,
     oss << "request=" << narrow(request) << " response=" << narrow(response.serialize());
     auto out = oss.str();
     if (out.size() > kMaxDiagnosticLen) {
+        // Back up from a UTF-8 continuation byte so the diagnostic remains valid text.
         size_t end = kMaxDiagnosticLen;
         while (end > 0 && (static_cast<unsigned char>(out[end]) & 0xC0) == 0x80) {
             --end;
