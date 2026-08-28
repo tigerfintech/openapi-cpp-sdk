@@ -25,6 +25,8 @@ using namespace TIGER_API::test;
 
 namespace {
 
+constexpr size_t kMaxDiagnosticLen = 3000;
+
 /// Build a JSON array of symbol strings, e.g. ["AAPL"].
 web::json::value make_symbols(const utility::string_t &sym) {
     web::json::value arr = web::json::value::array();
@@ -89,8 +91,12 @@ static std::string diagnostic(const utility::string_t &request,
     std::ostringstream oss;
     oss << "request=" << narrow(request) << " response=" << narrow(response.serialize());
     auto out = oss.str();
-    if (out.size() > 3000) {
-        out.resize(3000);
+    if (out.size() > kMaxDiagnosticLen) {
+        size_t end = kMaxDiagnosticLen;
+        while (end > 0 && (static_cast<unsigned char>(out[end]) & 0xC0) == 0x80) {
+            --end;
+        }
+        out.resize(end);
         out += "...<truncated>";
     }
     return out;
