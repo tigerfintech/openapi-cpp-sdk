@@ -85,9 +85,9 @@ namespace TIGER_API {
         }
     };
 
-    const utility::string_t PriceUtil::INF = U("Infinity");
-    const utility::string_t PriceUtil::TICK_SIZE = U("tickSize");
-    const double PriceUtil::RELATIVE_TOLERANCE = 1e-6;
+    inline const utility::string_t PriceUtil::INF = U("Infinity");
+    inline const utility::string_t PriceUtil::TICK_SIZE = U("tickSize");
+    inline const double PriceUtil::RELATIVE_TOLERANCE = 1e-6;
 
 } // TIGER_API
 
