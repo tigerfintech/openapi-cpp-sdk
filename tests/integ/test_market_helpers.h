@@ -616,16 +616,24 @@ inline ResolvedVerticalSpreadLegs resolve_us_vertical_spread_legs(QuoteClient &q
     return result;
 }
 
-/// A BUY limit price far below the current HK quote, but within the
-/// exchange's price-deviation tolerance — unlike a hardcoded absolute
-/// constant, this never falls too far outside whatever range the exchange
-/// currently allows. Aligned to the symbol's tick-size schedule via
-/// PriceUtil, since HK's tick size varies by price band and a price that
-/// isn't a clean multiple of it is rejected outright.
+/// A BUY limit price below the current HK quote, but within the exchange's
+/// price-deviation tolerance — unlike a hardcoded absolute constant, this
+/// never falls too far outside whatever range the exchange currently
+/// allows. Aligned to the symbol's tick-size schedule via PriceUtil, since
+/// HK's tick size varies by price band and a price that isn't a clean
+/// multiple of it is rejected outright.
+///
+/// The 50% discount off the live quote was verified empirically against the
+/// real gateway (see PlaceOrder_HkStkLimit_AcceptsOrSkips) — 00700 at that
+/// discount is accepted, whereas the previous hardcoded 0.01 was rejected
+/// with code=1200 "price deviates too much". If the gateway's tolerance
+/// narrows in the future, this test is what will catch it.
 ///
 /// Returns 0.0 when no live quote/contract tick data is available, rather
 /// than guessing a price that may or may not be accepted — caller should
-/// skip in that case.
+/// skip in that case. Logs the exception to stderr first: an exception here
+/// (auth failure, field-shape change) is a different failure mode than a
+/// quiet "no data", and a bare skip must not hide which one happened.
 inline double safe_hk_buy_price(QuoteClient &qc, TradeClient &tc,
                                 const utility::string_t &symbol) {
     double latest_price = 0.0;
@@ -633,14 +641,22 @@ inline double safe_hk_buy_price(QuoteClient &qc, TradeClient &tc,
         auto quotes = qc.get_quote_real_time(mh_make_string_array(symbol));
         if (quotes.empty() || !(quotes.front().latest_price > 0.0)) return 0.0;
         latest_price = quotes.front().latest_price;
+    } catch (const std::exception &ex) {
+        std::cerr << "[safe_hk_buy_price] get_quote_real_time failed: " << ex.what() << std::endl;
+        return 0.0;
     } catch (...) {
+        std::cerr << "[safe_hk_buy_price] get_quote_real_time failed: unknown non-std exception" << std::endl;
         return 0.0;
     }
 
     web::json::value contract;
     try {
         contract = tc.get_contract(symbol, SecType::STK, Currency::HKD);
+    } catch (const std::exception &ex) {
+        std::cerr << "[safe_hk_buy_price] get_contract failed: " << ex.what() << std::endl;
+        return 0.0;
     } catch (...) {
+        std::cerr << "[safe_hk_buy_price] get_contract failed: unknown non-std exception" << std::endl;
         return 0.0;
     }
     if (!contract.is_object() || !contract.has_field(U("tickSizes"))) return 0.0;
