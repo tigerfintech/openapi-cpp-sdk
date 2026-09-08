@@ -1375,8 +1375,16 @@ TEST(TradeClientInteg, PlaceOrder_HkStkLimit_AcceptsOrSkips) {
     auto cfg = make_integ_config();
     auto client = std::make_shared<TradeClient>(*cfg);
     auto quote_client = std::make_shared<QuoteClient>(*cfg, /*is_grab_permission=*/false);
+    // HK LMT orders are validated against a price-deviation tolerance
+    // (unlike AL, see the sibling test below), so a hardcoded near-zero
+    // price gets rejected. Compute a price close to the live quote instead,
+    // aligned to the symbol's tick-size schedule.
+    double price = safe_hk_buy_price(*quote_client, *client, U("00700"));
+    if (!(price > 0.0)) {
+        GTEST_SKIP() << "PlaceOrder(HK STK) skipped: cannot resolve safe buy price for 00700";
+    }
     Contract contract(U("STK"), U("00700"), U("HKD"), U("00700"), U("SEHK"), 0);
-    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/0.01);
+    auto order = OrderUtil::limit_order(cfg->account, contract, U("BUY"), 1, /*limit_price=*/price);
     try {
         web::json::value result = client->place_order(order);
         ASSERT_FALSE(result.is_null()) << "PlaceOrder(HK STK) returned null";

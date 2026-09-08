@@ -22,6 +22,7 @@
 #include "tigerapi/trade_client.h"
 #include "tigerapi/model.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/price_util.h"
 
 #include <algorithm>
 #include <chrono>
@@ -613,6 +614,41 @@ inline ResolvedVerticalSpreadLegs resolve_us_vertical_spread_legs(QuoteClient &q
     result.upper_strike = utility::conversions::to_string_t(std::to_string(put_strikes[mid + 1]));
     result.ok = true;
     return result;
+}
+
+/// A BUY limit price far below the current HK quote, but within the
+/// exchange's price-deviation tolerance — unlike a hardcoded absolute
+/// constant, this never falls too far outside whatever range the exchange
+/// currently allows. Aligned to the symbol's tick-size schedule via
+/// PriceUtil, since HK's tick size varies by price band and a price that
+/// isn't a clean multiple of it is rejected outright.
+///
+/// Returns 0.0 when no live quote/contract tick data is available, rather
+/// than guessing a price that may or may not be accepted — caller should
+/// skip in that case.
+inline double safe_hk_buy_price(QuoteClient &qc, TradeClient &tc,
+                                const utility::string_t &symbol) {
+    double latest_price = 0.0;
+    try {
+        auto quotes = qc.get_quote_real_time(mh_make_string_array(symbol));
+        if (quotes.empty() || !(quotes.front().latest_price > 0.0)) return 0.0;
+        latest_price = quotes.front().latest_price;
+    } catch (...) {
+        return 0.0;
+    }
+
+    web::json::value contract;
+    try {
+        contract = tc.get_contract(symbol, SecType::STK, Currency::HKD);
+    } catch (...) {
+        return 0.0;
+    }
+    if (!contract.is_object() || !contract.has_field(U("tickSizes"))) return 0.0;
+    const auto &tick_sizes = contract.at(U("tickSizes"));
+
+    double raw_price = latest_price * 0.5;
+    double fixed = PriceUtil::fix_price_by_tick_size(raw_price, tick_sizes);
+    return fixed > 0.0 ? fixed : 0.0;
 }
 
 } // namespace test
