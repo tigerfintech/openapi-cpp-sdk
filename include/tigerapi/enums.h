@@ -87,6 +87,25 @@ namespace TIGER_API {
         return U("");
     }
 
+    // Quote type used to value queried / pushed assets and positions.
+    enum class AssetQuoteType {
+        ETH,       // Extended trading hours
+        RTH,       // Regular trading hours
+        OVERNIGHT  // Overnight session (US only)
+    };
+
+    inline utility::string_t enum_to_str(AssetQuoteType asset_quote_type) {
+        switch (asset_quote_type) {
+            case AssetQuoteType::ETH:
+                return U("ETH");
+            case AssetQuoteType::RTH:
+                return U("RTH");
+            case AssetQuoteType::OVERNIGHT:
+                return U("OVERNIGHT");
+        }
+        return U("");
+    }
+
     enum class SecType {
         ALL,
         STK,  // Stock

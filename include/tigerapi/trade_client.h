@@ -31,13 +31,30 @@ namespace TIGER_API {
 
         value get_prime_asset(const utility::string_t &account, Currency base_currency = Currency::USD);
 
+        /**
+         * Get asset valued with an explicit quote type.
+         * asset_quote_type carries no default so these overloads never compete with
+         * the fully-defaulted ones above. Only US stocks have an overnight session.
+         */
+        value get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency,
+                              AssetQuoteType asset_quote_type);
+
+        value get_prime_asset(const utility::string_t &account, Currency base_currency,
+                              AssetQuoteType asset_quote_type);
+
         PortfolioAccount get_prime_portfolio(const utility::string_t &account = U(""), const utility::string_t &base_currency = U("USD"));
+
+        PortfolioAccount get_prime_portfolio(const utility::string_t &account, const utility::string_t &base_currency,
+                                             AssetQuoteType asset_quote_type);
 
         /**
          * Get asset (applicable to global/prime/paper accounts)
          */
         value get_asset(utility::string_t account = U(""), const value &sub_accounts = value::array(), bool segment = false,
                         bool market_value = false);
+
+        value get_asset(utility::string_t account, const value &sub_accounts, bool segment, bool market_value,
+                        AssetQuoteType asset_quote_type);
 
         /**
          * Get position
@@ -66,6 +83,29 @@ namespace TIGER_API {
                             utility::string_t market = U("ALL"),
                             utility::string_t symbol = U(""), const value &sub_accounts = value::array(), time_t expiry = -1,
                                            utility::string_t strike = U(""), utility::string_t right = U(""));
+
+        /**
+         * Get position valued with an explicit quote type.
+         * The two-argument forms are shorthand for "this account, no filters, this quote
+         * type" so callers do not have to spell out every filter just to pass the quote
+         * type. Only US stocks have an overnight session.
+         */
+        value get_positions(const utility::string_t &account, AssetQuoteType asset_quote_type);
+
+        value get_positions(utility::string_t account, SecType sec_type, Currency currency, Market market,
+                            utility::string_t symbol, const value &sub_accounts, time_t expiry,
+                            utility::string_t strike, Right right, AssetQuoteType asset_quote_type);
+
+        value get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
+                            const utility::string_t &market, const utility::string_t &symbol, const value &sub_accounts,
+                            time_t expiry, utility::string_t strike, const utility::string_t &right,
+                            AssetQuoteType asset_quote_type);
+
+        vector<Position> get_position_list(const utility::string_t &account, AssetQuoteType asset_quote_type);
+
+        vector<Position> get_position_list(utility::string_t account, utility::string_t sec_type, utility::string_t currency,
+                            utility::string_t market, utility::string_t symbol, const value &sub_accounts, time_t expiry,
+                            utility::string_t strike, utility::string_t right, AssetQuoteType asset_quote_type);
         /**
          * Get order list
          * @param account
@@ -174,6 +214,9 @@ namespace TIGER_API {
         /** Get aggregate assets **/
         value get_aggregate_assets(utility::string_t account = U(""), utility::string_t seg_type = U(""), utility::string_t base_currency = U(""));
 
+        value get_aggregate_assets(utility::string_t account, utility::string_t seg_type, utility::string_t base_currency,
+                                   AssetQuoteType asset_quote_type);
+
         /** Cancel segment fund transfer **/
         value cancel_segment_fund(long long id);
 
@@ -272,6 +315,29 @@ namespace TIGER_API {
         // Serialize advanced order fields (iceberg, amount, combo, algo, OCA, attached)
         // into obj. resolved_account is passed to OCA sub-orders.
         static void serialize_advanced_order_fields(value &obj, const Order &order, const utility::string_t &resolved_account);
+
+        // Shared response parser behind both get_prime_portfolio overloads.
+        static PortfolioAccount parse_prime_portfolio(const value &asset);
+
+        // Shared request builders behind the asset / position endpoints.
+        // In each, asset_quote_type is the enum name ("ETH" / "RTH" / "OVERNIGHT");
+        // an empty string omits the field, so the overloads that predate it keep
+        // producing byte-identical payloads.
+        value build_positions_request(const utility::string_t &account, const utility::string_t &sec_type,
+                                      const utility::string_t &currency, const utility::string_t &market,
+                                      const utility::string_t &symbol, const value &sub_accounts, time_t expiry,
+                                      const utility::string_t &strike, const utility::string_t &right,
+                                      const utility::string_t &asset_quote_type);
+
+        value build_prime_asset_request(const utility::string_t &account, const utility::string_t &base_currency,
+                                        const utility::string_t &asset_quote_type);
+
+        value build_asset_request(const utility::string_t &account, bool segment, bool market_value,
+                                  const utility::string_t &asset_quote_type);
+
+        value build_aggregate_assets_request(const utility::string_t &account, const utility::string_t &seg_type,
+                                             const utility::string_t &base_currency,
+                                             const utility::string_t &asset_quote_type);
     };
 }
 

@@ -1,3 +1,10 @@
+## 1.4.0 (2026-09-22)
+### New
+- 资产与持仓支持指定行情口径 `AssetQuoteType`（`ETH` / `RTH` / `OVERNIGHT`），用于夜盘时段按夜盘价估值。仅美股有夜盘时段。
+  - 拉取侧：`get_prime_asset`、`get_prime_portfolio`、`get_asset`、`get_positions`、`get_position_list`、`get_aggregate_assets` 各新增一个末位参数为 `AssetQuoteType` 的重载。
+  - 订阅侧：`IPushClient` 新增 `subscribe_asset(account, AssetQuoteType)` 与 `subscribe_position(account, AssetQuoteType)`；订阅报文 `Subscribe` 新增字段 5 `assetQuoteType`。
+  - 全部为新增重载，**已有方法签名未改动**：不传口径时请求内容与旧版本完全一致，服务端按 `ETH` 处理。新的纯虚函数追加在 `IPushClient` 类体末尾，只在 vtable 尾部新增槽位。
+
 ## 1.3.2 (2026-08-27)
 ### New
 - `RealtimeQuote` 新增 `amount` 字段，支持股票和数字货币实时行情成交额；`get_quote_real_time` 新增 `SecType` overload 用于数字货币实时行情。

@@ -100,6 +100,10 @@ namespace TIGER_API
 
 		virtual void set_heartbeat_callback(const std::function<void()>& cb) = 0;
 
+		// Keep these last: appending vtable slots leaves the existing ones in place,
+		// so binaries built against an earlier header keep working.
+		virtual unsigned int subscribe_asset(const std::string& account, AssetQuoteType asset_quote_type) = 0;
+		virtual unsigned int subscribe_position(const std::string& account, AssetQuoteType asset_quote_type) = 0;
 	};
 }
 

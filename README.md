@@ -450,6 +450,43 @@ push_client.connect();
 
 更多示例请参考 `demo/openapi_cpp_test/openapi_cpp_test.cpp`。
 
+### 夜盘资产口径 `AssetQuoteType`
+
+查询和订阅资产 / 持仓时，可以指定服务端用哪个行情口径给资产估值：
+
+| 值 | 含义 |
+|----|------|
+| `AssetQuoteType::ETH` | 盘前盘后（默认，不传即为此值） |
+| `AssetQuoteType::RTH` | 常规交易时段 |
+| `AssetQuoteType::OVERNIGHT` | 夜盘时段 |
+
+> **仅美股有夜盘时段。** 其他市场传 `OVERNIGHT` 无实际意义。
+
+拉取侧——以下方法各有一个末位参数为 `AssetQuoteType` 的重载：
+
+```cpp
+TradeClient trade_client(client_config);
+
+// 按夜盘口径查持仓
+value positions = trade_client.get_positions(account, AssetQuoteType::OVERNIGHT);
+vector<Position> list = trade_client.get_position_list(account, AssetQuoteType::OVERNIGHT);
+
+// 按夜盘口径查资产
+value prime = trade_client.get_prime_asset(account, U("USD"), AssetQuoteType::OVERNIGHT);
+PortfolioAccount portfolio = trade_client.get_prime_portfolio(account, U("USD"), AssetQuoteType::OVERNIGHT);
+value asset = trade_client.get_asset(account, value::array(), true, false, AssetQuoteType::OVERNIGHT);
+value aggregate = trade_client.get_aggregate_assets(account, U(""), U("USD"), AssetQuoteType::OVERNIGHT);
+```
+
+订阅侧——`subscribe_asset` / `subscribe_position` 各有一个带口径的重载：
+
+```cpp
+push_client->subscribe_asset(account, AssetQuoteType::OVERNIGHT);
+push_client->subscribe_position(account, AssetQuoteType::OVERNIGHT);
+```
+
+不带口径的原有重载全部保留，行为与之前版本完全一致（服务端按 `ETH` 处理），老代码无需改动。
+
 ## 项目结构
 
 ```

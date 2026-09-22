@@ -89,12 +89,16 @@ namespace TIGER_API
 
 		virtual const ClientConfig& get_client_config() const override;
 
+		virtual unsigned int subscribe_asset(const std::string& account, AssetQuoteType asset_quote_type) override;
+		virtual unsigned int subscribe_position(const std::string& account, AssetQuoteType asset_quote_type) override;
+
 	private:
 		unsigned int send_frame(const tigeropen::push::pb::Request& request);
 		void do_write(const std::string& frame);
 		void do_disconnect();
 		void on_message(const std::shared_ptr<tigeropen::push::pb::Response>& response_pb_object);
 		bool send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account);
+		bool send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account, const std::string& asset_quote_type);
 		unsigned int send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols, const std::string& market);
 		bool send_quote_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, std::vector<std::string> symbols);
 		std::shared_ptr<tigeropen::push::pb::QuoteBasicData> convert_to_basic_data(const tigeropen::push::pb::QuoteData& quote_data);
