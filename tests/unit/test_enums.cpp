@@ -26,6 +26,14 @@ TEST(EnumTest, TradingSession_Regular) { EXPECT_EQ(enum_to_str(TradingSession::R
 TEST(EnumTest, TradingSession_AfterHours) { EXPECT_EQ(enum_to_str(TradingSession::AfterHours), U("AfterHours")); }
 TEST(EnumTest, TradingSession_OverNight) { EXPECT_EQ(enum_to_str(TradingSession::OverNight), U("OverNight")); }
 
+// ── AssetQuoteType ────────────────────────────────────────────────────────────
+// The enum name is the wire value: the server maps it, so these strings must
+// stay byte-identical to the other SDKs (Java sends assetQuoteType.name()).
+
+TEST(EnumTest, AssetQuoteType_ETH) { EXPECT_EQ(enum_to_str(AssetQuoteType::ETH), U("ETH")); }
+TEST(EnumTest, AssetQuoteType_RTH) { EXPECT_EQ(enum_to_str(AssetQuoteType::RTH), U("RTH")); }
+TEST(EnumTest, AssetQuoteType_OVERNIGHT) { EXPECT_EQ(enum_to_str(AssetQuoteType::OVERNIGHT), U("OVERNIGHT")); }
+
 // ── SecType ────────────────────────────────────────────────────────────────────
 
 TEST(EnumTest, SecType_ALL) { EXPECT_EQ(enum_to_str(SecType::ALL), U("")); }

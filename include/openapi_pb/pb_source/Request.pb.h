@@ -223,6 +223,7 @@ class Request_Subscribe final : public ::google::protobuf::Message
     kSymbolsFieldNumber = 2,
     kAccountFieldNumber = 3,
     kMarketFieldNumber = 4,
+    kAssetQuoteTypeFieldNumber = 5,
     kDataTypeFieldNumber = 1,
   };
   // string symbols = 2;
@@ -273,6 +274,22 @@ class Request_Subscribe final : public ::google::protobuf::Message
   std::string* _internal_mutable_market();
 
   public:
+  // string assetQuoteType = 5;
+  void clear_assetquotetype() ;
+  const std::string& assetquotetype() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_assetquotetype(Arg_&& arg, Args_... args);
+  std::string* mutable_assetquotetype();
+  PROTOBUF_NODISCARD std::string* release_assetquotetype();
+  void set_allocated_assetquotetype(std::string* value);
+
+  private:
+  const std::string& _internal_assetquotetype() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_assetquotetype(
+      const std::string& value);
+  std::string* _internal_mutable_assetquotetype();
+
+  public:
   // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
   void clear_datatype() ;
   ::tigeropen::push::pb::SocketCommon_DataType datatype() const;
@@ -288,8 +305,8 @@ class Request_Subscribe final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 4, 0,
-      64, 2>
+      3, 5, 0,
+      78, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -312,6 +329,7 @@ class Request_Subscribe final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr symbols_;
     ::google::protobuf::internal::ArenaStringPtr account_;
     ::google::protobuf::internal::ArenaStringPtr market_;
+    ::google::protobuf::internal::ArenaStringPtr assetquotetype_;
     int datatype_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -1297,6 +1315,56 @@ inline void Request_Subscribe::set_allocated_market(std::string* value) {
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.Request.Subscribe.market)
+}
+
+// string assetQuoteType = 5;
+inline void Request_Subscribe::clear_assetquotetype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.assetquotetype_.ClearToEmpty();
+}
+inline const std::string& Request_Subscribe::assetquotetype() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:tigeropen.push.pb.Request.Subscribe.assetQuoteType)
+  return _internal_assetquotetype();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void Request_Subscribe::set_assetquotetype(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.assetquotetype_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:tigeropen.push.pb.Request.Subscribe.assetQuoteType)
+}
+inline std::string* Request_Subscribe::mutable_assetquotetype() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_assetquotetype();
+  // @@protoc_insertion_point(field_mutable:tigeropen.push.pb.Request.Subscribe.assetQuoteType)
+  return _s;
+}
+inline const std::string& Request_Subscribe::_internal_assetquotetype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.assetquotetype_.Get();
+}
+inline void Request_Subscribe::_internal_set_assetquotetype(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.assetquotetype_.Set(value, GetArena());
+}
+inline std::string* Request_Subscribe::_internal_mutable_assetquotetype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.assetquotetype_.Mutable( GetArena());
+}
+inline std::string* Request_Subscribe::release_assetquotetype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:tigeropen.push.pb.Request.Subscribe.assetQuoteType)
+  return _impl_.assetquotetype_.Release();
+}
+inline void Request_Subscribe::set_allocated_assetquotetype(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.assetquotetype_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.assetquotetype_.IsDefault()) {
+          _impl_.assetquotetype_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.Request.Subscribe.assetQuoteType)
 }
 
 // -------------------------------------------------------------------

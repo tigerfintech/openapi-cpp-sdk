@@ -38,6 +38,9 @@ inline constexpr Request_Subscribe::Impl_::Impl_(
         market_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        assetquotetype_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         datatype_{static_cast< ::tigeropen::push::pb::SocketCommon_DataType >(0)},
         _cached_size_{0} {}
 
@@ -164,6 +167,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.symbols_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.account_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.market_),
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request_Subscribe, _impl_.assetquotetype_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::Request, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -186,7 +190,7 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::tigeropen::push::pb::Request_Connect)},
         {15, -1, -1, sizeof(::tigeropen::push::pb::Request_Subscribe)},
-        {27, 39, -1, sizeof(::tigeropen::push::pb::Request)},
+        {28, 40, -1, sizeof(::tigeropen::push::pb::Request)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::tigeropen::push::pb::_Request_Connect_default_instance_._instance,
@@ -196,7 +200,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_Request_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\rRequest.proto\022\021tigeropen.push.pb\032\022Sock"
-    "etCommon.proto\"\322\003\n\007Request\0228\n\007command\030\001 "
+    "etCommon.proto\"\353\003\n\007Request\0228\n\007command\030\001 "
     "\001(\0162\'.tigeropen.push.pb.SocketCommon.Com"
     "mand\022\n\n\002id\030\002 \001(\r\0227\n\tsubscribe\030\003 \001(\0132$.ti"
     "geropen.push.pb.Request.Subscribe\0223\n\007con"
@@ -205,10 +209,10 @@ const char descriptor_table_protodef_Request_2eproto[] ABSL_ATTRIBUTE_SECTION_VA
     "ign\030\002 \001(\t\022\022\n\nsdkVersion\030\003 \001(\t\022\025\n\racceptV"
     "ersion\030\004 \001(\t\022\024\n\014sendInterval\030\005 \001(\r\022\027\n\017re"
     "ceiveInterval\030\006 \001(\r\022\023\n\013useFullTick\030\007 \001(\010"
-    "\032y\n\tSubscribe\022:\n\010dataType\030\001 \001(\0162(.tigero"
-    "pen.push.pb.SocketCommon.DataType\022\017\n\007sym"
-    "bols\030\002 \001(\t\022\017\n\007account\030\003 \001(\t\022\016\n\006market\030\004 "
-    "\001(\tP\000b\006proto3"
+    "\032\221\001\n\tSubscribe\022:\n\010dataType\030\001 \001(\0162(.tiger"
+    "open.push.pb.SocketCommon.DataType\022\017\n\007sy"
+    "mbols\030\002 \001(\t\022\017\n\007account\030\003 \001(\t\022\016\n\006market\030\004"
+    " \001(\t\022\026\n\016assetQuoteType\030\005 \001(\tP\000b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Request_2eproto_deps[1] =
     {
@@ -218,7 +222,7 @@ static ::absl::once_flag descriptor_table_Request_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Request_2eproto = {
     false,
     false,
-    533,
+    558,
     descriptor_table_protodef_Request_2eproto,
     "Request.proto",
     &descriptor_table_Request_2eproto_once,
@@ -648,6 +652,7 @@ inline PROTOBUF_NDEBUG_INLINE Request_Subscribe::Impl_::Impl_(
       : symbols_(arena, from.symbols_),
         account_(arena, from.account_),
         market_(arena, from.market_),
+        assetquotetype_(arena, from.assetquotetype_),
         _cached_size_{0} {}
 
 Request_Subscribe::Request_Subscribe(
@@ -673,6 +678,7 @@ inline PROTOBUF_NDEBUG_INLINE Request_Subscribe::Impl_::Impl_(
       : symbols_(arena),
         account_(arena),
         market_(arena),
+        assetquotetype_(arena),
         _cached_size_{0} {}
 
 inline void Request_Subscribe::SharedCtor(::_pb::Arena* arena) {
@@ -689,6 +695,7 @@ inline void Request_Subscribe::SharedDtor() {
   _impl_.symbols_.Destroy();
   _impl_.account_.Destroy();
   _impl_.market_.Destroy();
+  _impl_.assetquotetype_.Destroy();
   _impl_.~Impl_();
 }
 
@@ -721,15 +728,15 @@ const ::google::protobuf::MessageLite::ClassData* Request_Subscribe::GetClassDat
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 4, 0, 64, 2> Request_Subscribe::_table_ = {
+const ::_pbi::TcParseTable<3, 5, 0, 78, 2> Request_Subscribe::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    4, 24,  // max_field_number, fast_idx_mask
+    5, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967280,  // skipmap
+    4294967264,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    4,  // num_field_entries
+    5,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -739,9 +746,7 @@ const ::_pbi::TcParseTable<2, 4, 0, 64, 2> Request_Subscribe::_table_ = {
     ::_pbi::TcParser::GetTable<::tigeropen::push::pb::Request_Subscribe>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string market = 4;
-    {::_pbi::TcParser::FastUS1,
-     {34, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.market_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Request_Subscribe, _impl_.datatype_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.datatype_)}},
@@ -751,6 +756,14 @@ const ::_pbi::TcParseTable<2, 4, 0, 64, 2> Request_Subscribe::_table_ = {
     // string account = 3;
     {::_pbi::TcParser::FastUS1,
      {26, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.account_)}},
+    // string market = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.market_)}},
+    // string assetQuoteType = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.assetquotetype_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -766,14 +779,18 @@ const ::_pbi::TcParseTable<2, 4, 0, 64, 2> Request_Subscribe::_table_ = {
     // string market = 4;
     {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.market_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string assetQuoteType = 5;
+    {PROTOBUF_FIELD_OFFSET(Request_Subscribe, _impl_.assetquotetype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\43\0\7\7\6\0\0\0"
+    "\43\0\7\7\6\16\0\0"
     "tigeropen.push.pb.Request.Subscribe"
     "symbols"
     "account"
     "market"
+    "assetQuoteType"
   }},
 };
 
@@ -787,6 +804,7 @@ PROTOBUF_NOINLINE void Request_Subscribe::Clear() {
   _impl_.symbols_.ClearToEmpty();
   _impl_.account_.ClearToEmpty();
   _impl_.market_.ClearToEmpty();
+  _impl_.assetquotetype_.ClearToEmpty();
   _impl_.datatype_ = 0;
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -837,6 +855,14 @@ PROTOBUF_NOINLINE void Request_Subscribe::Clear() {
             target = stream->WriteStringMaybeAliased(4, _s, target);
           }
 
+          // string assetQuoteType = 5;
+          if (!this_._internal_assetquotetype().empty()) {
+            const std::string& _s = this_._internal_assetquotetype();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.Request.Subscribe.assetQuoteType");
+            target = stream->WriteStringMaybeAliased(5, _s, target);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -877,6 +903,11 @@ PROTOBUF_NOINLINE void Request_Subscribe::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_market());
             }
+            // string assetQuoteType = 5;
+            if (!this_._internal_assetquotetype().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_assetquotetype());
+            }
             // .tigeropen.push.pb.SocketCommon.DataType dataType = 1;
             if (this_._internal_datatype() != 0) {
               total_size += 1 +
@@ -904,6 +935,9 @@ void Request_Subscribe::MergeImpl(::google::protobuf::MessageLite& to_msg, const
   if (!from._internal_market().empty()) {
     _this->_internal_set_market(from._internal_market());
   }
+  if (!from._internal_assetquotetype().empty()) {
+    _this->_internal_set_assetquotetype(from._internal_assetquotetype());
+  }
   if (from._internal_datatype() != 0) {
     _this->_impl_.datatype_ = from._impl_.datatype_;
   }
@@ -926,6 +960,7 @@ void Request_Subscribe::InternalSwap(Request_Subscribe* PROTOBUF_RESTRICT other)
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.symbols_, &other->_impl_.symbols_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.account_, &other->_impl_.account_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.market_, &other->_impl_.market_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.assetquotetype_, &other->_impl_.assetquotetype_, arena);
   swap(_impl_.datatype_, other->_impl_.datatype_);
 }
 

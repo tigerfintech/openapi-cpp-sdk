@@ -10,6 +10,8 @@
 #include "openapi_pb/pb_source/PushData.pb.h"
 #include "tigerapi/enums.h"
 #include "openapi_pb/pb_source/SocketCommon.pb.h"
+#include "cpprest/asyncrt_utils.h"  // utility::conversions::to_utf8string
+#include "tigerapi/push_socket/subscribe_request.h"
 
 #include "google/protobuf/util/json_util.h"
 #include <vector>
@@ -138,6 +140,11 @@ unsigned int TIGER_API::PushClientImpl::subscribe_asset(const std::string& accou
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
 }
 
+unsigned int TIGER_API::PushClientImpl::subscribe_asset(const std::string& account, AssetQuoteType asset_quote_type)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account, utility::conversions::to_utf8string(enum_to_str(asset_quote_type)));
+}
+
 unsigned int TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 {
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
@@ -151,6 +158,11 @@ void TIGER_API::PushClientImpl::set_position_changed_callback(const std::functio
 unsigned int TIGER_API::PushClientImpl::subscribe_position(const std::string& account)
 {
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account);
+}
+
+unsigned int TIGER_API::PushClientImpl::subscribe_position(const std::string& account, AssetQuoteType asset_quote_type)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account, utility::conversions::to_utf8string(enum_to_str(asset_quote_type)));
 }
 
 unsigned int TIGER_API::PushClientImpl::unsubscribe_position(const std::string& account)
@@ -357,21 +369,17 @@ bool TIGER_API::PushClientImpl::send_quote_request(tigeropen::push::pb::SocketCo
 
 bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account)
 {
+	return send_trade_request(command, datatype, account, "");
+}
+
+bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account, const std::string& asset_quote_type)
+{
 	if (account.empty())
 	{
 		return false;
 	}
-	tigeropen::push::pb::Request request;
-	request.set_command(command);
-	request.set_id(socket_->get_next_id());
 
-	tigeropen::push::pb::Request_Subscribe* subscribe = request.mutable_subscribe();
-	subscribe->set_datatype(datatype);
-
-	if (!account.empty())
-	{
-		subscribe->set_account(account.c_str());
-	}
+	tigeropen::push::pb::Request request = TIGER_API::build_trade_request(command, datatype, account, asset_quote_type, socket_->get_next_id());
 
 	send_frame(request);
     return request.id();

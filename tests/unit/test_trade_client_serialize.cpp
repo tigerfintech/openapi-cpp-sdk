@@ -365,3 +365,93 @@ TEST(TradeClientSerializeTest, OcaSubOrderContractFields) {
     EXPECT_DOUBLE_EQ(oca0[U("limit_price")].as_double(), 185.0);
     EXPECT_EQ(oca0[U("time_in_force")].as_string(), U("DAY"));
 }
+
+// ── Asset quote type request builders ─────────────────────────────────────────
+// These cover the asset_quote_type additions on the pull side.  Each endpoint is
+// asserted twice: the pre-existing overloads must NOT emit the field (so old
+// callers keep sending the exact same payload), the new ones must emit the enum
+// name verbatim -- the server maps the name, not a code.
+
+TEST(AssetQuoteTypeRequestTest, Positions_WithQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_positions_request(U("ACCT"), U(""), U("ALL"), U("ALL"), U(""),
+                                           value::array(), -1, U(""), U(""), U("OVERNIGHT"));
+
+    ASSERT_TRUE(obj.has_field(U("asset_quote_type")));
+    EXPECT_EQ(obj[U("asset_quote_type")].as_string(), U("OVERNIGHT"));
+    EXPECT_EQ(obj[U("account")].as_string(), U("ACCT"));
+}
+
+TEST(AssetQuoteTypeRequestTest, Positions_WithoutQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_positions_request(U("ACCT"), U(""), U("ALL"), U("ALL"), U(""),
+                                           value::array(), -1, U(""), U(""), U(""));
+
+    EXPECT_FALSE(obj.has_field(U("asset_quote_type")));
+}
+
+TEST(AssetQuoteTypeRequestTest, Positions_KeepsExistingFilters) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_positions_request(U("ACCT"), U("OPT"), U("USD"), U("US"), U("AAPL"),
+                                           value::array(), 1700000000LL, U("175.0"), U("CALL"), U("RTH"));
+
+    EXPECT_EQ(obj[U("sec_type")].as_string(), U("OPT"));
+    EXPECT_EQ(obj[U("currency")].as_string(), U("USD"));
+    EXPECT_EQ(obj[U("market")].as_string(), U("US"));
+    EXPECT_EQ(obj[U("symbol")].as_string(), U("AAPL"));
+    EXPECT_EQ(obj[U("strike")].as_string(), U("175.0"));
+    EXPECT_EQ(obj[U("right")].as_string(), U("CALL"));
+    EXPECT_EQ(obj[U("expiry")].as_number().to_int64(), 1700000000LL);
+    EXPECT_EQ(obj[U("asset_quote_type")].as_string(), U("RTH"));
+}
+
+TEST(AssetQuoteTypeRequestTest, PrimeAsset_WithQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_prime_asset_request(U("ACCT"), U("USD"), U("ETH"));
+
+    EXPECT_EQ(obj[U("base_currency")].as_string(), U("USD"));
+    EXPECT_EQ(obj[U("asset_quote_type")].as_string(), U("ETH"));
+}
+
+TEST(AssetQuoteTypeRequestTest, PrimeAsset_WithoutQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_prime_asset_request(U("ACCT"), U("USD"), U(""));
+
+    EXPECT_EQ(obj[U("base_currency")].as_string(), U("USD"));
+    EXPECT_FALSE(obj.has_field(U("asset_quote_type")));
+}
+
+TEST(AssetQuoteTypeRequestTest, Asset_WithQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_asset_request(U("ACCT"), true, false, U("OVERNIGHT"));
+
+    // json::value's bool constructor is explicit, so these two go on the wire as
+    // the numbers 1 / 0 rather than true / false. Long-standing behaviour, asserted
+    // here so the refactoring above is provably payload-preserving.
+    EXPECT_EQ(obj[U("segment")].as_integer(), 1);
+    EXPECT_EQ(obj[U("market_value")].as_integer(), 0);
+    EXPECT_EQ(obj[U("asset_quote_type")].as_string(), U("OVERNIGHT"));
+}
+
+TEST(AssetQuoteTypeRequestTest, Asset_WithoutQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_asset_request(U("ACCT"), true, false, U(""));
+
+    EXPECT_FALSE(obj.has_field(U("asset_quote_type")));
+}
+
+TEST(AssetQuoteTypeRequestTest, AggregateAssets_WithQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_aggregate_assets_request(U("ACCT"), U("SEC"), U("USD"), U("OVERNIGHT"));
+
+    EXPECT_EQ(obj[U("seg_type")].as_string(), U("SEC"));
+    EXPECT_EQ(obj[U("base_currency")].as_string(), U("USD"));
+    EXPECT_EQ(obj[U("asset_quote_type")].as_string(), U("OVERNIGHT"));
+}
+
+TEST(AssetQuoteTypeRequestTest, AggregateAssets_WithoutQuoteType) {
+    TradeClient tc = make_trade_client();
+    value obj = tc.build_aggregate_assets_request(U("ACCT"), U("SEC"), U("USD"), U(""));
+
+    EXPECT_FALSE(obj.has_field(U("asset_quote_type")));
+}

@@ -73,6 +73,7 @@ add_executable(unit_tests
     unit/test_sign_util.cpp
     unit/test_trade_client_serialize.cpp
     unit/test_quote_request_params.cpp
+    unit/test_push_subscribe_message.cpp
 )
 common_test_setup(unit_tests)
 # test_client_config_props.cpp uses std::filesystem (C++17)

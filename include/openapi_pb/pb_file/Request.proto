@@ -24,5 +24,8 @@ message Request {
     string symbols = 2;
     string account = 3;
     string market = 4;
+    // 资产行情口径，取 AssetQuoteType 枚举名：ETH / RTH / OVERNIGHT。
+    // 仅对 dataType = Asset / Position 生效；不传则按 ETH 处理，与该字段存在前的行为一致。
+    string assetQuoteType = 5;
   }
 }

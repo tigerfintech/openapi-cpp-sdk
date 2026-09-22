@@ -385,6 +385,45 @@ push_client.connect();
 
 For more examples, see `demo/openapi_cpp_test/openapi_cpp_test.cpp`.
 
+### Asset quote type (`AssetQuoteType`)
+
+When querying or subscribing to assets and positions you can tell the server which
+quote type to value them with:
+
+| Value | Meaning |
+|-------|---------|
+| `AssetQuoteType::ETH` | Extended trading hours (default — this is what an unset field means) |
+| `AssetQuoteType::RTH` | Regular trading hours |
+| `AssetQuoteType::OVERNIGHT` | Overnight session |
+
+> **Only US stocks have an overnight session.** `OVERNIGHT` has no effect on other markets.
+
+Pull side — each of these methods has an overload taking `AssetQuoteType` as its last argument:
+
+```cpp
+TradeClient trade_client(client_config);
+
+// Positions valued with overnight quotes
+value positions = trade_client.get_positions(account, AssetQuoteType::OVERNIGHT);
+vector<Position> list = trade_client.get_position_list(account, AssetQuoteType::OVERNIGHT);
+
+// Assets valued with overnight quotes
+value prime = trade_client.get_prime_asset(account, U("USD"), AssetQuoteType::OVERNIGHT);
+PortfolioAccount portfolio = trade_client.get_prime_portfolio(account, U("USD"), AssetQuoteType::OVERNIGHT);
+value asset = trade_client.get_asset(account, value::array(), true, false, AssetQuoteType::OVERNIGHT);
+value aggregate = trade_client.get_aggregate_assets(account, U(""), U("USD"), AssetQuoteType::OVERNIGHT);
+```
+
+Push side — `subscribe_asset` and `subscribe_position` each have an overload taking a quote type:
+
+```cpp
+push_client->subscribe_asset(account, AssetQuoteType::OVERNIGHT);
+push_client->subscribe_position(account, AssetQuoteType::OVERNIGHT);
+```
+
+The existing overloads without a quote type are all still there and behave exactly as
+before (the server treats an unset field as `ETH`), so existing code needs no changes.
+
 ## Project Structure
 
 ```
