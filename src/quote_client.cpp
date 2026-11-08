@@ -391,6 +391,11 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_option_kline_value(value identifiers, time_t begin_time, time_t end_time) {
+        return get_option_kline_value(identifiers, begin_time, end_time, U("day"), boost::none);
+    }
+
+    value QuoteClient::get_option_kline_value(value identifiers, time_t begin_time, time_t end_time,
+                                             utility::string_t period, boost::optional<bool> with_hour_trading) {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
@@ -403,7 +408,10 @@ namespace TIGER_API {
             obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
             obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
             obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
-            obj[P_PERIOD] = value::string(U("day"));
+            obj[P_PERIOD] = value::string(period);
+            if (with_hour_trading) {
+                obj[U("with_hour_trading")] = value::boolean(*with_hour_trading);
+            }
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);
@@ -413,7 +421,12 @@ namespace TIGER_API {
     }
 
     vector<Kline> QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time) {
-        value result = get_option_kline_value(identifiers, begin_time, end_time);
+        return get_option_kline(identifiers, begin_time, end_time, U("day"), boost::none);
+    }
+
+    vector<Kline> QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time,
+                                               utility::string_t period, boost::optional<bool> with_hour_trading) {
+        value result = get_option_kline_value(identifiers, begin_time, end_time, period, with_hour_trading);
         json::array obj = result.as_array();
         vector<Kline> klines;
         for (const auto &bar: obj) {

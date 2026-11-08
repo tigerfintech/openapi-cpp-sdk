@@ -358,3 +358,16 @@ TEST(QuoteRequestParamsTest, SingleSymbol_UsesScalarKey_NotArray) {
     EXPECT_TRUE(obj.has_field(U("symbol")));
     EXPECT_FALSE(obj.has_field(U("symbols")));  // plural must NOT appear
 }
+
+TEST_F(QuoteRequestCaptureTest, GthMinuteKlineFlagPreservesFalseAndOmission) {
+    auto client = make_client();
+    value identifiers = value::array();
+    identifiers[0] = value::string(U("SPXW  260723P07380000"));
+    for (boost::optional<bool> flag : {boost::optional<bool>(), boost::optional<bool>(true), boost::optional<bool>(false)}) {
+        EXPECT_THROW(client->get_option_kline_value(identifiers, 1784000000000, 1784300000000, U("5min"), flag), std::runtime_error);
+        const value query = biz_content().as_array()[0];
+        EXPECT_EQ(query.at(P_PERIOD).as_string(), U("5min"));
+        EXPECT_EQ(query.has_field(U("with_hour_trading")), flag.has_value());
+        if (flag) EXPECT_EQ(query.at(U("with_hour_trading")).as_bool(), *flag);
+    }
+}
