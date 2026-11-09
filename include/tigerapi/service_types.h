@@ -126,5 +126,10 @@ static utility::string_t INDUSTRY_LIST = U("industry_list");
 static utility::string_t INDUSTRY_STOCKS = U("industry_stocks");
 static utility::string_t STOCK_INDUSTRY = U("stock_industry");
 
+// News (public market data domain; routed through the main gateway
+// like trade-domain methods — see NewsClient)
+static utility::string_t NEWS_STOCK_LIST = U("news_stock_list");  // single-symbol news list
+static utility::string_t NEWS_HIGHLIGHT_LIST = U("news_highlight_list");  // market highlight news list
+
 
 #endif //TIGERAPI_SERVICE_TYPES_H

@@ -1,3 +1,11 @@
+## 1.5.0 (2026-11-09)
+### New
+- 新增资讯查询客户端 `NewsClient`（`include/tigerapi/news_client.h`），与交易接口共用同一主网关（POST /gateway）：
+  - `get_stock_news(symbol, lang, page_count, page_size)` — 个股新闻列表（`news_stock_list`），`symbol` 仅支持单标的（下游资讯服务不支持批量查询），`page_count` / `page_size` 可选（`0` = 不发送，服务端默认 1 / 20）。
+  - `get_market_news(lang, last_id)` — 市场要闻列表（`news_highlight_list`），仅 `last_id` 游标翻页（无 `page_count` / `page_size` 参数）。
+  - 两接口均提供 `Language` 枚举重载（`zh_CN` / `zh_TW` / `en_US`）。
+  - 响应为强类型 `NewsPage` / `NewsItem`（`include/tigerapi/news_model.h`），按服务端驼峰字段解析：`items` + `pageCount` / `pageSize` / `totalPage` / `totalSize`，条目字段 `id` / `title` / `summary` / `pubTimestamp` / `url`。
+
 ## 1.4.0 (2026-09-22)
 ### New
 - 资产与持仓支持指定行情口径 `AssetQuoteType`（`ETH` / `RTH` / `OVERNIGHT`），用于夜盘时段按夜盘价估值。仅美股有夜盘时段。
