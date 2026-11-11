@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
@@ -11,6 +11,7 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 
 - 🚀 完整的交易接口支持（下单、撤单、查询持仓等）
 - 📊 实时行情数据获取（K线、报价、逐笔成交等）
+- 📰 资讯查询（个股新闻、市场要闻）
 - 🔌 WebSocket 长连接推送（持仓、订单、行情实时推送）
 - 🌐 跨平台支持（macOS、Linux、Windows）
 - 🛡️ 类型安全的 C++ API 设计
@@ -486,6 +487,85 @@ push_client->subscribe_position(account, AssetQuoteType::OVERNIGHT);
 ```
 
 不带口径的原有重载全部保留，行为与之前版本完全一致（服务端按 `ETH` 处理），老代码无需改动。
+
+### 查询资讯
+
+SDK 提供两个资讯查询接口（`NewsClient`），均为 HTTP 请求，与交易接口共用同一主网关（POST /gateway，`method` + `biz_content`，签名方式与其他 HTTP 接口一致）：
+
+| 接口 | method | 说明 |
+|------|--------|------|
+| 个股新闻 | `news_stock_list` | 查询单只股票的资讯列表，按 `page_count` / `page_size` 翻页 |
+| 市场要闻 | `news_highlight_list` | 查询市场要闻列表，按 `last_id` 游标翻页 |
+
+#### 个股新闻
+
+```cpp
+#include "tigerapi/news_client.h"
+
+ClientConfig config(U("your_tiger_id"), U("your_private_key"), U("your_account"));
+NewsClient news_client(config);
+
+// 查询 AAPL 个股新闻：第 1 页、每页 20 条、中文内容
+NewsPage page = news_client.get_stock_news(U("AAPL"), U("zh_CN"), 1, 20);
+for (const NewsItem &item : page.items) {
+    ucout << item.title << U(" — ") << item.url << endl;
+}
+```
+
+参数说明：
+
+| 参数 | 必填 | 说明 |
+|------|:----:|------|
+| `symbol` | 是 | 股票代码，**仅支持单只**（该接口不支持批量查询） |
+| `lang` | 否 | 语言枚举：`zh_CN` / `zh_TW` / `en_US` |
+| `page_count` | 否 | 页码，`0`（缺省）= 不发送，服务端默认 1；显式传值须 >= 1（越界由服务端校验报错） |
+| `page_size` | 否 | 每页条数，`0`（缺省）= 不发送，服务端默认 20；显式传值须 1–50（闭区间） |
+
+#### 市场要闻
+
+```cpp
+#include "tigerapi/news_client.h"
+
+NewsClient news_client(config);
+
+// 从最新一条开始拉取要闻
+NewsPage page = news_client.get_market_news(U("zh_CN"));
+
+// 下一页：把本页最后一条的 id 作为 last_id 传回
+if (!page.items.empty()) {
+    utility::string_t next_last_id = page.items.back().id;
+    NewsPage next = news_client.get_market_news(U("zh_CN"), next_last_id);
+}
+```
+
+参数说明：
+
+| 参数 | 必填 | 说明 |
+|------|:----:|------|
+| `lang` | 否 | 同上 |
+| `last_id` | 否 | 游标。不传从最新开始；下一页传本页 `items` 最后一条的 `id`。该接口仅有这一种翻页方式（无 `page_count` / `page_size` 参数） |
+
+#### 响应结构
+
+两个接口的返回值都是 `NewsPage`（响应 `data` 字段的驼峰解析结果），字段一一对应：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `items` | `vector<NewsItem>` | 当前页资讯列表 |
+| `page_count` | `int` | 当前页码（要闻接口恒为 1） |
+| `page_size` | `int` | 每页条数 |
+| `total_page` | `int` | 总页数 |
+| `total_size` | `int` | 总条数 |
+
+`NewsItem`：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | `utility::string_t` | 资讯 ID（要闻接口游标翻页的 `last_id` 取值来源） |
+| `title` | `utility::string_t` | 标题 |
+| `summary` | `utility::string_t` | 摘要 |
+| `pub_timestamp` | `long long` | 发布时间戳（秒级） |
+| `url` | `utility::string_t` | 原文链接 |
 
 ## 项目结构
 

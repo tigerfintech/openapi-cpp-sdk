@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK is the official C++ client for Tiger Brokers Open Platform, providing trading, market data, and WebSocket push functionalities.
@@ -11,6 +11,7 @@ English | [中文](README.md)
 
 - 🚀 Complete trading API support (place orders, cancel orders, query positions, etc.)
 - 📊 Real-time market data (K-line, quotes, tick-by-tick trades, etc.)
+- 📰 News queries (stock news, market highlights)
 - 🔌 WebSocket push notifications (positions, orders, real-time quotes)
 - ♻️ Persistent HTTP client reuses its built-in connection pool
 - 🌐 Cross-platform support (macOS, Linux, Windows)
@@ -423,6 +424,88 @@ push_client->subscribe_position(account, AssetQuoteType::OVERNIGHT);
 
 The existing overloads without a quote type are all still there and behave exactly as
 before (the server treats an unset field as `ETH`), so existing code needs no changes.
+
+### Query News
+
+The SDK exposes two news query APIs through `NewsClient`. Both are plain HTTP
+requests on the same main gateway as the trading APIs (POST /gateway,
+`method` + `biz_content`, signed like every other HTTP method):
+
+| API | method | Description |
+|-----|--------|-------------|
+| Stock news | `news_stock_list` | News list for a single symbol, paged by `page_count` / `page_size` |
+| Market highlights | `news_highlight_list` | Market highlight list, paged by the `last_id` cursor |
+
+#### Stock News
+
+```cpp
+#include "tigerapi/news_client.h"
+
+ClientConfig config(U("your_tiger_id"), U("your_private_key"), U("your_account"));
+NewsClient news_client(config);
+
+// News for AAPL: page 1, 20 items per page, Chinese content
+NewsPage page = news_client.get_stock_news(U("AAPL"), U("zh_CN"), 1, 20);
+for (const NewsItem &item : page.items) {
+    ucout << item.title << U(" — ") << item.url << endl;
+}
+```
+
+Parameters:
+
+| Parameter | Required | Description |
+|-----------|:--------:|-------------|
+| `symbol` | Yes | Stock symbol, **single symbol only** (batch queries are not supported) |
+| `lang` | No | `zh_CN` / `zh_TW` / `en_US` |
+| `page_count` | No | Page number, `0` (default) = not sent, server default 1; explicit values must be >= 1 (out-of-range values are rejected by the server) |
+| `page_size` | No | Page size, `0` (default) = not sent, server default 20; explicit values must be in 1–50 (inclusive) |
+
+#### Market Highlights
+
+```cpp
+#include "tigerapi/news_client.h"
+
+NewsClient news_client(config);
+
+// Start from the newest highlight
+NewsPage page = news_client.get_market_news(U("zh_CN"));
+
+// Next page: pass the id of the last item back as last_id
+if (!page.items.empty()) {
+    utility::string_t next_last_id = page.items.back().id;
+    NewsPage next = news_client.get_market_news(U("zh_CN"), next_last_id);
+}
+```
+
+Parameters:
+
+| Parameter | Required | Description |
+|-----------|:--------:|-------------|
+| `lang` | No | Same as above |
+| `last_id` | No | Cursor. Not sent = start from the newest; pass the `id` of the last item of the current page to get the next page. This is the only pagination path (no `page_count` / `page_size` on this API) |
+
+#### Response Structure
+
+Both APIs return a `NewsPage` (the camelCase `data` envelope parsed into typed
+fields):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `items` | `vector<NewsItem>` | News items on the current page |
+| `page_count` | `int` | Current page number (always 1 for highlights) |
+| `page_size` | `int` | Page size |
+| `total_page` | `int` | Total number of pages |
+| `total_size` | `int` | Total number of items |
+
+`NewsItem`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `utility::string_t` | News ID (the source of `last_id` for highlight cursor paging) |
+| `title` | `utility::string_t` | Title |
+| `summary` | `utility::string_t` | Summary |
+| `pub_timestamp` | `long long` | Publish timestamp (seconds) |
+| `url` | `utility::string_t` | Link to the article |
 
 ## Project Structure
 
