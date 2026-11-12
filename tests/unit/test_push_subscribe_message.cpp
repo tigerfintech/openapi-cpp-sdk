@@ -124,6 +124,34 @@ TEST(PushSubscribeMessageTest, GthServerWireSurvivesBasicCallbackConversion) {
     }
 }
 
+TEST(PushSubscribeMessageTest, AllQuoteProducesBasicCallbackType) {
+    tigeropen::push::pb::QuoteData quote;
+    quote.set_type(tigeropen::push::pb::SocketCommon_QuoteType_ALL);
+    quote.set_symbol("AAPL");
+    quote.set_latestprice(1.5);
+    quote.set_latestpricetimestamp(1784796380425ULL);
+    quote.set_volume(7);
+    quote.set_amount(12.5);
+    quote.set_askprice(1.6);
+    quote.set_bidprice(1.4);
+
+    const auto basic = detail::convert_quote_basic_data(quote);
+
+    ASSERT_NE(basic, nullptr);
+    EXPECT_EQ(basic->type(), tigeropen::push::pb::SocketCommon_QuoteType_BASIC);
+    EXPECT_EQ(basic->symbol(), quote.symbol());
+    EXPECT_TRUE(basic->has_latestprice());
+    EXPECT_DOUBLE_EQ(basic->latestprice(), 1.5);
+    EXPECT_EQ(basic->latestpricetimestamp(), 1784796380425ULL);
+    EXPECT_EQ(basic->volume(), 7);
+    EXPECT_DOUBLE_EQ(basic->amount(), 12.5);
+    EXPECT_FALSE(basic->has_cumvolume());
+    EXPECT_FALSE(basic->has_cumamount());
+    EXPECT_FALSE(basic->has_session());
+    EXPECT_FALSE(basic->has_hourtradingtag());
+    EXPECT_EQ(quote.type(), tigeropen::push::pb::SocketCommon_QuoteType_ALL);
+}
+
 TEST(PushSubscribeMessageTest, GthBasicConversionKeepsMissingFieldsAbsent) {
     tigeropen::push::pb::QuoteData q;
     q.set_type(tigeropen::push::pb::SocketCommon_QuoteType_BASIC);

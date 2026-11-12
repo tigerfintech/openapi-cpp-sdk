@@ -18,6 +18,8 @@ inline std::shared_ptr<tigeropen::push::pb::QuoteBasicData> convert_quote_basic_
     }
     auto builder = std::make_shared<tigeropen::push::pb::QuoteBasicData>();
     builder->set_symbol(quote_data.symbol());
+    // Basic callbacks report BASIC even for ALL input, matching the Java SDK.
+    // Earlier C++ callbacks exposed ALL here; callers should check BASIC instead.
     builder->set_type(tigeropen::push::pb::SocketCommon_QuoteType_BASIC);
     builder->set_timestamp(quote_data.timestamp());
     if (quote_data.has_servertimestamp()) builder->set_servertimestamp(quote_data.servertimestamp());

@@ -410,7 +410,7 @@ namespace TIGER_API {
             obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
             obj[P_PERIOD] = value::string(period);
             if (with_hour_trading) {
-                obj[U("with_hour_trading")] = value::boolean(*with_hour_trading);
+                obj[P_WITH_HOUR_TRADING] = value::boolean(*with_hour_trading);
             }
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);

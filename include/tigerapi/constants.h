@@ -31,6 +31,7 @@ static utility::string_t P_INCLUDE_OTC = U("include_otc");
 static utility::string_t P_CONTRACT_CODES = U("contract_codes");
 static utility::string_t P_CONTRACT_CODE = U("contract_code");
 static utility::string_t P_PERIOD = U("period");
+static utility::string_t P_WITH_HOUR_TRADING = U("with_hour_trading");
 static utility::string_t P_PERIOD_TYPE = U("period_type");
 static utility::string_t P_FIELDS = U("fields");
 static utility::string_t P_BEGIN_TIME = U("begin_time");
