@@ -220,6 +220,7 @@ class QuoteBasicData final : public ::google::protobuf::Message
     kHourTradingTagFieldNumber = 15,
     kMarketStatusFieldNumber = 16,
     kIdentifierFieldNumber = 23,
+    kSessionFieldNumber = 32,
     kMiFieldNumber = 28,
     kTimestampFieldNumber = 3,
     kServerTimestampFieldNumber = 4,
@@ -237,6 +238,9 @@ class QuoteBasicData final : public ::google::protobuf::Message
     kOpenIntFieldNumber = 24,
     kTradeTimeFieldNumber = 25,
     kPreSettlementFieldNumber = 26,
+    kVolumeDecimalFieldNumber = 29,
+    kCumVolumeFieldNumber = 30,
+    kCumAmountFieldNumber = 31,
   };
   // string symbol = 1;
   void clear_symbol() ;
@@ -254,7 +258,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   std::string* _internal_mutable_symbol();
 
   public:
-  // string latestTime = 8;
+  // optional string latestTime = 8;
+  bool has_latesttime() const;
   void clear_latesttime() ;
   const std::string& latesttime() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -270,7 +275,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   std::string* _internal_mutable_latesttime();
 
   public:
-  // string hourTradingTag = 15;
+  // optional string hourTradingTag = 15;
+  bool has_hourtradingtag() const;
   void clear_hourtradingtag() ;
   const std::string& hourtradingtag() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -286,7 +292,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   std::string* _internal_mutable_hourtradingtag();
 
   public:
-  // string marketStatus = 16;
+  // optional string marketStatus = 16;
+  bool has_marketstatus() const;
   void clear_marketstatus() ;
   const std::string& marketstatus() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -302,7 +309,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   std::string* _internal_mutable_marketstatus();
 
   public:
-  // string identifier = 23;
+  // optional string identifier = 23;
+  bool has_identifier() const;
   void clear_identifier() ;
   const std::string& identifier() const;
   template <typename Arg_ = const std::string&, typename... Args_>
@@ -318,7 +326,24 @@ class QuoteBasicData final : public ::google::protobuf::Message
   std::string* _internal_mutable_identifier();
 
   public:
-  // .tigeropen.push.pb.QuoteData.Minute mi = 28;
+  // optional string session = 32;
+  bool has_session() const;
+  void clear_session() ;
+  const std::string& session() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_session(Arg_&& arg, Args_... args);
+  std::string* mutable_session();
+  PROTOBUF_NODISCARD std::string* release_session();
+  void set_allocated_session(std::string* value);
+
+  private:
+  const std::string& _internal_session() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_session(
+      const std::string& value);
+  std::string* _internal_mutable_session();
+
+  public:
+  // optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
   bool has_mi() const;
   void clear_mi() ;
   const ::tigeropen::push::pb::QuoteData_Minute& mi() const;
@@ -343,7 +368,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_timestamp(::uint64_t value);
 
   public:
-  // uint64 serverTimestamp = 4;
+  // optional uint64 serverTimestamp = 4;
+  bool has_servertimestamp() const;
   void clear_servertimestamp() ;
   ::uint64_t servertimestamp() const;
   void set_servertimestamp(::uint64_t value);
@@ -353,7 +379,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_servertimestamp(::uint64_t value);
 
   public:
-  // double avgPrice = 5;
+  // optional double avgPrice = 5;
+  bool has_avgprice() const;
   void clear_avgprice() ;
   double avgprice() const;
   void set_avgprice(double value);
@@ -363,7 +390,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_avgprice(double value);
 
   public:
-  // double latestPrice = 6;
+  // optional double latestPrice = 6;
+  bool has_latestprice() const;
   void clear_latestprice() ;
   double latestprice() const;
   void set_latestprice(double value);
@@ -373,7 +401,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_latestprice(double value);
 
   public:
-  // uint64 latestPriceTimestamp = 7;
+  // optional uint64 latestPriceTimestamp = 7;
+  bool has_latestpricetimestamp() const;
   void clear_latestpricetimestamp() ;
   ::uint64_t latestpricetimestamp() const;
   void set_latestpricetimestamp(::uint64_t value);
@@ -383,7 +412,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_latestpricetimestamp(::uint64_t value);
 
   public:
-  // double preClose = 9;
+  // optional double preClose = 9;
+  bool has_preclose() const;
   void clear_preclose() ;
   double preclose() const;
   void set_preclose(double value);
@@ -393,7 +423,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_preclose(double value);
 
   public:
-  // sint64 volume = 10;
+  // optional sint64 volume = 10;
+  bool has_volume() const;
   void clear_volume() ;
   ::int64_t volume() const;
   void set_volume(::int64_t value);
@@ -403,7 +434,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_volume(::int64_t value);
 
   public:
-  // double amount = 11;
+  // optional double amount = 11;
+  bool has_amount() const;
   void clear_amount() ;
   double amount() const;
   void set_amount(double value);
@@ -413,7 +445,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_amount(double value);
 
   public:
-  // double open = 12;
+  // optional double open = 12;
+  bool has_open() const;
   void clear_open() ;
   double open() const;
   void set_open(double value);
@@ -423,7 +456,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_open(double value);
 
   public:
-  // double high = 13;
+  // optional double high = 13;
+  bool has_high() const;
   void clear_high() ;
   double high() const;
   void set_high(double value);
@@ -433,7 +467,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_high(double value);
 
   public:
-  // double low = 14;
+  // optional double low = 14;
+  bool has_low() const;
   void clear_low() ;
   double low() const;
   void set_low(double value);
@@ -453,7 +488,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_type(::tigeropen::push::pb::SocketCommon_QuoteType value);
 
   public:
-  // float minTick = 27;
+  // optional float minTick = 27;
+  bool has_mintick() const;
   void clear_mintick() ;
   float mintick() const;
   void set_mintick(float value);
@@ -463,7 +499,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_mintick(float value);
 
   public:
-  // sint64 openInt = 24;
+  // optional sint64 openInt = 24;
+  bool has_openint() const;
   void clear_openint() ;
   ::int64_t openint() const;
   void set_openint(::int64_t value);
@@ -473,7 +510,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_openint(::int64_t value);
 
   public:
-  // uint64 tradeTime = 25;
+  // optional uint64 tradeTime = 25;
+  bool has_tradetime() const;
   void clear_tradetime() ;
   ::uint64_t tradetime() const;
   void set_tradetime(::uint64_t value);
@@ -483,7 +521,8 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_tradetime(::uint64_t value);
 
   public:
-  // double preSettlement = 26;
+  // optional double preSettlement = 26;
+  bool has_presettlement() const;
   void clear_presettlement() ;
   double presettlement() const;
   void set_presettlement(double value);
@@ -493,13 +532,46 @@ class QuoteBasicData final : public ::google::protobuf::Message
   void _internal_set_presettlement(double value);
 
   public:
+  // optional double volumeDecimal = 29;
+  bool has_volumedecimal() const;
+  void clear_volumedecimal() ;
+  double volumedecimal() const;
+  void set_volumedecimal(double value);
+
+  private:
+  double _internal_volumedecimal() const;
+  void _internal_set_volumedecimal(double value);
+
+  public:
+  // optional sint64 cumVolume = 30;
+  bool has_cumvolume() const;
+  void clear_cumvolume() ;
+  ::int64_t cumvolume() const;
+  void set_cumvolume(::int64_t value);
+
+  private:
+  ::int64_t _internal_cumvolume() const;
+  void _internal_set_cumvolume(::int64_t value);
+
+  public:
+  // optional double cumAmount = 31;
+  bool has_cumamount() const;
+  void clear_cumamount() ;
+  double cumamount() const;
+  void set_cumamount(double value);
+
+  private:
+  double _internal_cumamount() const;
+  void _internal_set_cumamount(double value);
+
+  public:
   // @@protoc_insertion_point(class_scope:tigeropen.push.pb.QuoteBasicData)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      5, 22, 1,
-      109, 2>
+      5, 26, 1,
+      124, 2>
       _table_;
 
   static constexpr const void* _raw_default_instance_ =
@@ -526,6 +598,7 @@ class QuoteBasicData final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr hourtradingtag_;
     ::google::protobuf::internal::ArenaStringPtr marketstatus_;
     ::google::protobuf::internal::ArenaStringPtr identifier_;
+    ::google::protobuf::internal::ArenaStringPtr session_;
     ::tigeropen::push::pb::QuoteData_Minute* mi_;
     ::uint64_t timestamp_;
     ::uint64_t servertimestamp_;
@@ -543,6 +616,9 @@ class QuoteBasicData final : public ::google::protobuf::Message
     ::int64_t openint_;
     ::uint64_t tradetime_;
     double presettlement_;
+    double volumedecimal_;
+    ::int64_t cumvolume_;
+    double cumamount_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -659,10 +735,15 @@ inline void QuoteBasicData::_internal_set_timestamp(::uint64_t value) {
   _impl_.timestamp_ = value;
 }
 
-// uint64 serverTimestamp = 4;
+// optional uint64 serverTimestamp = 4;
+inline bool QuoteBasicData::has_servertimestamp() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_servertimestamp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.servertimestamp_ = ::uint64_t{0u};
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline ::uint64_t QuoteBasicData::servertimestamp() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.serverTimestamp)
@@ -670,6 +751,7 @@ inline ::uint64_t QuoteBasicData::servertimestamp() const {
 }
 inline void QuoteBasicData::set_servertimestamp(::uint64_t value) {
   _internal_set_servertimestamp(value);
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.serverTimestamp)
 }
 inline ::uint64_t QuoteBasicData::_internal_servertimestamp() const {
@@ -681,10 +763,15 @@ inline void QuoteBasicData::_internal_set_servertimestamp(::uint64_t value) {
   _impl_.servertimestamp_ = value;
 }
 
-// double avgPrice = 5;
+// optional double avgPrice = 5;
+inline bool QuoteBasicData::has_avgprice() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_avgprice() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.avgprice_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline double QuoteBasicData::avgprice() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.avgPrice)
@@ -692,6 +779,7 @@ inline double QuoteBasicData::avgprice() const {
 }
 inline void QuoteBasicData::set_avgprice(double value) {
   _internal_set_avgprice(value);
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.avgPrice)
 }
 inline double QuoteBasicData::_internal_avgprice() const {
@@ -703,10 +791,15 @@ inline void QuoteBasicData::_internal_set_avgprice(double value) {
   _impl_.avgprice_ = value;
 }
 
-// double latestPrice = 6;
+// optional double latestPrice = 6;
+inline bool QuoteBasicData::has_latestprice() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_latestprice() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.latestprice_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
 inline double QuoteBasicData::latestprice() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.latestPrice)
@@ -714,6 +807,7 @@ inline double QuoteBasicData::latestprice() const {
 }
 inline void QuoteBasicData::set_latestprice(double value) {
   _internal_set_latestprice(value);
+  _impl_._has_bits_[0] |= 0x00000100u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.latestPrice)
 }
 inline double QuoteBasicData::_internal_latestprice() const {
@@ -725,10 +819,15 @@ inline void QuoteBasicData::_internal_set_latestprice(double value) {
   _impl_.latestprice_ = value;
 }
 
-// uint64 latestPriceTimestamp = 7;
+// optional uint64 latestPriceTimestamp = 7;
+inline bool QuoteBasicData::has_latestpricetimestamp() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_latestpricetimestamp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.latestpricetimestamp_ = ::uint64_t{0u};
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
 inline ::uint64_t QuoteBasicData::latestpricetimestamp() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.latestPriceTimestamp)
@@ -736,6 +835,7 @@ inline ::uint64_t QuoteBasicData::latestpricetimestamp() const {
 }
 inline void QuoteBasicData::set_latestpricetimestamp(::uint64_t value) {
   _internal_set_latestpricetimestamp(value);
+  _impl_._has_bits_[0] |= 0x00000200u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.latestPriceTimestamp)
 }
 inline ::uint64_t QuoteBasicData::_internal_latestpricetimestamp() const {
@@ -747,10 +847,15 @@ inline void QuoteBasicData::_internal_set_latestpricetimestamp(::uint64_t value)
   _impl_.latestpricetimestamp_ = value;
 }
 
-// string latestTime = 8;
+// optional string latestTime = 8;
+inline bool QuoteBasicData::has_latesttime() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_latesttime() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.latesttime_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& QuoteBasicData::latesttime() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -761,6 +866,7 @@ template <typename Arg_, typename... Args_>
 inline PROTOBUF_ALWAYS_INLINE void QuoteBasicData::set_latesttime(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.latesttime_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.latestTime)
 }
@@ -775,19 +881,34 @@ inline const std::string& QuoteBasicData::_internal_latesttime() const {
 }
 inline void QuoteBasicData::_internal_set_latesttime(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.latesttime_.Set(value, GetArena());
 }
 inline std::string* QuoteBasicData::_internal_mutable_latesttime() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000001u;
   return _impl_.latesttime_.Mutable( GetArena());
 }
 inline std::string* QuoteBasicData::release_latesttime() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.latestTime)
-  return _impl_.latesttime_.Release();
+  if ((_impl_._has_bits_[0] & 0x00000001u) == 0) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* released = _impl_.latesttime_.Release();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.latesttime_.Set("", GetArena());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return released;
 }
 inline void QuoteBasicData::set_allocated_latesttime(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
   _impl_.latesttime_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         if (_impl_.latesttime_.IsDefault()) {
@@ -797,10 +918,15 @@ inline void QuoteBasicData::set_allocated_latesttime(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.latestTime)
 }
 
-// double preClose = 9;
+// optional double preClose = 9;
+inline bool QuoteBasicData::has_preclose() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_preclose() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.preclose_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
 inline double QuoteBasicData::preclose() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.preClose)
@@ -808,6 +934,7 @@ inline double QuoteBasicData::preclose() const {
 }
 inline void QuoteBasicData::set_preclose(double value) {
   _internal_set_preclose(value);
+  _impl_._has_bits_[0] |= 0x00000400u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.preClose)
 }
 inline double QuoteBasicData::_internal_preclose() const {
@@ -819,10 +946,15 @@ inline void QuoteBasicData::_internal_set_preclose(double value) {
   _impl_.preclose_ = value;
 }
 
-// sint64 volume = 10;
+// optional sint64 volume = 10;
+inline bool QuoteBasicData::has_volume() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_volume() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.volume_ = ::int64_t{0};
+  _impl_._has_bits_[0] &= ~0x00000800u;
 }
 inline ::int64_t QuoteBasicData::volume() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.volume)
@@ -830,6 +962,7 @@ inline ::int64_t QuoteBasicData::volume() const {
 }
 inline void QuoteBasicData::set_volume(::int64_t value) {
   _internal_set_volume(value);
+  _impl_._has_bits_[0] |= 0x00000800u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.volume)
 }
 inline ::int64_t QuoteBasicData::_internal_volume() const {
@@ -841,10 +974,15 @@ inline void QuoteBasicData::_internal_set_volume(::int64_t value) {
   _impl_.volume_ = value;
 }
 
-// double amount = 11;
+// optional double amount = 11;
+inline bool QuoteBasicData::has_amount() const {
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_amount() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.amount_ = 0;
+  _impl_._has_bits_[0] &= ~0x00001000u;
 }
 inline double QuoteBasicData::amount() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.amount)
@@ -852,6 +990,7 @@ inline double QuoteBasicData::amount() const {
 }
 inline void QuoteBasicData::set_amount(double value) {
   _internal_set_amount(value);
+  _impl_._has_bits_[0] |= 0x00001000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.amount)
 }
 inline double QuoteBasicData::_internal_amount() const {
@@ -863,10 +1002,15 @@ inline void QuoteBasicData::_internal_set_amount(double value) {
   _impl_.amount_ = value;
 }
 
-// double open = 12;
+// optional double open = 12;
+inline bool QuoteBasicData::has_open() const {
+  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_open() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.open_ = 0;
+  _impl_._has_bits_[0] &= ~0x00002000u;
 }
 inline double QuoteBasicData::open() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.open)
@@ -874,6 +1018,7 @@ inline double QuoteBasicData::open() const {
 }
 inline void QuoteBasicData::set_open(double value) {
   _internal_set_open(value);
+  _impl_._has_bits_[0] |= 0x00002000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.open)
 }
 inline double QuoteBasicData::_internal_open() const {
@@ -885,10 +1030,15 @@ inline void QuoteBasicData::_internal_set_open(double value) {
   _impl_.open_ = value;
 }
 
-// double high = 13;
+// optional double high = 13;
+inline bool QuoteBasicData::has_high() const {
+  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_high() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.high_ = 0;
+  _impl_._has_bits_[0] &= ~0x00004000u;
 }
 inline double QuoteBasicData::high() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.high)
@@ -896,6 +1046,7 @@ inline double QuoteBasicData::high() const {
 }
 inline void QuoteBasicData::set_high(double value) {
   _internal_set_high(value);
+  _impl_._has_bits_[0] |= 0x00004000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.high)
 }
 inline double QuoteBasicData::_internal_high() const {
@@ -907,10 +1058,15 @@ inline void QuoteBasicData::_internal_set_high(double value) {
   _impl_.high_ = value;
 }
 
-// double low = 14;
+// optional double low = 14;
+inline bool QuoteBasicData::has_low() const {
+  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_low() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.low_ = 0;
+  _impl_._has_bits_[0] &= ~0x00008000u;
 }
 inline double QuoteBasicData::low() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.low)
@@ -918,6 +1074,7 @@ inline double QuoteBasicData::low() const {
 }
 inline void QuoteBasicData::set_low(double value) {
   _internal_set_low(value);
+  _impl_._has_bits_[0] |= 0x00008000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.low)
 }
 inline double QuoteBasicData::_internal_low() const {
@@ -929,10 +1086,15 @@ inline void QuoteBasicData::_internal_set_low(double value) {
   _impl_.low_ = value;
 }
 
-// string hourTradingTag = 15;
+// optional string hourTradingTag = 15;
+inline bool QuoteBasicData::has_hourtradingtag() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_hourtradingtag() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.hourtradingtag_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
 inline const std::string& QuoteBasicData::hourtradingtag() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -943,6 +1105,7 @@ template <typename Arg_, typename... Args_>
 inline PROTOBUF_ALWAYS_INLINE void QuoteBasicData::set_hourtradingtag(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000002u;
   _impl_.hourtradingtag_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.hourTradingTag)
 }
@@ -957,19 +1120,34 @@ inline const std::string& QuoteBasicData::_internal_hourtradingtag() const {
 }
 inline void QuoteBasicData::_internal_set_hourtradingtag(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000002u;
   _impl_.hourtradingtag_.Set(value, GetArena());
 }
 inline std::string* QuoteBasicData::_internal_mutable_hourtradingtag() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000002u;
   return _impl_.hourtradingtag_.Mutable( GetArena());
 }
 inline std::string* QuoteBasicData::release_hourtradingtag() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.hourTradingTag)
-  return _impl_.hourtradingtag_.Release();
+  if ((_impl_._has_bits_[0] & 0x00000002u) == 0) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* released = _impl_.hourtradingtag_.Release();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.hourtradingtag_.Set("", GetArena());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return released;
 }
 inline void QuoteBasicData::set_allocated_hourtradingtag(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
   _impl_.hourtradingtag_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         if (_impl_.hourtradingtag_.IsDefault()) {
@@ -979,10 +1157,15 @@ inline void QuoteBasicData::set_allocated_hourtradingtag(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.hourTradingTag)
 }
 
-// string marketStatus = 16;
+// optional string marketStatus = 16;
+inline bool QuoteBasicData::has_marketstatus() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_marketstatus() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.marketstatus_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline const std::string& QuoteBasicData::marketstatus() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -993,6 +1176,7 @@ template <typename Arg_, typename... Args_>
 inline PROTOBUF_ALWAYS_INLINE void QuoteBasicData::set_marketstatus(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.marketstatus_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.marketStatus)
 }
@@ -1007,19 +1191,34 @@ inline const std::string& QuoteBasicData::_internal_marketstatus() const {
 }
 inline void QuoteBasicData::_internal_set_marketstatus(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.marketstatus_.Set(value, GetArena());
 }
 inline std::string* QuoteBasicData::_internal_mutable_marketstatus() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000004u;
   return _impl_.marketstatus_.Mutable( GetArena());
 }
 inline std::string* QuoteBasicData::release_marketstatus() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.marketStatus)
-  return _impl_.marketstatus_.Release();
+  if ((_impl_._has_bits_[0] & 0x00000004u) == 0) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* released = _impl_.marketstatus_.Release();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.marketstatus_.Set("", GetArena());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return released;
 }
 inline void QuoteBasicData::set_allocated_marketstatus(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
   _impl_.marketstatus_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         if (_impl_.marketstatus_.IsDefault()) {
@@ -1029,10 +1228,15 @@ inline void QuoteBasicData::set_allocated_marketstatus(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.marketStatus)
 }
 
-// string identifier = 23;
+// optional string identifier = 23;
+inline bool QuoteBasicData::has_identifier() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_identifier() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.identifier_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline const std::string& QuoteBasicData::identifier() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -1043,6 +1247,7 @@ template <typename Arg_, typename... Args_>
 inline PROTOBUF_ALWAYS_INLINE void QuoteBasicData::set_identifier(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.identifier_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.identifier)
 }
@@ -1057,19 +1262,34 @@ inline const std::string& QuoteBasicData::_internal_identifier() const {
 }
 inline void QuoteBasicData::_internal_set_identifier(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.identifier_.Set(value, GetArena());
 }
 inline std::string* QuoteBasicData::_internal_mutable_identifier() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000008u;
   return _impl_.identifier_.Mutable( GetArena());
 }
 inline std::string* QuoteBasicData::release_identifier() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.identifier)
-  return _impl_.identifier_.Release();
+  if ((_impl_._has_bits_[0] & 0x00000008u) == 0) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  auto* released = _impl_.identifier_.Release();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.identifier_.Set("", GetArena());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return released;
 }
 inline void QuoteBasicData::set_allocated_identifier(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000008u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000008u;
+  }
   _impl_.identifier_.SetAllocated(value, GetArena());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         if (_impl_.identifier_.IsDefault()) {
@@ -1079,10 +1299,15 @@ inline void QuoteBasicData::set_allocated_identifier(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.identifier)
 }
 
-// sint64 openInt = 24;
+// optional sint64 openInt = 24;
+inline bool QuoteBasicData::has_openint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00020000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_openint() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.openint_ = ::int64_t{0};
+  _impl_._has_bits_[0] &= ~0x00020000u;
 }
 inline ::int64_t QuoteBasicData::openint() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.openInt)
@@ -1090,6 +1315,7 @@ inline ::int64_t QuoteBasicData::openint() const {
 }
 inline void QuoteBasicData::set_openint(::int64_t value) {
   _internal_set_openint(value);
+  _impl_._has_bits_[0] |= 0x00020000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.openInt)
 }
 inline ::int64_t QuoteBasicData::_internal_openint() const {
@@ -1101,10 +1327,15 @@ inline void QuoteBasicData::_internal_set_openint(::int64_t value) {
   _impl_.openint_ = value;
 }
 
-// uint64 tradeTime = 25;
+// optional uint64 tradeTime = 25;
+inline bool QuoteBasicData::has_tradetime() const {
+  bool value = (_impl_._has_bits_[0] & 0x00040000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_tradetime() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.tradetime_ = ::uint64_t{0u};
+  _impl_._has_bits_[0] &= ~0x00040000u;
 }
 inline ::uint64_t QuoteBasicData::tradetime() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.tradeTime)
@@ -1112,6 +1343,7 @@ inline ::uint64_t QuoteBasicData::tradetime() const {
 }
 inline void QuoteBasicData::set_tradetime(::uint64_t value) {
   _internal_set_tradetime(value);
+  _impl_._has_bits_[0] |= 0x00040000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.tradeTime)
 }
 inline ::uint64_t QuoteBasicData::_internal_tradetime() const {
@@ -1123,10 +1355,15 @@ inline void QuoteBasicData::_internal_set_tradetime(::uint64_t value) {
   _impl_.tradetime_ = value;
 }
 
-// double preSettlement = 26;
+// optional double preSettlement = 26;
+inline bool QuoteBasicData::has_presettlement() const {
+  bool value = (_impl_._has_bits_[0] & 0x00080000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_presettlement() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.presettlement_ = 0;
+  _impl_._has_bits_[0] &= ~0x00080000u;
 }
 inline double QuoteBasicData::presettlement() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.preSettlement)
@@ -1134,6 +1371,7 @@ inline double QuoteBasicData::presettlement() const {
 }
 inline void QuoteBasicData::set_presettlement(double value) {
   _internal_set_presettlement(value);
+  _impl_._has_bits_[0] |= 0x00080000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.preSettlement)
 }
 inline double QuoteBasicData::_internal_presettlement() const {
@@ -1145,10 +1383,15 @@ inline void QuoteBasicData::_internal_set_presettlement(double value) {
   _impl_.presettlement_ = value;
 }
 
-// float minTick = 27;
+// optional float minTick = 27;
+inline bool QuoteBasicData::has_mintick() const {
+  bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
+  return value;
+}
 inline void QuoteBasicData::clear_mintick() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.mintick_ = 0;
+  _impl_._has_bits_[0] &= ~0x00010000u;
 }
 inline float QuoteBasicData::mintick() const {
   // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.minTick)
@@ -1156,6 +1399,7 @@ inline float QuoteBasicData::mintick() const {
 }
 inline void QuoteBasicData::set_mintick(float value) {
   _internal_set_mintick(value);
+  _impl_._has_bits_[0] |= 0x00010000u;
   // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.minTick)
 }
 inline float QuoteBasicData::_internal_mintick() const {
@@ -1167,9 +1411,9 @@ inline void QuoteBasicData::_internal_set_mintick(float value) {
   _impl_.mintick_ = value;
 }
 
-// .tigeropen.push.pb.QuoteData.Minute mi = 28;
+// optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
 inline bool QuoteBasicData::has_mi() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.mi_ != nullptr);
   return value;
 }
@@ -1189,16 +1433,16 @@ inline void QuoteBasicData::unsafe_arena_set_allocated_mi(::tigeropen::push::pb:
   }
   _impl_.mi_ = reinterpret_cast<::tigeropen::push::pb::QuoteData_Minute*>(value);
   if (value != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
+    _impl_._has_bits_[0] |= 0x00000020u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000020u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tigeropen.push.pb.QuoteBasicData.mi)
 }
 inline ::tigeropen::push::pb::QuoteData_Minute* QuoteBasicData::release_mi() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
 
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
   ::tigeropen::push::pb::QuoteData_Minute* released = _impl_.mi_;
   _impl_.mi_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -1218,7 +1462,7 @@ inline ::tigeropen::push::pb::QuoteData_Minute* QuoteBasicData::unsafe_arena_rel
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.mi)
 
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
   ::tigeropen::push::pb::QuoteData_Minute* temp = _impl_.mi_;
   _impl_.mi_ = nullptr;
   return temp;
@@ -1232,7 +1476,7 @@ inline ::tigeropen::push::pb::QuoteData_Minute* QuoteBasicData::_internal_mutabl
   return _impl_.mi_;
 }
 inline ::tigeropen::push::pb::QuoteData_Minute* QuoteBasicData::mutable_mi() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   ::tigeropen::push::pb::QuoteData_Minute* _msg = _internal_mutable_mi();
   // @@protoc_insertion_point(field_mutable:tigeropen.push.pb.QuoteBasicData.mi)
   return _msg;
@@ -1249,13 +1493,168 @@ inline void QuoteBasicData::set_allocated_mi(::tigeropen::push::pb::QuoteData_Mi
     if (message_arena != submessage_arena) {
       value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
     }
-    _impl_._has_bits_[0] |= 0x00000001u;
+    _impl_._has_bits_[0] |= 0x00000020u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000020u;
   }
 
   _impl_.mi_ = reinterpret_cast<::tigeropen::push::pb::QuoteData_Minute*>(value);
   // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.mi)
+}
+
+// optional double volumeDecimal = 29;
+inline bool QuoteBasicData::has_volumedecimal() const {
+  bool value = (_impl_._has_bits_[0] & 0x00100000u) != 0;
+  return value;
+}
+inline void QuoteBasicData::clear_volumedecimal() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.volumedecimal_ = 0;
+  _impl_._has_bits_[0] &= ~0x00100000u;
+}
+inline double QuoteBasicData::volumedecimal() const {
+  // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.volumeDecimal)
+  return _internal_volumedecimal();
+}
+inline void QuoteBasicData::set_volumedecimal(double value) {
+  _internal_set_volumedecimal(value);
+  _impl_._has_bits_[0] |= 0x00100000u;
+  // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.volumeDecimal)
+}
+inline double QuoteBasicData::_internal_volumedecimal() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.volumedecimal_;
+}
+inline void QuoteBasicData::_internal_set_volumedecimal(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.volumedecimal_ = value;
+}
+
+// optional sint64 cumVolume = 30;
+inline bool QuoteBasicData::has_cumvolume() const {
+  bool value = (_impl_._has_bits_[0] & 0x00200000u) != 0;
+  return value;
+}
+inline void QuoteBasicData::clear_cumvolume() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cumvolume_ = ::int64_t{0};
+  _impl_._has_bits_[0] &= ~0x00200000u;
+}
+inline ::int64_t QuoteBasicData::cumvolume() const {
+  // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.cumVolume)
+  return _internal_cumvolume();
+}
+inline void QuoteBasicData::set_cumvolume(::int64_t value) {
+  _internal_set_cumvolume(value);
+  _impl_._has_bits_[0] |= 0x00200000u;
+  // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.cumVolume)
+}
+inline ::int64_t QuoteBasicData::_internal_cumvolume() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.cumvolume_;
+}
+inline void QuoteBasicData::_internal_set_cumvolume(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cumvolume_ = value;
+}
+
+// optional double cumAmount = 31;
+inline bool QuoteBasicData::has_cumamount() const {
+  bool value = (_impl_._has_bits_[0] & 0x00400000u) != 0;
+  return value;
+}
+inline void QuoteBasicData::clear_cumamount() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cumamount_ = 0;
+  _impl_._has_bits_[0] &= ~0x00400000u;
+}
+inline double QuoteBasicData::cumamount() const {
+  // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.cumAmount)
+  return _internal_cumamount();
+}
+inline void QuoteBasicData::set_cumamount(double value) {
+  _internal_set_cumamount(value);
+  _impl_._has_bits_[0] |= 0x00400000u;
+  // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.cumAmount)
+}
+inline double QuoteBasicData::_internal_cumamount() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.cumamount_;
+}
+inline void QuoteBasicData::_internal_set_cumamount(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cumamount_ = value;
+}
+
+// optional string session = 32;
+inline bool QuoteBasicData::has_session() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline void QuoteBasicData::clear_session() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.session_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline const std::string& QuoteBasicData::session() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:tigeropen.push.pb.QuoteBasicData.session)
+  return _internal_session();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void QuoteBasicData::set_session(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.session_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:tigeropen.push.pb.QuoteBasicData.session)
+}
+inline std::string* QuoteBasicData::mutable_session() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_session();
+  // @@protoc_insertion_point(field_mutable:tigeropen.push.pb.QuoteBasicData.session)
+  return _s;
+}
+inline const std::string& QuoteBasicData::_internal_session() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.session_.Get();
+}
+inline void QuoteBasicData::_internal_set_session(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.session_.Set(value, GetArena());
+}
+inline std::string* QuoteBasicData::_internal_mutable_session() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_._has_bits_[0] |= 0x00000010u;
+  return _impl_.session_.Mutable( GetArena());
+}
+inline std::string* QuoteBasicData::release_session() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:tigeropen.push.pb.QuoteBasicData.session)
+  if ((_impl_._has_bits_[0] & 0x00000010u) == 0) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000010u;
+  auto* released = _impl_.session_.Release();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.session_.Set("", GetArena());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return released;
+}
+inline void QuoteBasicData::set_allocated_session(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000010u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000010u;
+  }
+  _impl_.session_.SetAllocated(value, GetArena());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.session_.IsDefault()) {
+          _impl_.session_.Set("", GetArena());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tigeropen.push.pb.QuoteBasicData.session)
 }
 
 #ifdef __GNUC__

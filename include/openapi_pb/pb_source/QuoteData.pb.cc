@@ -29,14 +29,14 @@ namespace pb {
 
 inline constexpr QuoteData_Minute::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : p_{0},
+      : _cached_size_{0},
+        p_{0},
         a_{0},
         t_{::uint64_t{0u}},
         v_{::int64_t{0}},
         o_{0},
         h_{0},
-        l_{0},
-        _cached_size_{0} {}
+        l_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR QuoteData_Minute::QuoteData_Minute(::_pbi::ConstantInitialized)
@@ -76,6 +76,9 @@ inline constexpr QuoteData::Impl_::Impl_(
         identifier_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        session_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         mi_{nullptr},
         timestamp_{::uint64_t{0u}},
         servertimestamp_{::uint64_t{0u}},
@@ -98,7 +101,10 @@ inline constexpr QuoteData::Impl_::Impl_(
         bidtimestamp_{::uint64_t{0u}},
         openint_{::int64_t{0}},
         tradetime_{::uint64_t{0u}},
-        presettlement_{0} {}
+        presettlement_{0},
+        volumedecimal_{0},
+        cumvolume_{::int64_t{0}},
+        cumamount_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR QuoteData::QuoteData(::_pbi::ConstantInitialized)
@@ -129,7 +135,7 @@ static constexpr const ::_pb::ServiceDescriptor**
 const ::uint32_t
     TableStruct_QuoteData_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
-        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData_Minute, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData_Minute, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -144,6 +150,13 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData_Minute, _impl_.o_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData_Minute, _impl_.h_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData_Minute, _impl_.l_),
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        0,
+        1,
+        2,
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -180,40 +193,48 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.presettlement_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.mintick_),
         PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.mi_),
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.volumedecimal_),
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.cumvolume_),
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.cumamount_),
+        PROTOBUF_FIELD_OFFSET(::tigeropen::push::pb::QuoteData, _impl_.session_),
         ~0u,
         ~0u,
         ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
-        ~0u,
+        6,
+        7,
+        8,
+        9,
         0,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        1,
+        2,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        3,
+        23,
+        24,
+        25,
+        16,
+        5,
+        26,
+        27,
+        28,
+        4,
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, -1, -1, sizeof(::tigeropen::push::pb::QuoteData_Minute)},
-        {15, 51, -1, sizeof(::tigeropen::push::pb::QuoteData)},
+        {0, 15, -1, sizeof(::tigeropen::push::pb::QuoteData_Minute)},
+        {22, 62, -1, sizeof(::tigeropen::push::pb::QuoteData)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::tigeropen::push::pb::_QuoteData_Minute_default_instance_._instance,
@@ -222,25 +243,41 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_QuoteData_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\017QuoteData.proto\022\021tigeropen.push.pb\032\022So"
-    "cketCommon.proto\"\274\005\n\tQuoteData\022\016\n\006symbol"
+    "cketCommon.proto\"\322\n\n\tQuoteData\022\016\n\006symbol"
     "\030\001 \001(\t\0227\n\004type\030\002 \001(\0162).tigeropen.push.pb"
     ".SocketCommon.QuoteType\022\021\n\ttimestamp\030\003 \001"
-    "(\004\022\027\n\017serverTimestamp\030\004 \001(\004\022\020\n\010avgPrice\030"
-    "\005 \001(\001\022\023\n\013latestPrice\030\006 \001(\001\022\034\n\024latestPric"
-    "eTimestamp\030\007 \001(\004\022\022\n\nlatestTime\030\010 \001(\t\022\020\n\010"
-    "preClose\030\t \001(\001\022\016\n\006volume\030\n \001(\022\022\016\n\006amount"
-    "\030\013 \001(\001\022\014\n\004open\030\014 \001(\001\022\014\n\004high\030\r \001(\001\022\013\n\003lo"
-    "w\030\016 \001(\001\022\026\n\016hourTradingTag\030\017 \001(\t\022\024\n\014marke"
-    "tStatus\030\020 \001(\t\022\020\n\010askPrice\030\021 \001(\001\022\017\n\007askSi"
-    "ze\030\022 \001(\022\022\024\n\014askTimestamp\030\023 \001(\004\022\020\n\010bidPri"
-    "ce\030\024 \001(\001\022\017\n\007bidSize\030\025 \001(\022\022\024\n\014bidTimestam"
-    "p\030\026 \001(\004\022\022\n\nidentifier\030\027 \001(\t\022\017\n\007openInt\030\030"
-    " \001(\022\022\021\n\ttradeTime\030\031 \001(\004\022\025\n\rpreSettlement"
-    "\030\032 \001(\001\022\017\n\007minTick\030\033 \001(\002\022/\n\002mi\030\034 \001(\0132#.ti"
-    "geropen.push.pb.QuoteData.Minute\032U\n\006Minu"
-    "te\022\t\n\001p\030\001 \001(\001\022\t\n\001a\030\002 \001(\001\022\t\n\001t\030\003 \001(\004\022\t\n\001v"
-    "\030\004 \001(\022\022\t\n\001o\030\005 \001(\001\022\t\n\001h\030\006 \001(\001\022\t\n\001l\030\007 \001(\001b"
-    "\006proto3"
+    "(\004\022\034\n\017serverTimestamp\030\004 \001(\004H\000\210\001\001\022\025\n\010avgP"
+    "rice\030\005 \001(\001H\001\210\001\001\022\030\n\013latestPrice\030\006 \001(\001H\002\210\001"
+    "\001\022!\n\024latestPriceTimestamp\030\007 \001(\004H\003\210\001\001\022\027\n\n"
+    "latestTime\030\010 \001(\tH\004\210\001\001\022\025\n\010preClose\030\t \001(\001H"
+    "\005\210\001\001\022\023\n\006volume\030\n \001(\022H\006\210\001\001\022\023\n\006amount\030\013 \001("
+    "\001H\007\210\001\001\022\021\n\004open\030\014 \001(\001H\010\210\001\001\022\021\n\004high\030\r \001(\001H"
+    "\t\210\001\001\022\020\n\003low\030\016 \001(\001H\n\210\001\001\022\033\n\016hourTradingTag"
+    "\030\017 \001(\tH\013\210\001\001\022\031\n\014marketStatus\030\020 \001(\tH\014\210\001\001\022\025"
+    "\n\010askPrice\030\021 \001(\001H\r\210\001\001\022\024\n\007askSize\030\022 \001(\022H\016"
+    "\210\001\001\022\031\n\014askTimestamp\030\023 \001(\004H\017\210\001\001\022\025\n\010bidPri"
+    "ce\030\024 \001(\001H\020\210\001\001\022\024\n\007bidSize\030\025 \001(\022H\021\210\001\001\022\031\n\014b"
+    "idTimestamp\030\026 \001(\004H\022\210\001\001\022\027\n\nidentifier\030\027 \001"
+    "(\tH\023\210\001\001\022\024\n\007openInt\030\030 \001(\022H\024\210\001\001\022\026\n\ttradeTi"
+    "me\030\031 \001(\004H\025\210\001\001\022\032\n\rpreSettlement\030\032 \001(\001H\026\210\001"
+    "\001\022\024\n\007minTick\030\033 \001(\002H\027\210\001\001\0224\n\002mi\030\034 \001(\0132#.ti"
+    "geropen.push.pb.QuoteData.MinuteH\030\210\001\001\022\032\n"
+    "\rvolumeDecimal\030\035 \001(\001H\031\210\001\001\022\026\n\tcumVolume\030\036"
+    " \001(\022H\032\210\001\001\022\026\n\tcumAmount\030\037 \001(\001H\033\210\001\001\022\024\n\007ses"
+    "sion\030  \001(\tH\034\210\001\001\032v\n\006Minute\022\t\n\001p\030\001 \001(\001\022\t\n\001"
+    "a\030\002 \001(\001\022\t\n\001t\030\003 \001(\004\022\t\n\001v\030\004 \001(\022\022\016\n\001o\030\005 \001(\001"
+    "H\000\210\001\001\022\016\n\001h\030\006 \001(\001H\001\210\001\001\022\016\n\001l\030\007 \001(\001H\002\210\001\001B\004\n"
+    "\002_oB\004\n\002_hB\004\n\002_lB\022\n\020_serverTimestampB\013\n\t_"
+    "avgPriceB\016\n\014_latestPriceB\027\n\025_latestPrice"
+    "TimestampB\r\n\013_latestTimeB\013\n\t_preCloseB\t\n"
+    "\007_volumeB\t\n\007_amountB\007\n\005_openB\007\n\005_highB\006\n"
+    "\004_lowB\021\n\017_hourTradingTagB\017\n\r_marketStatu"
+    "sB\013\n\t_askPriceB\n\n\010_askSizeB\017\n\r_askTimest"
+    "ampB\013\n\t_bidPriceB\n\n\010_bidSizeB\017\n\r_bidTime"
+    "stampB\r\n\013_identifierB\n\n\010_openIntB\014\n\n_tra"
+    "deTimeB\020\n\016_preSettlementB\n\n\010_minTickB\005\n\003"
+    "_miB\020\n\016_volumeDecimalB\014\n\n_cumVolumeB\014\n\n_"
+    "cumAmountB\n\n\010_sessionb\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_QuoteData_2eproto_deps[1] =
     {
@@ -250,7 +287,7 @@ static ::absl::once_flag descriptor_table_QuoteData_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_QuoteData_2eproto = {
     false,
     false,
-    767,
+    1429,
     descriptor_table_protodef_QuoteData_2eproto,
     "QuoteData.proto",
     &descriptor_table_QuoteData_2eproto_once,
@@ -270,6 +307,10 @@ namespace pb {
 
 class QuoteData_Minute::_Internal {
  public:
+  using HasBits =
+      decltype(std::declval<QuoteData_Minute>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_._has_bits_);
 };
 
 QuoteData_Minute::QuoteData_Minute(::google::protobuf::Arena* arena)
@@ -341,7 +382,7 @@ const ::google::protobuf::MessageLite::ClassData* QuoteData_Minute::GetClassData
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<3, 7, 0, 0, 2> QuoteData_Minute::_table_ = {
   {
-    0,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_._has_bits_),
     0, // no _extensions_
     7, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
@@ -370,39 +411,39 @@ const ::_pbi::TcParseTable<3, 7, 0, 0, 2> QuoteData_Minute::_table_ = {
     // sint64 v = 4;
     {::_pbi::TcParser::FastZ64S1,
      {32, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.v_)}},
-    // double o = 5;
+    // optional double o = 5;
     {::_pbi::TcParser::FastF64S1,
-     {41, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.o_)}},
-    // double h = 6;
+     {41, 0, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.o_)}},
+    // optional double h = 6;
     {::_pbi::TcParser::FastF64S1,
-     {49, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.h_)}},
-    // double l = 7;
+     {49, 1, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.h_)}},
+    // optional double l = 7;
     {::_pbi::TcParser::FastF64S1,
-     {57, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.l_)}},
+     {57, 2, 0, PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.l_)}},
   }}, {{
     65535, 65535
   }}, {{
     // double p = 1;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.p_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.p_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
     // double a = 2;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.a_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.a_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
     // uint64 t = 3;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.t_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.t_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
     // sint64 v = 4;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.v_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.v_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
-    // double o = 5;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.o_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double h = 6;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.h_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double l = 7;
-    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.l_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // optional double o = 5;
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.o_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double h = 6;
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.h_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double l = 7;
+    {PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.l_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
   }},
   // no aux_entries
   {{
@@ -417,8 +458,15 @@ PROTOBUF_NOINLINE void QuoteData_Minute::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.p_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.l_) -
-      reinterpret_cast<char*>(&_impl_.p_)) + sizeof(_impl_.l_));
+      reinterpret_cast<char*>(&_impl_.v_) -
+      reinterpret_cast<char*>(&_impl_.p_)) + sizeof(_impl_.v_));
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    ::memset(&_impl_.o_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.l_) -
+        reinterpret_cast<char*>(&_impl_.o_)) + sizeof(_impl_.l_));
+  }
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -465,22 +513,23 @@ PROTOBUF_NOINLINE void QuoteData_Minute::Clear() {
                 4, this_._internal_v(), target);
           }
 
-          // double o = 5;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_o()) != 0) {
+          cached_has_bits = this_._impl_._has_bits_[0];
+          // optional double o = 5;
+          if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_o(), target);
           }
 
-          // double h = 6;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_h()) != 0) {
+          // optional double h = 6;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_h(), target);
           }
 
-          // double l = 7;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_l()) != 0) {
+          // optional double l = 7;
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 7, this_._internal_l(), target);
@@ -529,16 +578,19 @@ PROTOBUF_NOINLINE void QuoteData_Minute::Clear() {
               total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(
                   this_._internal_v());
             }
-            // double o = 5;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_o()) != 0) {
+          }
+          cached_has_bits = this_._impl_._has_bits_[0];
+          if (cached_has_bits & 0x00000007u) {
+            // optional double o = 5;
+            if (cached_has_bits & 0x00000001u) {
               total_size += 9;
             }
-            // double h = 6;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_h()) != 0) {
+            // optional double h = 6;
+            if (cached_has_bits & 0x00000002u) {
               total_size += 9;
             }
-            // double l = 7;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_l()) != 0) {
+            // optional double l = 7;
+            if (cached_has_bits & 0x00000004u) {
               total_size += 9;
             }
           }
@@ -566,15 +618,19 @@ void QuoteData_Minute::MergeImpl(::google::protobuf::MessageLite& to_msg, const 
   if (from._internal_v() != 0) {
     _this->_impl_.v_ = from._impl_.v_;
   }
-  if (::absl::bit_cast<::uint64_t>(from._internal_o()) != 0) {
-    _this->_impl_.o_ = from._impl_.o_;
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.o_ = from._impl_.o_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.h_ = from._impl_.h_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.l_ = from._impl_.l_;
+    }
   }
-  if (::absl::bit_cast<::uint64_t>(from._internal_h()) != 0) {
-    _this->_impl_.h_ = from._impl_.h_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_l()) != 0) {
-    _this->_impl_.l_ = from._impl_.l_;
-  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -589,6 +645,7 @@ void QuoteData_Minute::CopyFrom(const QuoteData_Minute& from) {
 void QuoteData_Minute::InternalSwap(QuoteData_Minute* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(QuoteData_Minute, _impl_.l_)
       + sizeof(QuoteData_Minute::_impl_.l_)
@@ -628,7 +685,8 @@ inline PROTOBUF_NDEBUG_INLINE QuoteData::Impl_::Impl_(
         latesttime_(arena, from.latesttime_),
         hourtradingtag_(arena, from.hourtradingtag_),
         marketstatus_(arena, from.marketstatus_),
-        identifier_(arena, from.identifier_) {}
+        identifier_(arena, from.identifier_),
+        session_(arena, from.session_) {}
 
 QuoteData::QuoteData(
     ::google::protobuf::Arena* arena,
@@ -644,16 +702,16 @@ QuoteData::QuoteData(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.mi_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::tigeropen::push::pb::QuoteData_Minute>(
+  _impl_.mi_ = (cached_has_bits & 0x00000020u) ? ::google::protobuf::Message::CopyConstruct<::tigeropen::push::pb::QuoteData_Minute>(
                               arena, *from._impl_.mi_)
                         : nullptr;
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, timestamp_),
            reinterpret_cast<const char *>(&from._impl_) +
                offsetof(Impl_, timestamp_),
-           offsetof(Impl_, presettlement_) -
+           offsetof(Impl_, cumamount_) -
                offsetof(Impl_, timestamp_) +
-               sizeof(Impl_::presettlement_));
+               sizeof(Impl_::cumamount_));
 
   // @@protoc_insertion_point(copy_constructor:tigeropen.push.pb.QuoteData)
 }
@@ -665,16 +723,17 @@ inline PROTOBUF_NDEBUG_INLINE QuoteData::Impl_::Impl_(
         latesttime_(arena),
         hourtradingtag_(arena),
         marketstatus_(arena),
-        identifier_(arena) {}
+        identifier_(arena),
+        session_(arena) {}
 
 inline void QuoteData::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, mi_),
            0,
-           offsetof(Impl_, presettlement_) -
+           offsetof(Impl_, cumamount_) -
                offsetof(Impl_, mi_) +
-               sizeof(Impl_::presettlement_));
+               sizeof(Impl_::cumamount_));
 }
 QuoteData::~QuoteData() {
   // @@protoc_insertion_point(destructor:tigeropen.push.pb.QuoteData)
@@ -688,6 +747,7 @@ inline void QuoteData::SharedDtor() {
   _impl_.hourtradingtag_.Destroy();
   _impl_.marketstatus_.Destroy();
   _impl_.identifier_.Destroy();
+  _impl_.session_.Destroy();
   delete _impl_.mi_;
   _impl_.~Impl_();
 }
@@ -721,15 +781,15 @@ const ::google::protobuf::MessageLite::ClassData* QuoteData::GetClassData() cons
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<5, 28, 1, 112, 2> QuoteData::_table_ = {
+const ::_pbi::TcParseTable<5, 32, 1, 127, 2> QuoteData::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(QuoteData, _impl_._has_bits_),
     0, // no _extensions_
-    28, 248,  // max_field_number, fast_idx_mask
+    32, 248,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4026531840,  // skipmap
+    0,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    28,  // num_field_entries
+    32,  // num_field_entries
     1,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
@@ -749,84 +809,90 @@ const ::_pbi::TcParseTable<5, 28, 1, 112, 2> QuoteData::_table_ = {
     // uint64 timestamp = 3;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteData, _impl_.timestamp_), 63>(),
      {24, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.timestamp_)}},
-    // uint64 serverTimestamp = 4;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteData, _impl_.servertimestamp_), 63>(),
-     {32, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.servertimestamp_)}},
-    // double avgPrice = 5;
+    // optional uint64 serverTimestamp = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteData, _impl_.servertimestamp_), 6>(),
+     {32, 6, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.servertimestamp_)}},
+    // optional double avgPrice = 5;
     {::_pbi::TcParser::FastF64S1,
-     {41, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.avgprice_)}},
-    // double latestPrice = 6;
+     {41, 7, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.avgprice_)}},
+    // optional double latestPrice = 6;
     {::_pbi::TcParser::FastF64S1,
-     {49, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestprice_)}},
-    // uint64 latestPriceTimestamp = 7;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteData, _impl_.latestpricetimestamp_), 63>(),
-     {56, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestpricetimestamp_)}},
-    // string latestTime = 8;
+     {49, 8, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestprice_)}},
+    // optional uint64 latestPriceTimestamp = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(QuoteData, _impl_.latestpricetimestamp_), 9>(),
+     {56, 9, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestpricetimestamp_)}},
+    // optional string latestTime = 8;
     {::_pbi::TcParser::FastUS1,
-     {66, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latesttime_)}},
-    // double preClose = 9;
+     {66, 0, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latesttime_)}},
+    // optional double preClose = 9;
     {::_pbi::TcParser::FastF64S1,
-     {73, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.preclose_)}},
-    // sint64 volume = 10;
+     {73, 10, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.preclose_)}},
+    // optional sint64 volume = 10;
     {::_pbi::TcParser::FastZ64S1,
-     {80, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volume_)}},
-    // double amount = 11;
+     {80, 11, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volume_)}},
+    // optional double amount = 11;
     {::_pbi::TcParser::FastF64S1,
-     {89, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.amount_)}},
-    // double open = 12;
+     {89, 12, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.amount_)}},
+    // optional double open = 12;
     {::_pbi::TcParser::FastF64S1,
-     {97, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.open_)}},
-    // double high = 13;
+     {97, 13, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.open_)}},
+    // optional double high = 13;
     {::_pbi::TcParser::FastF64S1,
-     {105, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.high_)}},
-    // double low = 14;
+     {105, 14, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.high_)}},
+    // optional double low = 14;
     {::_pbi::TcParser::FastF64S1,
-     {113, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.low_)}},
-    // string hourTradingTag = 15;
+     {113, 15, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.low_)}},
+    // optional string hourTradingTag = 15;
     {::_pbi::TcParser::FastUS1,
-     {122, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.hourtradingtag_)}},
-    // string marketStatus = 16;
+     {122, 1, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.hourtradingtag_)}},
+    // optional string marketStatus = 16;
     {::_pbi::TcParser::FastUS2,
-     {386, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.marketstatus_)}},
-    // double askPrice = 17;
+     {386, 2, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.marketstatus_)}},
+    // optional double askPrice = 17;
     {::_pbi::TcParser::FastF64S2,
-     {393, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.askprice_)}},
-    // sint64 askSize = 18;
+     {393, 17, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.askprice_)}},
+    // optional sint64 askSize = 18;
     {::_pbi::TcParser::FastZ64S2,
-     {400, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asksize_)}},
-    // uint64 askTimestamp = 19;
+     {400, 18, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asksize_)}},
+    // optional uint64 askTimestamp = 19;
     {::_pbi::TcParser::FastV64S2,
-     {408, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asktimestamp_)}},
-    // double bidPrice = 20;
+     {408, 19, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asktimestamp_)}},
+    // optional double bidPrice = 20;
     {::_pbi::TcParser::FastF64S2,
-     {417, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidprice_)}},
-    // sint64 bidSize = 21;
+     {417, 20, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidprice_)}},
+    // optional sint64 bidSize = 21;
     {::_pbi::TcParser::FastZ64S2,
-     {424, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidsize_)}},
-    // uint64 bidTimestamp = 22;
+     {424, 21, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidsize_)}},
+    // optional uint64 bidTimestamp = 22;
     {::_pbi::TcParser::FastV64S2,
-     {432, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidtimestamp_)}},
-    // string identifier = 23;
+     {432, 22, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidtimestamp_)}},
+    // optional string identifier = 23;
     {::_pbi::TcParser::FastUS2,
-     {442, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.identifier_)}},
-    // sint64 openInt = 24;
+     {442, 3, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.identifier_)}},
+    // optional sint64 openInt = 24;
     {::_pbi::TcParser::FastZ64S2,
-     {448, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.openint_)}},
-    // uint64 tradeTime = 25;
+     {448, 23, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.openint_)}},
+    // optional uint64 tradeTime = 25;
     {::_pbi::TcParser::FastV64S2,
-     {456, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.tradetime_)}},
-    // double preSettlement = 26;
+     {456, 24, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.tradetime_)}},
+    // optional double preSettlement = 26;
     {::_pbi::TcParser::FastF64S2,
-     {465, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.presettlement_)}},
-    // float minTick = 27;
+     {465, 25, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.presettlement_)}},
+    // optional float minTick = 27;
     {::_pbi::TcParser::FastF32S2,
-     {477, 63, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mintick_)}},
-    // .tigeropen.push.pb.QuoteData.Minute mi = 28;
+     {477, 16, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mintick_)}},
+    // optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
     {::_pbi::TcParser::FastMtS2,
-     {482, 0, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mi_)}},
-    {::_pbi::TcParser::MiniParse, {}},
-    {::_pbi::TcParser::MiniParse, {}},
-    {::_pbi::TcParser::MiniParse, {}},
+     {482, 5, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mi_)}},
+    // optional double volumeDecimal = 29;
+    {::_pbi::TcParser::FastF64S2,
+     {489, 26, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volumedecimal_)}},
+    // optional sint64 cumVolume = 30;
+    {::_pbi::TcParser::FastZ64S2,
+     {496, 27, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.cumvolume_)}},
+    // optional double cumAmount = 31;
+    {::_pbi::TcParser::FastF64S2,
+     {505, 28, 0, PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.cumamount_)}},
   }}, {{
     65535, 65535
   }}, {{
@@ -839,91 +905,104 @@ const ::_pbi::TcParseTable<5, 28, 1, 112, 2> QuoteData::_table_ = {
     // uint64 timestamp = 3;
     {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.timestamp_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // uint64 serverTimestamp = 4;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.servertimestamp_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // double avgPrice = 5;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.avgprice_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double latestPrice = 6;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestprice_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // uint64 latestPriceTimestamp = 7;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestpricetimestamp_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // string latestTime = 8;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latesttime_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // double preClose = 9;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.preclose_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // sint64 volume = 10;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volume_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
-    // double amount = 11;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.amount_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double open = 12;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.open_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double high = 13;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.high_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double low = 14;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.low_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // string hourTradingTag = 15;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.hourtradingtag_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string marketStatus = 16;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.marketstatus_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // double askPrice = 17;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.askprice_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // sint64 askSize = 18;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asksize_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
-    // uint64 askTimestamp = 19;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asktimestamp_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // double bidPrice = 20;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidprice_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // sint64 bidSize = 21;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidsize_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
-    // uint64 bidTimestamp = 22;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidtimestamp_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // string identifier = 23;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.identifier_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // sint64 openInt = 24;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.openint_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kSInt64)},
-    // uint64 tradeTime = 25;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.tradetime_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // double preSettlement = 26;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.presettlement_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // float minTick = 27;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mintick_), -1, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
-    // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mi_), _Internal::kHasBitsOffset + 0, 0,
+    // optional uint64 serverTimestamp = 4;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.servertimestamp_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    // optional double avgPrice = 5;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.avgprice_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double latestPrice = 6;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestprice_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional uint64 latestPriceTimestamp = 7;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latestpricetimestamp_), _Internal::kHasBitsOffset + 9, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    // optional string latestTime = 8;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.latesttime_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // optional double preClose = 9;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.preclose_), _Internal::kHasBitsOffset + 10, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional sint64 volume = 10;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volume_), _Internal::kHasBitsOffset + 11, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kSInt64)},
+    // optional double amount = 11;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.amount_), _Internal::kHasBitsOffset + 12, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double open = 12;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.open_), _Internal::kHasBitsOffset + 13, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double high = 13;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.high_), _Internal::kHasBitsOffset + 14, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double low = 14;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.low_), _Internal::kHasBitsOffset + 15, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional string hourTradingTag = 15;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.hourtradingtag_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // optional string marketStatus = 16;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.marketstatus_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // optional double askPrice = 17;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.askprice_), _Internal::kHasBitsOffset + 17, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional sint64 askSize = 18;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asksize_), _Internal::kHasBitsOffset + 18, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kSInt64)},
+    // optional uint64 askTimestamp = 19;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.asktimestamp_), _Internal::kHasBitsOffset + 19, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    // optional double bidPrice = 20;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidprice_), _Internal::kHasBitsOffset + 20, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional sint64 bidSize = 21;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidsize_), _Internal::kHasBitsOffset + 21, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kSInt64)},
+    // optional uint64 bidTimestamp = 22;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.bidtimestamp_), _Internal::kHasBitsOffset + 22, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    // optional string identifier = 23;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.identifier_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // optional sint64 openInt = 24;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.openint_), _Internal::kHasBitsOffset + 23, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kSInt64)},
+    // optional uint64 tradeTime = 25;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.tradetime_), _Internal::kHasBitsOffset + 24, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+    // optional double preSettlement = 26;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.presettlement_), _Internal::kHasBitsOffset + 25, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional float minTick = 27;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mintick_), _Internal::kHasBitsOffset + 16, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mi_), _Internal::kHasBitsOffset + 5, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // optional double volumeDecimal = 29;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.volumedecimal_), _Internal::kHasBitsOffset + 26, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional sint64 cumVolume = 30;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.cumvolume_), _Internal::kHasBitsOffset + 27, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kSInt64)},
+    // optional double cumAmount = 31;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.cumamount_), _Internal::kHasBitsOffset + 28, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional string session = 32;
+    {PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.session_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }}, {{
     {::_pbi::TcParser::GetTable<::tigeropen::push::pb::QuoteData_Minute>()},
   }}, {{
-    "\33\6\0\0\0\0\0\0\12\0\0\0\0\0\0\16\14\0\0\0\0\0\0\12\0\0\0\0\0\0\0\0"
+    "\33\6\0\0\0\0\0\0\12\0\0\0\0\0\0\16\14\0\0\0\0\0\0\12\0\0\0\0\0\0\0\0\7\0\0\0\0\0\0\0"
     "tigeropen.push.pb.QuoteData"
     "symbol"
     "latestTime"
     "hourTradingTag"
     "marketStatus"
     "identifier"
+    "session"
   }},
 };
 
@@ -935,18 +1014,50 @@ PROTOBUF_NOINLINE void QuoteData::Clear() {
   (void) cached_has_bits;
 
   _impl_.symbol_.ClearToEmpty();
-  _impl_.latesttime_.ClearToEmpty();
-  _impl_.hourtradingtag_.ClearToEmpty();
-  _impl_.marketstatus_.ClearToEmpty();
-  _impl_.identifier_.ClearToEmpty();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(_impl_.mi_ != nullptr);
-    _impl_.mi_->Clear();
+  if (cached_has_bits & 0x0000003fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.latesttime_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.hourtradingtag_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.marketstatus_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _impl_.identifier_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _impl_.session_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      ABSL_DCHECK(_impl_.mi_ != nullptr);
+      _impl_.mi_->Clear();
+    }
   }
-  ::memset(&_impl_.timestamp_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.presettlement_) -
-      reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.presettlement_));
+  _impl_.timestamp_ = ::uint64_t{0u};
+  if (cached_has_bits & 0x000000c0u) {
+    ::memset(&_impl_.servertimestamp_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.avgprice_) -
+        reinterpret_cast<char*>(&_impl_.servertimestamp_)) + sizeof(_impl_.avgprice_));
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    ::memset(&_impl_.latestprice_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.low_) -
+        reinterpret_cast<char*>(&_impl_.latestprice_)) + sizeof(_impl_.low_));
+  }
+  _impl_.type_ = 0;
+  if (cached_has_bits & 0x00ff0000u) {
+    ::memset(&_impl_.mintick_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.openint_) -
+        reinterpret_cast<char*>(&_impl_.mintick_)) + sizeof(_impl_.openint_));
+  }
+  if (cached_has_bits & 0x1f000000u) {
+    ::memset(&_impl_.tradetime_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.cumamount_) -
+        reinterpret_cast<char*>(&_impl_.tradetime_)) + sizeof(_impl_.cumamount_));
+  }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -988,184 +1099,213 @@ PROTOBUF_NOINLINE void QuoteData::Clear() {
                 3, this_._internal_timestamp(), target);
           }
 
-          // uint64 serverTimestamp = 4;
-          if (this_._internal_servertimestamp() != 0) {
+          cached_has_bits = this_._impl_._has_bits_[0];
+          // optional uint64 serverTimestamp = 4;
+          if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
                 4, this_._internal_servertimestamp(), target);
           }
 
-          // double avgPrice = 5;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_avgprice()) != 0) {
+          // optional double avgPrice = 5;
+          if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_avgprice(), target);
           }
 
-          // double latestPrice = 6;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_latestprice()) != 0) {
+          // optional double latestPrice = 6;
+          if (cached_has_bits & 0x00000100u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_latestprice(), target);
           }
 
-          // uint64 latestPriceTimestamp = 7;
-          if (this_._internal_latestpricetimestamp() != 0) {
+          // optional uint64 latestPriceTimestamp = 7;
+          if (cached_has_bits & 0x00000200u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
                 7, this_._internal_latestpricetimestamp(), target);
           }
 
-          // string latestTime = 8;
-          if (!this_._internal_latesttime().empty()) {
+          // optional string latestTime = 8;
+          if (cached_has_bits & 0x00000001u) {
             const std::string& _s = this_._internal_latesttime();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                 _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteData.latestTime");
             target = stream->WriteStringMaybeAliased(8, _s, target);
           }
 
-          // double preClose = 9;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_preclose()) != 0) {
+          // optional double preClose = 9;
+          if (cached_has_bits & 0x00000400u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 9, this_._internal_preclose(), target);
           }
 
-          // sint64 volume = 10;
-          if (this_._internal_volume() != 0) {
+          // optional sint64 volume = 10;
+          if (cached_has_bits & 0x00000800u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
                 10, this_._internal_volume(), target);
           }
 
-          // double amount = 11;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_amount()) != 0) {
+          // optional double amount = 11;
+          if (cached_has_bits & 0x00001000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 11, this_._internal_amount(), target);
           }
 
-          // double open = 12;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_open()) != 0) {
+          // optional double open = 12;
+          if (cached_has_bits & 0x00002000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 12, this_._internal_open(), target);
           }
 
-          // double high = 13;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_high()) != 0) {
+          // optional double high = 13;
+          if (cached_has_bits & 0x00004000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 13, this_._internal_high(), target);
           }
 
-          // double low = 14;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_low()) != 0) {
+          // optional double low = 14;
+          if (cached_has_bits & 0x00008000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 14, this_._internal_low(), target);
           }
 
-          // string hourTradingTag = 15;
-          if (!this_._internal_hourtradingtag().empty()) {
+          // optional string hourTradingTag = 15;
+          if (cached_has_bits & 0x00000002u) {
             const std::string& _s = this_._internal_hourtradingtag();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                 _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteData.hourTradingTag");
             target = stream->WriteStringMaybeAliased(15, _s, target);
           }
 
-          // string marketStatus = 16;
-          if (!this_._internal_marketstatus().empty()) {
+          // optional string marketStatus = 16;
+          if (cached_has_bits & 0x00000004u) {
             const std::string& _s = this_._internal_marketstatus();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                 _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteData.marketStatus");
             target = stream->WriteStringMaybeAliased(16, _s, target);
           }
 
-          // double askPrice = 17;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_askprice()) != 0) {
+          // optional double askPrice = 17;
+          if (cached_has_bits & 0x00020000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 17, this_._internal_askprice(), target);
           }
 
-          // sint64 askSize = 18;
-          if (this_._internal_asksize() != 0) {
+          // optional sint64 askSize = 18;
+          if (cached_has_bits & 0x00040000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
                 18, this_._internal_asksize(), target);
           }
 
-          // uint64 askTimestamp = 19;
-          if (this_._internal_asktimestamp() != 0) {
+          // optional uint64 askTimestamp = 19;
+          if (cached_has_bits & 0x00080000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
                 19, this_._internal_asktimestamp(), target);
           }
 
-          // double bidPrice = 20;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_bidprice()) != 0) {
+          // optional double bidPrice = 20;
+          if (cached_has_bits & 0x00100000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 20, this_._internal_bidprice(), target);
           }
 
-          // sint64 bidSize = 21;
-          if (this_._internal_bidsize() != 0) {
+          // optional sint64 bidSize = 21;
+          if (cached_has_bits & 0x00200000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
                 21, this_._internal_bidsize(), target);
           }
 
-          // uint64 bidTimestamp = 22;
-          if (this_._internal_bidtimestamp() != 0) {
+          // optional uint64 bidTimestamp = 22;
+          if (cached_has_bits & 0x00400000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
                 22, this_._internal_bidtimestamp(), target);
           }
 
-          // string identifier = 23;
-          if (!this_._internal_identifier().empty()) {
+          // optional string identifier = 23;
+          if (cached_has_bits & 0x00000008u) {
             const std::string& _s = this_._internal_identifier();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                 _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteData.identifier");
             target = stream->WriteStringMaybeAliased(23, _s, target);
           }
 
-          // sint64 openInt = 24;
-          if (this_._internal_openint() != 0) {
+          // optional sint64 openInt = 24;
+          if (cached_has_bits & 0x00800000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
                 24, this_._internal_openint(), target);
           }
 
-          // uint64 tradeTime = 25;
-          if (this_._internal_tradetime() != 0) {
+          // optional uint64 tradeTime = 25;
+          if (cached_has_bits & 0x01000000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
                 25, this_._internal_tradetime(), target);
           }
 
-          // double preSettlement = 26;
-          if (::absl::bit_cast<::uint64_t>(this_._internal_presettlement()) != 0) {
+          // optional double preSettlement = 26;
+          if (cached_has_bits & 0x02000000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 26, this_._internal_presettlement(), target);
           }
 
-          // float minTick = 27;
-          if (::absl::bit_cast<::uint32_t>(this_._internal_mintick()) != 0) {
+          // optional float minTick = 27;
+          if (cached_has_bits & 0x00010000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteFloatToArray(
                 27, this_._internal_mintick(), target);
           }
 
-          cached_has_bits = this_._impl_._has_bits_[0];
-          // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-          if (cached_has_bits & 0x00000001u) {
+          // optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
+          if (cached_has_bits & 0x00000020u) {
             target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
                 28, *this_._impl_.mi_, this_._impl_.mi_->GetCachedSize(), target,
                 stream);
+          }
+
+          // optional double volumeDecimal = 29;
+          if (cached_has_bits & 0x04000000u) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+                29, this_._internal_volumedecimal(), target);
+          }
+
+          // optional sint64 cumVolume = 30;
+          if (cached_has_bits & 0x08000000u) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteSInt64ToArray(
+                30, this_._internal_cumvolume(), target);
+          }
+
+          // optional double cumAmount = 31;
+          if (cached_has_bits & 0x10000000u) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+                31, this_._internal_cumamount(), target);
+          }
+
+          // optional string session = 32;
+          if (cached_has_bits & 0x00000010u) {
+            const std::string& _s = this_._internal_session();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "tigeropen.push.pb.QuoteData.session");
+            target = stream->WriteStringMaybeAliased(32, _s, target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -1198,32 +1338,36 @@ PROTOBUF_NOINLINE void QuoteData::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_symbol());
             }
-            // string latestTime = 8;
-            if (!this_._internal_latesttime().empty()) {
+          }
+          cached_has_bits = this_._impl_._has_bits_[0];
+          if (cached_has_bits & 0x0000003fu) {
+            // optional string latestTime = 8;
+            if (cached_has_bits & 0x00000001u) {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_latesttime());
             }
-            // string hourTradingTag = 15;
-            if (!this_._internal_hourtradingtag().empty()) {
+            // optional string hourTradingTag = 15;
+            if (cached_has_bits & 0x00000002u) {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_hourtradingtag());
             }
-            // string marketStatus = 16;
-            if (!this_._internal_marketstatus().empty()) {
+            // optional string marketStatus = 16;
+            if (cached_has_bits & 0x00000004u) {
               total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_marketstatus());
             }
-            // string identifier = 23;
-            if (!this_._internal_identifier().empty()) {
+            // optional string identifier = 23;
+            if (cached_has_bits & 0x00000008u) {
               total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_identifier());
             }
-          }
-           {
-            // .tigeropen.push.pb.QuoteData.Minute mi = 28;
-            cached_has_bits =
-                this_._impl_._has_bits_[0];
-            if (cached_has_bits & 0x00000001u) {
+            // optional string session = 32;
+            if (cached_has_bits & 0x00000010u) {
+              total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_session());
+            }
+            // optional .tigeropen.push.pb.QuoteData.Minute mi = 28;
+            if (cached_has_bits & 0x00000020u) {
               total_size += 2 +
                             ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.mi_);
             }
@@ -1234,98 +1378,121 @@ PROTOBUF_NOINLINE void QuoteData::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_timestamp());
             }
-            // uint64 serverTimestamp = 4;
-            if (this_._internal_servertimestamp() != 0) {
+          }
+          if (cached_has_bits & 0x000000c0u) {
+            // optional uint64 serverTimestamp = 4;
+            if (cached_has_bits & 0x00000040u) {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_servertimestamp());
             }
-            // double avgPrice = 5;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_avgprice()) != 0) {
+            // optional double avgPrice = 5;
+            if (cached_has_bits & 0x00000080u) {
               total_size += 9;
             }
-            // double latestPrice = 6;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_latestprice()) != 0) {
+          }
+          if (cached_has_bits & 0x0000ff00u) {
+            // optional double latestPrice = 6;
+            if (cached_has_bits & 0x00000100u) {
               total_size += 9;
             }
-            // uint64 latestPriceTimestamp = 7;
-            if (this_._internal_latestpricetimestamp() != 0) {
+            // optional uint64 latestPriceTimestamp = 7;
+            if (cached_has_bits & 0x00000200u) {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_latestpricetimestamp());
             }
-            // double preClose = 9;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_preclose()) != 0) {
+            // optional double preClose = 9;
+            if (cached_has_bits & 0x00000400u) {
               total_size += 9;
             }
-            // sint64 volume = 10;
-            if (this_._internal_volume() != 0) {
+            // optional sint64 volume = 10;
+            if (cached_has_bits & 0x00000800u) {
               total_size += ::_pbi::WireFormatLite::SInt64SizePlusOne(
                   this_._internal_volume());
             }
-            // double amount = 11;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_amount()) != 0) {
+            // optional double amount = 11;
+            if (cached_has_bits & 0x00001000u) {
               total_size += 9;
             }
-            // double open = 12;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_open()) != 0) {
+            // optional double open = 12;
+            if (cached_has_bits & 0x00002000u) {
               total_size += 9;
             }
-            // double high = 13;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_high()) != 0) {
+            // optional double high = 13;
+            if (cached_has_bits & 0x00004000u) {
               total_size += 9;
             }
-            // double low = 14;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_low()) != 0) {
+            // optional double low = 14;
+            if (cached_has_bits & 0x00008000u) {
               total_size += 9;
             }
+          }
+           {
             // .tigeropen.push.pb.SocketCommon.QuoteType type = 2;
             if (this_._internal_type() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
             }
-            // float minTick = 27;
-            if (::absl::bit_cast<::uint32_t>(this_._internal_mintick()) != 0) {
+          }
+          if (cached_has_bits & 0x00ff0000u) {
+            // optional float minTick = 27;
+            if (cached_has_bits & 0x00010000u) {
               total_size += 6;
             }
-            // double askPrice = 17;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_askprice()) != 0) {
+            // optional double askPrice = 17;
+            if (cached_has_bits & 0x00020000u) {
               total_size += 10;
             }
-            // sint64 askSize = 18;
-            if (this_._internal_asksize() != 0) {
+            // optional sint64 askSize = 18;
+            if (cached_has_bits & 0x00040000u) {
               total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
                                               this_._internal_asksize());
             }
-            // uint64 askTimestamp = 19;
-            if (this_._internal_asktimestamp() != 0) {
+            // optional uint64 askTimestamp = 19;
+            if (cached_has_bits & 0x00080000u) {
               total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
                                               this_._internal_asktimestamp());
             }
-            // double bidPrice = 20;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_bidprice()) != 0) {
+            // optional double bidPrice = 20;
+            if (cached_has_bits & 0x00100000u) {
               total_size += 10;
             }
-            // sint64 bidSize = 21;
-            if (this_._internal_bidsize() != 0) {
+            // optional sint64 bidSize = 21;
+            if (cached_has_bits & 0x00200000u) {
               total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
                                               this_._internal_bidsize());
             }
-            // uint64 bidTimestamp = 22;
-            if (this_._internal_bidtimestamp() != 0) {
+            // optional uint64 bidTimestamp = 22;
+            if (cached_has_bits & 0x00400000u) {
               total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
                                               this_._internal_bidtimestamp());
             }
-            // sint64 openInt = 24;
-            if (this_._internal_openint() != 0) {
+            // optional sint64 openInt = 24;
+            if (cached_has_bits & 0x00800000u) {
               total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
                                               this_._internal_openint());
             }
-            // uint64 tradeTime = 25;
-            if (this_._internal_tradetime() != 0) {
+          }
+          if (cached_has_bits & 0x1f000000u) {
+            // optional uint64 tradeTime = 25;
+            if (cached_has_bits & 0x01000000u) {
               total_size += 2 + ::_pbi::WireFormatLite::UInt64Size(
                                               this_._internal_tradetime());
             }
-            // double preSettlement = 26;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_presettlement()) != 0) {
+            // optional double preSettlement = 26;
+            if (cached_has_bits & 0x02000000u) {
+              total_size += 10;
+            }
+            // optional double volumeDecimal = 29;
+            if (cached_has_bits & 0x04000000u) {
+              total_size += 10;
+            }
+            // optional sint64 cumVolume = 30;
+            if (cached_has_bits & 0x08000000u) {
+              total_size += 2 + ::_pbi::WireFormatLite::SInt64Size(
+                                              this_._internal_cumvolume());
+            }
+            // optional double cumAmount = 31;
+            if (cached_has_bits & 0x10000000u) {
               total_size += 10;
             }
           }
@@ -1345,93 +1512,115 @@ void QuoteData::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::googl
   if (!from._internal_symbol().empty()) {
     _this->_internal_set_symbol(from._internal_symbol());
   }
-  if (!from._internal_latesttime().empty()) {
-    _this->_internal_set_latesttime(from._internal_latesttime());
-  }
-  if (!from._internal_hourtradingtag().empty()) {
-    _this->_internal_set_hourtradingtag(from._internal_hourtradingtag());
-  }
-  if (!from._internal_marketstatus().empty()) {
-    _this->_internal_set_marketstatus(from._internal_marketstatus());
-  }
-  if (!from._internal_identifier().empty()) {
-    _this->_internal_set_identifier(from._internal_identifier());
-  }
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(from._impl_.mi_ != nullptr);
-    if (_this->_impl_.mi_ == nullptr) {
-      _this->_impl_.mi_ =
-          ::google::protobuf::Message::CopyConstruct<::tigeropen::push::pb::QuoteData_Minute>(arena, *from._impl_.mi_);
-    } else {
-      _this->_impl_.mi_->MergeFrom(*from._impl_.mi_);
+  if (cached_has_bits & 0x0000003fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_latesttime(from._internal_latesttime());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_hourtradingtag(from._internal_hourtradingtag());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_marketstatus(from._internal_marketstatus());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_set_identifier(from._internal_identifier());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_internal_set_session(from._internal_session());
+    }
+    if (cached_has_bits & 0x00000020u) {
+      ABSL_DCHECK(from._impl_.mi_ != nullptr);
+      if (_this->_impl_.mi_ == nullptr) {
+        _this->_impl_.mi_ =
+            ::google::protobuf::Message::CopyConstruct<::tigeropen::push::pb::QuoteData_Minute>(arena, *from._impl_.mi_);
+      } else {
+        _this->_impl_.mi_->MergeFrom(*from._impl_.mi_);
+      }
     }
   }
   if (from._internal_timestamp() != 0) {
     _this->_impl_.timestamp_ = from._impl_.timestamp_;
   }
-  if (from._internal_servertimestamp() != 0) {
-    _this->_impl_.servertimestamp_ = from._impl_.servertimestamp_;
+  if (cached_has_bits & 0x000000c0u) {
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.servertimestamp_ = from._impl_.servertimestamp_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.avgprice_ = from._impl_.avgprice_;
+    }
   }
-  if (::absl::bit_cast<::uint64_t>(from._internal_avgprice()) != 0) {
-    _this->_impl_.avgprice_ = from._impl_.avgprice_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_latestprice()) != 0) {
-    _this->_impl_.latestprice_ = from._impl_.latestprice_;
-  }
-  if (from._internal_latestpricetimestamp() != 0) {
-    _this->_impl_.latestpricetimestamp_ = from._impl_.latestpricetimestamp_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_preclose()) != 0) {
-    _this->_impl_.preclose_ = from._impl_.preclose_;
-  }
-  if (from._internal_volume() != 0) {
-    _this->_impl_.volume_ = from._impl_.volume_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_amount()) != 0) {
-    _this->_impl_.amount_ = from._impl_.amount_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_open()) != 0) {
-    _this->_impl_.open_ = from._impl_.open_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_high()) != 0) {
-    _this->_impl_.high_ = from._impl_.high_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_low()) != 0) {
-    _this->_impl_.low_ = from._impl_.low_;
+  if (cached_has_bits & 0x0000ff00u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_impl_.latestprice_ = from._impl_.latestprice_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.latestpricetimestamp_ = from._impl_.latestpricetimestamp_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      _this->_impl_.preclose_ = from._impl_.preclose_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      _this->_impl_.volume_ = from._impl_.volume_;
+    }
+    if (cached_has_bits & 0x00001000u) {
+      _this->_impl_.amount_ = from._impl_.amount_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      _this->_impl_.open_ = from._impl_.open_;
+    }
+    if (cached_has_bits & 0x00004000u) {
+      _this->_impl_.high_ = from._impl_.high_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      _this->_impl_.low_ = from._impl_.low_;
+    }
   }
   if (from._internal_type() != 0) {
     _this->_impl_.type_ = from._impl_.type_;
   }
-  if (::absl::bit_cast<::uint32_t>(from._internal_mintick()) != 0) {
-    _this->_impl_.mintick_ = from._impl_.mintick_;
+  if (cached_has_bits & 0x00ff0000u) {
+    if (cached_has_bits & 0x00010000u) {
+      _this->_impl_.mintick_ = from._impl_.mintick_;
+    }
+    if (cached_has_bits & 0x00020000u) {
+      _this->_impl_.askprice_ = from._impl_.askprice_;
+    }
+    if (cached_has_bits & 0x00040000u) {
+      _this->_impl_.asksize_ = from._impl_.asksize_;
+    }
+    if (cached_has_bits & 0x00080000u) {
+      _this->_impl_.asktimestamp_ = from._impl_.asktimestamp_;
+    }
+    if (cached_has_bits & 0x00100000u) {
+      _this->_impl_.bidprice_ = from._impl_.bidprice_;
+    }
+    if (cached_has_bits & 0x00200000u) {
+      _this->_impl_.bidsize_ = from._impl_.bidsize_;
+    }
+    if (cached_has_bits & 0x00400000u) {
+      _this->_impl_.bidtimestamp_ = from._impl_.bidtimestamp_;
+    }
+    if (cached_has_bits & 0x00800000u) {
+      _this->_impl_.openint_ = from._impl_.openint_;
+    }
   }
-  if (::absl::bit_cast<::uint64_t>(from._internal_askprice()) != 0) {
-    _this->_impl_.askprice_ = from._impl_.askprice_;
-  }
-  if (from._internal_asksize() != 0) {
-    _this->_impl_.asksize_ = from._impl_.asksize_;
-  }
-  if (from._internal_asktimestamp() != 0) {
-    _this->_impl_.asktimestamp_ = from._impl_.asktimestamp_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_bidprice()) != 0) {
-    _this->_impl_.bidprice_ = from._impl_.bidprice_;
-  }
-  if (from._internal_bidsize() != 0) {
-    _this->_impl_.bidsize_ = from._impl_.bidsize_;
-  }
-  if (from._internal_bidtimestamp() != 0) {
-    _this->_impl_.bidtimestamp_ = from._impl_.bidtimestamp_;
-  }
-  if (from._internal_openint() != 0) {
-    _this->_impl_.openint_ = from._impl_.openint_;
-  }
-  if (from._internal_tradetime() != 0) {
-    _this->_impl_.tradetime_ = from._impl_.tradetime_;
-  }
-  if (::absl::bit_cast<::uint64_t>(from._internal_presettlement()) != 0) {
-    _this->_impl_.presettlement_ = from._impl_.presettlement_;
+  if (cached_has_bits & 0x1f000000u) {
+    if (cached_has_bits & 0x01000000u) {
+      _this->_impl_.tradetime_ = from._impl_.tradetime_;
+    }
+    if (cached_has_bits & 0x02000000u) {
+      _this->_impl_.presettlement_ = from._impl_.presettlement_;
+    }
+    if (cached_has_bits & 0x04000000u) {
+      _this->_impl_.volumedecimal_ = from._impl_.volumedecimal_;
+    }
+    if (cached_has_bits & 0x08000000u) {
+      _this->_impl_.cumvolume_ = from._impl_.cumvolume_;
+    }
+    if (cached_has_bits & 0x10000000u) {
+      _this->_impl_.cumamount_ = from._impl_.cumamount_;
+    }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
@@ -1456,9 +1645,10 @@ void QuoteData::InternalSwap(QuoteData* PROTOBUF_RESTRICT other) {
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.hourtradingtag_, &other->_impl_.hourtradingtag_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.marketstatus_, &other->_impl_.marketstatus_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.identifier_, &other->_impl_.identifier_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.session_, &other->_impl_.session_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.presettlement_)
-      + sizeof(QuoteData::_impl_.presettlement_)
+      PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.cumamount_)
+      + sizeof(QuoteData::_impl_.cumamount_)
       - PROTOBUF_FIELD_OFFSET(QuoteData, _impl_.mi_)>(
           reinterpret_cast<char*>(&_impl_.mi_),
           reinterpret_cast<char*>(&other->_impl_.mi_));

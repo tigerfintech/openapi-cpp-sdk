@@ -1,3 +1,10 @@
+## 1.5.0 (2026-11-11)
+### New
+- US option quotes and option-chain legs expose cumulative volume/amount and extended-session quotes for GTH/CURB.
+- Protobuf option callbacks read GTH/CURB prices and session volume/amount from existing fields with PreMarket/AfterHours tags; cumulative totals remain independent. The unpublished nested push object is removed. HTTP snapshots and option-chain objects remain available.
+- Option minute-bar requests can include GTH/CURB through the optional with_hour_trading parameter; existing calls retain the server default.
+- News query client `NewsClient` with `get_stock_news` (per-symbol stock news, page-number pagination) and `get_market_news` (market highlights, `last_id` cursor pagination).
+
 ## 1.4.0 (2026-09-22)
 ### New
 - 资产与持仓支持指定行情口径 `AssetQuoteType`（`ETH` / `RTH` / `OVERNIGHT`），用于夜盘时段按夜盘价估值。仅美股有夜盘时段。

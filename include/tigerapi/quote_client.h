@@ -5,6 +5,7 @@
 #ifndef TIGERAPI_QUOTE_CLIENT_H
 #define TIGERAPI_QUOTE_CLIENT_H
 
+#include <boost/optional.hpp>
 #include "tiger_client.h"
 #include "client_config.h"
 #include "enums.h"
@@ -91,6 +92,11 @@ namespace TIGER_API {
         value get_option_brief(const utility::string_t identifier);
         value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
+        // Minute bars can include GTH/CURB; an omitted flag keeps the server default.
+        value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time,
+                                     utility::string_t period, boost::optional<bool> with_hour_trading = boost::none);
+        vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time,
+                                     utility::string_t period, boost::optional<bool> with_hour_trading = boost::none);
         value get_option_trade_tick(value identifiers);
         value get_option_symbols(utility::string_t market=U("HK"), utility::string_t lang=U(""));
         value get_option_depth(const value &symbols, utility::string_t market=U("US"));

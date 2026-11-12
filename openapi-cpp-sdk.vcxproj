@@ -590,6 +590,8 @@
     <ClInclude Include="include\tigerapi\enums.h" />
     <ClInclude Include="include\tigerapi\logger.h" />
     <ClInclude Include="include\tigerapi\model.h" />
+    <ClInclude Include="include\tigerapi\news_client.h" />
+    <ClInclude Include="include\tigerapi\news_model.h" />
     <ClInclude Include="include\tigerapi\order_util.h" />
     <ClInclude Include="include\tigerapi\push_client.h" />
     <ClInclude Include="include\tigerapi\push_socket\push_client_impl.h" />
@@ -649,6 +651,7 @@
     <ClCompile Include="src\contract_util.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />
     <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\news_client.cpp" />
     <ClCompile Include="src\order_util.cpp" />
     <ClCompile Include="src\push_socket\push_client_impl.cpp" />
     <ClCompile Include="src\push_socket\push_frame_serialize.cpp" />
