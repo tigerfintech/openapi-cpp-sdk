@@ -5,6 +5,9 @@
 - Option minute-bar requests can include GTH/CURB through the optional with_hour_trading parameter; existing calls retain the server default.
 - News query client `NewsClient` with `get_stock_news` (per-symbol stock news, page-number pagination) and `get_market_news` (market highlights, `last_id` cursor pagination).
 
+### Fixed
+- Date-to-timestamp conversion returns `0` on parse/conversion failure, defaults an empty timezone to `US/Eastern`, restores the previous `TZ` state and uses the Windows-specific timezone APIs where applicable.
+
 ## 1.4.0 (2026-09-22)
 ### New
 - 资产与持仓支持指定行情口径 `AssetQuoteType`（`ETH` / `RTH` / `OVERNIGHT`），用于夜盘时段按夜盘价估值。仅美股有夜盘时段。
@@ -20,12 +23,15 @@
 ### New
 - HTTP K-line and current-timeline requests support cryptocurrency symbols through `SecType::CC`; K-line pagination propagates `sec_type`, and typed `KlineItem` results expose fractional `volume_decimal` parsed from `volumeDecimal`. Existing overloads remain available and omit `sec_type` as before.
 - `get_option_chain` response adds `markPrice`, `preMarkPrice`, `markTimestamp`, `midPrice`, `preMidPrice`, `midTimestamp` fields
+- `get_option_chain` accepts optional `return_greek_value` to request Greeks in the response.
 
 ### Breaking
 - ABI change: adding `KlineItem::volume_decimal` changes the exported structure layout. Rebuild applications and libraries against the updated SDK.
 - `TradingSession::OverNight` and overnight-session support for `get_kline`, `get_quote_depth`, and the existing enum overload of `get_trade_tick`
 ### Fixed
 - `get_quote_overnight` now uses its required API version 1.0
+- `get_option_chain` forwards `option_filter` so Greeks, implied-volatility and open-interest filters take effect.
+- String option expiry dates are parsed in the market timezone (default `US/Eastern`) instead of the host timezone, including identifier-based option queries.
 
 ## 1.3.0 (2026-07-24)
 ### New
