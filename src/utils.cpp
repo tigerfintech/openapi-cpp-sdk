@@ -1,10 +1,12 @@
 ﻿#include "tigerapi/utils.h"
 #include <ctime>
 #include <cstdlib>
+#include <mutex>
 #include <iomanip>
 #include <random>
 #include <algorithm>
 #include <regex>
+#include <vector>
 #include "tigerapi/sign_util.h"
 
 #if defined(_WIN32)
@@ -42,7 +44,8 @@ namespace TIGER_API {
         return str8to16(result);
     }
 
-    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string, const utility::string_t &timezone) {
+    time_t Utils::date_string_to_timestamp(const utility::string_t &date_string,
+                                           const utility::string_t &timezone) {
         struct tm tm = {};
         utility::istringstream_t ss(date_string);
         ss >> std::get_time(&tm, U("%Y-%m-%d"));
@@ -64,6 +67,12 @@ namespace TIGER_API {
         if (tz.empty()) {
             tz = "US/Eastern";
         }
+
+        // Serialize SDK conversions while changing the process-wide timezone.
+        // Other code calling localtime/mktime or modifying TZ does not share this
+        // lock and can still observe the temporary timezone.
+        static std::mutex tz_mutex;
+        std::lock_guard<std::mutex> lock(tz_mutex);
 
         const char *prev_tz = std::getenv("TZ");
         std::string saved = prev_tz ? std::string(prev_tz) : std::string();
@@ -212,19 +221,19 @@ namespace TIGER_API {
         if (b64bio == nullptr || membio == nullptr) {
             if (b64bio != nullptr) BIO_free(b64bio);
             if (membio != nullptr) BIO_free(membio);
-            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+            return add_start_end(private_key, U("-----BEGIN " "RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
         }
         BIO_set_flags(b64bio, BIO_FLAGS_BASE64_NO_NL);
         BIO* chainbio = BIO_push(b64bio, membio);
         if (chainbio == nullptr) {
             BIO_free_all(b64bio);
-            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+            return add_start_end(private_key, U("-----BEGIN " "RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
         }
         unsigned char header[8] = {0};
         int read_len = BIO_read(chainbio, header, 8);
         BIO_free_all(chainbio);
         if (read_len <= 0) {
-            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+            return add_start_end(private_key, U("-----BEGIN " "RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
         }
         // PKCS#8 PrivateKeyInfo: SEQUENCE { INTEGER 0, SEQUENCE { OID ... } ... }
         // byte[0]=0x30 (SEQUENCE), byte[4]=0x02 (INTEGER version=0), byte[6] or nearby=0x30 (SEQUENCE AlgId)
@@ -248,7 +257,7 @@ namespace TIGER_API {
         if (is_pkcs8) {
             return add_start_end(private_key, U("-----BEGIN PRIVATE KEY-----\n"), U("\n-----END PRIVATE KEY-----"));
         } else {
-            return add_start_end(private_key, U("-----BEGIN RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
+            return add_start_end(private_key, U("-----BEGIN " "RSA PRIVATE KEY-----\n"), U("\n-----END RSA PRIVATE KEY-----"));
         }
     }
 
@@ -259,13 +268,17 @@ namespace TIGER_API {
 
     void Utils::camel_to_snake(web::json::value &obj) {
         if (obj.is_object()) {
-            // Iterate through all the keys in the object
+            // Snapshot keys to avoid UB from modifying the container during iteration.
+            // cpprestsdk's JSON object is vector-backed; inserting/erasing while
+            // iterating invalidates iterators.
+            std::vector<utility::string_t> keys;
             for (const auto &kv: obj.as_object()) {
-                // Convert the key to snake case
-                utility::string_t key = kv.first;
-//            if (key.empty()) {
-//                continue;
-//            }
+                keys.push_back(kv.first);
+            }
+            for (const auto &key: keys) {
+                if (!obj.has_field(key)) {
+                    continue;
+                }
                 utility::string_t snake_key;
                 bool is_first_char = true;
                 for (const auto &c: key) {
@@ -280,11 +293,16 @@ namespace TIGER_API {
                     is_first_char = false;
                 }
                 // Recurse into the value and convert it as well
-                auto value = kv.second;
+                auto value = obj[key];
                 camel_to_snake(value);
                 // Replace the key with the converted key
                 obj[snake_key] = value;
-                obj.erase(key);
+                // Only erase the original key when it differs from snake_key;
+                // otherwise obj[snake_key] and obj.erase(key) would operate on
+                // the same key and the field would be lost.
+                if (snake_key != key) {
+                    obj.erase(key);
+                }
             }
         } else if (obj.is_array()) {
             // Iterate through all the elements in the array and convert them
@@ -315,4 +333,31 @@ namespace TIGER_API {
         return stat(path.c_str(), &path_info) == 0 && S_ISDIR(path_info.st_mode);
 #endif
 	}
+
+    utility::string_t Utils::truncate_for_log(const utility::string_t& s, size_t max_bytes) {
+        if (s.size() <= max_bytes) {
+            return s;
+        }
+        size_t cut = max_bytes;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+        // utility::string_t is UTF-16 (wchar_t) on Windows. Avoid splitting a
+        // surrogate pair by not letting the cut land right after a high
+        // surrogate (0xD800-0xDBFF), which would leave a lone low surrogate
+        // (0xDC00-0xDFFF) — or worse, an unpaired high surrogate — at the
+        // boundary.
+        while (cut > 0 && s[cut - 1] >= 0xD800 && s[cut - 1] <= 0xDBFF) {
+            --cut;
+        }
+#else
+        // utility::string_t is UTF-8 (char) on Linux/Mac. Back up over any
+        // UTF-8 continuation bytes (10xxxxxx) so the cut lands on a complete
+        // code point boundary and doesn't emit an invalid sequence.
+        while (cut > 0 && (static_cast<unsigned char>(s[cut]) & 0xC0) == 0x80) {
+            --cut;
+        }
+#endif
+        utility::ostringstream_t oss;
+        oss << s.substr(0, cut) << U(" ...[") << s.size() << U(" chars total]");
+        return oss.str();
+    }
 }

@@ -6,9 +6,11 @@
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug /*= false*/)
 	: sandbox_debug(sandbox_debug) {
 	if (sandbox_debug) {
-		LOG(WARNING) << U("SANDBOX IS NOT SUPPORTED") << endl;
-		// server_url = SANDBOX_TIGER_SERVER_URL;
-		// server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
+		// Sandbox is deprecated and no longer reachable — mirrors Python SDK's
+		// tiger_open_config.py, which raises NotImplementedError for the same
+		// flag instead of silently falling back to production.
+		LOG(ERROR) << U("Sandbox debug mode is deprecated, please set to false") << endl;
+		throw std::runtime_error("Sandbox debug mode is deprecated, please set to false");
 	}
     if (is_us()) {
         server_url = US_TIGER_SERVER_URL;
@@ -35,11 +37,11 @@ TIGER_API::ClientConfig::ClientConfig(utility::string_t tiger_id, utility::strin
 	sandbox_debug(sandbox_debug),
 	lang(lang) {
 	if (sandbox_debug) {
-		LOG(WARNING) << U("SANDBOX IS NOT SUPPORTED") << endl;
-		// server_url = SANDBOX_TIGER_SERVER_URL;
-		// server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
-		// socket_url = SANDBOX_TIGER_SOCKET_HOST;
-		// socket_port = SANDBOX_TIGER_SOCKET_PORT;
+		// Sandbox is deprecated and no longer reachable — mirrors Python SDK's
+		// tiger_open_config.py, which raises NotImplementedError for the same
+		// flag instead of silently falling back to production.
+		LOG(ERROR) << U("Sandbox debug mode is deprecated, please set to false") << endl;
+		throw std::runtime_error("Sandbox debug mode is deprecated, please set to false");
 	}
     if (is_us()) {
         server_url = US_TIGER_SERVER_URL;
@@ -51,7 +53,25 @@ TIGER_API::ClientConfig::ClientConfig(utility::string_t tiger_id, utility::strin
 TIGER_API::ClientConfig::ClientConfig(bool sandbox_debug, const utility::string_t props_path)
 	: sandbox_debug(sandbox_debug),
 	props_path(props_path) {
+	if (sandbox_debug) {
+		// Sandbox is deprecated and no longer reachable — mirrors Python SDK's
+		// tiger_open_config.py, which raises NotImplementedError for the same
+		// flag instead of silently falling back to production. Note this only
+		// guards the explicit constructor argument; a properties file with
+		// env=SANDBOX is checked separately below, once load_props() returns.
+		LOG(ERROR) << U("Sandbox debug mode is deprecated, please set to false") << endl;
+		throw std::runtime_error("Sandbox debug mode is deprecated, please set to false");
+	}
     load_props();
+	if (this->sandbox_debug) {
+		// load_props() sets sandbox_debug=true when the properties file has
+		// env=SANDBOX. That endpoint (openapi-sandbox.tigerfintech.com) is
+		// deprecated and no longer reachable — mirrors Python SDK's
+		// tiger_open_config.py, which raises NotImplementedError for the same
+		// request instead of silently redirecting there.
+		LOG(ERROR) << U("Sandbox debug mode is deprecated, please set env to PROD in the properties file") << endl;
+		throw std::runtime_error("Sandbox debug mode is deprecated, please set env to PROD in the properties file");
+	}
 	load_token();
     if (is_us()) {
         server_url = US_TIGER_SERVER_URL;
@@ -168,10 +188,10 @@ void TIGER_API::ClientConfig::load_props()
 		std::transform(env.begin(), env.end(), env.begin(), ::toupper);
 		if (env == U("SANDBOX")) {
 			sandbox_debug = true;
-			server_url = SANDBOX_TIGER_SERVER_URL;
+		} else if (env == U("TEST")) {
+			// TEST uses the sandbox public key for response signature verification.
+			// Callers still need to provide the actual QA gateway via server_url or test env vars.
 			server_public_key = SANDBOX_TIGER_PUBLIC_KEY;
-			socket_url = SANDBOX_TIGER_SOCKET_HOST;
-			socket_port = SANDBOX_TIGER_SOCKET_PORT;
 		}
 
 		// Explicit server_url/server_public_key in the properties file take

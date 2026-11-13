@@ -1,6 +1,6 @@
 # Tiger OpenAPI C++ SDK
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/tigerbrokers/openapi-cpp-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
 Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提供交易、行情、长连接推送等功能。
@@ -11,6 +11,7 @@ Tiger OpenAPI C++ SDK 是老虎证券开放平台的官方 C++ 客户端，提�
 
 - 🚀 完整的交易接口支持（下单、撤单、查询持仓等）
 - 📊 实时行情数据获取（K线、报价、逐笔成交等）
+- 📰 资讯查询（个股新闻、市场要闻）
 - 🔌 WebSocket 长连接推送（持仓、订单、行情实时推送）
 - 🌐 跨平台支持（macOS、Linux、Windows）
 - 🛡️ 类型安全的 C++ API 设计
@@ -385,6 +386,51 @@ std::vector<std::string> symbols = {"AAPL", "TSLA"};
 ResponseModel response = client.grab_quote_kline(symbols, "day", "2024-01-01", "2024-12-31");
 ```
 
+### 逐笔成交 `cond` 字段说明
+
+`trade_tick` 接口和 push 层返回的 `cond` 字段已由 SDK 转换为可读字符串，含义如下：
+
+**美股（US）**
+
+| 值 | 含义 |
+|----|------|
+| `US_REGULAR_SALE` | 常规交易（Regular Sale） |
+| `US_BUNCHED_TRADE` | 批量交易（Bunched Trade） |
+| `US_CASH_TRADE` | 现金交易（Cash Trade） |
+| `US_INTERMARKET_SWEEP` | 跨市场交易（Intermarket Sweep） |
+| `US_BUNCHED_SOLD_TRADE` | 批量卖出（Bunched Sold Trade） |
+| `US_PRICE_VARIATION_TRADE` | 离价交易（Price Variation Trade） |
+| `US_ODD_LOT_TRADE` | 碎股交易（Odd Lot Trade） |
+| `US_RULE_127_OR_155_TRADE` | 纽交所第 127/155 条交易 |
+| `US_SOLD_LAST` | 延迟交易（Sold Last） |
+| `US_MARKET_CENTER_CLOSE_PRICE` | 中央收市价（Market Center Close Price） |
+| `US_NEXT_DAY_TRADE` | 隔日交易（Next Day Trade） |
+| `US_MARKET_CENTER_OPENING_TRADE` | 中央开盘价交易（Market Center Opening Trade） |
+| `US_PRIOR_REFERENCE_PRICE` | 前参考价（Prior Reference Price） |
+| `US_MARKET_CENTER_OPEN_PRICE` | 中央开盘价（Market Center Open Price） |
+| `US_SELLER` | 卖方（Seller） |
+| `US_FORM_T` | 盘前盘后交易（Form T） |
+| `US_EXTENDED_TRADING_HOURS` | 延长交易时段（Extended Trading Hours） |
+| `US_CONTINGENT_TRADE` | 合单交易（Contingent Trade） |
+| `US_AVERAGE_PRICE_TRADE` | 均价交易（Average Price Trade） |
+| `US_CROSS_TRADE` | 跨市场交易（Cross Trade） |
+| `US_SOLD_OUT_OF_SEQUENCE` | 场外售出（Sold Out of Sequence） |
+| `US_DERIVATIVELY_PRICED` | 衍生工具定价（Derivatively Priced） |
+| `US_QUALIFIED_CONTINGENT_TRADE` | 合单交易（Qualified Contingent Trade） |
+
+**港股（HK）**
+
+| 值 | 含义 |
+|----|------|
+| `HK_AUTOMATCH_NORMAL` | 自动对盘（Automatch Normal） |
+| `HK_ODD_LOT_TRADE` | 碎股交易（Odd Lot Trade） |
+| `HK_AUCTION_TRADE` | 竞价交易（Auction Trade） |
+| `HK_OVERSEAS_TRADE` | 场外交易（Overseas Trade） |
+| `HK_LATE_TRADE_OFF_EXCHG` | 场外延迟交易（Late Trade Off Exchange） |
+| `HK_NON_DIRECT_OFF_EXCHG_TRADE` | 非自动对盘（Non-Direct Off Exchange Trade） |
+| `HK_DIRECT_OFF_EXCHG_TRADE` | 同券商自动对盘（Direct Off Exchange Trade） |
+| `HK_AUTOMATIC_INTERNALIZED` | 自动内部化（Automatic Internalized） |
+
 ### WebSocket 长连接推送
 
 ```cpp
@@ -404,6 +450,122 @@ push_client.connect();
 ```
 
 更多示例请参考 `demo/openapi_cpp_test/openapi_cpp_test.cpp`。
+
+### 夜盘资产口径 `AssetQuoteType`
+
+查询和订阅资产 / 持仓时，可以指定服务端用哪个行情口径给资产估值：
+
+| 值 | 含义 |
+|----|------|
+| `AssetQuoteType::ETH` | 盘前盘后（默认，不传即为此值） |
+| `AssetQuoteType::RTH` | 常规交易时段 |
+| `AssetQuoteType::OVERNIGHT` | 夜盘时段 |
+
+> **仅美股有夜盘时段。** 其他市场传 `OVERNIGHT` 无实际意义。
+
+拉取侧——以下方法各有一个末位参数为 `AssetQuoteType` 的重载：
+
+```cpp
+TradeClient trade_client(client_config);
+
+// 按夜盘口径查持仓
+value positions = trade_client.get_positions(account, AssetQuoteType::OVERNIGHT);
+vector<Position> list = trade_client.get_position_list(account, AssetQuoteType::OVERNIGHT);
+
+// 按夜盘口径查资产
+value prime = trade_client.get_prime_asset(account, U("USD"), AssetQuoteType::OVERNIGHT);
+PortfolioAccount portfolio = trade_client.get_prime_portfolio(account, U("USD"), AssetQuoteType::OVERNIGHT);
+value asset = trade_client.get_asset(account, value::array(), true, false, AssetQuoteType::OVERNIGHT);
+value aggregate = trade_client.get_aggregate_assets(account, U(""), U("USD"), AssetQuoteType::OVERNIGHT);
+```
+
+订阅侧——`subscribe_asset` / `subscribe_position` 各有一个带口径的重载：
+
+```cpp
+push_client->subscribe_asset(account, AssetQuoteType::OVERNIGHT);
+push_client->subscribe_position(account, AssetQuoteType::OVERNIGHT);
+```
+
+不带口径的原有重载全部保留，行为与之前版本完全一致（服务端按 `ETH` 处理），老代码无需改动。
+
+### 查询资讯
+
+SDK 提供两个资讯查询接口（`NewsClient`），均为 HTTP 请求，与交易接口共用同一主网关（POST /gateway，`method` + `biz_content`，签名方式与其他 HTTP 接口一致）：
+
+| 接口 | method | 说明 |
+|------|--------|------|
+| 个股新闻 | `news_stock_list` | 查询单只股票的资讯列表，按 `page_count` / `page_size` 翻页 |
+| 市场要闻 | `news_highlight_list` | 查询市场要闻列表，按 `last_id` 游标翻页 |
+
+#### 个股新闻
+
+```cpp
+#include "tigerapi/news_client.h"
+
+ClientConfig config(U("your_tiger_id"), U("your_private_key"), U("your_account"));
+NewsClient news_client(config);
+
+// 查询 AAPL 个股新闻：第 1 页、每页 20 条、中文内容
+NewsPage page = news_client.get_stock_news(U("AAPL"), U("zh_CN"), 1, 20);
+for (const NewsItem &item : page.items) {
+    ucout << item.title << U(" — ") << item.url << endl;
+}
+```
+
+参数说明：
+
+| 参数 | 必填 | 说明 |
+|------|:----:|------|
+| `symbol` | 是 | 股票代码，**仅支持单只**（该接口不支持批量查询） |
+| `lang` | 否 | 语言枚举：`zh_CN` / `zh_TW` / `en_US` |
+| `page_count` | 否 | 页码，`0`（缺省）= 不发送，服务端默认 1；显式传值须 >= 1（越界由服务端校验报错） |
+| `page_size` | 否 | 每页条数，`0`（缺省）= 不发送，服务端默认 20；显式传值须 1–50（闭区间） |
+
+#### 市场要闻
+
+```cpp
+#include "tigerapi/news_client.h"
+
+NewsClient news_client(config);
+
+// 从最新一条开始拉取要闻
+NewsPage page = news_client.get_market_news(U("zh_CN"));
+
+// 下一页：把本页最后一条的 id 作为 last_id 传回
+if (!page.items.empty()) {
+    utility::string_t next_last_id = page.items.back().id;
+    NewsPage next = news_client.get_market_news(U("zh_CN"), next_last_id);
+}
+```
+
+参数说明：
+
+| 参数 | 必填 | 说明 |
+|------|:----:|------|
+| `lang` | 否 | 同上 |
+| `last_id` | 否 | 游标。不传从最新开始；下一页传本页 `items` 最后一条的 `id`。该接口仅有这一种翻页方式（无 `page_count` / `page_size` 参数） |
+
+#### 响应结构
+
+两个接口的返回值都是 `NewsPage`（响应 `data` 字段的驼峰解析结果），字段一一对应：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `items` | `vector<NewsItem>` | 当前页资讯列表 |
+| `page_count` | `int` | 当前页码（要闻接口恒为 1） |
+| `page_size` | `int` | 每页条数 |
+| `total_page` | `int` | 总页数 |
+| `total_size` | `int` | 总条数 |
+
+`NewsItem`：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | `utility::string_t` | 资讯 ID（要闻接口游标翻页的 `last_id` 取值来源） |
+| `title` | `utility::string_t` | 标题 |
+| `summary` | `utility::string_t` | 摘要 |
+| `pub_timestamp` | `long long` | 发布时间戳（秒级） |
+| `url` | `utility::string_t` | 原文链接 |
 
 ## 项目结构
 

@@ -7,6 +7,26 @@
 
 
 namespace TIGER_API {
+    namespace {
+        vector<Kline> parse_klines(const value &result) {
+            vector<Kline> klines;
+            for (const auto &bar: result.as_array()) {
+                vector<KlineItem> kline_items;
+                for (const auto &item: bar.at(U("items")).as_array()) {
+                    KlineItem kline_item;
+                    kline_item.from_json(item);
+                    kline_items.push_back(kline_item);
+                }
+                Kline kline;
+                kline.symbol = bar.at(U("symbol")).as_string();
+                kline.items = kline_items;
+                kline.period = bar.at(U("period")).as_string();
+                klines.push_back(kline);
+            }
+            return klines;
+        }
+    }
+
     QuoteClient::QuoteClient(const ClientConfig &cf, bool is_grab_permission) : TigerClient(cf) {
         if (is_grab_permission) {
             grab_quote_permission();
@@ -71,15 +91,29 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time) {
+        return get_timeline(symbols, include_hour_trading, begin_time, SecType::ALL);
+    }
+
+    value QuoteClient::get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time,
+                                    SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[U("include_hour_trading")] = include_hour_trading;
         obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(TIMELINE, obj);
     }
 
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time,
+                                 time_t end_time, utility::string_t right, int limit,
+                                 utility::string_t page_token) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token, SecType::ALL);
+    }
+
     value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time, utility::string_t right,
-                                 int limit, utility::string_t page_token) {
+                                 int limit, utility::string_t page_token, SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_PERIOD] = value::string(period);
@@ -88,39 +122,86 @@ namespace TIGER_API {
         obj[P_RIGHT] = value::string(right);
         obj[P_LIMIT] = limit;
         obj[P_PAGE_TOKEN] = value::string(page_token);
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
+        return post(KLINE, obj);
+    }
+
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time,
+                                 time_t end_time, utility::string_t right, int limit,
+                                 utility::string_t page_token, TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
+                         trade_session, SecType::ALL);
+    }
+
+    value QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                  utility::string_t right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session, SecType sec_type) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        obj[P_PERIOD] = value::string(period);
+        obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
+        obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
+        obj[P_RIGHT] = value::string(right);
+        obj[P_LIMIT] = limit;
+        obj[P_PAGE_TOKEN] = value::string(page_token);
+        obj[P_TRADE_SESSION] = value::string(enum_to_str(trade_session));
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(KLINE, obj);
     }
 
     value
     QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time, QuoteRight right,
                            int limit, utility::string_t page_token) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token, SecType::ALL);
+    }
+
+    value
+    QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time, QuoteRight right,
+                           int limit, utility::string_t page_token, SecType sec_type) {
         return get_kline(symbols, enum_to_str(period), begin_time, end_time, enum_to_str(right), limit,
-                         page_token);
+                         page_token, sec_type);
+    }
+
+    value QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                                  QuoteRight right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
+                         trade_session, SecType::ALL);
+    }
+
+    value QuoteClient::get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                                  QuoteRight right, int limit, utility::string_t page_token,
+                                  TradingSession trade_session, SecType sec_type) {
+        return get_kline(symbols, enum_to_str(period), begin_time, end_time, enum_to_str(right), limit,
+                         page_token, trade_session, sec_type);
     }
 
     vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
-                          int limit, utility::string_t right, utility::string_t page_token) {
-        value result = get_kline(symbols, period, begin_time, end_time, right, limit, page_token);
-        json::array obj = result.as_array();
-        vector<Kline> klines;
-        for (const auto &bar: obj) {
-            json::array items = bar.at(U("items")).as_array();
-            vector<KlineItem> kline_items;
-            for (const auto &item: items) {
-                KlineItem kline_item;
-                kline_item.from_json(item);
-                kline_items.push_back(kline_item);
-            }
-            utility::string_t symbol = bar.at(U("symbol")).as_string();
-            utility::string_t period = bar.at(U("period")).as_string();
-            Kline kline;
-            kline.symbol = symbol;
-            kline.items = kline_items;
-            kline.period = period;
-            klines.push_back(kline);
-        }
+                           int limit, utility::string_t right, utility::string_t page_token) {
+        return get_kline(symbols, period, begin_time, end_time, limit, right, page_token, SecType::ALL);
+    }
 
-        return klines;
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                           int limit, utility::string_t right, utility::string_t page_token, SecType sec_type) {
+        return parse_klines(get_kline(symbols, period, begin_time, end_time, right, limit, page_token, sec_type));
+    }
+
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                         int limit, utility::string_t right, utility::string_t page_token,
+                                         TradingSession trade_session) {
+        return get_kline(symbols, period, begin_time, end_time, limit, right, page_token,
+                         trade_session, SecType::ALL);
+    }
+
+    vector<Kline> QuoteClient::get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                         int limit, utility::string_t right, utility::string_t page_token,
+                                         TradingSession trade_session, SecType sec_type) {
+        return parse_klines(get_kline(symbols, period, begin_time, end_time, right, limit, page_token,
+                                      trade_session, sec_type));
     }
 
     value QuoteClient::get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right) {
@@ -149,15 +230,24 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_quote_real_time_value(const value &symbols) {
+        return get_quote_real_time_value(symbols, SecType::ALL);
+    }
+
+    value QuoteClient::get_quote_real_time_value(const value &symbols, SecType sec_type) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
+        if (sec_type != SecType::ALL) {
+            obj[P_SEC_TYPE] = value::string(enum_to_str(sec_type));
+        }
         return post(QUOTE_REAL_TIME, obj);
     }
 
     vector<RealtimeQuote> QuoteClient::get_quote_real_time(const value &symbols) {
-        value obj = value::object(true);
-        obj[P_SYMBOLS] = symbols;
-        value result = post(QUOTE_REAL_TIME, obj);
+        return get_quote_real_time(symbols, SecType::ALL);
+    }
+
+    vector<RealtimeQuote> QuoteClient::get_quote_real_time(const value &symbols, SecType sec_type) {
+        value result = get_quote_real_time_value(symbols, sec_type);
         json::array result_array = result.as_array();
         vector<RealtimeQuote> quotes;
         for (const auto &item: result_array) {
@@ -179,6 +269,14 @@ namespace TIGER_API {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         obj[P_MARKET] = value::string(enum_to_str(market));
+        return post(QUOTE_DEPTH, obj);
+    }
+
+    value QuoteClient::get_quote_depth(const value &symbols, Market market, TradingSession trade_session) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        obj[P_MARKET] = value::string(enum_to_str(market));
+        obj[P_TRADE_SESSION] = value::string(enum_to_str(trade_session));
         return post(QUOTE_DEPTH, obj);
     }
 
@@ -276,8 +374,8 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter,
-                                        value return_greek_value) {
-        time_t expiry_ts = Utils::date_string_to_timestamp(expiry);
+                                        value return_greek_value, utility::string_t timezone) {
+        time_t expiry_ts = Utils::date_string_to_timestamp(expiry, timezone);
         return get_option_chain(symbol, expiry_ts, option_filter, return_greek_value);
     }
 
@@ -293,6 +391,11 @@ namespace TIGER_API {
     }
 
     value QuoteClient::get_option_kline_value(value identifiers, time_t begin_time, time_t end_time) {
+        return get_option_kline_value(identifiers, begin_time, end_time, U("day"), boost::none);
+    }
+
+    value QuoteClient::get_option_kline_value(value identifiers, time_t begin_time, time_t end_time,
+                                             utility::string_t period, boost::optional<bool> with_hour_trading) {
         value options = value::array();
         for (size_t i = 0; i < identifiers.size(); ++i) {
             auto identifier = identifiers[i];
@@ -305,7 +408,10 @@ namespace TIGER_API {
             obj[P_BEGIN_TIME] = value::number(static_cast<int64_t>(begin_time));
             obj[P_END_TIME] = value::number(static_cast<int64_t>(end_time));
             obj[P_EXPIRY] = value::number(static_cast<int64_t>(Utils::date_string_to_timestamp(expiry)));
-            obj[P_PERIOD] = value::string(U("day"));
+            obj[P_PERIOD] = value::string(period);
+            if (with_hour_trading) {
+                obj[P_WITH_HOUR_TRADING] = value::boolean(*with_hour_trading);
+            }
             obj[P_RIGHT] = value::string(right);
             obj[P_STRIKE] = value::string(strike);
             obj[P_SYMBOL] = value::string(symbol);
@@ -315,7 +421,12 @@ namespace TIGER_API {
     }
 
     vector<Kline> QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time) {
-        value result = get_option_kline_value(identifiers, begin_time, end_time);
+        return get_option_kline(identifiers, begin_time, end_time, U("day"), boost::none);
+    }
+
+    vector<Kline> QuoteClient::get_option_kline(value identifiers, time_t begin_time, time_t end_time,
+                                               utility::string_t period, boost::optional<bool> with_hour_trading) {
+        value result = get_option_kline_value(identifiers, begin_time, end_time, period, with_hour_trading);
         json::array obj = result.as_array();
         vector<Kline> klines;
         for (const auto &bar: obj) {
@@ -508,7 +619,20 @@ namespace TIGER_API {
 
     value QuoteClient::get_option_depth(const value &symbols, utility::string_t market) {
         value obj = value::object(true);
-        obj[U("option_basic")] = symbols;
+        // Callers pass an array of OCC identifier strings; server expects
+        // `option_basic` to be an array of expanded contract objects
+        // `[{symbol, expiry, right, strike}, ...]`. Match the Rust
+        // `OptionDepthRequest` / Java `OptionCommonModel` wire shape.
+        // If the caller already passes an array of objects, pass through.
+        // NOTE: only the first element is checked for type. Heterogeneous arrays
+        // (mixed strings and objects) are not supported: if symbols[0] is a string
+        // the whole array is passed through identifiers_to_options, which skips
+        // non-string elements; if symbols[0] is an object the array is passed
+        // through as-is and string elements will be forwarded verbatim to the server.
+        value option_basic = (symbols.is_array() && symbols.size() > 0 && symbols.at(0).is_string())
+                                 ? identifiers_to_options(symbols)
+                                 : symbols;
+        obj[U("option_basic")] = option_basic;
         if (!market.empty()) {
             obj[P_MARKET] = value::string(market);
         }
@@ -517,7 +641,12 @@ namespace TIGER_API {
 
     value QuoteClient::get_option_timeline(const value &symbols, utility::string_t market, time_t begin_time) {
         value obj = value::object(true);
-        obj[U("option_query")] = symbols;
+        // Match Rust `OptionTimelineRequest`: `option_query` is an array of
+        // expanded contract objects, not raw identifier strings.
+        value option_query = (symbols.is_array() && symbols.size() > 0 && symbols.at(0).is_string())
+                                 ? identifiers_to_options(symbols)
+                                 : symbols;
+        obj[U("option_query")] = option_query;
         if (!market.empty()) {
             obj[P_MARKET] = value::string(market);
         }
@@ -611,8 +740,8 @@ namespace TIGER_API {
     // Financial new interfaces
 
     value QuoteClient::get_corporate_action(const value &symbols, const utility::string_t &market,
-                                            const utility::string_t &action_type, const utility::string_t &begin_date,
-                                            const utility::string_t &end_date) {
+                                            const utility::string_t &action_type, time_t begin_date,
+                                            time_t end_date) {
         value obj = value::object(true);
         obj[P_SYMBOLS] = symbols;
         if (!market.empty()) {
@@ -621,28 +750,85 @@ namespace TIGER_API {
         if (!action_type.empty()) {
             obj[P_ACTION_TYPE] = value::string(action_type);
         }
+        // begin_date/end_date are epoch-ms int64. Java's Date field serializes to
+        // epoch-ms via fastjson; Rust switched to Option<i64>. Omit when <= 0.
+        if (begin_date > 0) {
+            obj[P_BEGIN_DATE] = value::number(static_cast<int64_t>(begin_date));
+        }
+        if (end_date > 0) {
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
+        }
+        return post(CORPORATE_ACTION, obj);
+    }
+
+    value QuoteClient::get_corporate_symbol_change(const value &symbols, const utility::string_t &market,
+                                                   time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("symbol_change"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_corporate_delisting(const value &symbols, const utility::string_t &market,
+                                               time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("delisting"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_corporate_ipo(const value &symbols, const utility::string_t &market,
+                                         time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_corporate_split(const value &symbols, const utility::string_t &market,
+                                           time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("split"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_corporate_dividend(const value &symbols, const utility::string_t &market,
+                                              time_t begin_date, time_t end_date) {
+        return get_corporate_action(symbols, market, U("dividend"), begin_date, end_date);
+    }
+
+    value QuoteClient::get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
+                                           utility::string_t begin_date, utility::string_t end_date,
+                                           utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        obj[P_MARKET] = value::string(market);
+        obj[P_FIELDS] = fields;
         if (!begin_date.empty()) {
             obj[P_BEGIN_DATE] = value::string(begin_date);
         }
         if (!end_date.empty()) {
             obj[P_END_DATE] = value::string(end_date);
         }
-        return post(CORPORATE_ACTION, obj);
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FINANCIAL_DAILY, obj);
     }
 
-    value QuoteClient::get_corporate_symbol_change(const value &symbols, const utility::string_t &market,
-                                                   const utility::string_t &begin_date, const utility::string_t &end_date) {
-        return get_corporate_action(symbols, market, U("symbol_change"), begin_date, end_date);
+    value QuoteClient::get_financial_report(const value &symbols, utility::string_t market, const value &fields,
+                                            utility::string_t period_type, time_t begin_date, time_t end_date,
+                                            utility::string_t lang) {
+        value obj = value::object(true);
+        obj[P_SYMBOLS] = symbols;
+        obj[P_MARKET] = value::string(market);
+        obj[P_FIELDS] = fields;
+        obj[P_PERIOD_TYPE] = value::string(period_type);
+        if (begin_date > 0) {
+            obj[P_BEGIN_DATE] = value::number(static_cast<int64_t>(begin_date));
+        }
+        if (end_date > 0) {
+            obj[P_END_DATE] = value::number(static_cast<int64_t>(end_date));
+        }
+        if (!lang.empty()) {
+            obj[P_LANG] = value::string(lang);
+        }
+        return post(FINANCIAL_REPORT, obj);
     }
 
-    value QuoteClient::get_corporate_delisting(const value &symbols, const utility::string_t &market,
-                                               const utility::string_t &begin_date, const utility::string_t &end_date) {
-        return get_corporate_action(symbols, market, U("delisting"), begin_date, end_date);
-    }
-
-    value QuoteClient::get_corporate_ipo(const value &symbols, const utility::string_t &market,
-                                         const utility::string_t &begin_date, const utility::string_t &end_date) {
-        return get_corporate_action(symbols, market, U("ipo"), begin_date, end_date);
+    value QuoteClient::get_financial_report(const value &symbols, const value &fields,
+                                            utility::string_t period_type, time_t begin_date, time_t end_date,
+                                            utility::string_t lang) {
+        return get_financial_report(symbols, U("US"), fields, period_type, begin_date, end_date, lang);
     }
 
     value QuoteClient::get_financial_currency(const value &symbols, utility::string_t market, utility::string_t lang) {
@@ -748,6 +934,17 @@ namespace TIGER_API {
         return post(MARKET_SCANNER_TAGS, obj);
     }
 
+    value QuoteClient::get_market_scanner(utility::string_t market) {
+        // Minimal server-accepted payload matching Java MarketScannerModel: market + page/page_size.
+        // Scanner filters are optional; callers wanting rich filter support can invoke the
+        // underlying endpoint directly. This overload is convenience-only.
+        value obj = value::object(true);
+        obj[P_MARKET] = value::string(market.empty() ? U("US") : market);
+        obj[P_PAGE] = value::number(1);
+        obj[P_PAGE_SIZE] = value::number(20);
+        return post(MARKET_SCANNER, obj);
+    }
+
     // Industry related interfaces
 
     value QuoteClient::get_industry_list(utility::string_t industry_level, utility::string_t lang) {
@@ -790,4 +987,3 @@ namespace TIGER_API {
 
 
 }
-

@@ -8,6 +8,7 @@
 #include "tigerapi/model.h"
 #include "tigerapi/order_util.h"
 #include "tigerapi/utils.h"
+#include "tigerapi/version.h"
 #include "tigerapi/properties.h"
 #include "cpprest/details/basic_types.h"
 #include "tigerapi/price_util.h"
@@ -305,6 +306,11 @@ public:
         symbols[1] = value::string(U("JD"));
         value result = quote_client->get_timeline(symbols, false, 1675167178931);
         ucout << U("result: ") << result << endl;
+
+        value crypto_symbols = value::array();
+        crypto_symbols[0] = value::string(U("BTC.USD"));
+        ucout << U("crypto result: ")
+              << quote_client->get_timeline(crypto_symbols, false, -1, SecType::CC) << endl;
     }
 
     static void test_get_history_timeline(const std::shared_ptr<QuoteClient> quote_client) {
@@ -336,7 +342,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_quote_depth(symbols);
+        value result = quote_client->get_quote_depth(symbols, Market::US, TradingSession::OverNight);
         ucout << U("result: ") << result << endl;
     }
 
@@ -354,8 +360,18 @@ public:
         symbols[1] = value::string(U("JD"));
         //ucout << U("symbols ") << symbols << endl;
         //value result = quote_client->get_kline(symbols, U("day"), -1, -1, U("br"), 5);
-        vector<Kline> result = quote_client->get_kline(symbols, U("day"), -1, -1, 5);
+        vector<Kline> result = quote_client->get_kline(symbols, U("1min"), -1, -1, 5, U("br"), U(""),
+                                                       TradingSession::OverNight);
         ucout << result.at(0).to_string() << endl;
+
+        value crypto_symbols = value::array();
+        crypto_symbols[0] = value::string(U("BTC.USD"));
+        vector<Kline> crypto = quote_client->get_kline(crypto_symbols, U("day"), -1, -1, 5,
+                                                       U("br"), U(""), SecType::CC);
+        ucout << crypto.at(0).to_string() << endl;
+        if (!crypto.at(0).items.empty() && crypto.at(0).items.at(0).volume_decimal) {
+            ucout << U("fractional volume: ") << *crypto.at(0).items.at(0).volume_decimal << endl;
+        }
     }
 
     static void test_get_quote_stock_trade(std::shared_ptr<QuoteClient> quote_client) {
@@ -370,7 +386,7 @@ public:
         value symbols = value::array();
         symbols[0] = value::string(U("AAPL"));
         symbols[1] = value::string(U("JD"));
-        value result = quote_client->get_trade_tick(symbols, 0, 100000000);
+        value result = quote_client->get_trade_tick(symbols, TradingSession::OverNight, -1, -1, 2000);
         ucout << U("Result: ") << result << endl;
     }
 
@@ -712,22 +728,31 @@ public:
     }
 
     // --- Corporate Action: new types (SYMBOL_CHANGE / DELISTING / IPO) ---
+    // begin_date/end_date are epoch-ms int64 (server contract; matches Java Date
+    // serialization and Rust Option<i64>). Convert human dates via
+    // Utils::date_string_to_timestamp.
     static void test_get_corporate_symbol_change(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("META"));
-        value result = quote_client->get_corporate_symbol_change(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        value result = quote_client->get_corporate_symbol_change(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2022-01-01")),
+            Utils::date_string_to_timestamp(U("2023-01-01")));
         ucout << U("corporate_symbol_change: ") << result << endl;
     }
     static void test_get_corporate_delisting(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("TWTR"));
-        value result = quote_client->get_corporate_delisting(symbols, U("US"), U("2022-01-01"), U("2023-01-01"));
+        value result = quote_client->get_corporate_delisting(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2022-01-01")),
+            Utils::date_string_to_timestamp(U("2023-01-01")));
         ucout << U("corporate_delisting: ") << result << endl;
     }
     static void test_get_corporate_ipo(std::shared_ptr<QuoteClient> quote_client) {
         value symbols = value::array();
         symbols[0] = value::string(U("RIVN"));
-        value result = quote_client->get_corporate_ipo(symbols, U("US"), U("2021-01-01"), U("2022-01-01"));
+        value result = quote_client->get_corporate_ipo(symbols, U("US"),
+            Utils::date_string_to_timestamp(U("2021-01-01")),
+            Utils::date_string_to_timestamp(U("2022-01-01")));
         ucout << U("corporate_ipo: ") << result << endl;
     }
 
@@ -1120,7 +1145,7 @@ void print_report(const std::vector<TestResult>& results, const std::string& rep
     oss << std::endl;
     oss << "========================================" << std::endl;
     oss << "     OpenAPI C++ SDK Test Report         " << std::endl;
-    oss << "     SDK Version: openapi-cpp-sdk-1.2.0  " << std::endl;
+    oss << "     SDK Version: openapi-cpp-sdk-" << PROJECT_VERSION << "  " << std::endl;  // PROJECT_VERSION defined in include/tigerapi/version.h
     oss << "========================================" << std::endl;
     oss << "Total: " << total << "  Passed: " << passed << "  Failed: " << failed << "  Skipped: " << skipped << std::endl;
     oss << "Pass Rate: " << (total > 0 ? (passed * 100 / total) : 0) << "% (" << passed << "/" << total << ")" << std::endl;

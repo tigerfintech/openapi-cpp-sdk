@@ -16,19 +16,49 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency) {
+        value obj = build_prime_asset_request(account, base_currency, U(""));
+        return post(PRIME_ASSETS, obj);
+    }
+
+    value TradeClient::build_prime_asset_request(const utility::string_t &account, const utility::string_t &base_currency,
+                                                 const utility::string_t &asset_quote_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
         obj[U("base_currency")] = value::string(base_currency);
-        return post(PRIME_ASSETS, obj);
+        if (!asset_quote_type.empty()) {
+            obj[U("asset_quote_type")] = value::string(asset_quote_type);
+        }
+        return obj;
     }
 
     value TradeClient::get_prime_asset(const utility::string_t &account, Currency base_currency) {
         return get_prime_asset(account, enum_to_str(base_currency));
     }
 
+    value TradeClient::get_prime_asset(const utility::string_t &account, const utility::string_t &base_currency,
+                                       AssetQuoteType asset_quote_type) {
+        value obj = build_prime_asset_request(account, base_currency, enum_to_str(asset_quote_type));
+        return post(PRIME_ASSETS, obj);
+    }
+
+    value TradeClient::get_prime_asset(const utility::string_t &account, Currency base_currency,
+                                       AssetQuoteType asset_quote_type) {
+        return get_prime_asset(account, enum_to_str(base_currency), asset_quote_type);
+    }
+
     PortfolioAccount TradeClient::get_prime_portfolio(const utility::string_t &account, const utility::string_t &base_currency) {
         value asset = get_prime_asset(account, base_currency);
+        return parse_prime_portfolio(asset);
+    }
+
+    PortfolioAccount TradeClient::get_prime_portfolio(const utility::string_t &account, const utility::string_t &base_currency,
+                                                      AssetQuoteType asset_quote_type) {
+        value asset = get_prime_asset(account, base_currency, asset_quote_type);
+        return parse_prime_portfolio(asset);
+    }
+
+    PortfolioAccount TradeClient::parse_prime_portfolio(const value &asset) {
         PortfolioAccount portfolio = PortfolioAccount();
         portfolio.account = asset.at(U("accountId")).as_string();
         portfolio.update_timestamp = (long) asset.at(U("updateTimestamp")).as_number().to_uint64();
@@ -47,12 +77,27 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_asset(utility::string_t account, const value &sub_accounts, bool segment, bool market_value) {
+        value obj = build_asset_request(account, segment, market_value, U(""));
+        return post(ASSETS, obj);
+    }
+
+    value TradeClient::get_asset(utility::string_t account, const value &sub_accounts, bool segment, bool market_value,
+                                 AssetQuoteType asset_quote_type) {
+        value obj = build_asset_request(account, segment, market_value, enum_to_str(asset_quote_type));
+        return post(ASSETS, obj);
+    }
+
+    value TradeClient::build_asset_request(const utility::string_t &account, bool segment, bool market_value,
+                                           const utility::string_t &asset_quote_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
         obj[U("segment")] = segment;
         obj[U("market_value")] = market_value;
-        return post(ASSETS, obj);
+        if (!asset_quote_type.empty()) {
+            obj[U("asset_quote_type")] = value::string(asset_quote_type);
+        }
+        return obj;
     }
 
     value TradeClient::get_account_param(const utility::string_t &account) {
@@ -68,9 +113,11 @@ namespace TIGER_API {
         }
     }
 
-    value TradeClient::get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
-                                     const utility::string_t &market, const utility::string_t &symbol,
-                                     const value &sub_accounts, time_t expiry, utility::string_t strike, const utility::string_t &right) {
+    value TradeClient::build_positions_request(const utility::string_t &account, const utility::string_t &sec_type,
+                                               const utility::string_t &currency, const utility::string_t &market,
+                                               const utility::string_t &symbol, const value &sub_accounts, time_t expiry,
+                                               const utility::string_t &strike, const utility::string_t &right,
+                                               const utility::string_t &asset_quote_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
@@ -98,6 +145,17 @@ namespace TIGER_API {
         if (!right.empty()) {
             obj[P_RIGHT] = value::string(right);
         }
+        if (!asset_quote_type.empty()) {
+            obj[U("asset_quote_type")] = value::string(asset_quote_type);
+        }
+        return obj;
+    }
+
+    value TradeClient::get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
+                                     const utility::string_t &market, const utility::string_t &symbol,
+                                     const value &sub_accounts, time_t expiry, utility::string_t strike, const utility::string_t &right) {
+        value obj = build_positions_request(account, sec_type, currency, market, symbol, sub_accounts, expiry, strike,
+                                            right, U(""));
         return post(POSITIONS, obj)[P_ITEMS];
     }
 
@@ -105,6 +163,27 @@ namespace TIGER_API {
                                      const value &sub_accounts, time_t expiry, utility::string_t strike, Right right) {
         return get_positions(account, enum_to_str(sec_type), enum_to_str(currency), enum_to_str(market),
                              symbol, sub_accounts, expiry, strike, enum_to_str(right));
+    }
+
+    value TradeClient::get_positions(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &currency,
+                                     const utility::string_t &market, const utility::string_t &symbol,
+                                     const value &sub_accounts, time_t expiry, utility::string_t strike, const utility::string_t &right,
+                                     AssetQuoteType asset_quote_type) {
+        value obj = build_positions_request(account, sec_type, currency, market, symbol, sub_accounts, expiry, strike,
+                                            right, enum_to_str(asset_quote_type));
+        return post(POSITIONS, obj)[P_ITEMS];
+    }
+
+    value TradeClient::get_positions(utility::string_t account, SecType sec_type, Currency currency, Market market, utility::string_t symbol,
+                                     const value &sub_accounts, time_t expiry, utility::string_t strike, Right right,
+                                     AssetQuoteType asset_quote_type) {
+        return get_positions(account, enum_to_str(sec_type), enum_to_str(currency), enum_to_str(market),
+                             symbol, sub_accounts, expiry, strike, enum_to_str(right), asset_quote_type);
+    }
+
+    value TradeClient::get_positions(const utility::string_t &account, AssetQuoteType asset_quote_type) {
+        return get_positions(account, U(""), U("ALL"), U("ALL"), U(""), value::array(), -1, U(""), U(""),
+                             asset_quote_type);
     }
 
 
@@ -119,6 +198,25 @@ namespace TIGER_API {
             vec.push_back(p);
         }
         return vec;
+    }
+
+    vector<Position>
+    TradeClient::get_position_list(utility::string_t account, utility::string_t sec_type, utility::string_t currency, utility::string_t market, utility::string_t symbol,
+                                   const value &sub_accounts, time_t expiry, utility::string_t strike, utility::string_t right,
+                                   AssetQuoteType asset_quote_type) {
+        std::vector<Position> vec;
+        value positions = get_positions(account, sec_type, currency, market, symbol,
+                                        sub_accounts, expiry, strike, right, asset_quote_type);
+        for (const auto &element: positions.as_array()) {
+            Position p = Position(element);
+            vec.push_back(p);
+        }
+        return vec;
+    }
+
+    vector<Position> TradeClient::get_position_list(const utility::string_t &account, AssetQuoteType asset_quote_type) {
+        return get_position_list(account, U(""), U("ALL"), U("ALL"), U(""), value::array(), -1, U(""), U(""),
+                                 asset_quote_type);
     }
 
     value TradeClient::get_orders(const utility::string_t &account, const utility::string_t &sec_type, const utility::string_t &market, const utility::string_t &symbol, time_t start_date,
@@ -971,6 +1069,19 @@ namespace TIGER_API {
     }
 
     value TradeClient::get_aggregate_assets(utility::string_t account, utility::string_t seg_type, utility::string_t base_currency) {
+        value obj = build_aggregate_assets_request(account, seg_type, base_currency, U(""));
+        return post(AGGREGATE_ASSETS, obj);
+    }
+
+    value TradeClient::get_aggregate_assets(utility::string_t account, utility::string_t seg_type, utility::string_t base_currency,
+                                            AssetQuoteType asset_quote_type) {
+        value obj = build_aggregate_assets_request(account, seg_type, base_currency, enum_to_str(asset_quote_type));
+        return post(AGGREGATE_ASSETS, obj);
+    }
+
+    value TradeClient::build_aggregate_assets_request(const utility::string_t &account, const utility::string_t &seg_type,
+                                                      const utility::string_t &base_currency,
+                                                      const utility::string_t &asset_quote_type) {
         value obj = value::object(true);
         obj[P_ACCOUNT] = get_account_param(account);
         set_secret_key(obj);
@@ -980,7 +1091,10 @@ namespace TIGER_API {
         if (!base_currency.empty()) {
             obj[U("base_currency")] = value::string(base_currency);
         }
-        return post(AGGREGATE_ASSETS, obj);
+        if (!asset_quote_type.empty()) {
+            obj[U("asset_quote_type")] = value::string(asset_quote_type);
+        }
+        return obj;
     }
 
     value TradeClient::cancel_segment_fund(long long id) {

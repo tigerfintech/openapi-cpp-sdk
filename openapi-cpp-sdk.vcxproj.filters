@@ -51,6 +51,12 @@
     <ClInclude Include="include\tigerapi\model.h">
       <Filter>include\tigerapi</Filter>
     </ClInclude>
+    <ClInclude Include="include\tigerapi\news_client.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tigerapi\news_model.h">
+      <Filter>include\tigerapi</Filter>
+    </ClInclude>
     <ClInclude Include="include\tigerapi\order_util.h">
       <Filter>include\tigerapi</Filter>
     </ClInclude>
@@ -684,6 +690,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\contract_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\news_client.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\order_util.cpp">

@@ -8,6 +8,7 @@
 #include <typeinfo>
 //#include <any>
 #include <string>
+#include <boost/optional.hpp>
 #include "cpprest/json.h"
 #include "cpprest/details/basic_types.h"
 #include "win32.h"
@@ -672,6 +673,7 @@ namespace TIGER_API {
         double close = 0;
         time_t time;
         long long volume = 0;
+        boost::optional<double> volume_decimal;
         time_t last_time;
         long long open_interest = 0;
         double settlement = 0;
@@ -697,6 +699,10 @@ namespace TIGER_API {
             }
             if (j.has_field(U("volume"))) {
                 volume = j.at(U("volume")).as_number().to_int64();
+            }
+            volume_decimal = boost::none;
+            if (j.has_field(U("volumeDecimal")) && !j.at(U("volumeDecimal")).is_null()) {
+                volume_decimal = j.at(U("volumeDecimal")).as_double();
             }
             if (j.has_field(U("settlement"))) {
                 settlement = j.at(U("settlement")).as_double();
@@ -737,6 +743,7 @@ namespace TIGER_API {
         double bid_price = 0;
         double bid_size = 0;
         double latest_price = 0;
+        double amount = 0;
         time_t latest_time;
         long long latest_size = 0;
         utility::string_t status;
@@ -784,6 +791,9 @@ namespace TIGER_API {
 
             if (j.has_field(U("latestPrice")))
                 latest_price = j.at(U("latestPrice")).as_double();
+
+            if (j.has_field(U("amount")))
+                amount = j.at(U("amount")).as_double();
 
             if (j.has_field(U("latestTime")))
                 latest_time = j.at(U("latestTime")).as_number().to_int64();

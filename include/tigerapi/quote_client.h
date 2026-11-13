@@ -5,6 +5,7 @@
 #ifndef TIGERAPI_QUOTE_CLIENT_H
 #define TIGERAPI_QUOTE_CLIENT_H
 
+#include <boost/optional.hpp>
 #include "tiger_client.h"
 #include "client_config.h"
 #include "enums.h"
@@ -31,22 +32,48 @@ namespace TIGER_API {
         value get_brief(const value &symbols, bool include_hour_trading=false, bool include_ask_bid=false, QuoteRight right=QuoteRight::br);
         value get_stock_detail(const value &symbols, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_timeline(const value &symbols, bool include_hour_trading=false, time_t begin_time=-1);
+        value get_timeline(const value &symbols, bool include_hour_trading, time_t begin_time, SecType sec_type);
         value get_history_timeline(const value &symbols, utility::string_t date, QuoteRight right=QuoteRight::br);
         value get_kline(const value &symbols, BarPeriod period=BarPeriod::DAY, time_t begin_time=-1, time_t end_time=-1,
-                        QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
+                         QuoteRight right=QuoteRight::br, int limit=251, utility::string_t page_token=U(""));
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                         QuoteRight right, int limit, utility::string_t page_token, SecType sec_type);
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                         QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session);
+        value get_kline(const value &symbols, BarPeriod period, time_t begin_time, time_t end_time,
+                         QuoteRight right, int limit, utility::string_t page_token, TradingSession trade_session,
+                         SecType sec_type);
         value get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
-                        utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
+                         utility::string_t right=U("br"), int limit=251, utility::string_t page_token=U(""));
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                         utility::string_t right, int limit, utility::string_t page_token, SecType sec_type);
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                         utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session);
+        value get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                         utility::string_t right, int limit, utility::string_t page_token, TradingSession trade_session,
+                         SecType sec_type);
         vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time=-1, time_t end_time=-1,
-                              int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
+                               int limit=251, utility::string_t right=U("br"), utility::string_t page_token=U(""));
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token, SecType sec_type);
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token,
+                                TradingSession trade_session);
+        vector<Kline> get_kline(const value &symbols, utility::string_t period, time_t begin_time, time_t end_time,
+                                int limit, utility::string_t right, utility::string_t page_token,
+                                TradingSession trade_session, SecType sec_type);
         value get_trade_tick(const value &symbols, TradingSession trade_session=TradingSession::Regular, long begin_index=-1,
                              long end_index=-1, int limit=100);
         value get_trade_tick(const value &symbols, long begin_index=-1,
                              long end_index=-1, utility::string_t trade_session=U("Regular"), int limit=100);
         value get_quote_real_time_value(const value &symbols);
+        value get_quote_real_time_value(const value &symbols, SecType sec_type);
         vector<RealtimeQuote> get_quote_real_time(const value &symbols);
+        vector<RealtimeQuote> get_quote_real_time(const value &symbols, SecType sec_type);
         value get_quote_delay(const value &symbols);
         value get_quote_shortable_stocks(const value &symbols);
         value get_quote_depth(const value &symbols, Market market = Market::US);
+        value get_quote_depth(const value &symbols, Market market, TradingSession trade_session);
         value get_stock_broker(utility::string_t symbol, int limit=40, utility::string_t lang=U(""), utility::string_t sec_type=U(""));
         value get_capital_distribution(utility::string_t symbol, Market market = Market::US, utility::string_t lang=U(""));
         value get_capital_flow(utility::string_t symbol, Market market = Market::US, CapitalPeriod period = CapitalPeriod::DAY,
@@ -66,15 +93,22 @@ namespace TIGER_API {
          *          "open_interest":      {"min": num, "max": num},
          *          "greeks": { "delta"|"gamma"|"vega"|"theta"|"rho": {"min": num, "max": num} } }
          * @param return_greek_value optional bool; set true to receive Greeks in the response.
+         * @param timezone market timezone for the string-expiry overload; defaults to US/Eastern.
          */
         value get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter= value::null(),
                                value return_greek_value= value::null());
         value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null(),
-                               value return_greek_value= value::null());
+                               value return_greek_value= value::null(),
+                               utility::string_t timezone= U("US/Eastern"));
         value get_option_brief(value identifiers);
         value get_option_brief(const utility::string_t identifier);
         value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time=4070880000000);
         vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time=4070880000000);
+        // Minute bars can include GTH/CURB; an omitted flag keeps the server default.
+        value get_option_kline_value(value identifiers, time_t begin_time, time_t end_time,
+                                     utility::string_t period, boost::optional<bool> with_hour_trading = boost::none);
+        vector<Kline> get_option_kline(value identifiers, time_t begin_time, time_t end_time,
+                                     utility::string_t period, boost::optional<bool> with_hour_trading = boost::none);
         value get_option_trade_tick(value identifiers);
         value get_option_symbols(utility::string_t market=U("HK"), utility::string_t lang=U(""));
         value get_option_depth(const value &symbols, utility::string_t market=U("US"));
@@ -111,17 +145,36 @@ namespace TIGER_API {
         value get_fund_history_quote(const value &symbols, time_t begin_time=-1, time_t end_time=-1, int limit=200, utility::string_t lang=U(""));
 
         /** Financial related api **/
-        value get_financial_daily();
-        value get_financial_report();
+        value get_financial_daily(const value &symbols, utility::string_t market, const value &fields,
+                               utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
+                               utility::string_t lang=U(""));
+        // Backward-compatible no-param overload (deprecated — use the full-param version)
+        [[deprecated("use get_financial_daily(symbols, market, fields) instead")]]
+        value get_financial_daily() { return get_financial_daily(value::array(), U("US"), value::array()); }
+        value get_financial_report(const value &symbols, utility::string_t market, const value &fields,
+                                   utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
+                                   time_t end_date=-1, utility::string_t lang=U(""));
+        value get_financial_report(const value &symbols, const value &fields,
+                                   utility::string_t period_type=U("Quarterly"), time_t begin_date=-1,
+                                   time_t end_date=-1, utility::string_t lang=U(""));
+        // begin_date/end_date are epoch-ms int64 (matches Java's Date → fastjson epoch-ms
+        // wire shape, Rust's Option<i64>, and get_financial_report above). Server rejects
+        // string dates with 'biz param error(failed to parse parameters in biz_content)'.
+        // Pass -1 or 0 to omit. Use Utils::date_string_to_timestamp("YYYY-MM-DD") to
+        // convert human dates.
         value get_corporate_action(const value &symbols, const utility::string_t &market=U(""),
-                                   const utility::string_t &action_type=U(""), const utility::string_t &begin_date=U(""),
-                                   const utility::string_t &end_date=U(""));
+                                   const utility::string_t &action_type=U(""), time_t begin_date=-1,
+                                   time_t end_date=-1);
         value get_corporate_symbol_change(const value &symbols, const utility::string_t &market=U(""),
-                                          const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                          time_t begin_date=-1, time_t end_date=-1);
         value get_corporate_delisting(const value &symbols, const utility::string_t &market=U(""),
-                                      const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                      time_t begin_date=-1, time_t end_date=-1);
         value get_corporate_ipo(const value &symbols, const utility::string_t &market=U(""),
-                                const utility::string_t &begin_date=U(""), const utility::string_t &end_date=U(""));
+                                time_t begin_date=-1, time_t end_date=-1);
+        value get_corporate_split(const value &symbols, const utility::string_t &market=U(""),
+                                  time_t begin_date=-1, time_t end_date=-1);
+        value get_corporate_dividend(const value &symbols, const utility::string_t &market=U(""),
+                                     time_t begin_date=-1, time_t end_date=-1);
         value get_financial_currency(const value &symbols, utility::string_t market=U(""), utility::string_t lang=U(""));
         value get_financial_exchange_rate(const value &currency_list, utility::string_t begin_date=U(""), utility::string_t end_date=U(""),
                                          utility::string_t timezone=U(""), utility::string_t lang=U(""));
@@ -138,8 +191,8 @@ namespace TIGER_API {
                               int limit=0, int page=0, utility::string_t lang=U(""));
         value get_market_scanner_tags(utility::string_t market=U(""), const value &multi_tags_fields=value::null());
 
-        // Market scanner
-        value get_market_scanner();
+        // Market scanner. market defaults to "US"; pass e.g. "HK" or "AU" for other markets.
+        value get_market_scanner(utility::string_t market=U("US"));
 
         // general
         value get_kline_quota(bool with_details = false);

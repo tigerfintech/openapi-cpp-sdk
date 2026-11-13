@@ -2,6 +2,7 @@
 // Work around MSVC 14.32 parsing Boost.Move's copy-constructor probe.
 #define BOOST_NO_CXX11_DELETED_FUNCTIONS
 #endif
+#include "tigerapi/push_socket/quote_data_util.h"
 
 #include "tigerapi/push_socket/push_client_impl.h"
 #include "tigerapi/client_config.h"
@@ -10,6 +11,8 @@
 #include "openapi_pb/pb_source/PushData.pb.h"
 #include "tigerapi/enums.h"
 #include "openapi_pb/pb_source/SocketCommon.pb.h"
+#include "cpprest/asyncrt_utils.h"  // utility::conversions::to_utf8string
+#include "tigerapi/push_socket/subscribe_request.h"
 
 #include "google/protobuf/util/json_util.h"
 #include <vector>
@@ -138,6 +141,11 @@ unsigned int TIGER_API::PushClientImpl::subscribe_asset(const std::string& accou
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
 }
 
+unsigned int TIGER_API::PushClientImpl::subscribe_asset(const std::string& account, AssetQuoteType asset_quote_type)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account, utility::conversions::to_utf8string(enum_to_str(asset_quote_type)));
+}
+
 unsigned int TIGER_API::PushClientImpl::unsubscribe_asset(const std::string& account)
 {
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_UNSUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Asset, account);
@@ -151,6 +159,11 @@ void TIGER_API::PushClientImpl::set_position_changed_callback(const std::functio
 unsigned int TIGER_API::PushClientImpl::subscribe_position(const std::string& account)
 {
 	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account);
+}
+
+unsigned int TIGER_API::PushClientImpl::subscribe_position(const std::string& account, AssetQuoteType asset_quote_type)
+{
+	return send_trade_request(tigeropen::push::pb::SocketCommon_Command_SUBSCRIBE, tigeropen::push::pb::SocketCommon_DataType::SocketCommon_DataType_Position, account, utility::conversions::to_utf8string(enum_to_str(asset_quote_type)));
 }
 
 unsigned int TIGER_API::PushClientImpl::unsubscribe_position(const std::string& account)
@@ -357,21 +370,17 @@ bool TIGER_API::PushClientImpl::send_quote_request(tigeropen::push::pb::SocketCo
 
 bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account)
 {
+	return send_trade_request(command, datatype, account, "");
+}
+
+bool TIGER_API::PushClientImpl::send_trade_request(tigeropen::push::pb::SocketCommon_Command command, tigeropen::push::pb::SocketCommon_DataType datatype, const std::string& account, const std::string& asset_quote_type)
+{
 	if (account.empty())
 	{
 		return false;
 	}
-	tigeropen::push::pb::Request request;
-	request.set_command(command);
-	request.set_id(socket_->get_next_id());
 
-	tigeropen::push::pb::Request_Subscribe* subscribe = request.mutable_subscribe();
-	subscribe->set_datatype(datatype);
-
-	if (!account.empty())
-	{
-		subscribe->set_account(account.c_str());
-	}
+	tigeropen::push::pb::Request request = TIGER_API::build_trade_request(command, datatype, account, asset_quote_type, socket_->get_next_id());
 
 	send_frame(request);
     return request.id();
@@ -576,90 +585,7 @@ void TIGER_API::PushClientImpl::on_message(const std::shared_ptr<tigeropen::push
 
 
 std::shared_ptr<tigeropen::push::pb::QuoteBasicData> TIGER_API::PushClientImpl::convert_to_basic_data(const tigeropen::push::pb::QuoteData& quote_data) {
-    // Check for valid input
-    if (!quote_data.type()) {
-        return nullptr;
-    }
-
-    tigeropen::push::pb::SocketCommon_QuoteType quote_type = quote_data.type();
-    if (quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_ALL &&
-        quote_type != tigeropen::push::pb::SocketCommon::QuoteType::SocketCommon_QuoteType_BASIC) {
-        return nullptr;
-    }
-
-    // Create and initialize builder
-    // auto* builder = new QuoteBasicData();
-    auto builder = std::make_shared<tigeropen::push::pb::QuoteBasicData>();
-    // Set required fields
-    builder->set_symbol(quote_data.symbol());
-    builder->set_type(quote_type);
-    builder->set_timestamp(quote_data.timestamp());
-    builder->set_latestprice(quote_data.latestprice());
-    builder->set_latesttime(quote_data.latesttime());
-    builder->set_preclose(quote_data.preclose());
-    builder->set_volume(quote_data.volume());
-
-    // Set optional fields if they exist
-    if (quote_data.servertimestamp()) {
-        builder->set_servertimestamp(quote_data.servertimestamp());
-    }
-    
-    if (quote_data.avgprice() != 0) {
-        builder->set_avgprice(quote_data.avgprice());
-    }
-    
-    if (quote_data.latestpricetimestamp()) {
-        builder->set_latestpricetimestamp(quote_data.latestpricetimestamp());
-    }
-    
-    if (quote_data.amount() != 0) {
-            builder->set_amount(quote_data.amount());
-    }
-    
-    if (quote_data.open() != 0) {
-        builder->set_open(quote_data.open());
-    }
-    
-    if (quote_data.high() != 0) {
-        builder->set_high(quote_data.high());
-    }
-    
-    if (quote_data.low() != 0) {
-        builder->set_low(quote_data.low());
-    }
-    
-    if (!quote_data.hourtradingtag().empty()) {
-            builder->set_hourtradingtag(quote_data.hourtradingtag());
-    }
-    
-    if (!quote_data.marketstatus().empty()) {
-        builder->set_marketstatus(quote_data.marketstatus());
-    }
-    
-    if (!quote_data.identifier().empty()) {
-        builder->set_identifier(quote_data.identifier());
-    }
-    
-    if (quote_data.openint() != 0) {
-        builder->set_openint(quote_data.openint());
-    }
-    
-    if (quote_data.tradetime()) {
-        builder->set_tradetime(quote_data.tradetime());
-    }
-    
-    if (quote_data.presettlement() != 0) {
-        builder->set_presettlement(quote_data.presettlement());
-    }
-    
-    if (quote_data.mintick() != 0) {
-        builder->set_mintick(quote_data.mintick());
-    }
-    
-    builder->mutable_mi()->CopyFrom(quote_data.mi());
-
-
-    return builder;
+    return TIGER_API::detail::convert_quote_basic_data(quote_data);
 }
 
 std::shared_ptr<tigeropen::push::pb::QuoteBBOData> TIGER_API::PushClientImpl::convert_to_bbo_data(const tigeropen::push::pb::QuoteData& quote_data) {

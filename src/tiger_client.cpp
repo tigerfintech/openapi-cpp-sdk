@@ -2,6 +2,7 @@
 #include "tigerapi/version.h"
 #include "tigerapi/contract_util.h"
 #include "tigerapi/logger.h"
+#include <map>
 #include <memory>
 
 namespace TIGER_API {
@@ -39,11 +40,50 @@ namespace TIGER_API {
         return str;
     }
 
-    value TigerClient::build_common_params() {
+    // Endpoints pinned to a specific gateway version. Matches the Java SDK request classes:
+    //   QuoteTimelineRequest                                      -> V3_0
+    //   QuoteKlineRequest / QuoteDepthRequest / QuoteTradeTickRequest -> V2_0
+    //   FinancialReportRequest / FinancialDailyRequest                -> V2_0
+    //   QuoteTradeCalendarRequest                                     -> V2_0
+    // Rust SDK pins the same set via call_into_versioned(..., VERSION_V2).
+    // Without the override the gateway answers 'biz param error(failed to parse
+    // parameters in biz_content)' (financial_report / financial_daily) or returns
+    // an empty market field (trading_calendar).
+    //
+    // quote_overnight is independently pinned to 1.0 (not the V2_0 group above):
+    // the gateway rejects V3.0 for this endpoint and 2.0 is also rejected; 1.0 is
+    // the only accepted version (confirmed via live testing; see CHANGELOG 1.3.1
+    // "get_quote_overnight now uses its required API version 1.0").
+    static const std::map<utility::string_t, utility::string_t>&
+    endpoint_version_overrides() {
+        static const std::map<utility::string_t, utility::string_t> table = {
+            {U("quote_overnight"), U("1.0")},
+            {U("quote_real_time"), U("2.0")},
+            {U("timeline"), U("3.0")},
+            {U("kline"), U("2.0")},
+            {U("quote_depth"), U("2.0")},
+            {U("trade_tick"), U("2.0")},
+            {U("financial_report"), U("2.0")},
+            {U("financial_daily"), U("2.0")},
+            {U("trading_calendar"), U("2.0")},
+        };
+        return table;
+    }
+
+    value TigerClient::build_common_params(const utility::string_t &api_method) {
         value common_params;
         common_params[P_TIGER_ID] = value::string(client_config.tiger_id);
         common_params[P_CHARSET] = value::string(client_config.charset);
-        common_params[P_VERSION] = value::string(OPEN_API_SERVICE_VERSION);
+        // Use per-endpoint version override if present; otherwise the global default.
+        utility::string_t version = OPEN_API_SERVICE_VERSION;
+        if (!api_method.empty()) {
+            const auto &table = endpoint_version_overrides();
+            auto it = table.find(api_method);
+            if (it != table.end()) {
+                version = it->second;
+            }
+        }
+        common_params[P_VERSION] = value::string(version);
         common_params[P_SIGN_TYPE] = value::string(client_config.sign_type);
         common_params[P_DEVICE_ID] = value::string(client_config.device_id);
         return common_params;
@@ -76,11 +116,19 @@ namespace TIGER_API {
         /************************** set request body ***************************/
 
         value params = value::object(true);
-        value common_params = build_common_params();
+        // Pass api_method so build_common_params can apply per-endpoint version overrides
+        // (e.g. financial_report / trading_calendar require V2.0, not the global V3.0).
+        value common_params = build_common_params(api_method);
         for (const auto &kvp: common_params.as_object()) {
             params[kvp.first] = kvp.second;
         }
-        if (!client_config.lang.empty()) {
+        // `body` may be a top-level array (v1-style batch endpoints like
+        // option_brief, option_kline, option_trade_tick — which serialize
+        // biz_content as `[{...}, ...]`). cpprestsdk throws "not an object"
+        // when you call `array[stringKey]`, so only attach `lang` for object
+        // bodies. v1 batch endpoints have no request-level `lang` field
+        // anyway (Java `BatchApiModel` serializes `items` directly).
+        if (!client_config.lang.empty() && body.is_object()) {
             body[P_LANG] = value::string(client_config.lang);
         }
         if (!body.is_null() && body.size() > 0) {
@@ -102,13 +150,15 @@ namespace TIGER_API {
         try {
             LOG(DEBUG) << U("request:\n") << U("Server: ") << http_client_->base_uri().to_string() << U("\n") << request.to_string();
             if (!params.is_null()) {
-               LOG(DEBUG)  << U("body:\n") << Utils::json_format(params.serialize());
+                utility::string_t req_body = Utils::json_format(params.serialize());
+                LOG(DEBUG) << U("body:\n") << Utils::truncate_for_log(req_body);
             }
             // Wait for headers
             response = http_client_->request(request).get();
 
             // Wait for data
             response.content_ready().wait();
+            result_str = response.extract_string().get();
 
         }
         catch (const std::exception &ex) {
@@ -116,11 +166,15 @@ namespace TIGER_API {
             throw;
         }
         try {
-            result = response.extract_json().get();
-            result_str = result.serialize();
-            if (result[P_CODE].is_null()) {
-                LOG(ERROR) << U("Exception: api error, response: ") << result.serialize();
-                throw std::runtime_error(Utils::str16to8(result.serialize()).c_str());
+            try {
+                result = value::parse(result_str);
+            } catch (...) {
+                LOG(ERROR) << Utils::truncate_for_log(result_str);
+                throw std::runtime_error(Utils::str16to8(Utils::truncate_for_log(result_str)));
+            }
+            if (!result.is_object() || !result.has_field(P_CODE) || result[P_CODE].is_null()) {
+                LOG(ERROR) << U("Exception: response missing code field, response: ") << Utils::truncate_for_log(result_str);
+                throw std::runtime_error("Exception: response missing code field");
             }
             int code = result[P_CODE].as_integer();
             if (code != 0) {
@@ -137,15 +191,27 @@ namespace TIGER_API {
                 LOG(ERROR) << U("Exception: response sign verify failed. ");
                 throw std::runtime_error("Exception: response sign verify failed");
             }
+            if (!result.has_field(P_DATA)) {
+                LOG(ERROR) << U("Exception: response missing data field, response: ") << result_str;
+                throw std::runtime_error("Exception: response missing data field");
+            }
+            // Allow data:null on code==0 (valid empty success response).
             result_data = result[P_DATA];
         }
         catch (const std::exception &e) {
             LOG(ERROR) << U("get response error :") << e.what() << endl;
             throw;
         }
-        LOG(DEBUG) << U("response:\n") << result.serialize();
-        // json format
-        LOG(DEBUG) << U("body:\n") << Utils::json_format(result_str);
+        // Truncate large responses in DEBUG logs to prevent CI log overflow
+        // (e.g. get_all_symbols returns thousands of symbols, easily > 4 MB).
+        // Reuse result_str (already serialized above) instead of calling
+        // result.serialize() again — serialization of large responses is not
+        // free, and doing it twice doubles the peak memory/CPU cost for this
+        // log statement alone.
+        LOG(DEBUG) << U("response:\n") << Utils::truncate_for_log(result_str);
+        // Pretty-printed body — also truncated for the same reason.
+        utility::string_t formatted = Utils::json_format(result_str);
+        LOG(DEBUG) << U("body:\n") << Utils::truncate_for_log(formatted);
 
         return result_data;
     }
@@ -159,6 +225,8 @@ namespace TIGER_API {
             utility::string_t symbol, expiry, right, strike;
             std::tie(symbol, expiry, right, strike) = ContractUtil::extract_option_info(identifier.as_string());
             if (symbol.empty() || expiry.empty() || right.empty()) {
+                LOG(WARNING) << U("identifiers_to_options: skipping unparseable identifier '")
+                             << identifier.as_string() << U("' (ContractUtil::extract_option_info returned empty fields)") << endl;
                 continue;
             }
             value obj = value::object(true);

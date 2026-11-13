@@ -1,0 +1,114 @@
+#pragma once
+/**
+ * test_support.h — TigerOpen C++ SDK test utilities
+ *
+ * Fake offline credentials for unit tests that must not make real network
+ * calls, and helpers for integration tests that read live credentials from
+ * environment variables.
+ */
+#include <cstdlib>
+#include <stdexcept>
+#include <string>
+#include <memory>
+#include "tigerapi/client_config.h"
+
+namespace TIGER_API {
+namespace test {
+
+// ── Fake offline credentials ─────────────────────────────────────────────────
+// Intentionally invalid — allows ClientConfig construction and field-access
+// tests without any real crypto or network I/O.
+static const utility::string_t FAKE_TIGER_ID    = U("test_tiger_id_00001");
+static const utility::string_t FAKE_ACCOUNT     = U("test_account_00001");
+// A valid PEM-format placeholder (not a real key; signing will fail).
+static const utility::string_t FAKE_PRIVATE_KEY =
+    U("-----BEGIN " "RSA PRIVATE KEY-----\n")
+    U("dGVzdA==0000000000000000000000000000000000000000000000000\n")
+    U("0000000000000000000000000000000000000000000000000000000000000000\n")
+    U("-----END RSA PRIVATE KEY-----");
+
+/**
+ * Returns an offline ClientConfig for unit tests: valid construction but no
+ * real credentials — do NOT call methods that sign or send requests.
+ * sandbox_debug is deprecated (throws if true) and not requested here.
+ */
+inline std::shared_ptr<ClientConfig> make_offline_config() {
+    return std::make_shared<ClientConfig>(FAKE_TIGER_ID, FAKE_PRIVATE_KEY, FAKE_ACCOUNT,
+                        /*sandbox_debug=*/false);
+}
+
+// ── Integration test helpers ─────────────────────────────────────────────────
+
+/** Returns true when TIGER_RUN_INTEG=true is set in the environment. */
+inline bool integ_enabled() {
+    const char* v = std::getenv("TIGER_RUN_INTEG");
+    return v != nullptr && std::string(v) == "true";
+}
+
+/** Live credentials sourced from environment variables. */
+struct IntegCreds {
+    utility::string_t tiger_id;
+    utility::string_t private_key;
+    utility::string_t account;
+};
+
+/**
+ * Reads live credentials from:
+ *   TIGER_TEST_ID, TIGER_TEST_PRIVATE_KEY, TIGER_TEST_ACCOUNT
+ * Throws std::runtime_error if any variable is absent.
+ */
+inline IntegCreds read_integ_creds() {
+    auto env = [](const char* name) -> utility::string_t {
+        const char* v = std::getenv(name);
+        if (!v || *v == '\0')
+            throw std::runtime_error(std::string("Missing env var: ") + name);
+#if defined(_WIN32)
+        return utility::conversions::to_string_t(std::string(v));
+#else
+        return utility::string_t(v);
+#endif
+    };
+    return {env("TIGER_TEST_ID"), env("TIGER_TEST_PRIVATE_KEY"), env("TIGER_TEST_ACCOUNT")};
+}
+
+/** Returns a production ClientConfig populated from integration env vars.
+ * Sandbox is deprecated (throws if requested) — integration tests run
+ * against production, matching the other SDKs' integ test convention.
+ * Returns shared_ptr to avoid ClientConfig move (deleted move constructor in C++14). */
+inline std::shared_ptr<ClientConfig> make_integ_config() {
+    auto c = read_integ_creds();
+    return std::make_shared<ClientConfig>(c.tiger_id, c.private_key, c.account, /*sandbox_debug=*/false);
+}
+
+/** Returns a production config from a properties path when provided.
+ * Falls back to the existing integration environment credentials otherwise. */
+inline std::shared_ptr<ClientConfig> make_readonly_integ_config() {
+    const char* props_path = std::getenv("TIGEROPEN_PROPS_PATH");
+    if (!props_path || *props_path == '\0') {
+        props_path = std::getenv("TIGER_CONFIG_PATH");
+    }
+    if (!props_path || *props_path == '\0') {
+        return make_integ_config();
+    }
+#if defined(_WIN32)
+    auto path = utility::conversions::to_string_t(std::string(props_path));
+#else
+    utility::string_t path(props_path);
+#endif
+    if (!path.empty() && path.back() != U('/') && path.back() != U('\\')) {
+        path += U('/');
+    }
+    auto cfg = std::make_shared<ClientConfig>(/*sandbox_debug=*/false, path);
+    const char* server_url = std::getenv("TIGEROPEN_SERVER_URL");
+    if (server_url && *server_url != '\0') {
+#if defined(_WIN32)
+        cfg->set_server_url(utility::conversions::to_string_t(std::string(server_url)));
+#else
+        cfg->set_server_url(utility::string_t(server_url));
+#endif
+    }
+    return cfg;
+}
+
+} // namespace test
+} // namespace TIGER_API
