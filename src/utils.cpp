@@ -1,5 +1,7 @@
 ﻿#include "tigerapi/utils.h"
 #include <ctime>
+#include <cstdlib>
+#include <mutex>
 #include <iomanip>
 #include <random>
 #include <algorithm>
@@ -43,35 +45,61 @@ namespace TIGER_API {
     }
 
     time_t Utils::date_string_to_timestamp(const utility::string_t &date_string,
-                                            const utility::string_t &timezone) {
+                                           const utility::string_t &timezone) {
         struct tm tm = {};
         utility::istringstream_t ss(date_string);
         ss >> std::get_time(&tm, U("%Y-%m-%d"));
+        if (ss.fail()) {
+            return 0;
+        }
         tm.tm_hour = 0;
         tm.tm_min = 0;
         tm.tm_sec = 0;
-        tm.tm_isdst = -1;  // let mktime determine DST automatically
-        // WARNING: setenv/unsetenv is NOT thread-safe — tz_mutex only serializes callers
-        // of this function. Any other thread concurrently calling mktime/localtime/time/
-        // ctime/strftime will observe the temporarily-modified TZ and may produce wrong
-        // results. This is a known limitation. A correct fix requires replacing the
-        // setenv/mktime approach with manual UTC arithmetic (e.g., timegm on Linux,
-        // _mkgmtime on Windows) and a timezone offset lookup table.
-        // Safe for single-threaded or short-lived SDK contexts.
+        tm.tm_isdst = -1;
+
+        // The date names a calendar day in the *market's* timezone, not the
+        // machine's. mktime() interprets tm as local time, so on any host that
+        // is not in the target timezone the resulting instant lands on the wrong
+        // day and the server returns an empty result. Temporarily pin TZ so the
+        // conversion matches the reference SDKs (Python parses the date in
+        // US/Eastern by default; see common_utils.date_str_to_timestamp).
+        std::string tz = str16to8(timezone);
+        if (tz.empty()) {
+            tz = "US/Eastern";
+        }
+
+        // Serialize SDK conversions while changing the process-wide timezone.
+        // Other code calling localtime/mktime or modifying TZ does not share this
+        // lock and can still observe the temporary timezone.
         static std::mutex tz_mutex;
         std::lock_guard<std::mutex> lock(tz_mutex);
-        const char* old_tz = getenv("TZ");
-        std::string old_tz_str = old_tz ? old_tz : "";
-        setenv("TZ", utility::conversions::to_utf8string(timezone).c_str(), 1);
+
+        const char *prev_tz = std::getenv("TZ");
+        std::string saved = prev_tz ? std::string(prev_tz) : std::string();
+        bool had_tz = (prev_tz != nullptr);
+
+#if defined(_WIN32)
+        _putenv_s("TZ", tz.c_str());
+        _tzset();
+        time_t secs = mktime(&tm);
+        _putenv_s("TZ", had_tz ? saved.c_str() : "");
+        _tzset();
+#else
+        setenv("TZ", tz.c_str(), 1);
         tzset();
-        time_t res = mktime(&tm) * 1000;
-        if (!old_tz_str.empty()) {
-            setenv("TZ", old_tz_str.c_str(), 1);
+        time_t secs = mktime(&tm);
+        if (had_tz) {
+            setenv("TZ", saved.c_str(), 1);
         } else {
             unsetenv("TZ");
         }
         tzset();
-        return res;
+#endif
+
+        if (secs == static_cast<time_t>(-1)) {
+            return 0;
+        }
+        return secs * 1000;
     }
 
     utility::string_t Utils::get_sign(const utility::string_t &private_key, const utility::string_t &content) {
