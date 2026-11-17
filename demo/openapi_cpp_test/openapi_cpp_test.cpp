@@ -87,6 +87,12 @@ public:
     static void test_get_contract(const std::shared_ptr<TradeClient>& trade_client) {
         value res = trade_client->get_contract(U("AAPL"));
         ucout << U("contract: ") << res << endl;
+        if (res.has_field(U("orderCapabilities")) && res.at(U("orderCapabilities")).is_array()) {
+            for (const auto &capability : res.at(U("orderCapabilities")).as_array()) {
+                // Keep the server's order type, time in force, and session strings unchanged.
+                ucout << U("order capability: ") << capability << endl;
+            }
+        }
     }
 
     static void test_get_contracts(const std::shared_ptr<TradeClient>& trade_client) {
