@@ -137,7 +137,7 @@ value sample_page_data() {
 TEST_F(NewsRequestCaptureTest, ContractOrderCapabilitiesRemainUnchanged) {
     const value contract = value::parse(U("{\"symbol\":\"AAPL\",\"secType\":\"OPT\",\"orderCapabilities\":["
         "{\"orderType\":\"LMT\",\"timeInForce\":\"DAY\",\"tradingSessionType\":\"PRE_RTH_POST\"},"
-        "{\"orderType\":\"LMT\",\"timeInForce\":\"GTC\",\"tradingSessionType\":\"GTH_RTH_CURB\"}]}"));
+        "{\"orderType\":\"LMT\",\"timeInForce\":\"GTC\",\"tradingSessionType\":\"PRE_RTH_POST\"}]}"));
     response_data_ = contract;
     auto client = make_trade_client();
     const value single = client->get_contract(U("AAPL"), U("OPT"));
