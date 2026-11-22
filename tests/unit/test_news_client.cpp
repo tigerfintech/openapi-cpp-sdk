@@ -13,8 +13,10 @@
 #include "cpprest/json.h"
 #include "support/test_support.h"
 #include "tigerapi/constants.h"
+#include "tigerapi/contract_util.h"
 #include "tigerapi/enums.h"
 #include "tigerapi/news_client.h"
+#include "tigerapi/order_util.h"
 #include "tigerapi/trade_client.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/service_types.h"
@@ -134,6 +136,38 @@ value sample_page_data() {
 } // namespace
 
 // Reuse the signed gateway fixture to exercise the contract response path.
+TEST_F(NewsRequestCaptureTest, TradingSessionsReachPlaceAndPreview) {
+    auto client = make_trade_client();
+    Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
+    for (const auto &account : {U("600021175417"), U("20220101000000001")}) {
+        for (const auto &session : {U("PRE_RTH"), U("RTH_POST"), U("")}) {
+            Order order = OrderUtil::limit_order(account, contract, U("BUY"), 1, 100.0);
+            order.outside_rth = true;
+            order.trading_session_type = session;
+            for (bool preview : {false, true}) {
+                if (preview) client->preview_order(order);
+                else client->place_order(order);
+                EXPECT_EQ(captured_.at(P_METHOD).as_string(), preview ? U("preview_order") : U("place_order"));
+                const value payload = biz_content();
+                EXPECT_EQ(payload.at(P_ACCOUNT).as_string(), account);
+                EXPECT_TRUE(payload.has_field(U("outside_rth")));
+                if (order.trading_session_type.empty()) EXPECT_FALSE(payload.has_field(U("trading_session_type")));
+                else EXPECT_EQ(payload.at(U("trading_session_type")).as_string(), session);
+                EXPECT_FALSE(payload.has_field(U("tradingSessionType")));
+            }
+        }
+    }
+}
+
+TEST_F(NewsRequestCaptureTest, TradingSessionResponseKeepsItsStringValue) {
+    for (const auto &session : {U("PRE_RTH"), U("RTH_POST")}) {
+        value response = value::object();
+        response[U("tradingSessionType")] = value::string(session);
+        EXPECT_EQ(Order(response).trading_session_type, session);
+    }
+    EXPECT_TRUE(Order(value::object()).trading_session_type.empty());
+}
+
 TEST_F(NewsRequestCaptureTest, ContractOrderCapabilitiesRemainUnchanged) {
     const value contract = value::parse(U("{\"symbol\":\"AAPL\",\"secType\":\"OPT\",\"orderCapabilities\":["
         "{\"orderType\":\"LMT\",\"timeInForce\":\"DAY\",\"tradingSessionType\":\"PRE_RTH_POST\"},"

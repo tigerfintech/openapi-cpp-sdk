@@ -1,3 +1,9 @@
+## Unreleased
+
+### New
+
+- `Order.trading_session_type` 新增综合/模拟账号交易时段字符串参数，下单与 preview 支持 `PRE_RTH`、`RTH_POST` 等值；未设置时不传该字段，订单响应保留交易时段。
+
 ## 1.5.1 (2026-11-18)
 
 ### New
