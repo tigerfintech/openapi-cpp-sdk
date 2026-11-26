@@ -83,6 +83,18 @@ namespace TIGER_API {
 
         /** Option quote related api **/
         value get_option_expiration(const value &symbols);
+        /**
+         * Query the option chain for one underlying and expiry.
+         *
+         * @param option_filter optional filter object, forwarded as `option_filter`.
+         *        Wire shape (all members optional):
+         *        { "in_the_money": bool,
+         *          "implied_volatility": {"min": num, "max": num},
+         *          "open_interest":      {"min": num, "max": num},
+         *          "greeks": { "delta"|"gamma"|"vega"|"theta"|"rho": {"min": num, "max": num} } }
+         * @param return_greek_value optional bool; set true to receive Greeks in the response.
+         * @param timezone market timezone for the string-expiry overload; defaults to US/Eastern.
+         */
         value get_option_chain(const utility::string_t symbol, time_t expiry, value option_filter= value::null(),
                                value return_greek_value= value::null());
         value get_option_chain(const utility::string_t symbol, utility::string_t expiry, value option_filter= value::null(),

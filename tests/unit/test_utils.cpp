@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
 #include "tigerapi/utils.h"
+#include <atomic>
+#include <cstdlib>
+#include <ctime>
 #include <string>
+#include <thread>
+#include <vector>
 
 using namespace TIGER_API;
 
@@ -108,7 +113,7 @@ TEST(UtilsTest, GetTimestamp_Length) {
 }
 
 // ── date_string_to_timestamp ─────────────────────────────────────────────────
-// Implementation: parse "%Y-%m-%d", return mktime(...) * 1000 (epoch ms at midnight local)
+// Dates name midnight in the requested market timezone, defaulting to US/Eastern.
 
 TEST(UtilsTest, DateStringToTimestamp_ReturnsPositive) {
     // Any valid date in the past should give a positive epoch-ms value
@@ -122,6 +127,102 @@ TEST(UtilsTest, DateStringToTimestamp_ConsistencyTwoDate) {
     time_t ts2 = Utils::date_string_to_timestamp(U("2020-01-02"));
     EXPECT_GE(ts2, ts1);
 }
+
+TEST(UtilsTest, DateStringToTimestamp_InvalidInputReturnsZero) {
+    EXPECT_EQ(Utils::date_string_to_timestamp(U("")), 0);
+    EXPECT_EQ(Utils::date_string_to_timestamp(U("not-a-date")), 0);
+}
+
+// These tests exercise POSIX TZ state and IANA timezone names. The Windows CRT
+// uses a different TZ format, so its environment handling needs a Windows runner.
+#if !defined(_WIN32)
+namespace {
+class UtilsTimezoneTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        const char* current = std::getenv("TZ");
+        had_timezone_ = current != nullptr;
+        saved_timezone_ = current ? current : "";
+    }
+
+    void TearDown() override {
+        set_timezone(had_timezone_ ? saved_timezone_.c_str() : nullptr);
+    }
+
+    static void set_timezone(const char* timezone) {
+        if (timezone) {
+            setenv("TZ", timezone, 1);
+        } else {
+            unsetenv("TZ");
+        }
+        tzset();
+    }
+
+private:
+    bool had_timezone_ = false;
+    std::string saved_timezone_;
+};
+}  // namespace
+
+TEST_F(UtilsTimezoneTest, DefaultTimezoneIsIndependentOfHostAndHonorsDst) {
+    for (const char* host : {"Asia/Shanghai", "UTC", "America/New_York"}) {
+        SCOPED_TRACE(host);
+        set_timezone(host);
+        EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-08-21")), 1787284800000LL);
+        EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-01-15")), 1768453200000LL);
+        ASSERT_NE(std::getenv("TZ"), nullptr);
+        EXPECT_STREQ(std::getenv("TZ"), host);
+    }
+}
+
+TEST_F(UtilsTimezoneTest, ExplicitAndEmptyTimezone) {
+    set_timezone("Asia/Shanghai");
+    EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-08-21"), U("Asia/Hong_Kong")),
+              1787241600000LL);
+    EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-08-21"), U("UTC")),
+              1787270400000LL);
+    EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-08-21"), U("")),
+              1787284800000LL);
+    EXPECT_STREQ(std::getenv("TZ"), "Asia/Shanghai");
+}
+
+TEST_F(UtilsTimezoneTest, RestoresUnsetAndEmptyTimezone) {
+    for (const char* host : {static_cast<const char*>(nullptr), ""}) {
+        SCOPED_TRACE(host ? "empty TZ" : "unset TZ");
+        set_timezone(host);
+        EXPECT_EQ(Utils::date_string_to_timestamp(U("2026-08-21")), 1787284800000LL);
+        EXPECT_EQ(Utils::date_string_to_timestamp(U("not-a-date")), 0);
+        if (host) {
+            ASSERT_NE(std::getenv("TZ"), nullptr);
+            EXPECT_STREQ(std::getenv("TZ"), "");
+        } else {
+            EXPECT_EQ(std::getenv("TZ"), nullptr);
+        }
+    }
+}
+
+TEST_F(UtilsTimezoneTest, ConcurrentConversionsKeepTheirMarketTimezone) {
+    set_timezone("Asia/Shanghai");
+    std::atomic<bool> correct{true};
+    std::vector<std::thread> workers;
+    for (int i = 0; i < 8; ++i) {
+        workers.emplace_back([i, &correct]() {
+            const auto zone = i % 2 ? U("US/Eastern") : U("Asia/Hong_Kong");
+            const auto expected = i % 2 ? 1787284800000LL : 1787241600000LL;
+            for (int n = 0; n < 100; ++n) {
+                if (Utils::date_string_to_timestamp(U("2026-08-21"), zone) != expected) {
+                    correct.store(false);
+                }
+            }
+        });
+    }
+    for (auto& worker : workers) {
+        worker.join();
+    }
+    EXPECT_TRUE(correct.load());
+    EXPECT_STREQ(std::getenv("TZ"), "Asia/Shanghai");
+}
+#endif
 
 // ── get_device_id ─────────────────────────────────────────────────────────────
 // Implementation: random MAC-address-style hex string "xx:xx:xx:xx:xx:xx"
