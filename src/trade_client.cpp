@@ -519,6 +519,9 @@ namespace TIGER_API {
     }
 
     void TradeClient::serialize_advanced_order_fields(value &obj, const Order &order, const utility::string_t &resolved_account) {
+        if (!order.trading_session_type.empty()) {
+            obj[U("trading_session_type")] = value::string(order.trading_session_type);
+        }
         // Iceberg order fields.
         if (order.display_size != 0) {
             obj[U("display_size")] = value::number(static_cast<int64_t>(order.display_size));
@@ -599,6 +602,7 @@ namespace TIGER_API {
                 if (oca_order.aux_price != 0) oca_obj[U("aux_price")] = oca_order.aux_price;
                 if (!oca_order.time_in_force.empty()) oca_obj[U("time_in_force")] = value::string(oca_order.time_in_force);
                 if (oca_order.outside_rth) oca_obj[U("outside_rth")] = oca_order.outside_rth;
+                if (!oca_order.trading_session_type.empty()) oca_obj[U("trading_session_type")] = value::string(oca_order.trading_session_type);
                 oca[i++] = oca_obj;
             }
             obj[U("oca_orders")] = oca;

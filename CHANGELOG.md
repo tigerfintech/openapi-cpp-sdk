@@ -1,9 +1,20 @@
+## 1.5.1 (2026-11-26)
+
+### New
+
+- 合约查询新增订单能力信息，可查看支持的订单类型、订单有效期和交易时段组合。
+- `Order.trading_session_type` 支持综合/模拟账号交易时段字符串参数，下单与 preview 可传 `PRE_RTH`、`RTH_POST`；未设置时不发送该字段，订单响应保留交易时段。
+
+### Breaking
+
+- `Order` 新增成员改变了二进制布局；使用本版本时需重新编译 SDK 和调用方应用。
+
 ## 1.5.0 (2026-11-11)
 ### New
-- US option quotes and option-chain legs expose cumulative volume/amount and extended-session quotes for GTH/CURB.
-- Protobuf option callbacks read GTH/CURB prices and session volume/amount from existing fields with PreMarket/AfterHours tags; cumulative totals remain independent. The unpublished nested push object is removed. HTTP snapshots and option-chain objects remain available.
-- Option minute-bar requests can include GTH/CURB through the optional with_hour_trading parameter; existing calls retain the server default.
-- News query client `NewsClient` with `get_stock_news` (per-symbol stock news, page-number pagination) and `get_market_news` (market highlights, `last_id` cursor pagination).
+- 美股期权快照和期权链子项新增累计成交量、累计成交额及 GTH/CURB 延长时段行情。
+- Protobuf 期权回调通过既有字段提供 GTH/CURB 价格和当前时段成交量、成交额，以 PreMarket/AfterHours 标识时段，累计量额独立返回。移除未发布的嵌套推送对象，HTTP 快照及期权链中的对应对象保留。
+- 期权分钟 K 线查询支持通过可选参数 with_hour_trading 包含 GTH/CURB 数据；原有调用继续使用服务端默认行为。
+- 新增资讯查询客户端 `NewsClient`：`get_stock_news` 按单只标的查询股票新闻，支持页码分页；`get_market_news` 查询市场要闻，支持 `last_id` 游标分页。
 
 ### Fixed
 - Date-to-timestamp conversion returns `0` on parse/conversion failure, defaults an empty timezone to `US/Eastern`, restores the previous `TZ` state and uses the Windows-specific timezone APIs where applicable.

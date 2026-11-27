@@ -231,6 +231,9 @@ namespace TIGER_API {
         double stop_loss_trailing_percent = 0;
         double stop_loss_trailing_amount = 0;
 
+        /** Omnibus/paper trading session, e.g. PRE_RTH or RTH_POST. Empty keeps the server default. */
+        utility::string_t trading_session_type;
+
         utility::string_t to_string() {
             utility::stringstream_t ss;
             ss << U("Order(id=") << this->id << U(" status=") << this->status << U(" total_quantity: ")
@@ -277,6 +280,9 @@ namespace TIGER_API {
             }
             if (json.has_field(U("outsideRth"))) {
                 outside_rth = json.at(U("outsideRth")).as_bool();
+            }
+            if (json.has_field(U("tradingSessionType")) && !json.at(U("tradingSessionType")).is_null()) {
+                trading_session_type = json.at(U("tradingSessionType")).as_string();
             }
             if (json.has_field(U("adjustLimit"))) {
                 adjust_limit = json.at(U("adjustLimit")).as_double();

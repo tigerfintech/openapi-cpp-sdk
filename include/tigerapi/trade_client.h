@@ -189,11 +189,15 @@ namespace TIGER_API {
                            utility::string_t time_in_force=U(""), bool outside_rth=false, time_t expire_time=0);
 
 
+        // Returns raw contract JSON, including the optional orderCapabilities array.
+        // Each capability contains orderType, timeInForce, and tradingSessionType.
+        // Check for a missing or null array before iterating its entries.
         value get_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t currency = U(""), utility::string_t exchange = U(""), time_t expiry = -1,
                            utility::string_t strike = U(""), utility::string_t right = U(""));
         value
         get_contract(utility::string_t symbol, SecType sec_type = SecType::STK, Currency currency = Currency::ALL, utility::string_t exchange = U(""), time_t expiry = -1,
                      utility::string_t strike = U(""), Right right = Right::ALL);
+        // Returns contract objects with their original orderCapabilities values, when present.
         value get_contracts(const value &symbols, utility::string_t sec_type, utility::string_t currency = U(""), utility::string_t exchange = U(""), time_t expiry = -1,
                             utility::string_t strike = U(""), utility::string_t right = U(""));
         value get_quote_contract(utility::string_t symbol, utility::string_t sec_type, utility::string_t expiry);

@@ -13,8 +13,11 @@
 #include "cpprest/json.h"
 #include "support/test_support.h"
 #include "tigerapi/constants.h"
+#include "tigerapi/contract_util.h"
 #include "tigerapi/enums.h"
 #include "tigerapi/news_client.h"
+#include "tigerapi/order_util.h"
+#include "tigerapi/trade_client.h"
 #include "tigerapi/quote_client.h"
 #include "tigerapi/service_types.h"
 #include "tigerapi/utils.h"
@@ -109,6 +112,14 @@ protected:
         return value::parse(captured_.at(P_BIZ_CONTENT).as_string());
     }
 
+    std::unique_ptr<TradeClient> make_trade_client() {
+        ClientConfig config(U("test_tiger_id"), test_key_pair().private_pem,
+                            U("test_account"), false);
+        config.set_server_url(listener_.uri().to_string());
+        config.set_server_public_key(test_key_pair().public_pem);
+        return std::make_unique<TradeClient>(config);
+    }
+
     web::http::experimental::listener::http_listener listener_;
     value captured_;
     value response_data_ = value::object(true);
@@ -123,6 +134,73 @@ value sample_page_data() {
 }
 
 } // namespace
+
+// Reuse the signed gateway fixture to exercise the contract response path.
+TEST_F(NewsRequestCaptureTest, TradingSessionsReachPlaceAndPreview) {
+    auto client = make_trade_client();
+    Contract contract = ContractUtil::stock_contract(U("AAPL"), U("USD"));
+    for (const auto &account : {U("600021175417"), U("20220101000000001")}) {
+        for (const auto &session : {U("PRE_RTH"), U("RTH_POST"), U("")}) {
+            Order order = OrderUtil::limit_order(account, contract, U("BUY"), 1, 100.0);
+            order.outside_rth = true;
+            order.trading_session_type = session;
+            for (bool preview : {false, true}) {
+                if (preview) client->preview_order(order);
+                else client->place_order(order);
+                EXPECT_EQ(captured_.at(P_METHOD).as_string(), preview ? U("preview_order") : U("place_order"));
+                const value payload = biz_content();
+                EXPECT_EQ(payload.at(P_ACCOUNT).as_string(), account);
+                EXPECT_TRUE(payload.has_field(U("outside_rth")));
+                if (order.trading_session_type.empty()) EXPECT_FALSE(payload.has_field(U("trading_session_type")));
+                else EXPECT_EQ(payload.at(U("trading_session_type")).as_string(), session);
+                EXPECT_FALSE(payload.has_field(U("tradingSessionType")));
+            }
+        }
+    }
+}
+
+TEST_F(NewsRequestCaptureTest, TradingSessionResponseKeepsItsStringValue) {
+    for (const auto &session : {U("PRE_RTH"), U("RTH_POST")}) {
+        value response = value::object();
+        response[U("tradingSessionType")] = value::string(session);
+        EXPECT_EQ(Order(response).trading_session_type, session);
+    }
+    EXPECT_TRUE(Order(value::object()).trading_session_type.empty());
+}
+
+TEST_F(NewsRequestCaptureTest, ContractOrderCapabilitiesRemainUnchanged) {
+    const value contract = value::parse(U("{\"symbol\":\"AAPL\",\"secType\":\"OPT\",\"orderCapabilities\":["
+        "{\"orderType\":\"LMT\",\"timeInForce\":\"DAY\",\"tradingSessionType\":\"PRE_RTH_POST\"},"
+        "{\"orderType\":\"LMT\",\"timeInForce\":\"GTC\",\"tradingSessionType\":\"PRE_RTH_POST\"}]}"));
+    response_data_ = contract;
+    auto client = make_trade_client();
+    const value single = client->get_contract(U("AAPL"), U("OPT"));
+    EXPECT_EQ(single.at(U("orderCapabilities")), contract.at(U("orderCapabilities")));
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("contract"));
+
+    response_data_ = value::object();
+    response_data_[P_ITEMS] = value::array({contract});
+    const value batch = client->get_contracts(value::array({value::string(U("AAPL"))}), U("OPT"));
+    ASSERT_EQ(batch.size(), 1u);
+    EXPECT_EQ(batch.at(0).at(U("orderCapabilities")), contract.at(U("orderCapabilities")));
+    EXPECT_EQ(captured_.at(P_METHOD).as_string(), U("contracts"));
+}
+
+TEST_F(NewsRequestCaptureTest, ContractOrderCapabilitiesPreserveMissingNullAndEmpty) {
+    auto client = make_trade_client();
+    for (const auto &json : {U("{\"symbol\":\"AAPL\"}"),
+                            U("{\"symbol\":\"AAPL\",\"orderCapabilities\":null}"),
+                            U("{\"symbol\":\"AAPL\",\"orderCapabilities\":[]}")}) {
+        const value contract = value::parse(json);
+        response_data_ = contract;
+        EXPECT_EQ(client->get_contract(U("AAPL"), U("STK")), contract);
+        response_data_ = value::object();
+        response_data_[P_ITEMS] = value::array({contract});
+        const value batch = client->get_contracts(value::array({value::string(U("AAPL"))}), U("STK"));
+        ASSERT_EQ(batch.size(), 1u);
+        EXPECT_EQ(batch.at(0), contract);
+    }
+}
 
 // ── news_stock_list wire keys ─────────────────────────────────────────────────
 
